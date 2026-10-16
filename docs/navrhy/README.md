@@ -5,7 +5,7 @@ Sem sa ukladajú **len schválené** návrhy z plátna Claude Design. Na plátne
 
 | Priečinok | Obrazovka | Popis pre stavbu | Verzia |
 |---|---|---|---|
-| `stranka-hosta/` | Detail objektu, košík (bočný panel), mobil | `docs/vizual-stranka-hosta.md` | v1 — 16. 10. 2026 |
+| `stranka-hosta/` | Detail objektu, galéria, košík (bočný panel), mobil | `docs/vizual-stranka-hosta.md` | v2 — 16. 10. 2026 (v1 tiež 16. 10.) |
 
 **Ako to funguje**
 - Súbory `*.dc.html` sú zdroj plátna (dosky). Samostatne sa v prehliadači neotvoria — slúžia na čítanie štruktúry, textov a správania

@@ -139,6 +139,9 @@ PLATFORMA (Martin)
   Aplikácia podľa domény pozná klienta a dosadí jeho premenné. Rovnaká téma platí pre rezervačnú stránku, widget aj e-maily.
 - **Poistky:** obmedzená sada nastavení (klient si nevie rozbiť vzhľad), automatická kontrola kontrastu (farba textu na tlačidle sa dopočíta),
   náhľad pri zakladaní klienta.
+- **Predvolená téma platformy (v2, 16. 10.):** hlavný akcent (plochy, hlavné akcie) + **doplnková farba** len na drobné štítky (nikdy akcia),
+  zaoblenie 10 px (malé prvky 8 px, tlačidlá pilulky), na farebnej ploche **grafitové tlačidlo** s čiernym hover, striedanie bielej a jemného pásu.
+  Pri svetlom akcente sa pre plochy s bielym textom automaticky použije tmavší odtieň. Podrobne: `docs/vizual-stranka-hosta.md` → *Pravidlá vzhľadu*.
 - Pri klientovi s vlastným webom sa téma nastaví podľa jeho webu (napr. globálne farby a písma z Elementor Kitu).
 
 ## A13. Notifikácie a mobil
@@ -206,7 +209,8 @@ Martin môže čokoľvek zmeniť; otvorené obchodné otázky sú v ROADMAP → 
 KLIENT (tenant)
   └── OBJEKT (property) ── režim: celok / po jednotkách · cenový model: za noc / za osobu a noc · platobný režim
         ├── JEDNOTKA (unit) ◄── na ňu sa viaže dostupnosť a cena; pri režime „celok“ má objekt práve jednu (v rozhraní skrytú)
-        ├── FOTKY · VYBAVENIE · TYP · REGIÓN · VHODNÉ PRE
+        ├── FOTKY (kategória pre albumy galérie, popis, poradie) · VYBAVENIE (zvýraznené pre „čo vás čaká“) · TYP · REGIÓN · VHODNÉ PRE
+        ├── POLOHA ── súradnice + zobrazenie na mape: presné miesto / približná oblasť (adresa až po potvrdení) · MIESTA V OKOLÍ (názov, ako, vzdialenosť)
         ├── SEZÓNA (season) ── termíny (aj každoročne opakované), min./max. nocí, povolené dni príchodu, priorita
         ├── CENA (rate) ── jednotka × sezóna → za noc, alebo za osobu a noc podľa vekového pásma
         ├── POPLATOK (fee) ── automatický alebo voliteľný (zviera, záverečné upratovanie), vratná kaucia zvlášť (nie je tržba)
@@ -301,8 +305,10 @@ RUČNÁ REZERVÁCIA (majiteľ, napr. telefón) ──► rovno POTVRDENÁ alebo 
 - Po odoslaní: stránka a e-mail s prístupovým odkazom na rezerváciu (stav, platba, žiadosť o storno). Účet hosťa neskôr.
 - **Detail objektu sa skladá zo sekcií** (nie builder):
   - **Typy sekcií** sú pevné a spoločné pre všetkých klientov; každý typ = komponent so schémou polí (zod), vzhľad len z témy (A12).
-    Základná sada: galéria · úvod s údajmi · „čo vás čaká“ (ikony z vybavenia) · pás s fotkou · kalendár s cenami (povinný, nedá sa vypnúť) ·
-    cenník sezón · v cene · priestory a izby · okolie a mapa · referencie · časté otázky · pravidlá a storno · kontakt na majiteľa · záverečná výzva.
+    Základná sada: úvod (galéria + referencia + mapa + údaje + panel s cenou) · „čo vás čaká“ (zvýraznené vybavenie, počet deliteľný 3) ·
+    kalendár s cenami (povinný, nedá sa vypnúť) · pás s fotkou · okolie a mapa (miesta v okolí) · cenník sezón s „v cene“ · pohľad dovnútra
+    (mozaika fotiek) · priestory a izby · referencie · časté otázky · pravidlá a storno · kontakt na majiteľa · záverečná výzva
+    (s **najbližším voľným termínom**, ktorý systém vypočíta z obsadenosti, min. nocí a cien).
     Moduly môžu pridať vlastný typ sekcie cez register (napr. `services` → služby na objednávku); jadro typy modulov nepozná.
   - **Pri objekte** sa ukladá zoznam sekcií: typ, poradie, zapnutá, obsah (texty viacjazyčne, odkazy na fotky). **Prázdna sekcia sa skryje.**
   - **Predlohy podľa typu ubytovania** (celý objekt, penzión s izbami, apartmány, glamping) = prednastavený výber a poradie sekcií;
@@ -343,7 +349,7 @@ Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia 
   - **„Rezervovať znova“** — ten istý objekt s predvyplnenými hosťami a službami, hosť vyberie len termín
   - **správy s majiteľom** pri rezervácii (modul Správy, A15/B6) — dovtedy kontakt WhatsApp/telefón
   - žiadosť o storno, úprava kontaktných údajov, **správa marketingového súhlasu** (odvolanie jedným klikom)
-- Vzhľad v téme klienta (A12), rovnaký jazyk ako košík (`docs/vizual-stranka-hosta.md`). Podklad z WordPress fázy: `docs/archiv-wp/ucet-hosta-navrh.md`.
+- Vzhľad v téme klienta (A12), rovnaký jazyk ako stránka a košík v2 (`docs/vizual-stranka-hosta.md`). Podklad z WordPress fázy: `docs/archiv-wp/ucet-hosta-navrh.md`.
 - **MVP:** prístupový odkaz k rezervácii. **Účet a zóna hneď po MVP** (Fáza 4); dátový model pripravený už teraz.
 
 ---

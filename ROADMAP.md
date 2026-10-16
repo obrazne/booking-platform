@@ -9,9 +9,9 @@
 - **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
   kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
   captcha (čaká na účet Cloudflare).
-- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie od Claude chatu.
+- **Ďalší krok pre Claude Code:** Z19 — stránka hosťa, galéria a košík podľa vizuálu v2. Veci na web klienta zatiaľ nie.
 - **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
-- **Claude chat:** kontrola výsledkov Z16–Z18, ďalšia fronta (košík v2 s referenciami, doklady), obchodný model, otázky pre Janu.
+- **Claude chat:** kontrola výsledkov Z16–Z19, doklady, obchodný model, otázky pre Janu.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
@@ -19,8 +19,6 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 
 *Hotové Z1–Z15 (analýza, kostra platformy, MVP Chalet STRÖMY: doména, administrácia, stránka hosťa, rezervácie,
 e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — detail v Denníku a histórii Gitu.*
-
-*Fronta je prázdna — Z16–Z18 hotové (detail v Denníku).*
 
 **Kontext pre frontu Z16–Z18:** MVP je postavené. Teraz ho skontrolujeme pred ukážkou Jane a ladíme **len našu aplikáciu** (B7, B10).
 **Nič, čo sa vkladá na web klienta (vyhľadávací pás, widget, úprava Janinho webu), teraz nerob** — Martin 16. 10. Rovnaké pravidlá ako doteraz (`tenant_id` + RLS + testy, centy, preklady, téma, A18). Stále len staging.
@@ -53,6 +51,26 @@ V editore objektu záložka **Stránka**: zoznam sekcií s vypínačom (kalendá
 generovaný zo zod schémy typu (texty s prekladmi — zatiaľ slovenčina, výber fotiek z fotiek objektu), „Pridať sekciu“ z typov, ktoré tam
 ešte nie sú, „Obnoviť podľa predlohy“ s potvrdením, náhľad stránky. Bočný panel podľa A18. Údaje zo systému (ceny, storno…) sa vo formulári
 neupravujú — len odkaz, kde sa menia.
+
+### Z19 — Stránka hosťa, galéria a košík podľa vizuálu v2
+Martin schválil **v2 (16. 10.)**. Čítaj `docs/vizual-stranka-hosta.md` — najprv *Zmeny oproti v1* a *Pravidlá vzhľadu* (platia pre celú časť
+pre hosťa, aj pre zónu hosťa zo Z17), zdroj plátna `docs/navrhy/stranka-hosta/` (platné dosky sú vymenované v hlavičke popisu).
+Architektúra: `ARCHITEKTURA.md` B1 (fotky s kategóriou, poloha a miesta v okolí, referencie), B7 (typy sekcií), A12 (predvolená téma v2),
+rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
+1. **Dáta (migrácie len pridávajú):** tabuľka **referencií** podľa B1 (+ skopírovať `properties.testimonials`, stĺpec ponechať), nastavenie
+   `reviews_url`; **kategória a popis fotky**; **zvýraznené vybavenie**; **poloha** (presné miesto / približná oblasť) a **miesta v okolí**;
+   téma: **doplnková farba**, zaoblenie 10. RLS + pgTAP testy. Administrácia: referencie (zoznam + bočný panel, zvýraznená, poradie,
+   zverejnená, zdroj), kategória fotky pri fotkách, miesta v okolí a poloha v editore objektu, zvýraznené vybavenie (upozornenie, ak počet nie je 3/6/9).
+2. **Typy sekcií** (register z Z14): úvod v2, čo vás čaká (mriežka), okolie a mapa (**OpenStreetMap cez MapLibre alebo statická dlaždica —
+   bez cookies a bez platených kľúčov**; ak by mapa niečo stála, opýtaj sa), cenník v2, **pohľad dovnútra**, referencie, časté otázky,
+   **záverečná výzva s najbližším voľným termínom** (výpočet na serveri z obsadenosti, min. nocí a cien). Predlohy doplň o nové typy a poradie podľa v2.
+3. **Galéria v okne** (albumy, mriežka, veľká fotka s pásom náhľadov, referencie vpravo; na mobile prepínač Fotky / Referencie).
+4. **Košík v2** (široký panel, zelený súhrn s doplnkami a istotami dole, doplnky v kroku 1 ako rozbaľovacie riadky, zbaľovací kalendár)
+   a mobil (zelený pás, rozpis zospodu). Logiku rezervácie a výpočtu ceny zo Z9 nemeň — len rozhranie.
+5. **Správanie:** žiadne tlačidlo hosťa neposúva stránku (Príchod/Odchod, „Vybrať termín“, lišta bez termínu → košík s kalendárom);
+   naraz jedno okno, Esc a Späť zatvoria jednu úroveň; posunutý panel v úvode len na širokej obrazovke.
+6. Over Playwrightom na počítači aj 390 px (aj prístupnosť) a pridaj do `docs/kontrola-mvp.md`. Seed: STRÖMY a showroom s kategóriami fotiek,
+   miestami v okolí (orientačné, označ ako ukážkové) a referenciami.
 
 ---
 
@@ -122,6 +140,7 @@ neupravujú — len odkaz, kde sa menia.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Vizuál stránky hosťa **v2 schválený** (galéria a referencie ako Booking, mapa, košík v2, mobil) → `docs/navrhy/stranka-hosta/`, `docs/vizual-stranka-hosta.md`; architektúra (B1, B7, A12), rozhodnutie; úloha Z19. (Claude chat)
 - 2026-10-16 — Z18: v editore objektu záložka **Stránka** — sekcie v poradí s vypínačom (kalendár je povinný, nedá sa vypnúť ani
   odstrániť), presúvanie šípkami aj klávesnicou (Alt + šípka na riadku), úprava v bočnom paneli (A18) cez **formulár generovaný zo zod
   schémy typu** (texty zatiaľ po slovensky, výber fotky z fotiek objektu, položky „Čo vás čaká“ z vybavenia objektu alebo vlastné,

@@ -23,6 +23,13 @@ button{font-family:inherit}
 @keyframes barIn{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
 .bar{animation:barIn 240ms cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion: reduce){.tip,.drawer,.veil,.bar{animation:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.fade{animation:fadein 200ms ease}
+@media (prefers-reduced-motion: reduce){.fade{animation:none}}
+.cta-dark{background:#2b3036;transition:background 160ms ease,transform 160ms ease}
+.cta-dark:hover{background:#0c0e11}
+.cta-dark:active{transform:scale(0.99)}
+.cta-dark:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
 </style>
 </helmet>
 <div style="background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42; min-height: 100vh;">
@@ -41,15 +48,15 @@ button{font-family:inherit}
 </header>
 
 <sc-if value="{{showBar}}" hint-placeholder-val="{{false}}">
-<div class="bar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 30; background: #11212f; box-shadow: 0 18px 40px -24px rgba(17,33,47,0.6);">
+<div class="bar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 30; background: {{accent}}; box-shadow: 0 18px 40px -24px rgba(17,33,47,0.6);">
 <div style="max-width: 1180px; margin: 0 auto; padding: 12px 24px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;">
 <button type="button" onClick="{{openDrawer}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; border: none; background: none; padding: 0; cursor: pointer; text-align: left;">
 <span style="font-size: 15px; font-weight: 800; letter-spacing: -0.01em; color: #ffffff;">Chalet STRÖMY</span>
-<span style="display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.16);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18"></path></svg><span style="font-size: 14px; font-weight: 500; color: #f3f5f7;">{{dateSummary}}</span><span style="font-size: 13px; color: #8a97a5;">{{nightsSummary}}</span></span>
+<span style="display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.28);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18"></path></svg><span style="font-size: 14px; font-weight: 500; color: #f3f5f7;">{{dateSummary}}</span><span style="font-size: 13px; color: rgba(255,255,255,0.72);">{{nightsSummary}}</span></span>
 </button>
 <div style="display: flex; align-items: center; gap: 18px;">
-<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1px;"><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">{{total}}</span><span style="font-size: 12px; color: #8a97a5;">{{perPerson}}</span></div>
-<button type="button" onClick="{{openDrawer}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 22px; border: none; border-radius: 9999px; background: #ffffff; color: #11212f; font-size: 15px; font-weight: 700; cursor: pointer;">Pozrieť pobyt <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1px;"><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">{{total}}</span><span style="font-size: 12px; color: rgba(255,255,255,0.72);">{{perPerson}}</span></div>
+<button type="button" class="cta-dark" onClick="{{openDrawer}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 22px; border: 1px solid rgba(255,255,255,0.18); border-radius: 9999px; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer;">Pozrieť pobyt <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
 </div>
 </div>
 </div>
@@ -57,59 +64,85 @@ button{font-family:inherit}
 
 <main>
 
+<div style="background: linear-gradient(165deg, #f9f8f5 0%, #f2f3f0 50%, #e9eeeb 100%); border-bottom: 1px solid #e3e6e2;">
 <div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 24px;">
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 230px; gap: 10px;">
-<div style="grid-column: span 2; grid-row: span 2; border-radius: 20px; background: #f1eee6; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Exteriér večer</span></div>
-<div style="border-radius: 14px; background: #ece8df;"></div>
-<div style="border-radius: 14px; background: #f1eee6;"></div>
-<div style="border-radius: 14px; background: #f1eee6;"></div>
-<div style="border-radius: 14px; background: #e9e5db; display: flex; align-items: center; justify-content: center;"><a href="#" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 9999px; background: #ffffff; color: #11212f; font-size: 14px; font-weight: 700; text-decoration: none;">Všetkých 25 fotiek</a></div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: stretch;">
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 206px 206px; gap: 8px;">
+<sc-for list="{{heroPhotos}}" as="ph" hint-placeholder-count="3"><button type="button" onClick="{{ph.open}}" aria-label="{{ph.aria}}" style="{{ph.style}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b737c;">{{ph.label}}</span></button></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; height: 100px;">
+<sc-for list="{{thumbPhotos}}" as="ph" hint-placeholder-count="5"><button type="button" onClick="{{ph.open}}" aria-label="{{ph.aria}}" style="{{ph.style}}"><sc-if value="{{ph.more}}" hint-placeholder-val="{{false}}"><span style="position: absolute; inset: 0; border-radius: 8px; background: rgba(17,33,47,0.55); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 15px; font-weight: 700;">{{ph.moreLabel}}</span></sc-if></button></sc-for>
+</div>
+</div>
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+<figure style="flex: 1 1 auto; margin: 0; border: 1px solid #e9e5db; border-radius: 10px; padding: 20px; background: #ffffff; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 60px -44px rgba(17,33,47,0.2);">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Hostia hovoria</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #8b929b;">{{refPos}}</span></div>
+<blockquote class="fade" style="flex: 1 1 auto; margin: 0; font-size: 16px; line-height: 1.55; font-weight: 400; color: #11212f;">{{refQuote}}</blockquote>
+<figcaption style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">{{refName}}</span>
+<span style="display: inline-flex; gap: 6px;">
+<button type="button" onClick="{{refPrev}}" aria-label="Predchádzajúca referencia" style="width: 32px; height: 32px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg></button>
+<button type="button" onClick="{{refNext}}" aria-label="Ďalšia referencia" style="width: 32px; height: 32px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
+</span>
+</figcaption>
+<button type="button" onClick="{{openLbAll}}" style="align-self: flex-start; border: none; background: none; padding: 10px 0 0; border-top: 1px solid #e9e5db; width: 100%; text-align: left; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Všetky referencie a fotky →</button>
+</figure>
+<a href="#okolie" style="position: relative; display: block; height: 150px; border-radius: 10px; overflow: hidden; border: 1px solid #e9e5db; text-decoration: none;">
+<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;" aria-hidden="true"><rect width="400" height="240" fill="#eef0ea"></rect><path d="M0 60 C80 40 120 90 200 80 S320 30 400 50 L400 0 L0 0Z" fill="#e1e8dc"></path><path d="M0 200 C90 180 150 230 260 210 S360 190 400 200 L400 240 L0 240Z" fill="#e1e8dc"></path><path d="M-10 150 C70 140 120 175 190 160 S300 120 410 135" fill="none" stroke="#d6e4ee" stroke-width="10"></path><path d="M30 0 C60 70 140 110 200 120 S330 170 380 240" fill="none" stroke="#ffffff" stroke-width="7"></path><path d="M0 105 C90 110 160 95 260 100 S350 90 400 95" fill="none" stroke="#ffffff" stroke-width="5"></path><path d="M250 0 C240 50 210 90 200 120" fill="none" stroke="#ffffff" stroke-width="4"></path><circle cx="200" cy="114" r="22" fill="{{accent2}}" opacity="0.16"></circle><path d="M200 92 c-9 0 -16 7 -16 16 c0 12 16 26 16 26 s16 -14 16 -26 c0 -9 -7 -16 -16 -16z" fill="{{accent2}}"></path><circle cx="200" cy="108" r="5.5" fill="#ffffff"></circle></svg>
+<span style="position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px; border-radius: 9999px; background: #ffffff; box-shadow: 0 10px 24px -12px rgba(17,33,47,0.45); color: #11212f; font-size: 14px; font-weight: 700; white-space: nowrap;">Zobraziť na mape</span>
+</a>
+</div>
 </div>
 
-<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; padding: 56px 0 72px;">
-<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent}};">Demänovská dolina · komplex Tri Vody</div>
-<h1 style="margin: 0; font-size: 60px; font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; color: #11212f;">Chalet STRÖMY. <span style="color: #a9aeb5;">Celý len pre vás.</span></h1>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: stretch; padding: 56px 0 72px;">
+<div style="min-width: 0; padding-right: 24px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px;">
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Demänovská dolina · komplex Tri Vody</div>
+<h1 style="margin: 0; font-size: 60px; font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; color: #11212f;">Chalet STRÖMY</h1>
 <p style="margin: 0; max-width: 54ch; font-size: 18px; line-height: 1.6; color: #5a6672;">Horský chalet pre rodiny a partie, sedem kilometrov od Liptovského Mikuláša a pár minút skibusom od Jasnej.</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border-top: 1px solid #e9e5db; border-bottom: 1px solid #e9e5db; margin-top: 14px;">
-<div style="padding: 16px 0; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Kapacita</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">8–12 osôb</span></div><div style="padding: 16px 0; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Spálne</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">4</span></div><div style="padding: 16px 0; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Kúpeľne</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">3</span></div><div style="padding: 16px 0; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Príchod</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">od 15:00</span></div><div style="padding: 16px 0; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Odchod</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">do 10:00</span></div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: auto; padding: 0; background: rgba(255,255,255,0.72); border: 1px solid #e4e8e4; border-radius: 10px;">
+<div style="padding: 22px 8px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"></path><circle cx="17" cy="9" r="2.4"></circle><path d="M15.5 14.2c2.6.2 5 1.9 5 4.8"></path></svg><span style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Kapacita</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">8–12 osôb</span></span></div><div style="padding: 22px 8px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; border-left: 1px solid #e6e9e5;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3 18V7"></path><path d="M3 14h18v4"></path><path d="M21 14v-2a3 3 0 0 0-3-3h-7v5"></path><circle cx="7" cy="11" r="1.8"></circle></svg><span style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Spálne</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">4</span></span></div><div style="padding: 22px 8px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; border-left: 1px solid #e6e9e5;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-2z"></path><path d="M6 12V6a2 2 0 0 1 3.5-1.3"></path><path d="M8 19l-1 2"></path><path d="M16 19l1 2"></path></svg><span style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Kúpeľne</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">3</span></span></div><div style="padding: 22px 8px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; border-left: 1px solid #e6e9e5;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"></path><path d="M4 12h10"></path><path d="M10.5 8.5L14 12l-3.5 3.5"></path></svg><span style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Príchod</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">od 15:00</span></span></div><div style="padding: 22px 8px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; border-left: 1px solid #e6e9e5;"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"></path><path d="M10 12h10"></path><path d="M16.5 8.5L20 12l-3.5 3.5"></path></svg><span style="display: flex; flex-direction: column; align-items: center; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Odchod</span><span style="font-size: 17px; font-weight: 500; color: #11212f;">do 10:00</span></span></div>
 </div>
 </div>
-<aside style="flex: 1 1 320px; max-width: 380px; border: 1px solid #e9e5db; border-radius: 24px; padding: 26px; background: #ffffff; box-shadow: 0 24px 60px -34px rgba(17,33,47,0.2); display: flex; flex-direction: column; gap: 18px;">
-<span style="font-size: 15px; color: #5a6672;">od <span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">700 €</span> / noc</span>
-<a href="#termin" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #e9e5db; border-radius: 14px; overflow: hidden; text-decoration: none;">
-<span style="padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; border-right: 1px solid #e9e5db;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Príchod</span><span style="font-size: 16px; font-weight: 500; color: #11212f;">{{startLabel}}</span></span>
-<span style="padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Odchod</span><span style="font-size: 16px; font-weight: 500; color: #11212f;">{{endLabel}}</span></span>
-</a>
-<div style="display: flex; flex-direction: column; gap: 4px;">
-<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;"><span style="font-size: 15px; color: #5a6672;">Spolu</span><span style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{total}}</span></div>
-<span style="font-size: 13px; color: #5a6672; text-align: right;">{{perPerson}}</span>
+<aside style="margin-top: -40px; border-radius: 10px; padding: 32px 32px 28px; background: {{accent}}; color: #ffffff; box-shadow: 0 30px 60px -34px rgba(17,33,47,0.45); display: flex; flex-direction: column; gap: 18px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Váš termín</span>
+<button type="button" onClick="{{openDrawerCal}}" aria-label="Vybrať termín" style="padding: 0; width: 100%; font-family: inherit; text-align: left; cursor: pointer; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; text-decoration: none; background: rgba(255,255,255,0.12);">
+<span style="padding: 14px 16px; display: flex; flex-direction: column; gap: 5px; border-right: 1px solid rgba(255,255,255,0.3);"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Príchod</span><span style="font-size: 18px; font-weight: 700; color: #ffffff;">{{startLabel}}</span></span>
+<span style="padding: 14px 16px; display: flex; flex-direction: column; gap: 5px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Odchod</span><span style="font-size: 18px; font-weight: 700; color: #ffffff;">{{endLabel}}</span></span>
+</button>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 4px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.7);">{{heroLabel}}</span>
+<span style="font-size: 36px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #ffffff;">{{heroPrice}}</span>
+<span style="font-size: 13px; color: rgba(255,255,255,0.78);">{{heroSub}}</span>
 </div>
-<button type="button" onClick="{{openDrawer}}" style="{{pageCtaStyle}}">Pozrieť pobyt <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
-<span style="font-size: 13px; color: #5a6672; text-align: center;">Storno zdarma do 30 dní pred príchodom</span>
+<button type="button" class="cta-dark" onClick="{{openDrawer}}" style="{{onAccentCta}}; width: 100%; margin-top: auto;">Pozrieť pobyt <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+<span style="align-self: center; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.8);"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní pred príchodom</span>
 </aside>
 </div>
 </div>
 
-<section style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
+</div>
+
+<section style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 88px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
 <div style="display: flex; flex-direction: column; gap: 12px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #5a6672;">Čo vás čaká</div>
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Čo vás čaká</div>
 <h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Wellness, hory a pokoj. <span style="color: #a9aeb5;">Pre celú partiu.</span></h2>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0 32px;"><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"></path><path d="M6 20V9l6-4 6 4v11"></path><path d="M10 13c0-1 1-1.5 1-2.5"></path><path d="M13 13c0-1 1-1.5 1-2.5"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Fínska sauna</span><span style="font-size: 14px; color: #5a6672;">v spodnom apartmáne</span></div></div><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h18"></path><path d="M5 13v4a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4"></path><path d="M8 9c0-1.2 1-1.6 1-2.8"></path><path d="M12 9c0-1.2 1-1.6 1-2.8"></path><path d="M16 9c0-1.2 1-1.6 1-2.8"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Vonkajšia vírivka</span><span style="font-size: 14px; color: #5a6672;">pre 5 osôb, 37 °C</span></div></div><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="12" rx="3"></rect><path d="M4 11h16"></path><path d="M7 20l1-3"></path><path d="M17 20l-1-3"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Skibus do Jasnej</span><span style="font-size: 14px; color: #5a6672;">zastávka pod komplexom</span></div></div><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5"></path><path d="M9 19l10-10"></path><path d="M4 15l3 3"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Lyžiareň</span><span style="font-size: 14px; color: #5a6672;">so sušičom obuvi</span></div></div><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"></path><path d="M5 20v-6h14v6"></path><path d="M12 14V6"></path><path d="M8 6h8"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Dve terasy</span><span style="font-size: 14px; color: #5a6672;">a gril</span></div></div><div style="display: flex; flex-direction: column; gap: 14px; padding: 26px 0; border-top: 1px solid #e9e5db;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect><path d="M10 16V8h3a2.5 2.5 0 0 1 0 5h-3"></path></svg><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Parkovanie</span><span style="font-size: 14px; color: #5a6672;">2 miesta pri chalete</span></div></div></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));">
+<div style="padding: 48px 32px 44px; background: transparent;   display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"></path><path d="M6 20V9l6-4 6 4v11"></path><path d="M10 13c0-1 1-1.5 1-2.5"></path><path d="M13 13c0-1 1-1.5 1-2.5"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Fínska sauna</span><span style="font-size: 15px; color: #5a6672;">v spodnom apartmáne</span></span></div>
+<div style="padding: 48px 32px 44px; background: #fbfaf9; border-left: 1px solid #e9e5db;  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h18"></path><path d="M5 13v4a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4"></path><path d="M8 9c0-1.2 1-1.6 1-2.8"></path><path d="M12 9c0-1.2 1-1.6 1-2.8"></path><path d="M16 9c0-1.2 1-1.6 1-2.8"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Vonkajšia vírivka</span><span style="font-size: 15px; color: #5a6672;">pre 5 osôb, 37 °C</span></span></div>
+<div style="padding: 48px 32px 44px; background: transparent; border-left: 1px solid #e9e5db;  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="12" rx="3"></rect><path d="M4 11h16"></path><path d="M7 20l1-3"></path><path d="M17 20l-1-3"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Skibus do Jasnej</span><span style="font-size: 15px; color: #5a6672;">zastávka pod komplexom</span></span></div>
+<div style="padding: 48px 32px 44px; background: #fbfaf9;  border-top: 1px solid #e9e5db; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5"></path><path d="M9 19l10-10"></path><path d="M4 15l3 3"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Lyžiareň</span><span style="font-size: 15px; color: #5a6672;">so sušičom obuvi</span></span></div>
+<div style="padding: 48px 32px 44px; background: transparent; border-left: 1px solid #e9e5db; border-top: 1px solid #e9e5db; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"></path><path d="M5 20v-6h14v6"></path><path d="M12 14V6"></path><path d="M8 6h8"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Dve terasy</span><span style="font-size: 15px; color: #5a6672;">a gril</span></span></div>
+<div style="padding: 48px 32px 44px; background: #fbfaf9; border-left: 1px solid #e9e5db; border-top: 1px solid #e9e5db; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect><path d="M10 16V8h3a2.5 2.5 0 0 1 0 5h-3"></path></svg><span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Parkovanie</span><span style="font-size: 15px; color: #5a6672;">2 miesta pri chalete</span></span></div>
+</div>
 </section>
 
-<div style="height: 560px; background: #e3ded2; display: flex; align-items: flex-end;">
-<div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; width: 100%; padding-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;">
-<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Fotka cez celú šírku · vírivka večer</span>
-</div>
-</div>
-
-<section id="termin" style="background: #fbfaf9; border-bottom: 1px solid #e9e5db;">
+<section id="termin" style="background: linear-gradient(180deg, #f8f7f3 0%, #f1f2ee 100%);">
 <div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 96px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
 <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between;">
 <div style="display: flex; flex-direction: column; gap: 12px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #5a6672;">Dostupnosť a ceny</div>
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Dostupnosť a ceny</div>
 <h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Vyberte si termín. <span style="color: #a9aeb5;">Cenu uvidíte hneď.</span></h2>
 </div>
 <div style="display: flex; gap: 8px;">
@@ -117,7 +150,7 @@ button{font-family:inherit}
 <button type="button" onClick="{{nextMonth}}" aria-label="Ďalší mesiac" style="{{nextStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
 </div>
 </div>
-<div style="border: 1px solid #e9e5db; border-radius: 24px; padding: 30px; background: #ffffff; box-shadow: 0 24px 60px -34px rgba(17,33,47,0.14); display: flex; flex-direction: column; gap: 22px;">
+<div style="border: 1px solid #e9e5db; border-radius: 10px; padding: 30px; background: #ffffff; box-shadow: 0 24px 60px -34px rgba(17,33,47,0.14); display: flex; flex-direction: column; gap: 22px;">
 <div style="display: flex; flex-wrap: wrap; gap: 40px;">
 <sc-for list="{{months}}" as="mon" hint-placeholder-count="2">
 <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
@@ -151,41 +184,76 @@ button{font-family:inherit}
 </div>
 </section>
 
-<section style="position: relative; overflow: hidden; background: #11212f;">
-<div style="position: absolute; right: -10%; top: -30%; width: 60%; height: 120%; background: radial-gradient(closest-side, rgba(70,130,150,0.28), transparent); filter: blur(30px);"></div>
-<div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; position: relative; padding-top: 104px; padding-bottom: 104px; display: flex; flex-direction: column; gap: 44px;">
+<div style="height: 560px; background: #e3ded2; display: flex; align-items: flex-end;">
+<div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; width: 100%; padding-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Fotka cez celú šírku · vírivka večer</span>
+</div>
+</div>
+
+
+<section id="okolie" style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 96px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 28px;">
 <div style="display: flex; flex-direction: column; gap: 12px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #8fb4e8;">Cenník</div>
-<h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #ffffff;">Cena za celý chalet. <span style="color: #8a97a5;">Nie za osobu.</span></h2>
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Okolie</div>
+<h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Hory na dosah. <span style="color: #a9aeb5;">Mesto tiež.</span></h2>
 </div>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px;">
-<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12);"><span style="font-size: 56px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #ffffff;">700 €</span><span style="font-size: 17px; font-weight: 700; color: #f3f5f7;">Celoročne</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.04em; color: #8a97a5;">mimo zimnej sezóny</span><span style="font-size: 14px; color: #b6c1cc;">za noc · od 2 nocí</span></div>
-<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12);"><span style="font-size: 56px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #ffffff;">850 €</span><span style="font-size: 17px; font-weight: 700; color: #f3f5f7;">Zimná sezóna</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.04em; color: #8a97a5;">19.–22. 12. · 27.–30. 12. · 2. 1.–28. 2.</span><span style="font-size: 14px; color: #b6c1cc;">za noc · od 3 nocí</span></div>
-<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.12);"><span style="font-size: 56px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #ffffff;">1 200 €</span><span style="font-size: 17px; font-weight: 700; color: #f3f5f7;">Vianoce a Silvester</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.04em; color: #8a97a5;">23.–26. 12. · 31. 12.–1. 1.</span><span style="font-size: 14px; color: #b6c1cc;">za noc · od 4 nocí</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: stretch;">
+<div style="flex: 2 1 520px; position: relative; min-height: 400px; border-radius: 10px; overflow: hidden; border: 1px solid #e9e5db;">
+<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;" aria-hidden="true"><rect width="400" height="240" fill="#eef0ea"></rect><path d="M0 60 C80 40 120 90 200 80 S320 30 400 50 L400 0 L0 0Z" fill="#e1e8dc"></path><path d="M0 200 C90 180 150 230 260 210 S360 190 400 200 L400 240 L0 240Z" fill="#e1e8dc"></path><path d="M-10 150 C70 140 120 175 190 160 S300 120 410 135" fill="none" stroke="#d6e4ee" stroke-width="10"></path><path d="M30 0 C60 70 140 110 200 120 S330 170 380 240" fill="none" stroke="#ffffff" stroke-width="7"></path><path d="M0 105 C90 110 160 95 260 100 S350 90 400 95" fill="none" stroke="#ffffff" stroke-width="5"></path><path d="M250 0 C240 50 210 90 200 120" fill="none" stroke="#ffffff" stroke-width="4"></path><circle cx="200" cy="114" r="22" fill="{{accent2}}" opacity="0.16"></circle><path d="M200 92 c-9 0 -16 7 -16 16 c0 12 16 26 16 26 s16 -14 16 -26 c0 -9 -7 -16 -16 -16z" fill="{{accent2}}"></path><circle cx="200" cy="108" r="5.5" fill="#ffffff"></circle></svg>
+<span style="position: absolute; left: 16px; bottom: 16px; padding: 6px 12px; border-radius: 9999px; background: rgba(255,255,255,0.92); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6672;">Interaktívna mapa · OpenStreetMap</span>
 </div>
-<div style="display: flex; flex-direction: column; gap: 16px;">
-<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8a97a5;">V cene pobytu · od 6 nocí zľava 10 % · daň za ubytovanie v cene</span>
-<div style="display: flex; flex-wrap: wrap; gap: 10px;"><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Posteľná bielizeň a uteráky</span><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Župany a plachty do sauny</span><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Sauna a vírivka</span><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Energie a Wi-Fi</span><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Parkovanie</span><span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.14); font-size: 14px; color: #f3f5f7;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8fb4e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Bezkontaktný check-in</span></div>
+<div style="flex: 1 1 300px; display: flex; flex-direction: column;">
+<sc-for list="{{places}}" as="pl" hint-placeholder-count="5"><div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid #e9e5db;"><span style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 16px; font-weight: 500; color: #11212f;">{{pl.name}}</span><span style="font-size: 13px; color: #5a6672;">{{pl.how}}</span></span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #11212f; white-space: nowrap;">{{pl.dist}}</span></div></sc-for>
+<span style="padding-top: 16px; font-size: 13px; line-height: 1.5; color: #5a6672;">Presnú adresu a pokyny k príchodu pošleme po potvrdení rezervácie.</span>
 </div>
 </div>
 </section>
 
-<section style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 104px; padding-bottom: 96px; display: flex; flex-direction: column; gap: 32px;">
-<div style="display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #c2643c;">Hostia</div>
+<section style="background: linear-gradient(180deg, #f8f7f3 0%, #f1f2ee 100%);">
+<div style="max-width: 1180px; margin: 0 auto; padding: 96px 24px; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 64px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 22px;">
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Cenník</div>
+<h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Cena za celý chalet. <span style="color: #a9aeb5;">Nie za osobu.</span></h2>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b; padding-top: 6px;">V cene pobytu</span>
+<ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px;"><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Posteľná bielizeň a uteráky</li><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Župany a plachty do sauny</li><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Sauna a vírivka</li><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Energie a Wi-Fi</li><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Parkovanie</li><li style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Bezkontaktný check-in</li></ul>
+</div>
+<div style="display: flex; flex-direction: column;">
+<div style="border-top: 1px solid #e9e5db;"><div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid #e9e5db;"><span style="font-size: 18px; font-weight: 700; color: #11212f;">Celoročne</span><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f; text-align: right;">700 € <span style="font-size: 14px; font-weight: 400; color: #5a6672;">/ noc</span></span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.02em; color: #8b929b;">mimo zimnej sezóny</span><span style="font-size: 13px; color: #5a6672; text-align: right;">od 2 nocí</span></div><div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid #e9e5db;"><span style="font-size: 18px; font-weight: 700; color: #11212f;">Zimná sezóna</span><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f; text-align: right;">850 € <span style="font-size: 14px; font-weight: 400; color: #5a6672;">/ noc</span></span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.02em; color: #8b929b;">19.–22. 12. · 27.–30. 12. · 2. 1.–28. 2.</span><span style="font-size: 13px; color: #5a6672; text-align: right;">od 3 nocí</span></div><div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid #e9e5db;"><span style="font-size: 18px; font-weight: 700; color: #11212f;">Vianoce a Silvester</span><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f; text-align: right;">1 200 € <span style="font-size: 14px; font-weight: 400; color: #5a6672;">/ noc</span></span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.02em; color: #8b929b;">23.–26. 12. · 31. 12.–1. 1.</span><span style="font-size: 13px; color: #5a6672; text-align: right;">od 4 nocí</span></div></div>
+<span style="padding-top: 16px; font-size: 13px; color: #5a6672;">Od 6 nocí zľava 10 %. Daň za ubytovanie je v cene.</span>
+</div>
+</div>
+</section>
+
+<section style="max-width: 1180px; margin: 0 auto; padding: 96px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px;">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;">
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Pohľad dovnútra</div>
+<h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Drevo, kameň, teplo. <span style="color: #a9aeb5;">A výhľad na hory.</span></h2>
+</div>
+<button type="button" onClick="{{openLbAll}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 20px; border-radius: 9999px; border: 1px solid #d9ddd8; background: #ffffff; color: #11212f; font-size: 15px; font-weight: 500; cursor: pointer;">Všetky fotky <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+</div>
+<div style="display: grid; grid-template-columns: 1.3fr 1fr 1fr; grid-template-rows: 240px 240px; gap: 8px;">
+<sc-for list="{{mosaic}}" as="ph" hint-placeholder-count="5"><button type="button" onClick="{{ph.open}}" aria-label="{{ph.aria}}" style="{{ph.style}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b737c;">{{ph.label}}</span></button></sc-for>
+</div>
+</section>
+
+<section style="background: linear-gradient(180deg, #f8f7f3 0%, #f1f2ee 100%);">
+<div style="max-width: 1180px; margin: 0 auto; padding: 96px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px;">
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Hostia</div>
 <h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Vracajú sa. <span style="color: #a9aeb5;">A hovoria prečo.</span></h2>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px;">
-<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 24px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; box-shadow: 0 24px 60px -40px rgba(17,33,47,0.16);"><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„Skvelá lokalita a služby na vysokej úrovni. Strávili sme tu pár dní s rodinou. Určite sa vrátime.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #a9542f;">Elizabeth Kohutova</figcaption></figure>
-<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 24px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; box-shadow: 0 24px 60px -40px rgba(17,33,47,0.16);"><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„Neviem si predstaviť lepšie miesto na oddych a vypnutie hlavy. Atmosféra hôr je jednoducho top.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #a9542f;">Patricia Vittek</figcaption></figure>
-<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 24px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; box-shadow: 0 24px 60px -40px rgba(17,33,47,0.16);"><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„S priateľmi sme si užili skvelé ubytovanie s kompletným vybavením. Radi sa sem vrátime.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #a9542f;">Eva Milistenferova</figcaption></figure>
+<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 10px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; "><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„Skvelá lokalita a služby na vysokej úrovni. Strávili sme tu pár dní s rodinou. Určite sa vrátime.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">Elizabeth Kohutova</figcaption></figure>
+<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 10px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; "><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„Neviem si predstaviť lepšie miesto na oddych a vypnutie hlavy. Atmosféra hôr je jednoducho top.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">Patricia Vittek</figcaption></figure>
+<figure style="margin: 0; border: 1px solid #e9e5db; border-radius: 10px; padding: 30px; display: flex; flex-direction: column; gap: 20px; background: #ffffff; "><blockquote style="margin: 0; font-size: 18px; line-height: 1.55; font-weight: 400; color: #11212f;">„S priateľmi sme si užili skvelé ubytovanie s kompletným vybavením. Radi sa sem vrátime.“</blockquote><figcaption style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">Eva Milistenferova</figcaption></figure>
+</div>
 </div>
 </section>
 
-<section style="max-width: 820px; margin: 0 auto; padding: 24px 24px 104px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px;">
+<section style="max-width: 1180px; margin: 0 auto; padding: 96px 24px 104px; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 64px; align-items: start;">
 <div style="display: flex; flex-direction: column; gap: 12px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #5a6672;">Dobré vedieť</div>
-<h2 style="margin: 0; font-size: 32px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #11212f;">Pravidlá poznáte vopred. <span style="color: #a9aeb5;">Bez prekvapení.</span></h2>
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Dobré vedieť</div>
+<h2 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: #11212f;">Pravidlá poznáte vopred. <span style="color: #a9aeb5;">Bez prekvapení.</span></h2>
 </div>
 <div style="border-top: 1px solid #e9e5db;">
 <sc-for list="{{faqs}}" as="fq" hint-placeholder-count="3">
@@ -197,169 +265,297 @@ button{font-family:inherit}
 </div>
 </section>
 
-<section style="border-top: 1px solid #e9e5db;">
-<div style="max-width: 1180px; margin: 0 auto; padding-left: 24px; padding-right: 24px; box-sizing: border-box; padding-top: 96px; padding-bottom: 104px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 22px;">
-<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent}};">Rezervácia</div>
-<h2 style="margin: 0; font-size: 48px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: #11212f; max-width: 16ch;">Chalet je pripravený. <span style="color: #a9aeb5;">Vyberte si termín.</span></h2>
-<div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 8px;">
-<a href="#termin" style="display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none;">Vybrať termín <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></a>
-<a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 24px; border-radius: 9999px; border: 1px solid #e9e5db; color: #11212f; font-size: 16px; font-weight: 500; text-decoration: none;">Napísať Jane</a>
+<section style="background: {{accent}}; position: relative; overflow: hidden;">
+<div style="position: absolute; left: -12%; bottom: -40%; width: 55%; height: 120%; background: radial-gradient(closest-side, rgba(255,255,255,0.10), transparent); pointer-events: none;"></div>
+<div style="position: relative; max-width: 1180px; margin: 0 auto; padding: 104px 24px; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 64px; align-items: center;">
+<div style="display: flex; flex-direction: column; gap: 26px;">
+<div style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #f5c4a1;">Rezervácia</div>
+<h2 style="margin: 0; font-size: 52px; font-weight: 800; line-height: 1.06; letter-spacing: -0.03em; color: #ffffff;">Chalet je pripravený. <span style="color: rgba(255,255,255,0.55);">Vyberte si termín.</span></h2>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px;"><li style="display: flex; align-items: center; gap: 12px; font-size: 16px; color: rgba(255,255,255,0.92);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní pred príchodom</li><li style="display: flex; align-items: center; gap: 12px; font-size: 16px; color: rgba(255,255,255,0.92);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Platíte priamo majiteľke, bez provízií a poplatkov</li><li style="display: flex; align-items: center; gap: 12px; font-size: 16px; color: rgba(255,255,255,0.92);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Termín vám po odoslaní podržíme 24 hodín</li><li style="display: flex; align-items: center; gap: 12px; font-size: 16px; color: rgba(255,255,255,0.92);"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Na otázky odpovedá Jana osobne</li></ul>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+<button type="button" class="cta-dark" onClick="{{openDrawerCal}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 28px; border: 1px solid rgba(255,255,255,0.18); border-radius: 9999px; color: #ffffff; font-size: 16px; font-weight: 700; cursor: pointer;">Vybrať termín <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+<a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 24px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.45); color: #ffffff; font-size: 16px; font-weight: 500; text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z"></path></svg>Napísať Jane</a>
+</div>
+</div>
+<div style="position: relative;">
+<div style="height: 460px; border-radius: 10px; background: #cfd4d0; display: flex; align-items: flex-end; padding: 18px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b737c;">Chalet večer v snehu</span></div>
+<button type="button" onClick="{{pickNextFree}}" style="position: absolute; left: -28px; bottom: 32px; width: 290px; border: none; border-radius: 10px; background: #ffffff; padding: 18px 20px; text-align: left; box-shadow: 0 30px 60px -30px rgba(17,33,47,0.5); display: flex; flex-direction: column; gap: 6px; cursor: pointer;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}};">Najbližší voľný termín (3 noci)</span>
+<span style="font-size: 18px; font-weight: 700; color: #11212f;">{{nextFreeLabel}}</span>
+<span style="font-size: 13px; color: #5a6672;">{{nextFreeSub}}</span>
+<span style="font-size: 13px; font-weight: 600; color: {{accent}}; margin-top: 4px;">Pozrieť tento termín →</span>
+</button>
 </div>
 </div>
 </section>
 
 </main>
 
+<sc-if value="{{lbOpen}}" hint-placeholder-val="{{false}}">
+<div class="fade" onClick="{{lbClose}}" style="position: fixed; inset: 0; z-index: 59; background: rgba(17,33,47,0.55);"></div>
+<div class="fade" role="dialog" aria-modal="true" aria-label="Fotky a referencie" style="position: fixed; top: 32px; right: 40px; bottom: 32px; left: 40px; z-index: 60; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 40px 100px -40px rgba(17,33,47,0.6); display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; border-bottom: 1px solid #e9e5db;">
+<div style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 17px; font-weight: 800; letter-spacing: -0.01em; color: #11212f;">Chalet STRÖMY</span><span style="font-size: 13px; color: #5a6672;">{{lbCount}}</span></div>
+<div style="display: flex; align-items: center; gap: 12px;">
+<button type="button" onClick="{{lbToDrawer}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 20px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;">Pozrieť pobyt</button>
+<button type="button" onClick="{{lbClose}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;">Zavrieť <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+</div>
+<div style="flex: 1 1 auto; min-height: 0; display: flex;">
+<div style="flex: 1 1 auto; min-width: 0; position: relative;">
+<div style="position: absolute; inset: 0; overflow-y: auto; padding: 18px 24px 40px; display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; flex-wrap: wrap; gap: 14px;">
+<sc-for list="{{albums}}" as="al" hint-placeholder-count="5"><button type="button" onClick="{{al.pick}}" aria-pressed="{{al.active}}" style="border: none; background: none; padding: 0; display: flex; flex-direction: column; gap: 6px; cursor: pointer; text-align: left;"><span style="{{al.thumbStyle}}"></span><span style="{{al.labelStyle}}">{{al.label}} · {{al.count}}</span></button></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;">
+<sc-for list="{{lbPhotos}}" as="ph" hint-placeholder-count="12"><button type="button" onClick="{{ph.open}}" aria-label="{{ph.aria}}" style="{{ph.style}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{ph.label}}</span></button></sc-for>
+</div>
+</div>
+<sc-if value="{{lbSingle}}" hint-placeholder-val="{{false}}">
+<div class="fade" style="position: absolute; inset: 0; background: #0f1c27; display: flex; flex-direction: column; padding: 18px 24px 22px; gap: 14px; box-sizing: border-box;">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+<button type="button" onClick="{{lbBack}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: #ffffff; font-size: 14px; font-weight: 500; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>Všetky fotky</button>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #8a97a5;">{{lbPos}}</span>
+</div>
+<div style="flex: 1 1 auto; min-height: 0; display: flex; align-items: center; gap: 16px;">
+<button type="button" onClick="{{lbPrev}}" aria-label="Predchádzajúca fotka" style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg></button>
+<div style="{{lbBigStyle}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{lbBigLabel}}</span></div>
+<button type="button" onClick="{{lbNext}}" aria-label="Ďalšia fotka" style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
+</div>
+<span style="text-align: center; font-size: 14px; color: #c9d1d9;">{{lbBigCaption}}</span>
+<div style="flex-shrink: 0; display: flex; justify-content: center; gap: 10px; padding: 4px 64px 0;">
+<sc-for list="{{strip}}" as="t" hint-placeholder-count="6"><button type="button" onClick="{{t.open}}" aria-label="{{t.aria}}" style="{{t.style}}"></button></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+<aside style="width: 360px; flex-shrink: 0; border-left: 1px solid #e9e5db; background: #fbfaf9; overflow-y: auto; padding: 22px 24px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Hostia hovoria</span>
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: #11212f;">Vracajú sa. <span style="color: #a9aeb5;">A hovoria prečo.</span></span>
+<span style="font-size: 12px; line-height: 1.5; color: #8b929b; padding-bottom: 8px;">Vybrané hodnotenia hostí, ktoré majiteľka zverejnila so súhlasom. Zdroj pri každom.</span>
+<sc-for list="{{refsAll}}" as="rf" hint-placeholder-count="3"><figure style="margin: 0; padding: 16px 0; border-top: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 10px;"><blockquote style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; color: #11212f;">{{rf.q}}</blockquote><figcaption style="display: flex; flex-direction: column; gap: 2px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">{{rf.n}}</span><span style="font-size: 12px; color: #8b929b;">{{rf.src}}</span></figcaption></figure></sc-for>
+<a href="#" style="margin-top: 8px; font-size: 14px; font-weight: 500; color: #11212f;">Ďalšie hodnotenia na webe chaletu ↗</a>
+</aside>
+</div>
+</div>
+</sc-if>
+
 <sc-if value="{{drawerOpen}}" hint-placeholder-val="{{false}}">
 <div class="veil" onClick="{{closeDrawer}}" style="position: fixed; inset: 0; background: rgba(17,33,47,0.38); z-index: 40;"></div>
-<aside class="drawer" aria-label="Rezervácia" style="position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 480px; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 80px -40px rgba(17,33,47,0.45); z-index: 41; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+<aside class="drawer" aria-label="Váš pobyt" style="position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 1040px; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 80px -40px rgba(17,33,47,0.45); z-index: 41; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 32px; border-bottom: 1px solid #e9e5db;">
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px;">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3"><li style="display: inline-flex; align-items: center; gap: 10px;"><span style="{{st.numStyle}}">{{st.n}}</span><span style="{{st.labelStyle}}">{{st.label}}</span></li></sc-for>
+</ol>
+<button type="button" onClick="{{closeDrawer}}" aria-label="Zavrieť" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; min-height: 0; display: flex;">
+
+<div class="tip" style="flex: 1 1 auto; min-width: 0; overflow-y: auto; padding: 32px 40px 48px; display: flex; flex-direction: column; gap: 40px;">
 
 <sc-if value="{{isStep1}}" hint-placeholder-val="{{true}}">
-<div class="veil" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
-<div style="position: relative; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 70px 70px; gap: 4px;">
-<div style="grid-row: span 2; background: #f1eee6; display: flex; align-items: flex-end; padding: 12px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Exteriér večer</span></div>
-<div style="background: #ece8df;"></div>
-<div style="background: #e9e5db;"></div>
-<div style="position: absolute; top: 14px; right: 14px;"><button type="button" onClick="{{closeDrawer}}" aria-label="Zavrieť" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button></div>
+<div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; height: 190px;">
+<div style="border-radius: 10px; background: #f1eee6; display: flex; align-items: flex-end; padding: 14px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Exteriér večer</span></div>
+<div style="border-radius: 10px; background: #ece8df; display: flex; align-items: flex-end; padding: 12px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Obývačka</span></div>
+<div style="border-radius: 10px; background: #e9e5db; display: flex; align-items: flex-end; padding: 12px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Vírivka</span></div>
 </div>
-<div style="padding: 22px 28px 8px; display: flex; flex-direction: column; gap: 22px;">
-
-<div style="display: flex; flex-direction: column; gap: 6px;">
-<div style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent}};">Váš pobyt · 1 / 3</div>
-<div style="font-size: 26px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</div>
+<section style="display: flex; flex-direction: column; gap: 18px;">
+<h2 style="margin: 0; font-size: 30px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #11212f;">Váš termín. <span style="color: #a9aeb5;">Cenu vidíte hneď.</span></h2>
+<sc-if value="{{calCollapsed}}" hint-placeholder-val="{{false}}">
+<div style="border: 1px solid #e9e5db; border-radius: 10px; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;">
+<div style="display: flex; align-items: center; gap: 14px;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 18px; font-weight: 700; color: #11212f;">{{dateSummary}}</span><span style="font-size: 14px; color: #5a6672;">{{nightsSummary}}</span></div>
 </div>
-
-<div style="border: 1px solid #e9e5db; border-radius: 16px;">
-<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px;">
-<div style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 16px; font-weight: 700; color: #11212f;">{{dateSummary}}</span><span style="font-size: 13px; color: #5a6672;">{{nightsSummary}}</span></div>
-<button type="button" onClick="{{toggleCal}}" aria-expanded="{{calShown}}" style="min-height: 36px; padding: 0 12px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 13px; font-weight: 500; cursor: pointer;">{{calToggleLabel}}</button>
+<button type="button" onClick="{{toggleCal}}" aria-expanded="{{calShown}}" style="min-height: 40px; padding: 0 16px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;">Zmeniť termín</button>
 </div>
-<sc-if value="{{calShown}}" hint-placeholder-val="{{false}}">
-<div class="tip" style="border-top: 1px solid #e9e5db; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 10px;">
+</sc-if>
+<sc-if value="{{calShown}}" hint-placeholder-val="{{true}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 12px;">
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-<span style="font-size: 15px; font-weight: 700; color: #11212f; text-transform: capitalize;">{{drawerMonth.title}}</span>
+<sc-if value="{{hasDates}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{toggleCal}}" style="min-height: 36px; padding: 0 14px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 13px; font-weight: 500; cursor: pointer;">Hotovo, skryť kalendár</button></sc-if>
+<span></span>
 <div style="display: flex; gap: 6px;">
 <button type="button" onClick="{{dPrev}}" aria-label="Predchádzajúci mesiac" style="{{dPrevStyle}}"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg></button>
 <button type="button" onClick="{{dNext}}" aria-label="Ďalší mesiac" style="{{dNextStyle}}"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
 </div>
 </div>
+<div style="border: 1px solid #e9e5db; border-radius: 10px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; flex-wrap: wrap; gap: 28px;">
+<sc-for list="{{drawerMonths}}" as="mon" hint-placeholder-count="2">
+<div style="flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f; text-transform: capitalize;">{{mon.title}}</span>
 <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px;">
 <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">Po</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">Ut</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">St</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">Št</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">Pi</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">So</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center; padding: 2px 0;">Ne</span>
-<sc-for list="{{drawerMonth.cells}}" as="c" hint-placeholder-count="35">
+<sc-for list="{{mon.cells}}" as="c" hint-placeholder-count="35">
 <sc-if value="{{c.blank}}" hint-placeholder-val="{{false}}"><span style="height: 44px;"></span></sc-if>
 <sc-if value="{{c.day}}" hint-placeholder-val="{{true}}"><div style="position: relative;" onMouseEnter="{{c.onEnter}}" onMouseLeave="{{c.onLeave}}"><button type="button" onClick="{{c.onClick}}" onFocus="{{c.onEnter}}" onBlur="{{c.onLeave}}" disabled="{{c.disabled}}" aria-label="{{c.aria}}" style="{{c.style}}"><span style="{{c.numStyle}}">{{c.label}}</span><span style="{{c.priceStyle}}">{{c.price}}</span></button><sc-if value="{{c.showTip}}" hint-placeholder-val="{{false}}"><div class="tip" role="tooltip" style="{{c.tipStyle}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8a97a5;">{{c.tipTitle}}</span><span style="font-size: 15px; font-weight: 700; color: #ffffff;">{{c.tipMain}}</span><span style="font-size: 13px; line-height: 1.45; color: #b6c1cc;">{{c.tipNote}}</span></div></sc-if></div></sc-if>
 </sc-for>
 </div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; border-top: 1px solid #e9e5db; padding-top: 14px;">
 <div style="{{hintStyle}}">{{hint}}</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: #5a6672;">
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 11px; height: 11px; border-radius: 4px; border: 1px solid #e9e5db; background: #ffffff;"></span>700 €</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 11px; height: 11px; border-radius: 4px; background: #eaf0f8;"></span>Zima 850 €</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 11px; height: 11px; border-radius: 4px; background: #f8eadf;"></span>Vianoce 1 200 €</span>
+</div>
+</div>
+</div>
 </div>
 </sc-if>
-<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-top: 1px solid #e9e5db;">
-<span style="font-size: 14px; color: #3b3d42;">Hostia</span>
-<div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e9e5db; border-radius: 9999px; padding: 3px;"><button type="button" onClick="{{guestsDec}}" aria-label="Menej hostí" style="width: 32px; height: 32px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 17px; cursor: pointer;">−</button><span style="min-width: 28px; text-align: center; font-size: 14px; font-weight: 500; color: #11212f;">{{guests}}</span><button type="button" onClick="{{guestsInc}}" aria-label="Viac hostí" style="width: 32px; height: 32px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 17px; cursor: pointer;">+</button></div>
-</div>
-</div>
+</section>
 
+<section style="display: flex; flex-direction: column; gap: 18px;">
 <div style="display: flex; flex-direction: column; gap: 6px;">
-<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;"><span style="font-size: 15px; color: #5a6672;">Spolu</span><span style="font-size: 34px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">{{total}}</span></div>
-<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;"><span style="font-size: 13px; color: #5a6672;">{{perPerson}}</span><button type="button" onClick="{{toggleBreak}}" aria-expanded="{{showBreak}}" style="border: none; background: none; padding: 4px 0; font-size: 13px; font-weight: 500; color: #11212f; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">{{breakLabel}}</button></div>
-<sc-if value="{{showBreak}}" hint-placeholder-val="{{false}}">
-<div class="tip" style="display: flex; flex-direction: column; gap: 8px; padding-top: 10px; margin-top: 4px; border-top: 1px solid #e9e5db;">
-<sc-for list="{{lines}}" as="ln" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px;"><span style="color: #5a6672;">{{ln.label}}</span><span style="{{ln.amountStyle}}">{{ln.amount}}</span></div></sc-for>
+<h2 style="margin: 0; font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #11212f;">K pobytu môžete pridať. <span style="color: #a9aeb5;">Nepovinné.</span></h2>
+<span style="font-size: 14px; color: #5a6672;">Šípkou zobrazíte viac. Podrobnosti doladíte s Janou e-mailom.</span>
+</div>
+<div style="border-top: 1px solid #e9e5db;">
+<sc-for list="{{cards}}" as="sv" hint-placeholder-count="4">
+<div style="border-bottom: 1px solid #e9e5db;">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 0;">
+<button type="button" onClick="{{sv.quick}}" aria-pressed="{{sv.on}}" aria-label="Pridať alebo odobrať" style="{{sv.checkStyle}}"><sc-if value="{{sv.on}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></sc-if></button>
+<button type="button" onClick="{{sv.toggleOpen}}" aria-expanded="{{sv.open}}" style="flex: 1 1 auto; min-width: 0; border: none; background: none; padding: 0; text-align: left; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+<span style="width: 52px; height: 52px; flex-shrink: 0; border-radius: 8px; background: #f1eee6;"></span>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+<sc-if value="{{sv.rec}}" hint-placeholder-val="{{false}}"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}};">{{sv.recLabel}}</span></sc-if>
+<span style="font-size: 15px; font-weight: 500; color: #11212f;">{{sv.cardTitle}}</span>
+<span style="font-size: 13px; color: #5a6672;">{{sv.sub}}</span>
+</span>
+</button>
+<span style="font-size: 14px; font-weight: 500; color: #11212f; white-space: nowrap;">{{sv.priceLine}}</span>
+<button type="button" onClick="{{sv.toggleOpen}}" aria-expanded="{{sv.open}}" aria-label="Ukázať viac" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #5a6672; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><span style="{{sv.chevronStyle}}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg></span></button>
+</div>
+<sc-if value="{{sv.open}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 4px 0 20px 40px;">
+<div style="flex: 0 0 220px; height: 150px; border-radius: 10px; background: #f1eee6; display: flex; align-items: flex-end; padding: 12px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{sv.media}}</span></div>
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #5a6672;">{{sv.desc}}</p>
+<div style="display: flex; flex-direction: column; gap: 6px;"><sc-for list="{{sv.includes}}" as="it" hint-placeholder-count="2"><span style="display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: #3b3d42;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>{{it.text}}</span></sc-for></div>
+<sc-if value="{{sv.isStepper}}" hint-placeholder-val="{{false}}"><div style="display: inline-flex; align-self: flex-start; align-items: center; gap: 10px;"><span style="font-size: 14px; color: #3b3d42;">Počet ciest</span><div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e9e5db; border-radius: 9999px; padding: 3px;"><button type="button" onClick="{{sv.dec}}" aria-label="Menej ciest" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 16px; cursor: pointer;">−</button><span style="min-width: 36px; text-align: center; font-size: 14px; font-weight: 500; color: #11212f;">{{sv.countLabel}}</span><button type="button" onClick="{{sv.inc}}" aria-label="Viac ciest" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 16px; cursor: pointer;">+</button></div></div></sc-if>
+<button type="button" onClick="{{sv.quick}}" aria-pressed="{{sv.on}}" style="{{sv.addStyle}}; align-self: flex-start;">{{sv.addLongLabel}}</button>
+</div>
 </div>
 </sc-if>
 </div>
-
-<div style="display: flex; flex-direction: column; gap: 9px; font-size: 14px; color: #3b3d42;">
-<span style="display: inline-flex; align-items: center; gap: 10px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní pred príchodom</span>
-<span style="display: inline-flex; align-items: center; gap: 10px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Termín vám podržíme 24 hodín</span>
-<span style="display: inline-flex; align-items: center; gap: 10px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Platíte priamo majiteľke, bez poplatkov</span>
+</sc-for>
 </div>
-
-<div style="display: flex; align-items: center; gap: 14px; padding: 14px 0; border-top: 1px solid #e9e5db; border-bottom: 1px solid #e9e5db;">
-<div style="width: 46px; height: 46px; flex-shrink: 0; border-radius: 9999px; background: #f1eee6; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #5a6672;">JH</div>
-<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">Otázky? Odpovedá Jana.</span><span style="font-size: 13px; color: #5a6672;">Majiteľka chaletu</span></div>
-<a href="#" aria-label="Napísať na WhatsApp" style="display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; color: #11212f; font-size: 13px; font-weight: 500; text-decoration: none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z"></path></svg>WhatsApp</a>
-<a href="#" aria-label="Zavolať" style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 9999px; border: 1px solid #e9e5db; color: #11212f; display: inline-flex; align-items: center; justify-content: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></a>
-</div>
-
-<div style="display: flex; align-items: center; gap: 14px;">
-<button type="button" onClick="{{recDetail}}" aria-label="Viac o službe" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 12px; border: none; background: #f1eee6; cursor: pointer;"></button>
-<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
-<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #c2643c;">Pre váš termín</span>
-<button type="button" onClick="{{recDetail}}" style="border: none; background: none; padding: 0; text-align: left; font-size: 15px; font-weight: 500; color: #11212f; cursor: pointer;">{{recTitle}}</button>
-<span style="font-size: 13px; color: #5a6672;">{{recAmount}}</span>
-</div>
-<button type="button" onClick="{{recToggle}}" aria-pressed="{{recOn}}" style="{{recBtnStyle}}">{{recBtnLabel}}</button>
-</div>
-
-</div>
-</div>
-<div style="padding: 16px 28px 24px; border-top: 1px solid #e9e5db; background: #ffffff;">
-<button type="button" onClick="{{goStep2}}" style="{{ctaStyle}}; width: 100%; border: none; cursor: pointer;">Pokračovať <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
-</div>
+</section>
 </sc-if>
 
 <sc-if value="{{isStep2}}" hint-placeholder-val="{{false}}">
-<div style="padding: 20px 28px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e9e5db;">
-<button type="button" onClick="{{goStep1}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px 0 8px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>Späť</button>
-<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent}};">Údaje a želania · 2 / 3</span>
-<button type="button" onClick="{{closeDrawer}}" aria-label="Zavrieť" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
-</div>
-<div class="tip" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 22px 28px 24px; display: flex; flex-direction: column; gap: 26px;">
-<div style="font-size: 24px; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #11212f;">Kto prichádza? <span style="color: #a9aeb5;">Stačí kontakt na vás.</span></div>
-<div style="display: flex; flex-direction: column; gap: 14px;">
-<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Meno a priezvisko</span><input type="text" autocomplete="name" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<div style="display: flex; flex-direction: column; gap: 28px; max-width: 620px;">
+<button type="button" onClick="{{goStep1}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>Späť na termín a doplnky</button>
+<h2 style="margin: 0; font-size: 30px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #11212f;">Kto prichádza? <span style="color: #a9aeb5;">Stačí kontakt na vás.</span></h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Meno a priezvisko</span><input type="text" autocomplete="name" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f;"></label>
 <label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">E-mail</span><input type="email" autocomplete="email" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f;"></label>
 <label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Telefón</span><input type="tel" autocomplete="tel" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Poznámka pre majiteľku</span><textarea rows="4" placeholder="Čas príchodu, alergie, špeciálne želania" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f; resize: vertical;"></textarea></label>
 </div>
-<section style="display: flex; flex-direction: column;">
-<div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px;"><span style="font-size: 17px; font-weight: 700; color: #11212f;">Želáte si niečo pripraviť?</span><span style="font-size: 14px; color: #5a6672;">Nepovinné. Podrobnosti doladíme e-mailom.</span></div>
-<sc-for list="{{services}}" as="sv" hint-placeholder-count="4">
-<div style="display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid #e9e5db;">
-<button type="button" onClick="{{sv.quick}}" aria-pressed="{{sv.on}}" aria-label="Pridať alebo odobrať" style="{{sv.checkStyle}}"><sc-if value="{{sv.on}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></sc-if></button>
-<button type="button" onClick="{{sv.openDetail}}" style="flex: 1 1 auto; min-width: 0; border: none; background: none; padding: 0; text-align: left; display: flex; flex-direction: column; gap: 2px; cursor: pointer;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">{{sv.title}}</span><span style="font-size: 13px; color: #5a6672;">{{sv.sub}}</span></button>
-<span style="font-size: 14px; font-weight: 500; color: #11212f; white-space: nowrap;">{{sv.amount}}</span>
-<button type="button" onClick="{{sv.openDetail}}" aria-label="Podrobnosti" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 9999px; border: none; background: none; color: #8b929b; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5L8 6l-3.5 3.5"></path></svg></button>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid #e9e5db;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Vaše doplnky</span>
+<span style="font-size: 15px; color: #11212f;">{{chosenSummary}}</span>
+<button type="button" onClick="{{goStep1}}" style="align-self: flex-start; border: none; background: none; padding: 0; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">Upraviť doplnky</button>
 </div>
-</sc-for>
-</section>
-<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Poznámka pre majiteľku</span><textarea rows="3" placeholder="Čas príchodu, alergie, špeciálne želania" style="width: 100%; box-sizing: border-box; min-height: 48px; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; background: #ffffff; font-family: inherit; font-size: 15px; color: #11212f; resize: vertical;"></textarea></label>
-</div>
-<div style="padding: 14px 28px 22px; border-top: 1px solid #e9e5db; background: #ffffff; display: flex; align-items: center; justify-content: space-between; gap: 14px;">
-<div style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 13px; color: #5a6672;">Spolu</span><span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{total}}</span></div>
-<a href="#" style="{{ctaStyle}}">K platbe <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></a>
 </div>
 </sc-if>
 
 <sc-if value="{{isDetail}}" hint-placeholder-val="{{false}}">
-<div class="drawer" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
-<div style="position: relative; height: 240px; background: #f1eee6; display: flex; align-items: flex-end; padding: 16px 28px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{detailMedia}}</span>
-<button type="button" onClick="{{closeDetail}}" style="position: absolute; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.94); color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>Späť</button>
-</div>
-<div style="padding: 24px 28px; display: flex; flex-direction: column; gap: 16px;">
-<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #c2643c;">{{detailSub}}</span>
-<div style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{detailTitle}}</div>
+<div style="display: flex; flex-direction: column; gap: 22px; max-width: 640px;">
+<button type="button" onClick="{{closeDetail}}" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 14px; font-weight: 500; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg>Späť</button>
+<div style="height: 300px; border-radius: 10px; background: #f1eee6; display: flex; align-items: flex-end; padding: 16px 20px; box-sizing: border-box;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{detailMedia}}</span></div>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}};">{{detailSub}}</span>
+<div style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{detailTitle}}</div>
 <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #5a6672;">{{detailDesc}}</p>
 <div style="display: flex; flex-direction: column; border-top: 1px solid #e9e5db;">
 <sc-for list="{{detailIncludes}}" as="it" hint-placeholder-count="2"><span style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #e9e5db; font-size: 15px; color: #3b3d42;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>{{it.text}}</span></sc-for>
 </div>
 <sc-if value="{{detailIsStepper}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;"><span style="font-size: 15px; color: #3b3d42;">Počet ciest</span><div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid #e9e5db; border-radius: 9999px; padding: 4px;"><button type="button" onClick="{{detailDec}}" aria-label="Menej ciest" style="width: 34px; height: 34px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 18px; cursor: pointer;">−</button><span style="min-width: 44px; text-align: center; font-size: 14px; font-weight: 500; color: #11212f;">{{detailCount}}</span><button type="button" onClick="{{detailInc}}" aria-label="Viac ciest" style="width: 34px; height: 34px; border-radius: 9999px; border: none; background: #f7f4ed; color: #11212f; font-size: 18px; cursor: pointer;">+</button></div></div></sc-if>
-</div>
-</div>
-<div style="padding: 14px 28px 22px; border-top: 1px solid #e9e5db; background: #ffffff;">
-<button type="button" onClick="{{detailAction}}" style="{{detailBtnStyle}}; width: 100%;">{{detailBtnLabel}}</button>
+<button type="button" onClick="{{detailAction}}" style="{{detailBtnStyle}}; align-self: flex-start;">{{detailBtnLabel}}</button>
 </div>
 </sc-if>
 
+</div>
+
+<div style="width: 340px; flex-shrink: 0; background: {{accent}}; color: #ffffff; display: flex; flex-direction: column; min-height: 0;">
+<div class="tip" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 24px 26px; display: flex; flex-direction: column; gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #f5c4a1;">Demänovská dolina</span>
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #ffffff;">Chalet STRÖMY</span>
+</div>
+<div style="border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; background: rgba(255,255,255,0.1);">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px;">
+<div style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700; color: #ffffff;">{{dateSummary}}</span><span style="font-size: 13px; color: rgba(255,255,255,0.75);">{{nightsSummary}}</span></div>
+<sc-if value="{{notStep1}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{changeDates}}" style="min-height: 34px; padding: 0 12px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 13px; font-weight: 500; cursor: pointer;">Zmeniť</button></sc-if>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.22);">
+<span style="font-size: 14px; color: rgba(255,255,255,0.88);">Hostia</span>
+<div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(255,255,255,0.22); border-radius: 9999px; padding: 3px;"><button type="button" onClick="{{guestsDec}}" aria-label="Menej hostí" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 16px; cursor: pointer;">−</button><span style="min-width: 26px; text-align: center; font-size: 14px; font-weight: 500; color: #ffffff;">{{guests}}</span><button type="button" onClick="{{guestsInc}}" aria-label="Viac hostí" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 16px; cursor: pointer;">+</button></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65);">{{heroLabel}}</span>
+<span style="font-size: 34px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #ffffff;">{{heroPrice}}</span>
+<span style="font-size: 13px; color: rgba(255,255,255,0.75);">{{heroSub}}</span>
+<button type="button" onClick="{{toggleBreak}}" aria-expanded="{{showBreak}}" style="align-self: flex-start; border: none; background: none; padding: 4px 0; font-size: 13px; font-weight: 500; color: #ffffff; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">{{breakLabel}}</button>
+<sc-if value="{{showBreak}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.22);">
+<sc-for list="{{lines}}" as="ln" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px;"><span style="color: rgba(255,255,255,0.75);">{{ln.label}}</span><span style="{{ln.amountStyle}}">{{ln.amount}}</span></div></sc-for>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{hasChosen}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.18);">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65);">Vaše doplnky</span>
+<sc-for list="{{chosenList}}" as="ch" hint-placeholder-count="1"><div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px;"><span style="color: rgba(255,255,255,0.9);">{{ch.title}}</span><span style="color: #ffffff; font-weight: 500;">{{ch.amount}}</span></div></sc-for>
+</div>
+</sc-if>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 18px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.18);">
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.88);">
+<span style="display: inline-flex; align-items: center; gap: 9px;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní pred príchodom</span>
+<span style="display: inline-flex; align-items: center; gap: 9px;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Termín vám podržíme 24 hodín</span>
+<span style="display: inline-flex; align-items: center; gap: 9px;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Platíte priamo majiteľke, bez poplatkov</span>
+</div>
+<figure style="margin: 0; padding: 18px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.22); display: flex; flex-direction: column; gap: 12px;">
+<blockquote class="fade" style="margin: 0; font-size: 14px; line-height: 1.55; font-weight: 400; color: #ffffff;">{{refQuote}}</blockquote>
+<figcaption style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #f5c4a1;">{{refName}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;">
+<button type="button" onClick="{{refPrev}}" aria-label="Predchádzajúca recenzia" style="width: 30px; height: 30px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg></button>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: rgba(255,255,255,0.65);">{{refPos}}</span>
+<button type="button" onClick="{{refNext}}" aria-label="Ďalšia recenzia" style="width: 30px; height: 30px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1); color: #ffffff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
+</span>
+</figcaption>
+</figure>
+<div style="display: flex; align-items: center; gap: 12px;">
+<div style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 9999px; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.75);">JH</div>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 13px; font-weight: 500; color: #ffffff;">Otázky? Odpovedá Jana.</span><span style="font-size: 12px; color: rgba(255,255,255,0.75);">Majiteľka chaletu</span></div>
+<a href="#" aria-label="Napísať na WhatsApp" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1); color: #ffffff; display: inline-flex; align-items: center; justify-content: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z"></path></svg></a>
+<a href="#" aria-label="Zavolať" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.1); color: #ffffff; display: inline-flex; align-items: center; justify-content: center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg></a>
+</div>
+</div>
+</div>
+<div style="flex-shrink: 0; padding: 16px 26px 22px; border-top: 1px solid rgba(255,255,255,0.18);">
+<button type="button" class="cta-dark" onClick="{{ctaAction}}" style="{{ctaOnAccent}}; width: 100%;">{{ctaLabel}} <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+</div>
+</div>
+
+</div>
 </aside>
 </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"$preview":{"width":1440,"height":4200}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":5700}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { off: 1, start: '2026-12-21', end: '2026-12-24', guests: 8, breakfast: false, chef: false, transfer: 0, pet: false, hover: null, drawer: false, dOff: 1, openSvc: null, step: 1, calOpen: false, showBreak: false, detail: null, faq: null, scrolled: false };
+    this.state = { off: 1, start: '2026-12-21', end: '2026-12-24', guests: 8, breakfast: false, chef: false, transfer: 0, pet: false, hover: null, drawer: false, dOff: 1, openSvc: null, step: 1, calOpen: false, showBreak: false, detail: null, faq: null, scrolled: false, ref: 0, lb: false, lbAlbum: 'all', lbIdx: null, lbFocus: null };
   }
 
   componentDidMount() {
@@ -414,6 +610,12 @@ class Component extends DCLogic {
     return s + out + ' €';
   }
   nightsWord(n) { if (n === 1) return 'noc'; if (n >= 2 && n <= 4) return 'noci'; return 'nocí'; }
+  shade(hex, f) {
+    var h = (hex || '#2f5d50').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var c = [0, 2, 4].map(function (i) { return Math.round(parseInt(h.slice(i, i + 2), 16) * f); });
+    return 'rgb(' + c.join(',') + ')';
+  }
   tint(hex, a) {
     var h = (hex || '#2f5d50').replace('#', '');
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
@@ -438,6 +640,7 @@ class Component extends DCLogic {
   renderVals() {
     var self = this; var s = this.state; var S = this.seasons(); var bk = this.booked();
     var accent = this.props.accent ?? '#2f5d50';
+    var accent2 = this.props.accent2 ?? '#ad5a2b';
     var soft = this.tint(accent, 0.13);
     var MONTHS = [[2026, 10], [2026, 11], [2027, 0], [2027, 1], [2027, 2]];
     var NAMES = ['január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september', 'október', 'november', 'december'];
@@ -479,7 +682,7 @@ class Component extends DCLogic {
         var bg = isEdge ? accent : (inRange ? soft : (inPreview ? preview : (isB ? '#ffffff' : S[sk].tint)));
         var fg = isEdge ? '#ffffff' : (isB || disabled ? '#b9bec5' : '#11212f');
         var border = isHover && !isEdge ? '1px solid ' + accent : (sk === 'base' && !isEdge && !inRange && !inPreview && !isB ? '1px solid #f1eee6' : '1px solid transparent');
-        var cellStyle = 'height: ' + (compact ? 44 : 58) + 'px; width: 100%; border-radius: 12px; border: ' + border + '; background: ' + bg + '; color: ' + fg + '; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; cursor: ' + (disabled ? 'default' : 'pointer') + '; transform: ' + (isHover ? 'translateY(-1px)' : 'none') + '; transition: background 160ms ease, color 160ms ease, transform 160ms ease, border-color 160ms ease;';
+        var cellStyle = 'height: ' + (compact ? 44 : 58) + 'px; width: 100%; border-radius: 8px; border: ' + border + '; background: ' + bg + '; color: ' + fg + '; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; cursor: ' + (disabled ? 'default' : 'pointer') + '; transform: ' + (isHover ? 'translateY(-1px)' : 'none') + '; transition: background 160ms ease, color 160ms ease, transform 160ms ease, border-color 160ms ease;';
         var col = (lead + d - 1) % 7;
         var wd = new Date(Date.UTC(y, m, d)).getUTCDay();
         var tipMain, tipNote;
@@ -503,7 +706,7 @@ class Component extends DCLogic {
           showTip: s.hover === k && (compact ? !!s.drawer : !s.drawer),
           tipTitle: cap(LONG[wd]) + ' ' + d + '. ' + (m + 1) + '.',
           tipMain: tipMain, tipNote: tipNote,
-          tipStyle: 'position: absolute; bottom: calc(100% + 10px); ' + pos + ' width: 220px; box-sizing: border-box; z-index: 30; background: #11212f; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 24px 50px -24px rgba(17,33,47,0.55); pointer-events: none; text-align: left;',
+          tipStyle: 'position: absolute; bottom: calc(100% + 10px); ' + pos + ' width: 220px; box-sizing: border-box; z-index: 30; background: #11212f; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 24px 50px -24px rgba(17,33,47,0.55); pointer-events: none; text-align: left;',
           onEnter: (function (kk) { return function () { if (self.state.hover !== kk) self.setState({ hover: kk }); }; })(k),
           onLeave: (function (kk) { return function () { if (self.state.hover === kk) self.setState({ hover: null }); }; })(k),
           blank: false, day: true, label: String(d), disabled: disabled,
@@ -519,7 +722,63 @@ class Component extends DCLogic {
       return { title: NAMES[m] + ' ' + y, cells: cells };
     };
     var months = [MONTHS[s.off], MONTHS[s.off + 1]].map(function (ym) { return buildMonth(ym, false); });
+    var REFS = [
+      { q: '„Skvelá lokalita a služby na vysokej úrovni. Strávili sme tu pár dní s rodinou. Určite sa vrátime.“', n: 'Elizabeth Kohutova' },
+      { q: '„Neviem si predstaviť lepšie miesto na oddych a vypnutie hlavy. Atmosféra hôr je jednoducho top.“', n: 'Patricia Vittek' },
+      { q: '„S priateľmi sme si užili skvelé ubytovanie s kompletným vybavením. Radi sa sem vrátime.“', n: 'Eva Milistenferova' }
+    ];
+    var PHOTOS = [
+      { cat: 'ext', label: 'Exteriér večer', tint: '#d9dcd8' }, { cat: 'int', label: 'Obývačka s krbom', tint: '#cfd4d0' }, { cat: 'well', label: 'Vírivka', tint: '#dde0db' },
+      { cat: 'bed', label: 'Hlavná spálňa', tint: '#d4d8d3' }, { cat: 'int', label: 'Kuchyňa', tint: '#c9cfca' }, { cat: 'well', label: 'Sauna', tint: '#d6d9d4' },
+      { cat: 'ext', label: 'Terasa', tint: '#dde0db' }, { cat: 'out', label: 'Jasná v zime', tint: '#cdd6d1' }, { cat: 'bed', label: 'Detská izba', tint: '#d9dcd8' },
+      { cat: 'int', label: 'Jedáleň', tint: '#cfd4d0' }, { cat: 'bed', label: 'Spálňa s balkónom', tint: '#c9cfca' }, { cat: 'ext', label: 'Chalet v snehu', tint: '#d4d8d3' },
+      { cat: 'int', label: 'Kúpeľňa', tint: '#d6d9d4' }, { cat: 'out', label: 'Demänovská dolina', tint: '#c7d1ca' }, { cat: 'well', label: 'Relax zóna', tint: '#dde0db' },
+      { cat: 'bed', label: 'Podkrovná spálňa', tint: '#cfd4d0' }, { cat: 'ext', label: 'Parkovanie', tint: '#d9dcd8' }, { cat: 'out', label: 'Skibus pod komplexom', tint: '#cdd6d1' }
+    ];
+    var ALB = [['all', 'Všetky'], ['ext', 'Exteriér'], ['int', 'Interiér'], ['bed', 'Spálne'], ['well', 'Wellness'], ['out', 'Okolie']];
+    var openAt = function (i) { return function () { self.setState({ lb: true, lbAlbum: 'all', lbIdx: null, lbFocus: i }); }; };
+    var tile = function (p, radius, big) { return 'position: relative; border: none; padding: 12px; border-radius: ' + radius + 'px; background: ' + p.tint + '; display: flex; align-items: flex-end; cursor: zoom-in; ' + (big ? 'grid-row: span 2;' : '') + ' min-height: 0;'; };
+    var heroPhotos = [0, 1, 2].map(function (i) { return { label: PHOTOS[i].label, aria: 'Otvoriť fotku: ' + PHOTOS[i].label, open: openAt(i), style: tile(PHOTOS[i], 10, i === 0) }; });
+    var thumbPhotos = [3, 4, 5, 6, 7].map(function (i, j) { return { more: j === 4, moreLabel: '+' + (PHOTOS.length - 7) + ' fotiek', aria: j === 4 ? 'Všetky fotky' : 'Otvoriť fotku: ' + PHOTOS[i].label, open: j === 4 ? function () { self.setState({ lb: true, lbAlbum: 'all', lbIdx: null }); } : openAt(i), style: tile(PHOTOS[i], 8, false).replace('cursor: zoom-in;', 'cursor: pointer;') }; });
+    var mosaic = [1, 3, 5, 9, 12].map(function (i, j) { return { label: PHOTOS[i].label, aria: 'Otvoriť galériu: ' + PHOTOS[i].label, open: openAt(i), style: 'border: none; padding: 14px; border-radius: 10px; background: ' + PHOTOS[i].tint + '; display: flex; align-items: flex-end; cursor: zoom-in; ' + (j === 0 ? 'grid-row: span 2;' : '') }; });
+    var inAlb = PHOTOS.map(function (p, i) { return { p: p, i: i }; }).filter(function (x) { return s.lbAlbum === 'all' || x.p.cat === s.lbAlbum; });
+    var albums = ALB.map(function (a) {
+      var list = PHOTOS.filter(function (p) { return a[0] === 'all' || p.cat === a[0]; }); var active = s.lbAlbum === a[0];
+      return { label: a[1], count: list.length, active: active, pick: function () { self.setState({ lbAlbum: a[0], lbIdx: null }); },
+        thumbStyle: 'display: block; width: 92px; height: 60px; border-radius: 8px; background: ' + list[0].tint + '; box-shadow: ' + (active ? '0 0 0 2px ' + accent : 'none') + ';',
+        labelStyle: 'font-size: 13px; font-weight: ' + (active ? '700' : '500') + '; color: ' + (active ? '#11212f' : '#5a6672') + ';' };
+    });
+    var lbPhotos = inAlb.map(function (x) { var f = s.lbFocus === x.i; return { label: x.p.label, aria: 'Zväčšiť: ' + x.p.label, open: function () { self.setState({ lbIdx: x.i }); }, style: 'border: none; padding: 12px; aspect-ratio: 4 / 3; border-radius: 8px; background: ' + x.p.tint + '; display: flex; align-items: flex-end; cursor: zoom-in; box-shadow: ' + (f ? '0 0 0 3px ' + accent : 'none') + ';' }; });
+    var curPos = s.lbIdx === null ? -1 : inAlb.map(function (x) { return x.i; }).indexOf(s.lbIdx);
+    if (s.lbIdx !== null && curPos < 0) curPos = 0;
+    var curPhoto = s.lbIdx !== null ? PHOTOS[s.lbIdx] : PHOTOS[0];
+    var winStart = Math.max(0, Math.min(curPos - 2, inAlb.length - 6));
+    var strip = inAlb.slice(winStart, winStart + 6).map(function (x) {
+      var active = x.i === s.lbIdx;
+      return { label: x.p.label, aria: 'Fotka: ' + x.p.label, open: function () { self.setState({ lbIdx: x.i }); },
+        style: 'flex: 1 1 0; min-width: 0; max-width: 170px; height: 104px; border: none; padding: 0; border-radius: 8px; background: ' + x.p.tint + '; cursor: pointer; opacity: ' + (active ? '1' : '0.55') + '; box-shadow: ' + (active ? '0 0 0 3px #ffffff' : 'none') + '; transition: opacity 160ms ease, box-shadow 160ms ease;' };
+    });
+    var stepTo = function (d) { return function () { var ids = inAlb.map(function (x) { return x.i; }); var pos = ids.indexOf(self.state.lbIdx); if (pos < 0) pos = 0; self.setState({ lbIdx: ids[(pos + d + ids.length) % ids.length] }); }; };
+    var places = [
+      { name: 'Jasná — lanovky a zjazdovky', how: 'skibus zastavuje pod komplexom', dist: '7 min' },
+      { name: 'Demänovská jaskyňa slobody', how: 'autom alebo pešo po doline', dist: '4 km' },
+      { name: 'Aquapark Tatralandia', how: 'autom', dist: '12 km' },
+      { name: 'Liptovský Mikuláš — centrum', how: 'reštaurácie, obchody', dist: '7 km' },
+      { name: 'Letisko Poprad-Tatry', how: 'transfer na objednávku', dist: '60 km' }
+    ];
+    var nextFree = (function () {
+      var k = '2026-12-01';
+      for (var guard = 0; guard < 120; guard++) {
+        var m = S[self.season(k)].min; var len = Math.max(3, m); var ok = true;
+        var ns = self.nightsBetween(k, self.addDays(k, len));
+        for (var q = 0; q < ns.length; q++) if (bk[ns[q]]) { ok = false; break; }
+        if (ok) return { start: k, end: self.addDays(k, len), n: len, price: accomOf(k, self.addDays(k, len)) };
+        k = self.addDays(k, 1);
+      }
+      return null;
+    })();
     var drawerMonth = buildMonth(MONTHS[s.dOff], true);
+    var drawerMonths = [MONTHS[Math.min(s.dOff, 3)], MONTHS[Math.min(s.dOff, 3) + 1]].map(function (ym) { return buildMonth(ym, true); });
 
     var nights = s.start && s.end ? this.nightsBetween(s.start, s.end) : [];
     var n = nights.length;
@@ -533,22 +792,22 @@ class Component extends DCLogic {
     var svc = { breakfast: s.breakfast ? 15 * g * n : 0, chef: s.chef ? 65 * g : 0, transfer: 90 * s.transfer, pet: s.pet ? 20 * n : 0 };
     var total = n > 0 ? accom - discount + svc.breakfast + svc.chef + svc.transfer + svc.pet : 0;
 
-    var plain = 'color: #11212f; font-weight: 500;';
+    var plain = 'color: #ffffff; font-weight: 500;';
     var lines = [];
     ['winter', 'xmas', 'base'].forEach(function (sk) {
       if (counts[sk] > 0) lines.push({ label: counts[sk] + ' × noc · ' + S[sk].name, amount: self.eur(counts[sk] * S[sk].price), amountStyle: plain });
     });
-    if (discount > 0) lines.push({ label: 'Zľava za pobyt od 6 nocí', amount: '−' + self.eur(discount), amountStyle: 'color: ' + accent + '; font-weight: 500;' });
+    if (discount > 0) lines.push({ label: 'Zľava za pobyt od 6 nocí', amount: '−' + self.eur(discount), amountStyle: 'color: #cfe8da; font-weight: 500;' });
     if (n > 0 && svc.breakfast) lines.push({ label: 'Raňajky · ' + g + ' os. × ' + n + ' ' + self.nightsWord(n), amount: self.eur(svc.breakfast), amountStyle: plain });
     if (n > 0 && svc.chef) lines.push({ label: 'Privátny šéfkuchár · ' + g + ' os.', amount: self.eur(svc.chef), amountStyle: plain });
     if (n > 0 && svc.transfer) lines.push({ label: 'Transfer z letiska · ' + s.transfer + '×', amount: self.eur(svc.transfer), amountStyle: plain });
     if (n > 0 && svc.pet) lines.push({ label: 'Pobyt so zvieraťom', amount: self.eur(svc.pet), amountStyle: plain });
-    if (n > 0) lines.push({ label: 'Daň za ubytovanie', amount: 'v cene', amountStyle: 'color: #5a6672; font-weight: 400;' });
+    if (n > 0) lines.push({ label: 'Daň za ubytovanie', amount: 'v cene', amountStyle: 'color: rgba(255,255,255,0.7); font-weight: 400;' });
 
     var hint; var hintColor = '#5a6672';
     if (!s.start) hint = 'Vyberte deň príchodu.';
     else if (!s.end) hint = 'Príchod ' + this.fmt(s.start) + ' — vyberte odchod. Minimálny pobyt ' + minReq + ' ' + this.nightsWord(minReq) + ' (' + S[this.season(s.start)].name + ').';
-    else if (tooShort) { hint = 'V tomto termíne je minimálny pobyt ' + minReq + ' ' + this.nightsWord(minReq) + '. Predĺžte pobyt.'; hintColor = '#a9542f'; }
+    else if (tooShort) { hint = 'V tomto termíne je minimálny pobyt ' + minReq + ' ' + this.nightsWord(minReq) + '. Predĺžte pobyt.'; hintColor = '#a8432f'; }
     else hint = this.fmt(s.start) + ' – ' + this.fmt(s.end) + ' · ' + n + ' ' + this.nightsWord(n);
 
     var can = n > 0 && !tooShort;
@@ -556,13 +815,13 @@ class Component extends DCLogic {
       return 'width: 44px; height: 44px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: ' + (enabled ? '#11212f' : '#c9ccd1') + '; display: inline-flex; align-items: center; justify-content: center; cursor: ' + (enabled ? 'pointer' : 'default') + ';';
     };
     var card = function (active) {
-      return 'border: 1px solid ' + (active ? accent : '#e9e5db') + '; border-radius: 24px; padding: 26px 24px; background: #ffffff; display: flex; flex-direction: column; gap: 10px; box-shadow: ' + (active ? '0 0 0 3px ' + soft : '0 24px 60px -40px rgba(17,33,47,0.14)') + '; transition: border-color 160ms ease, box-shadow 160ms ease;';
+      return 'border: 1px solid ' + (active ? accent : '#e9e5db') + '; border-radius: 10px; padding: 26px 24px; background: #ffffff; display: flex; flex-direction: column; gap: 10px; box-shadow: ' + (active ? '0 0 0 3px ' + soft : '0 24px 60px -40px rgba(17,33,47,0.14)') + '; transition: border-color 160ms ease, box-shadow 160ms ease;';
     };
     var tbtn = function (active) {
       return 'min-height: 40px; padding: 0 18px; border-radius: 9999px; border: 1px solid ' + accent + '; background: ' + (active ? accent : '#ffffff') + '; color: ' + (active ? '#ffffff' : accent) + '; font-size: 14px; font-weight: 700; cursor: pointer;';
     };
     var dcard = function (active) {
-      return 'border: 1px solid ' + (active ? accent : '#e9e5db') + '; border-radius: 20px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; gap: 12px; box-shadow: ' + (active ? '0 0 0 3px ' + soft : 'none') + '; transition: border-color 160ms ease, box-shadow 160ms ease;';
+      return 'border: 1px solid ' + (active ? accent : '#e9e5db') + '; border-radius: 10px; padding: 10px; background: #ffffff; display: flex; flex-direction: column; gap: 12px; box-shadow: ' + (active ? '0 0 0 3px ' + soft : 'none') + '; transition: border-color 160ms ease, box-shadow 160ms ease;';
     };
     var toggle = function (field) { return function () { var o = {}; o[field] = !self.state[field]; self.setState(o); }; };
 
@@ -598,10 +857,32 @@ class Component extends DCLogic {
     services.forEach(function (sv, i) {
       var id = ids[i];
       sv.openDetail = function () { self.setState({ detail: id }); };
+      sv.addLabel = sv.on ? 'Pridané' : 'Pridať';
+      sv.addLongLabel = sv.on ? 'Odobrať z pobytu' : 'Pridať k pobytu';
+      sv.addStyle = 'min-height: 36px; padding: 0 16px; border-radius: 9999px; border: 1px solid ' + accent + '; background: ' + (sv.on ? accent : '#ffffff') + '; color: ' + (sv.on ? '#ffffff' : accent) + '; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;';
       sv.includes = includes[id].map(function (t) { return { text: t }; });
     });
     var hasXmasEve = nights.indexOf('2026-12-24') >= 0 || nights.indexOf('2027-12-24') >= 0 || (s.start && s.end && s.start <= '2026-12-24' && s.end > '2026-12-24');
     var recTitle = hasXmasEve ? 'Štedrovečerná večera so šéfkuchárom' : 'Večera so šéfkuchárom';
+    var groupPrice = { breakfast: 15 * g * Math.max(n, 1), chef: 65 * g, transfer: 90 * Math.max(s.transfer, 1), pet: 20 * Math.max(n, 1) };
+    services.forEach(function (sv, i) {
+      var id = ids[i];
+      sv.rec = id === 'chef';
+      sv.recLabel = hasXmasEve ? 'Pre váš termín' : 'Pre skupiny';
+      sv.cardTitle = sv.rec ? recTitle : sv.title;
+      sv.priceLine = n > 0 ? (sv.on ? self.eur(svc[id]) + ' · pridané' : '+' + self.eur(groupPrice[id]) + ' pre váš pobyt') : sv.price;
+    });
+    var cards = services.slice().sort(function (a, b) { return (b.rec ? 1 : 0) - (a.rec ? 1 : 0); });
+    var chosen = services.filter(function (sv) { return sv.on; }).map(function (sv) { return sv.rec ? recTitle : sv.title; });
+    var stepNames = ['Váš pobyt', 'Údaje a želania', 'Platba'];
+    var steps = stepNames.map(function (label, i) {
+      var active = s.step === i + 1; var done = s.step > i + 1;
+      return {
+        n: String(i + 1), label: label,
+        numStyle: 'width: 26px; height: 26px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: ' + (active ? accent : (done ? soft : '#f7f4ed')) + '; color: ' + (active ? '#ffffff' : (done ? accent : '#8b929b')) + ';',
+        labelStyle: 'font-size: 14px; font-weight: ' + (active ? '700' : '500') + '; color: ' + (active ? '#11212f' : '#8b929b') + ';'
+      };
+    });
     var dsv = null;
     if (s.detail) { services.forEach(function (sv, i) { if (ids[i] === s.detail) dsv = sv; }); }
     var detailOn = dsv ? dsv.on : false;
@@ -613,12 +894,21 @@ class Component extends DCLogic {
         weekday: SHORT[new Date(Date.UTC(p[0], p[1], p[2])).getUTCDay()],
         date: p[2] + '. ' + (p[1] + 1) + '.',
         price: self.eur(S[sk2].price),
-        style: 'min-width: 92px; padding: 12px 14px; border-radius: 14px; background: ' + (S[sk2].tint === '#ffffff' ? '#fbfaf9' : S[sk2].tint) + '; border: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 4px;'
+        style: 'min-width: 92px; padding: 12px 14px; border-radius: 10px; background: ' + (S[sk2].tint === '#ffffff' ? '#fbfaf9' : S[sk2].tint) + '; border: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 4px;'
       };
     });
 
     return {
       accent: accent,
+      accent2: accent2,
+      nextFreeLabel: nextFree ? this.fmt(nextFree.start) + ' – ' + this.fmt(nextFree.end) + ' ' + nextFree.end.slice(0, 4) : '',
+      nextFreeSub: nextFree ? nextFree.n + ' ' + this.nightsWord(nextFree.n) + ' · ' + this.eur(nextFree.price) + ' za celý chalet' : '',
+      pickNextFree: function () { if (!nextFree) return; var p0 = self.parts(nextFree.start); var d0 = 1; MONTHS.forEach(function (ym, i) { if (ym[0] === p0[0] && ym[1] === p0[1]) d0 = i; }); self.setState({ start: nextFree.start, end: nextFree.end, drawer: true, step: 1, detail: null, hover: null, dOff: Math.min(d0, 3), calOpen: false }); },
+      accentSoft: this.tint(accent, 0.09),
+      heroLabel: n > 0 ? 'Spolu za ' + n + ' ' + this.nightsWord(n) : 'Cena za celý chalet',
+      heroPrice: n > 0 ? this.eur(total) : 'od 700 €',
+      heroSub: n > 0 ? this.eur(Math.round(total / g / n)) + ' na osobu a noc · daň v cene' : 'za noc, podľa sezóny',
+      accentDeep: this.shade(accent, 0.62),
       months: months,
       drawerOpen: !!s.drawer,
       openDrawer: function () {
@@ -629,12 +919,47 @@ class Component extends DCLogic {
         }
         self.setState({ drawer: true, hover: null, dOff: d0, step: 1, detail: null, showBreak: false, calOpen: !(self.state.start && self.state.end) });
       },
+      openDrawerCal: function () {
+        var d0 = 1;
+        if (self.state.start) { var p0 = self.parts(self.state.start); MONTHS.forEach(function (ym, i) { if (ym[0] === p0[0] && ym[1] === p0[1]) d0 = i; }); }
+        self.setState({ drawer: true, hover: null, dOff: Math.min(d0, 3), step: 1, detail: null, showBreak: false, calOpen: true });
+      },
       closeDrawer: function () { self.setState({ drawer: false }); },
       rangeTitle: n > 0 ? this.fmt(s.start) + ' – ' + this.fmt(s.end) + ', ' + n + ' ' + this.nightsWord(n) + '.' : 'Termín ešte nie je vybraný.',
       nightsList: nightsList,
       noNights: n === 0,
+      mosaic: mosaic, heroPhotos: heroPhotos, thumbPhotos: thumbPhotos, albums: albums, lbPhotos: lbPhotos, places: places,
+      lbOpen: !!s.lb, lbSingle: !!s.lb && s.lbIdx !== null,
+      lbCount: PHOTOS.length + ' fotiek · ' + REFS.length + ' referencie',
+      openLbAll: function () { self.setState({ lb: true, lbAlbum: 'all', lbIdx: null }); },
+      lbClose: function () { self.setState({ lb: false, lbIdx: null, lbFocus: null }); },
+      lbBack: function () { self.setState({ lbIdx: null }); },
+      lbToDrawer: function () { self.setState({ lb: false, lbIdx: null, drawer: true, step: 1, detail: null, hover: null }); },
+      lbPrev: stepTo(-1), lbNext: stepTo(1), strip: strip,
+      lbPos: (curPos + 1) + ' / ' + inAlb.length,
+      lbBigLabel: curPhoto.label, lbBigCaption: curPhoto.label,
+      lbBigStyle: 'flex: 1 1 auto; height: 100%; border-radius: 10px; background: ' + curPhoto.tint + '; display: flex; align-items: flex-end; justify-content: center; padding: 18px; box-sizing: border-box;',
+      refsAll: REFS.map(function (r) { return { q: r.q, n: r.n, src: 'Zdroj: web chaletu' }; }),
+      refQuote: REFS[s.ref % REFS.length].q,
+      refName: REFS[s.ref % REFS.length].n,
+      refPos: ((s.ref % REFS.length) + 1) + ' / ' + REFS.length,
+      refPrev: function () { self.setState({ ref: (self.state.ref + REFS.length - 1) % REFS.length }); },
+      refNext: function () { self.setState({ ref: (self.state.ref + 1) % REFS.length }); },
       drawerMonth: drawerMonth,
+      drawerMonths: drawerMonths,
+      cards: cards,
+      steps: steps,
+      notStep1: s.step !== 1 || !!s.detail,
+      hasDates: n > 0,
+      changeDates: function () { self.setState({ step: 1, detail: null, calOpen: true }); },
+      hasChosen: services.some(function (sv) { return sv.on; }),
+      chosenList: services.filter(function (sv) { return sv.on; }).map(function (sv, i) { return { title: sv.rec ? recTitle : sv.title, amount: n > 0 ? self.eur(svc[['breakfast','chef','transfer','pet'][services.indexOf(sv)]]) : '' }; }),
+      chosenSummary: chosen.length ? chosen.join(' · ') : 'Bez doplnkov',
+      ctaLabel: s.step === 1 ? 'Pokračovať' : 'K platbe',
+      ctaAction: function () { if (!can) return; if (self.state.step === 1) self.setState({ step: 2, detail: null }); },
       showBar: !!s.scrolled && !s.drawer,
+      ctaOnAccent: 'display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 0 24px; border: 1px solid rgba(255,255,255,0.18); border-radius: 9999px; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer; opacity: ' + (can ? '1' : '0.45') + '; pointer-events: ' + (can ? 'auto' : 'none') + ';',
+      onAccentCta: 'display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 0 24px; border: 1px solid rgba(255,255,255,0.18); border-radius: 9999px; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer;',
       pageCtaStyle: 'display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border: none; border-radius: 9999px; background: ' + accent + '; color: #ffffff; font-size: 16px; font-weight: 700; cursor: pointer;',
       faqs: [
         { id: 'storno', title: 'Storno podmienky', rows: [{ a: '30 a viac dní pred príchodom', b: 'zdarma' }, { a: '14 dní pred príchodom', b: '50 % z ceny' }, { a: '10 a menej dní alebo nedostavenie sa', b: '100 % z ceny' }] },
@@ -651,7 +976,7 @@ class Component extends DCLogic {
       goStep1: function () { self.setState({ step: 1, detail: null }); },
       closeDetail: function () { self.setState({ detail: null }); },
       calShown: !!s.calOpen || n === 0,
-      calCollapsed: !(s.calOpen || n === 0),
+      calCollapsed: !(s.calOpen || n === 0) && s.step === 1,
       toggleCal: function () { self.setState({ calOpen: !self.state.calOpen }); },
       calToggleLabel: s.calOpen ? 'Hotovo' : 'Zmeniť',
       dateSummary: n > 0 ? this.fmt(s.start) + ' – ' + this.fmt(s.end) + (s.end.slice(0, 4) === '2027' ? ' 2027' : ' 2026') : 'Termín nie je vybraný',
@@ -680,9 +1005,9 @@ class Component extends DCLogic {
       detailBtnLabel: detailOn ? 'Odobrať z pobytu' : 'Pridať k pobytu',
       detailBtnStyle: 'display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border-radius: 9999px; border: 1px solid ' + accent + '; background: ' + (detailOn ? '#ffffff' : accent) + '; color: ' + (detailOn ? accent : '#ffffff') + '; font-size: 16px; font-weight: 700; cursor: pointer;',
       dPrev: function () { if (self.state.dOff > 0) self.setState({ dOff: self.state.dOff - 1 }); },
-      dNext: function () { if (self.state.dOff < 4) self.setState({ dOff: self.state.dOff + 1 }); },
+      dNext: function () { if (self.state.dOff < 3) self.setState({ dOff: self.state.dOff + 1 }); },
       dPrevStyle: navBtn(s.dOff > 0).replace('width: 44px; height: 44px', 'width: 36px; height: 36px'),
-      dNextStyle: navBtn(s.dOff < 4).replace('width: 44px; height: 44px', 'width: 36px; height: 36px'),
+      dNextStyle: navBtn(s.dOff < 3).replace('width: 44px; height: 44px', 'width: 36px; height: 36px'),
       prevMonth: function () { if (self.state.off > 0) self.setState({ off: self.state.off - 1 }); },
       nextMonth: function () { if (self.state.off < 3) self.setState({ off: self.state.off + 1 }); },
       prevStyle: navBtn(s.off > 0),

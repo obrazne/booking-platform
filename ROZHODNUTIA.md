@@ -2,6 +2,18 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Stránka hosťa v2 (inšpirácia Bookingom, prémiový pokoj)
+
+- Martin schválil **vizuál v2** (`docs/vizual-stranka-hosta.md`, `docs/navrhy/stranka-hosta/`). Hlavné dôvody zmien:
+  - **Hosť sa rozhoduje o tisícoch eur** — potrebuje fotky, referencie a polohu hneď hore (vzor Booking), cenu stále na očiach (zelený panel,
+    lišta, zelený súhrn v košíku) a fakty namiesto nátlaku (najbližší voľný termín, nie „nezmeškajte“).
+  - **Široký košík** s pevným súhrnom vpravo: doplnky môžu byť už v kroku 1, lebo cena a tlačidlo sa neodsunú (v úzkom paneli boli v kroku 2).
+  - **Nič neskáče:** výber termínu vždy v bočnom paneli, naraz najviac jedno okno, Späť zatvorí jednu úroveň — aby sa hosť nestratil.
+  - **Prémiový dojem = zdržanlivosť:** menšie zaoblenie (10 px), vlasové linky namiesto kariet s medzerami, tichý cenník, jedna doplnková farba
+    len na drobnosti, grafitové tlačidlo na farebnej ploche.
+- Bez známky typu 9,5 a počtu hodnotení — nemáme overené recenzie (pravidlá EÚ); mapa OpenStreetMap (bez poplatkov a cookies), nie Google.
+- Mobil kreslený zvlášť (zelený pás dole namiesto panela, galéria s prepínačom Fotky / Referencie).
+
 ## 2026-10-16 — Referencie ako sociálny dôkaz v košíku
 
 - Hosť sa pri rozhodovaní (pobyt za tisíce eur) potrebuje uistiť — preto **fotky a referencie aj v košíku**, nielen na stránke (Martin).

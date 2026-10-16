@@ -1,18 +1,123 @@
 {
   "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-10-16T13:50:00Z"},
-  "title": "Rezervačná stránka — návrh",
-  "launch": {"view": "canvas"},
-  "pages": [],
+  "attachments": {},
   "boards": {
-    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 4200, "title": "01 Detail objektu — počítač (klikací kalendár)", "expand": "fill", "is_interactive": true},
-    "Mobil.dc.html": {"x": 1520, "y": 0, "w": 390, "h": 844, "title": "02 Mobil — detail s pásom ceny"},
-    "MobilKalendar.dc.html": {"x": 1990, "y": 0, "w": 390, "h": 844, "title": "03 Mobil — výber termínu"}
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 5700,
+      "is_interactive": true,
+      "title": "01 Detail objektu — počítač (klikací kalendár)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Mobil.dc.html": {
+      "h": 844,
+      "title": "02 Mobil — detail s pásom ceny",
+      "w": 390,
+      "x": 1520,
+      "y": 0
+    },
+    "MobilKalendar.dc.html": {
+      "h": 844,
+      "title": "03 Mobil — výber termínu",
+      "w": 390,
+      "x": 1990,
+      "y": 0
+    },
+    "MobilKosik.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "04 Mobil — košík v2 (krok 1, klikací)",
+      "w": 390,
+      "x": 2460,
+      "y": 0
+    },
+    "MobilKosikRozpis.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "05 Mobil — košík v2, ťuk na sumu",
+      "w": 390,
+      "x": 2930,
+      "y": 0
+    },
+    "MobilDetailV2.dc.html": {
+      "x": 3400,
+      "y": 0,
+      "w": 390,
+      "h": 6400,
+      "title": "06 Mobil — detail v2 (celá stránka)"
+    },
+    "MobilGaleria.dc.html": {
+      "x": 3870,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "07 Mobil — galéria v2"
+    }
   },
-  "order": ["Main.dc.html", "Mobil.dc.html", "MobilKalendar.dc.html"],
+  "createdOnFiles": {
+    "at": "2026-10-16T13:50:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
   "notes": {
-    "titul": {"x": 0, "y": -300, "text": "Rezervačná stránka — Chalet STRÖMY, návrh v1", "kind": "title1", "maxW": 2380},
-    "fotky": {"x": 1520, "y": 960, "w": 300, "fill": "orange", "text": "Fotky sú zatiaľ zástupné rámy. V aplikácii pôjdu reálne fotky chaletu zo seedu.\n\nCeny služieb sú orientačné, kým ich Jana nepotvrdí."}
+    "galeria": {
+      "fill": "orange",
+      "text": "Galéria a referencie podľa vzoru Bookingu: klik na fotku otvorí prehliadač všetkých fotiek (albumy podľa kategórie, vpravo referencie). Mapa vpravo hore vedie na sekciu Okolie.",
+      "w": 360,
+      "x": -420,
+      "y": 0
+    },
+    "titul": {
+      "kind": "title1",
+      "maxW": 4260,
+      "text": "Rezervačná stránka — Chalet STRÖMY, návrh v2",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "v2": {
+      "fill": "orange",
+      "text": "Košík v2 (návrh): na počítači široký panel — vľavo kroky, vpravo súhrn s cenou a tlačidlom. Na mobile to isté pod sebou: súhrn sa zmení na pevný pás dole, ťuk na sumu vysunie rozpis, istoty a kontakt.",
+      "w": 440,
+      "x": 2460,
+      "y": 960
+    },
+    "mobil2": {
+      "x": 3870,
+      "y": 960,
+      "w": 390,
+      "fill": "orange",
+      "text": "Mobil v2: stránka pod sebou v rovnakom poradí ako počítač. Zelený panel s cenou nahrádza pevný zelený pás dole (termín, suma, Pozrieť pobyt). Galéria cez celú obrazovku: prepínač Fotky / Referencie, albumy, mriežka po 2. Ťuk na fotku → fotka cez celú obrazovku, posun prstom, pás náhľadov dole, zatvorenie krížikom aj gestom späť."
+    },
+    "mobil1": {
+      "x": 1520,
+      "y": 960,
+      "w": 300,
+      "fill": "orange",
+      "text": "Dosky 02 a 03 sú z v1 (staršie). Platí 06 a 07, výber termínu ako 03 (spodné okno)."
+    },
+    "fotky": {
+      "x": 0,
+      "y": -180,
+      "w": 520,
+      "fill": "orange",
+      "text": "Fotky sú zástupné rámy, v aplikácii pôjdu reálne fotky zo seedu. Ceny služieb a vzdialenosti sú orientačné, kým ich Jana nepotvrdí."
+    }
   },
-  "designSystems": []
+  "order": [
+    "Main.dc.html",
+    "Mobil.dc.html",
+    "MobilKalendar.dc.html",
+    "MobilKosik.dc.html",
+    "MobilKosikRozpis.dc.html",
+    "MobilDetailV2.dc.html",
+    "MobilGaleria.dc.html"
+  ],
+  "pages": [],
+  "title": "Rezervačná stránka — návrh"
 }
