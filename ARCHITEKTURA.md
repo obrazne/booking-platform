@@ -212,6 +212,7 @@ KLIENT (tenant)
         ├── POPLATOK (fee) ── automatický alebo voliteľný (zviera, záverečné upratovanie), vratná kaucia zvlášť (nie je tržba)
         ├── ZĽAVA (discount) ── dĺžka pobytu, promo kód; neskôr early bird, last minute, vernostná
         ├── SLUŽBA (service, modul) ── cena: fixne za pobyt / za osobu / za noc / za osobu a noc / za kus
+        ├── REFERENCIA (testimonial) ── vybrané hodnotenia hostí: text (viacjazyčne), meno, mesiac pobytu, zdroj, odkaz, zvýraznená, poradie
         └── iCAL KANÁL ── import z Bookingu/Airbnb, export nášho kalendára (na jednotke)
 
 REZERVÁCIA (hlavička) ── číslo (rad klienta), stav, zdroj (priama / booking / airbnb / ručná / iná), objednávateľ, počty osôb
@@ -228,8 +229,18 @@ OBSADENOSŤ (occupancy) ── jedna tabuľka všetkého, čo blokuje jednotku: 
 ```
 
 - Texty objektu, jednotky, služieb a pravidiel sú **viacjazyčné** (A6). Fotky v úložisku s cestou podľa klienta.
+- **Referencie** (rozhodnutie 16. 10.):
+  - Samostatná tabuľka pri klientovi, voliteľne priradená k objektu (spoločná pre viac objektov). Polia: text, zobrazené meno
+    (celé meno len so súhlasom hosťa, inak meno a iniciála), mesiac a rok pobytu, zdroj (Google / Booking / Airbnb / e-mail / iný),
+    odkaz na zdroj, **zvýraznená** (do košíka, max. 5), poradie, zverejnená.
+  - Zobrazenie: sekcia „Referencie“ na stránke (B7) a v košíku **jedna naraz s ručnými šípkami** (bez automatického posúvania),
+    odkaz **„Všetky referencie“** otvorí zoznam priamo v paneli; až v ňom je odkaz na externú stránku klienta (nastavenie `reviews_url`,
+    nová karta). Hosť tak neodchádza z rozpracovanej rezervácie.
+  - **Pravidlá EÚ o recenziách:** pri referenciách je krátka veta, odkiaľ pochádzajú a ako ich majiteľ vyberá (napr. „Vybrané hodnotenia
+    hostí z Google a e-mailov.“). Žiadne vymyslené hodnotenia ani hviezdičky bez zdroja; „overené“ len pri recenziách z našich pobytov.
+  - Neskôr **modul Recenzie**: žiadosť po pobyte (B6), overená recenzia viazaná na rezerváciu, majiteľ ju môže zverejniť ako referenciu.
 - **Neskôr (dátovo pripravené):** zložená jednotka (celý chalet = apartmán + zvyšok — rezervácia celku blokuje časti a naopak),
-  vekové pásma v rozhraní, cena za osobu, záloha a doplatok, vlastné polia služieb a dostupnosť služieb, recenzie, údaje ubytovaných z check-inu.
+  vekové pásma v rozhraní, cena za osobu, záloha a doplatok, vlastné polia služieb a dostupnosť služieb, overené recenzie z pobytov (modul), údaje ubytovaných z check-inu.
 
 ## B2. Dostupnosť
 

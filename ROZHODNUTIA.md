@@ -2,6 +2,16 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Referencie ako sociálny dôkaz v košíku
+
+- Hosť sa pri rozhodovaní (pobyt za tisíce eur) potrebuje uistiť — preto **fotky a referencie aj v košíku**, nielen na stránke (Martin).
+- Referencie **samostatná tabuľka** (nie zoznam v objekte): dajú sa zdieľať medzi objektmi, zvýrazniť do košíka, zoradiť a neskôr ich
+  doplní modul Recenzie z overených pobytov. Doterajšie `properties.testimonials` sa skopírujú, stĺpec ostane (migrácie len pridávajú).
+- V košíku **jedna naraz, šípky ručne** — automatický karusel ruší a zhoršuje prístupnosť. „Všetky referencie“ najprv **v paneli**,
+  externý odkaz na web klienta až potom (nová karta by hosťa vytiahla z rozpracovanej rezervácie). (Claude, Martin súhlasil so smerom.)
+- **Pravidlá EÚ (smernica Omnibus):** ak obchodník zobrazuje hodnotenia, musí povedať, či a ako overuje, že sú od skutočných hostí.
+  Preto veta o pôvode pri referenciách, žiadne vymyslené hodnotenia ani hviezdičky; mená hostí len so súhlasom (inak iniciála).
+
 ## 2026-10-16 — Stránka objektu zo sekcií, nie builder
 
 - Každé ubytovanie je iné, ale **voľný builder (štýl Elementor) nebude** — klient by si rozbil vzhľad a mobil, stránky by sa rozišli,
