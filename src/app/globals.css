@@ -12,6 +12,8 @@
   --color-line: var(--line);
   --color-ink-soft: var(--ink-soft);
   --color-tooltip: var(--tooltip);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-background: var(--brand-background);
   --font-heading: var(--app-font-heading);
@@ -57,6 +59,8 @@
   --line: #e9e5db;
   --ink-soft: #9a9a93;
   --tooltip: #11212f;
+  --ink: #11212f;
+  --surface: #fbfaf9;
   --app-font-sans: var(--font-geist);
   --app-font-heading: var(--font-geist);
   --background: oklch(1 0 0);

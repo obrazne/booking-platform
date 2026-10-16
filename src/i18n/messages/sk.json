@@ -127,7 +127,12 @@
       "property": "Objekt",
       "allProperties": "Všetky objekty",
       "active": "Aktívna",
-      "empty": "Zatiaľ žiadne služby."
+      "empty": "Zatiaľ žiadne služby.",
+      "section": {
+        "kicker": "Na objednávku",
+        "title": "Pripravíme, čo si želáte.",
+        "subtitle": "Objednáte v košíku."
+      }
     }
   },
   "forms": {
@@ -393,7 +398,15 @@
       "continueToDetails": "Pokračovať k údajom",
       "servicesLine": "K pobytu si môžete objednať: {list}.",
       "dates": "Termíny",
-      "otherDays": "Všetky ostatné dni"
+      "otherDays": "Všetky ostatné dni",
+      "fromNightRich": "od <b>{price}</b> / noc",
+      "fromPersonNightRich": "od <b>{price}</b> / osoba a noc",
+      "viewStay": "Pozrieť pobyt",
+      "capacity": "Kapacita",
+      "bedroomsLabel": "Spálne",
+      "bathroomsLabel": "Kúpeľne",
+      "fromTime": "od {time}",
+      "untilTime": "do {time}"
     },
     "calendar": {
       "prev": "Predchádzajúci mesiac",
@@ -543,6 +556,87 @@
       "stayWithServices": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {services}",
       "selectDates": "Vyberte termín",
       "book": "Rezervovať"
+    },
+    "sections": {
+      "highlights": {
+        "kicker": "Čo vás čaká",
+        "title": "Všetko na mieste.",
+        "subtitle": "Stačí prísť."
+      },
+      "calendar": {
+        "kicker": "Dostupnosť a ceny",
+        "title": "Vyberte si termín.",
+        "subtitle": "Cenu uvidíte hneď."
+      },
+      "prices": {
+        "kicker": "Cenník",
+        "titleWhole": "Cena za celý objekt.",
+        "titleUnit": "Cena za ubytovaciu jednotku.",
+        "titlePerson": "Cena za osobu a noc.",
+        "subtitleWhole": "Nie za osobu.",
+        "subtitlePerson": "Bez skrytých poplatkov.",
+        "perNightFrom": "za noc · {count, plural, one {od # noci} other {od # nocí}}",
+        "perPersonNightFrom": "za osobu a noc · {count, plural, one {od # noci} other {od # nocí}}",
+        "included": "V cene pobytu",
+        "taxIncluded": "daň za ubytovanie v cene",
+        "taxExtra": "daň za ubytovanie {price} za osobu a noc"
+      },
+      "included": {
+        "kicker": "V cene",
+        "title": "V cene pobytu.",
+        "subtitle": "Bez skrytých poplatkov."
+      },
+      "units": {
+        "kicker": "Ubytovanie",
+        "title": "Vyberte si, kde budete bývať.",
+        "subtitle": "Každá jednotka má vlastný kalendár."
+      },
+      "about": {
+        "kicker": "O objekte",
+        "title": "Ako to tu vyzerá.",
+        "subtitle": "A čo nájdete na mieste."
+      },
+      "location": {
+        "kicker": "Okolie",
+        "title": "Kde nás nájdete.",
+        "subtitle": "A čo je v okolí.",
+        "openMap": "Otvoriť mapu"
+      },
+      "testimonials": {
+        "kicker": "Hostia",
+        "title": "Vracajú sa.",
+        "subtitle": "A hovoria prečo."
+      },
+      "faq": {
+        "kicker": "Časté otázky",
+        "title": "Pýtate sa.",
+        "subtitle": "Odpovedáme."
+      },
+      "rules": {
+        "kicker": "Dobré vedieť",
+        "title": "Pravidlá poznáte vopred.",
+        "subtitle": "Bez prekvapení.",
+        "cancellation": "Storno podmienky",
+        "arrival": "Príchod a odchod",
+        "houseRules": "Domáci poriadok",
+        "pets": "Zvieratá",
+        "petsNo": "nie sú povolené",
+        "petsYes": "po dohode",
+        "petsFee": "po dohode, {price}"
+      },
+      "contact": {
+        "kicker": "Kontakt",
+        "title": "Otázky? Odpovedá {name}.",
+        "titleFallback": "Otázky? Radi odpovieme.",
+        "subtitle": "Bez čakania na e-mail."
+      },
+      "cta": {
+        "kicker": "Rezervácia",
+        "title": "Tešíme sa na vás.",
+        "subtitle": "Vyberte si termín.",
+        "choose": "Vybrať termín",
+        "write": "Napísať správu"
+      }
     }
   },
   "reservations": {

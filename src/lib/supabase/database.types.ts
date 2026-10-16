@@ -953,6 +953,57 @@ export type Database = {
           },
         ]
       }
+      property_sections: {
+        Row: {
+          content: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          property_id: string
+          sort: number
+          tenant_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          property_id: string
+          sort?: number
+          tenant_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          property_id?: string
+          sort?: number
+          tenant_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_sections_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_sections_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_terms: {
         Row: {
           property_id: string
@@ -1602,6 +1653,30 @@ export type Database = {
           },
         ]
       }
+      section_templates: {
+        Row: {
+          key: string
+          name: Json
+          property_types: string[]
+          sort: number
+          types: string[]
+        }
+        Insert: {
+          key: string
+          name: Json
+          property_types?: string[]
+          sort?: number
+          types: string[]
+        }
+        Update: {
+          key?: string
+          name?: Json
+          property_types?: string[]
+          sort?: number
+          types?: string[]
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
@@ -2050,6 +2125,14 @@ export type Database = {
     }
     Functions: {
       access_token_key: { Args: never; Returns: string }
+      apply_section_template: {
+        Args: {
+          p_property_id: string
+          p_replace?: boolean
+          p_template?: string
+        }
+        Returns: string
+      }
       arrival_instructions_visible: {
         Args: { p_reservation_id: string }
         Returns: boolean

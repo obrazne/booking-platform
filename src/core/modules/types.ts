@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
+import type { SectionDef } from "@/core/sections/types";
 
 /** Booking lifecycle events modules can react to (A3, hook point 2). Payloads grow with part B. */
 export type BookingEventName =
@@ -34,4 +35,6 @@ export type ModuleManifest = {
   navItems?: readonly ModuleNavItem[];
   slots?: Partial<Record<SlotName, ComponentType<SlotProps>>>;
   events?: Partial<Record<BookingEventName, (event: ModuleEvent) => Promise<void>>>;
+  /** Section types for the property page (B7), e.g. services on request. */
+  sections?: readonly SectionDef[];
 };

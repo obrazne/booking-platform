@@ -58,6 +58,8 @@ export type BookingData = {
     paymentDueHours: number;
     holdMinutes: number;
     cancellationPolicy: string;
+    /** First sentence of the policy for the side panel. */
+    cancellationShort: string | null;
     termsUrl: string | null;
     privacyUrl: string | null;
   };
@@ -383,11 +385,23 @@ export function InlineAvailability() {
   );
 }
 
-/** Sticky panel on the right (desktop). */
+/** "X € per person and night · tax included" for the current selection, or null. */
+function usePerPerson(): string | null {
+  const t = useTranslations("guest");
+  const { data, price, total, money, adults, children } = useBooking();
+  if (!price?.ok) return null;
+  const per = Math.round(total / Math.max(1, adults + children) / Math.max(1, price.nights));
+  return (
+    t("cart.perPersonNight", { price: money(per, 0) }) +
+    (data.catalog.touristTax.included ? ` · ${t("cart.taxIncluded")}` : "")
+  );
+}
+
+/** Small panel next to the intro (visual v1): from-price, dates (jump to the calendar), total, View stay. */
 export function SidePanel() {
   const t = useTranslations("guest");
-  const { data, range, adults, children, price, total, openCart, money, minRate, lines } =
-    useBooking();
+  const { data, range, price, total, openCart, money, minRate } = useBooking();
+  const perPerson = usePerPerson();
   const fmt = new Intl.DateTimeFormat(data.locale, {
     day: "numeric",
     month: "numeric",
@@ -397,90 +411,77 @@ export function SidePanel() {
   const d = (x: IsoDate | null) => (x ? fmt.format(new Date(`${x}T00:00:00Z`)) : "—");
   const ready = Boolean(price?.ok);
   return (
-    <div className="bg-card border-line grid gap-4 rounded-3xl border p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.12)]">
-      <div className="flex items-baseline justify-between gap-2">
-        {minRate !== null ? (
-          <p className="text-lg">
-            {t(
-              data.catalog.pricingModel === "per_person_night"
-                ? "property.fromPersonNight"
-                : "property.fromNight",
-              {
-                price: money(minRate),
-              },
-            )}
-          </p>
-        ) : (
-          <span />
-        )}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="rounded-full"
-          onClick={() => openCart(1)}
-        >
-          {t("property.expand")}
-        </Button>
-      </div>
-      <div className="border-line grid grid-cols-2 overflow-hidden rounded-2xl border">
-        <button
-          type="button"
-          onClick={() => openCart(1)}
-          className="border-line grid gap-0.5 border-r p-3 text-left"
-        >
-          <span className="kicker text-muted-foreground">{t("property.arrival")}</span>
-          <span className="text-sm">{d(range.checkIn)}</span>
-        </button>
-        <button type="button" onClick={() => openCart(1)} className="grid gap-0.5 p-3 text-left">
-          <span className="kicker text-muted-foreground">{t("property.departure")}</span>
-          <span className="text-sm">{d(range.checkOut)}</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => openCart(1)}
-          className="border-line col-span-2 grid gap-0.5 border-t p-3 text-left"
-        >
-          <span className="kicker text-muted-foreground">{t("property.guestsLabel")}</span>
-          <span className="text-sm">{adults + children}</span>
-        </button>
-      </div>
-      {ready ? (
-        <>
-          <dl className="grid gap-1.5 text-sm">
-            {lines.map((l, i) => (
-              <div key={i} className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">
-                  {l.labelKey === "touristTax" ? t("touristTax") : tr(l.name, data.locale)}
-                  {l.kind === "accommodation" ? ` · ${l.quantity}×` : ""}
-                </dt>
-                <dd className="tabular-nums">{money(l.amountCents)}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="border-line flex items-baseline justify-between border-t pt-3">
-            <span className="font-medium">{t("booking.total")}</span>
-            <span className="text-2xl font-semibold tabular-nums">{money(total)}</span>
-          </div>
-        </>
-      ) : (
-        <p
+    <div className="bg-card border-line grid gap-5 rounded-3xl border p-6 shadow-[0_24px_60px_-40px_rgba(17,33,47,0.35)]">
+      {minRate !== null ? (
+        <p className="text-muted-foreground">
+          {t.rich(
+            data.catalog.pricingModel === "per_person_night"
+              ? "property.fromPersonNightRich"
+              : "property.fromNightRich",
+            {
+              price: money(minRate),
+              b: (chunks) => (
+                <span className="text-ink text-3xl font-extrabold tracking-tight">{chunks}</span>
+              ),
+            },
+          )}
+        </p>
+      ) : null}
+      <a href="#termin" className="border-line grid grid-cols-2 rounded-2xl border">
+        <span className="border-line grid gap-1 border-r px-3.5 py-3">
+          <span className="kicker text-muted-foreground text-[10px]">{t("property.arrival")}</span>
+          <span>{d(range.checkIn)}</span>
+        </span>
+        <span className="grid gap-1 px-3.5 py-3">
+          <span className="kicker text-muted-foreground text-[10px]">
+            {t("property.departure")}
+          </span>
+          <span>{d(range.checkOut)}</span>
+        </span>
+      </a>
+      <div className="grid gap-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-muted-foreground">{t("booking.total")}</span>
+          <span className="text-ink text-2xl font-extrabold tracking-tight tabular-nums">
+            {ready ? money(total) : "—"}
+          </span>
+        </div>
+        <span
           className={cn("text-sm", price && !price.ok ? "text-[#b5532f]" : "text-muted-foreground")}
         >
-          {errorsText(t, price) ?? t("booking.chooseDates")}
-        </p>
-      )}
-      <Button
-        type="button"
-        size="lg"
-        className="rounded-full"
-        onClick={() => openCart(ready ? 2 : 1)}
-      >
-        {t("property.continueToDetails")}
+          {perPerson ?? errorsText(t, price) ?? t("booking.chooseDates")}
+        </span>
+      </div>
+      <Button type="button" size="lg" className="h-12 rounded-full" onClick={() => openCart(1)}>
+        {t("property.viewStay")} <ChevronRight />
       </Button>
-      <p className="text-muted-foreground text-xs">
-        {t("booking.payNote", { hours: data.settings.paymentDueHours })}
-      </p>
+      {data.settings.cancellationShort ? (
+        <p className="text-muted-foreground text-center text-sm">
+          {data.settings.cancellationShort}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/** Total and View stay under the page calendar. */
+export function CalendarSummary() {
+  const t = useTranslations("guest");
+  const { price, total, money, openCart } = useBooking();
+  const perPerson = usePerPerson();
+  return (
+    <div className="flex flex-wrap items-center gap-4 sm:justify-end">
+      {price?.ok ? (
+        <div className="grid text-right">
+          <span className="text-ink text-2xl font-extrabold tracking-tight tabular-nums">
+            {money(total)}
+          </span>
+          <span className="text-muted-foreground text-sm">{perPerson}</span>
+        </div>
+      ) : null}
+      <Button type="button" size="lg" className="h-12 rounded-full" onClick={() => openCart(1)}>
+        {t("property.viewStay")} <ChevronRight />
+      </Button>
     </div>
   );
 }

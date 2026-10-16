@@ -114,12 +114,14 @@ Next.js 16 (App Router, strict TS) · Tailwind 4 + shadcn/ui (Radix) · next-int
 | `src/core/theme` | téma klienta → CSS premenné, kontrola kontrastu, ponuka písiem, svetlý/tmavý režim |
 | `src/core/modules` | manifest modulu, register, sloty (`ModuleSlot`), udalosti (`emitBookingEvent`), vypínače |
 | `src/core/admin` | `AdminShell` (pás ikon, pripnutie, mobilné menu), `RecordPanel` (`?panel=typ:id`), `DataListToolbar`, `SortHeader`, `Pagination`, `list-params` |
+| `src/core/booking` | stránka hosťa: katalóg a detail (`catalog.ts`), košík a panely (`guest-booking.tsx`), kalendár, galéria, vytvorenie rezervácie |
+| `src/core/sections` | detail objektu zo sekcií (B7): typy = komponent + zod schéma (`core-sections.tsx`), register (`registry.ts`, + `sections` v manifeste modulu), `PropertySections`; predlohy v tabuľke `section_templates` |
 | `src/modules/<kľúč>/` | moduly; zoznam v `src/modules/index.ts` (jediné miesto) — prvý: `services` |
 | `src/i18n/` | preklady (`messages/sk.json`, menné priestory `modules.<kľúč>` pre moduly) |
 | `src/lib/supabase/` | klienti Supabase (server, prehliadač, admin) a typy DB |
 | `supabase/` | migrácie, pgTAP testy, seed, `config.toml` |
 
-**Nový modul:** priečinok `src/modules/<kľúč>/` s `manifest.ts` (navItems, slots, events, dependsOn), preklady pod `modules.<kľúč>`,
+**Nový modul:** priečinok `src/modules/<kľúč>/` s `manifest.ts` (navItems, slots, events, sections, dependsOn), preklady pod `modules.<kľúč>`,
 riadok v `public.modules` cez migráciu, zápis do `src/modules/index.ts`, stránka v `src/app/admin/<cesta>/page.tsx` s kontrolou `isModuleEnabled`.
 
 ## Priečinky

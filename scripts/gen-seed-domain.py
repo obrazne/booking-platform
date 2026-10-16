@@ -82,6 +82,13 @@ def insert(table: str, conflict: str = "(id)", **row):
     out.append(f"insert into public.{table} ({cols}) values ({vals}) on conflict {conflict} do nothing;")
 
 
+def sections(prop_id: str, template: str | None = None, content: dict | None = None):
+    """Page sections (B7): template by key (or by property type) and content of individual sections."""
+    out.append(f"select public.apply_section_template({q(prop_id)}, {q(template)}, true);")
+    for type_, value in (content or {}).items():
+        out.append(f"update public.property_sections set content = {q(value)} where property_id = {q(prop_id)} and type = {q(type_)};")
+
+
 # ---------------------------------------------------------------------------------------------- Chalet STRÖMY
 P = uid("b", 100)
 U = uid("c", 100)
@@ -153,6 +160,24 @@ for i, (key, name, desc, model, cents, maxq) in enumerate([
     insert("services", id=uid("2", 101 + i), tenant_id=STROMY, property_id=P, key=key, name=sk(name),
            description=sk(desc), price_model=model, amount_cents=cents, max_quantity=maxq, sort=i)
 
+sections(P, "whole", {
+    "intro": {"kicker": sk("Demänovská dolina · komplex Tri Vody")},
+    "highlights": {
+        "title": sk("Wellness, hory a pokoj."), "subtitle": sk("Pre celú partiu."),
+        "items": [
+            {"amenity": "sauna", "title": sk("Fínska sauna"), "note": sk("Po lyžovačke aj po túre")},
+            {"amenity": "virivka", "title": sk("Vonkajšia vírivka"), "note": sk("S výhľadom do doliny")},
+            {"icon": "skibus", "title": sk("Skibus"), "note": sk("Zastavuje pod komplexom, pár minút na Jasnú")},
+            {"amenity": "lyziaren", "note": sk("Na lyže a obuv")},
+            {"icon": "terasa", "title": sk("Dve terasy"), "note": sk("Na raňajky aj na gril")},
+            {"amenity": "parkovanie", "note": sk("2 vyhradené miesta pri chalete")},
+        ],
+    },
+    "photo_band": {"photo": 22},
+    "prices": {"kicker": sk("Cenník")},
+    "cta": {"title": sk("Chalet je pripravený."), "subtitle": sk("Vyberte si termín."), "contactLabel": sk("Napísať Jane")},
+})
+
 insert("tenant_settings", conflict="(tenant_id)", tenant_id=STROMY, iban="SK3112000000198742637541",
        account_holder="Chalet STRÖMY (ukážka)", payment_due_hours=24, hold_minutes=30,
        cancellation_policy={"sk": "30 a viac dní pred nástupom: zdarma. 14 dní pred nástupom: 50 % z ceny. "
@@ -203,6 +228,24 @@ SHOWROOM = [
          units=[("Stan Dunajec", 3), ("Stan Tri koruny", 3), ("Stan Lesnica", 3)]),
 ]
 
+# Showroom templates follow the property type (whole / apartments / rooms / glamping) — the difference is visible.
+SHOWROOM_SECTIONS = {
+    "glamping-luka": {
+        "intro": {"kicker": sk("Pieniny · lúka nad Dunajcom")},
+        "location": {"text": sk("Pltníci, cyklotrasa popri Dunajci a Prielom Dunajca sú na dosah pešo. Obchod je v Červenom Kláštore.")},
+        "faq": {"items": [
+            {"q": sk("Je v stanoch elektrina?"), "a": sk("Áno, zásuvky aj osvetlenie. Kúpeľňa so sprchou je v drevenom domčeku pri stanoch.")},
+            {"q": sk("Čo ak bude pršať?"), "a": sk("Stany sú na drevených podlahách a majú prístrešok s posedením.")},
+        ]},
+    },
+    "penzion-u-haja": {
+        "location": {"text": sk("Pod Roháčmi, desať minút autom od Oravskej priehrady. Ráno vás privíta domáca kuchyňa.")},
+    },
+    "apartmany-panorama": {
+        "location": {"text": sk("Pár krokov od zubačky a turistických chodníkov do Studenej doliny.")},
+    },
+}
+
 for prop in SHOWROOM:
     n = prop["n"]
     pid = uid("b", n)
@@ -217,6 +260,7 @@ for prop in SHOWROOM:
     )
     term_links(pid, UKAZKA, [("property_type", prop["type"]), ("region", prop["region"])]
                + [("amenity", a) for a in prop["amen"]] + [("suitable_for", s) for s in prop["suit"]])
+    sections(pid, None, SHOWROOM_SECTIONS.get(prop["slug"]))
     unit_ids = []
     for j, (uname, cap) in enumerate(prop["units"]):
         unit_id = uid("c", n * 10 + j)
