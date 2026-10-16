@@ -49,7 +49,7 @@ a **prístupový odkaz** na rezerváciu (stav, platobné údaje, žiadosť o sto
 samostatný komponent, košík ako bočný panel v troch krokoch (Váš pobyt → Údaje a želania → Platba), detail služby posunom v paneli,
 kontakt na majiteľa (WhatsApp, telefón), na mobile spodný pás a výber termínu v spodnom okne. Bez akýchkoľvek nátlakových prvkov.
 
-### Z10 — Rezervácie v administrácii
+### Z10 ✅ — Rezervácie v administrácii
 Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × jednotky; rezervácie, blokácie, iCal), prehľad na úvodnej stránke
 (dnešné príchody, odchody, čakajúce platby), potvrdenie platby, zrušenie, žiadosti o storno, **ručná rezervácia**, poznámky, história stavov,
 export CSV. **Plánovaná úloha:** automatické zrušenie po lehote a uvoľnenie termínu.
@@ -155,6 +155,13 @@ Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z10: rezervácie v administrácii — zoznam (stav, zdroj, príchod od–do, hľadanie, triedenie, stránkovanie, CSV) a bočný
+  panel (rozpis, platba s VS a splatnosťou, **Platba prijatá**, Hosť prišiel / Pobyt ukončený, zrušenie s dôvodom, žiadosť hosťa
+  o storno a jej zamietnutie, interné poznámky, história stavov s autorom, súhlasy). Kalendár obsadenosti mesiac × jednotky
+  (rezervácie podľa stavu, blokácie, iCal, kolízie, rozpracované). Prehľad: dnešné príchody a odchody, čakajúce platby, žiadosti o storno.
+  Ručná rezervácia rovnakým výpočtom ceny a tou istou DB funkciou (zdroj „ručná“, potvrdená alebo čaká na platbu, voliteľne zaplatená).
+  **Automatické zrušenie po lehote: pg_cron v databáze každých 5 minút** (`expire_pending_reservations`), nezávisle od webu —
+  Vercel Hobby dovoľuje cron len raz denne. Overené: potvrdenie platby 2026-0001, ručná 2026-0003. (Claude Code)
 - 2026-10-16 — Vizuál stránky hosťa **v1 schválený** → `docs/navrhy/stranka-hosta/` + `docs/vizual-stranka-hosta.md`; úloha Z15. (Claude chat)
 - 2026-10-16 — Z9 prerobená podľa schváleného vizuálu (`docs/vizual-stranka-hosta.md`): Roboto + JetBrains Mono, kicker, nadpis
   z dvoch viet (`properties.tagline`), linky `#e9e5db`, karty 24, jeden akcent (STRÖMY smrekovo zelená). Kalendár: sezóny podfarbené
