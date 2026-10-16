@@ -6,12 +6,14 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
-  kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
-  (captcha Cloudflare Turnstile je zapojená).
-- **Ďalší krok pre Claude Code:** fronta Z20 → Z22 (potvrdenie rezervácie, ukážkové dáta, prehliadka „Čo je nové“). Veci na web klienta zatiaľ nie.
-- **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
-- **Claude chat:** kontrola výsledkov Z16–Z19, doklady, obchodný model, otázky pre Janu.
+- **Kde sme (16. 10. večer):** fronta Z1–Z22 hotová na stagingu — MVP pre Chalet STRÖMY + showroom, stránka hosťa podľa vizuálu v2/v2.1
+  (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
+  a **prehliadka „Čo je nové“** pre majiteľa aj správcu. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
+  nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
+- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na zadanie z Claude chatu.
+- **Ďalší krok pre Martina:** preklikať staging s ukážkovými dátami (prehliadka sa otvorí po prihlásení) a spísať pripomienky;
+  odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
+- **Claude chat:** spracovať Martinove pripomienky, návrh administrácie majiteľa (kalendár, rezervácie) na plátne, obchodný model, príprava ukážky pre Janu.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
