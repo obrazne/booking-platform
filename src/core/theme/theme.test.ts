@@ -31,6 +31,6 @@ describe("theme", () => {
   it("derives the button text colour", () => {
     const vars = themeToCssVariables({ ...DEFAULT_THEME, primaryColor: "#ffd60a" });
     expect(vars["--primary-foreground"]).toBe("#111111");
-    expect(vars["--radius"]).toBe("0.75rem");
+    expect(vars["--radius"]).toBe("1rem");
   });
 });

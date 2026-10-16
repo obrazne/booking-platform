@@ -17,6 +17,8 @@ export type Season = {
   /** Allowed ISO weekdays of arrival; null = any. */
   arrivalDays: number[] | null;
   ranges: SeasonRange[];
+  /** Tint in the guest calendar (optional, #rrggbb). */
+  color?: string | null;
 };
 
 export type Fee = {

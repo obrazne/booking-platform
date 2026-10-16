@@ -1,4 +1,13 @@
-import { Geist, Geist_Mono, Inter, Lora, Manrope, Playfair_Display } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  JetBrains_Mono,
+  Lora,
+  Manrope,
+  Playfair_Display,
+  Roboto,
+} from "next/font/google";
 import type { FontKey } from "./theme";
 
 // Every selectable font is registered once; only the ones a page actually uses are downloaded by the browser.
@@ -17,7 +26,27 @@ const playfair = Playfair_Display({
   preload: false,
 });
 
-export const fontVariableClasses = [geist, geistMono, inter, manrope, lora, playfair]
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "700", "800"],
+});
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin", "latin-ext"],
+  preload: false,
+});
+
+export const fontVariableClasses = [
+  geist,
+  geistMono,
+  inter,
+  manrope,
+  lora,
+  playfair,
+  roboto,
+  jetbrainsMono,
+]
   .map((f) => f.variable)
   .join(" ");
 
@@ -27,4 +56,5 @@ export const FONT_LABELS: Record<FontKey, string> = {
   manrope: "Manrope",
   lora: "Lora",
   playfair: "Playfair Display",
+  roboto: "Roboto",
 };

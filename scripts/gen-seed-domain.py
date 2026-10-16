@@ -100,6 +100,7 @@ property_row(
         "V interiéri je zakázané fajčiť a používať otvorený oheň. Zvieratá po dohode za poplatok."
     ),
     included=sk("Posteľná bielizeň, uteráky, župany, plachty do sauny, wellness, energie, Wi-Fi, parkovanie a online check-in. Žiadne skryté poplatky."),
+    tagline=sk("Celý len pre vás."),
     testimonials=[
         {"author": "Elizabeth Kohutova", "text": "Toto miesto… nádherné! Skvelá lokalita a služby na vysokej úrovni. Strávili sme tu pár dní s rodinou a som veľmi nadšená! Určite sa vrátime."},
         {"author": "Patricia Vittek", "text": "Neviem si predstaviť lepšie miesto na oddych a vypnutie hlavy. Atmosféra hôr je jednoducho TOP!"},
@@ -121,10 +122,10 @@ term_links(P, STROMY, [("property_type", "chalet"), ("region", "liptov"), ("amen
                        ("suitable_for", "skupiny"), ("suitable_for", "lyziari"), ("suitable_for", "so-zvieratom")])
 
 seasons = [
-    (uid("d", 101), "Celoročne", 0, True, 2, 70000, "#8e8e93", []),
-    (uid("d", 102), "Zimná sezóna", 10, False, 3, 85000, "#0071e3",
+    (uid("d", 101), "Celoročne", 0, True, 2, 70000, None, []),
+    (uid("d", 102), "Zimná sezóna", 10, False, 3, 85000, "#5b8db8",
      [("2000-12-19", "2000-12-22"), ("2000-12-27", "2000-12-30"), ("2000-01-02", "2000-02-28")]),
-    (uid("d", 103), "Vianoce a Silvester", 20, False, 4, 120000, "#c9302c",
+    (uid("d", 103), "Vianoce a Silvester", 20, False, 4, 120000, "#c8873a",
      [("2000-12-23", "2000-12-26"), ("2000-12-31", "2000-01-01")]),
 ]
 for i, (sid, name, prio, default, min_n, rate, color, ranges) in enumerate(seasons):
@@ -156,7 +157,9 @@ insert("tenant_settings", conflict="(tenant_id)", tenant_id=STROMY, iban="SK3112
        account_holder="Chalet STRÖMY (ukážka)", payment_due_hours=24, hold_minutes=30,
        cancellation_policy={"sk": "30 a viac dní pred nástupom: zdarma. 14 dní pred nástupom: 50 % z ceny. "
                                   "10 dní a menej pred nástupom alebo nedostavenie sa: 100 % z ceny."},
-       arrival_email_days_before=3, owner_notification_email="info@obrazne.sk", vat_payer=False)
+       arrival_email_days_before=3, owner_notification_email="info@obrazne.sk", vat_payer=False,
+       website_url="https://www.chaletstromy.sk", contact_name="Jana", contact_phone="+421 905 109 393",
+       whatsapp_phone="421905109393")
 
 # ---------------------------------------------------------------------------------------------- Showroom (fictional)
 SHOWROOM = [

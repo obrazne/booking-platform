@@ -8,7 +8,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--app-font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains), var(--font-geist-mono), ui-monospace, monospace;
+  --color-line: var(--line);
+  --color-ink-soft: var(--ink-soft);
+  --color-tooltip: var(--tooltip);
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-background: var(--brand-background);
   --font-heading: var(--app-font-heading);
@@ -51,6 +54,9 @@
 }
 
 :root {
+  --line: #e9e5db;
+  --ink-soft: #9a9a93;
+  --tooltip: #11212f;
   --app-font-sans: var(--font-geist);
   --app-font-heading: var(--font-geist);
   --background: oklch(1 0 0);
@@ -134,5 +140,25 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  /* Kicker above headings (approved guest visual). */
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

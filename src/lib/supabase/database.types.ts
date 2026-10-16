@@ -657,6 +657,7 @@ export type Database = {
           status: string
           street: string | null
           summary: Json
+          tagline: Json
           tenant_id: string
           testimonials: Json
           tourist_tax_cents: number
@@ -692,6 +693,7 @@ export type Database = {
           status?: string
           street?: string | null
           summary?: Json
+          tagline?: Json
           tenant_id: string
           testimonials?: Json
           tourist_tax_cents?: number
@@ -727,6 +729,7 @@ export type Database = {
           status?: string
           street?: string | null
           summary?: Json
+          tagline?: Json
           tenant_id?: string
           testimonials?: Json
           tourist_tax_cents?: number
@@ -1421,6 +1424,7 @@ export type Database = {
           amount_cents: number
           description: Json
           id: string
+          image_path: string | null
           key: string | null
           max_quantity: number | null
           name: Json
@@ -1435,6 +1439,7 @@ export type Database = {
           amount_cents: number
           description?: Json
           id?: string
+          image_path?: string | null
           key?: string | null
           max_quantity?: number | null
           name: Json
@@ -1449,6 +1454,7 @@ export type Database = {
           amount_cents?: number
           description?: Json
           id?: string
+          image_path?: string | null
           key?: string | null
           max_quantity?: number | null
           name?: Json
@@ -1562,6 +1568,8 @@ export type Database = {
           arrival_email_days_before: number
           bic: string | null
           cancellation_policy: Json
+          contact_name: string | null
+          contact_phone: string | null
           hold_minutes: number
           iban: string | null
           owner_notification_email: string | null
@@ -1571,12 +1579,16 @@ export type Database = {
           terms_url: string | null
           updated_at: string
           vat_payer: boolean
+          website_url: string | null
+          whatsapp_phone: string | null
         }
         Insert: {
           account_holder?: string | null
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_policy?: Json
+          contact_name?: string | null
+          contact_phone?: string | null
           hold_minutes?: number
           iban?: string | null
           owner_notification_email?: string | null
@@ -1586,12 +1598,16 @@ export type Database = {
           terms_url?: string | null
           updated_at?: string
           vat_payer?: boolean
+          website_url?: string | null
+          whatsapp_phone?: string | null
         }
         Update: {
           account_holder?: string | null
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_policy?: Json
+          contact_name?: string | null
+          contact_phone?: string | null
           hold_minutes?: number
           iban?: string | null
           owner_notification_email?: string | null
@@ -1601,6 +1617,8 @@ export type Database = {
           terms_url?: string | null
           updated_at?: string
           vat_payer?: boolean
+          website_url?: string | null
+          whatsapp_phone?: string | null
         }
         Relationships: [
           {
@@ -1884,6 +1902,7 @@ export type Database = {
           unit_id: string
         }[]
       }
+      is_active_tenant: { Args: { p_tenant_id: string }; Returns: boolean }
       is_module_enabled: {
         Args: { p_module_key: string; p_tenant_id: string }
         Returns: boolean
@@ -1945,6 +1964,15 @@ export type Database = {
           locales: string[]
           name: string
           slug: string
+        }[]
+      }
+      tenant_public_contact: {
+        Args: { p_tenant_id: string }
+        Returns: {
+          contact_name: string
+          contact_phone: string
+          website_url: string
+          whatsapp_phone: string
         }[]
       }
       tenant_theme: {

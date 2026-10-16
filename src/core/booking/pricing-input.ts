@@ -31,6 +31,7 @@ export function toSeasons(rows: SeasonRow[]): Season[] {
     minNights: s.min_nights,
     maxNights: s.max_nights,
     arrivalDays: s.arrival_days,
+    color: s.color,
     ranges: s.season_ranges.map((r) => ({
       start: r.start_date,
       end: r.end_date,

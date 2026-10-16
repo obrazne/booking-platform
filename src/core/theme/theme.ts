@@ -1,7 +1,7 @@
 import { contrastRatio, isHexColor, readableTextOn } from "./contrast";
 
 /** Fonts a client can choose from (A12: limited set so the look cannot be broken). */
-export const FONT_KEYS = ["geist", "inter", "manrope", "lora", "playfair"] as const;
+export const FONT_KEYS = ["geist", "inter", "manrope", "lora", "playfair", "roboto"] as const;
 export type FontKey = (typeof FONT_KEYS)[number];
 
 export const COLOR_MODES = ["light", "dark", "system"] as const;
@@ -19,16 +19,19 @@ export type Theme = {
   colorMode: ColorMode;
 };
 
-/** Platform default — calm, Apple-like: neutral surfaces, one accent, rounded corners (A12). */
+/**
+ * Platform default for booking pages — approved guest visual (docs/vizual-stranka-hosta.md): Roboto, one spruce-green
+ * accent, white surfaces, thin warm lines, generous rounding (A12).
+ */
 export const DEFAULT_THEME: Theme = {
   logoPath: null,
-  primaryColor: "#0071e3",
+  primaryColor: "#2f5d50",
   secondaryColor: "#6e6e73",
   backgroundColor: "#ffffff",
-  headingFont: "geist",
-  bodyFont: "geist",
-  radius: 12,
-  colorMode: "system",
+  headingFont: "roboto",
+  bodyFont: "roboto",
+  radius: 16,
+  colorMode: "light",
 };
 
 export type ThemeIssue =

@@ -59,7 +59,7 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   if (!p) notFound();
 
   const servicesOn = await isModuleEnabledPublic(tenant.id, "services");
-  const [{ data: discounts }, { data: services }, settings] = await Promise.all([
+  const [{ data: discounts }, { data: services }, settings, { data: contact }] = await Promise.all([
     supabase
       .from("discounts")
       .select("*")
@@ -72,6 +72,7 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
       .eq("tenant_id", tenant.id)
       .or(`property_id.eq.${p.id},property_id.is.null`),
     getGuestSettings(tenant.id),
+    supabase.rpc("tenant_public_contact", { p_tenant_id: tenant.id }).maybeSingle(),
   ]);
 
   const units = [...p.units].filter((u) => u.active).sort((a, b) => a.sort - b.sort);
@@ -107,6 +108,8 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
     seasons,
     catalogs,
     settings,
+    serviceRows: servicesOn ? (services ?? []).filter((x) => x.active) : [],
+    contact: contact ?? null,
   };
 });
 
