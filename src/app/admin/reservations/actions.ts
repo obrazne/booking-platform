@@ -17,8 +17,10 @@ import type { Json } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { priceContributorsFor } from "@/modules/price-contributors";
 import { toPricingInput } from "@/core/booking/pricing-input";
+import { flushEmails, notifyReservationCreated } from "@/core/booking/notify";
 
 function refresh(id?: string) {
+  void flushEmails();
   revalidatePath("/admin/reservations");
   revalidatePath("/admin/calendar");
   revalidatePath("/admin");
@@ -185,6 +187,7 @@ export async function createManualReservation(
     })
     .single();
   if (error) return fail(dbErrorKey(error));
+  await notifyReservationCreated(data.id, data.access_token).catch(() => undefined);
   refresh();
   redirect(`/admin/reservations?panel=reservation:${data.id}`);
 }

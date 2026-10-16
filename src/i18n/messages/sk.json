@@ -641,5 +641,67 @@
       "conflict": "Kolízia"
     },
     "empty": "Žiadne jednotky."
+  },
+  "emails": {
+    "greeting": "Dobrý deň, {name},",
+    "signature": "S pozdravom\n{tenant}",
+    "openReservation": "Zobraziť rezerváciu",
+    "stay": "Pobyt",
+    "guests": "Hostia",
+    "total": "Spolu",
+    "number": "Číslo rezervácie",
+    "payment": {
+      "title": "Platobné údaje",
+      "iban": "IBAN",
+      "holder": "Príjemca",
+      "vs": "Variabilný symbol",
+      "amount": "Suma",
+      "due": "Splatnosť",
+      "qr": "QR kód na platbu (PAY by square) nájdete v prílohe alebo naskenujte z obrázka."
+    },
+    "guest_received": {
+      "subject": "Rezervácia {number} prijatá — {property}",
+      "intro": "ďakujeme za rezerváciu. Termín vám držíme do {due}. Po prijatí platby vám rezerváciu potvrdíme."
+    },
+    "guest_reminder": {
+      "subject": "Pripomienka platby — rezervácia {number}",
+      "intro": "pripomíname, že rezervácia čaká na platbu. Ak platba nepríde do {due}, rezervácia sa automaticky zruší a termín uvoľní."
+    },
+    "guest_confirmed": {
+      "subject": "Rezervácia {number} je potvrdená",
+      "intro": "vaša rezervácia je potvrdená. Tešíme sa na vás! Pred príchodom vám pošleme pokyny."
+    },
+    "guest_cancelled": {
+      "subject": "Rezervácia {number} bola zrušená",
+      "intro": "vaša rezervácia bola zrušená.",
+      "expired": "Platba neprišla v lehote, preto sa rezervácia automaticky zrušila a termín sa uvoľnil.",
+      "reason": "Dôvod: {reason}"
+    },
+    "guest_arrival": {
+      "subject": "Pokyny k príchodu — {property}",
+      "intro": "blíži sa váš pobyt. Tu sú informácie k príchodu.",
+      "checkIn": "Príchod od {time}, odchod do {time2}.",
+      "address": "Adresa: {address}"
+    },
+    "owner_new": {
+      "subject": "Nová rezervácia {number} — {guest}",
+      "intro": "prišla nová rezervácia."
+    },
+    "owner_expired": {
+      "subject": "Lehota na platbu vypršala — {number}",
+      "intro": "rezervácia {number} ({guest}) nebola zaplatená v lehote. Systém ju zrušil a termín uvoľnil."
+    },
+    "owner_cancel_request": {
+      "subject": "Hosť žiada o zrušenie — {number}",
+      "intro": "hosť {guest} žiada o zrušenie rezervácie {number}.",
+      "note": "Dôvod hosťa: {note}",
+      "decide": "O zrušení rozhodnete v administrácii."
+    },
+    "owner_ical_conflict": {
+      "subject": "Kolízia v kalendári — {property}",
+      "intro": "pri synchronizácii kalendára {channel} sa objavila udalosť, ktorá sa prekrýva s existujúcou rezerváciou alebo blokáciou ({dates}). Nič sme neprepísali — skontrolujte to, prosím, v administrácii."
+    },
+    "ownerGreeting": "Dobrý deň,",
+    "openAdmin": "Otvoriť v administrácii"
   }
 }

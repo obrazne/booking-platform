@@ -1,14 +1,22 @@
 import "server-only";
+import { after } from "next/server";
+import { processEmailQueue } from "@/core/email/worker";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
- * E-mail notifications about a new reservation (B6). Filled in by Z11 (transactional e-mail queue);
- * until then a no-op so the booking flow is complete.
+ * After a reservation is created: keep the encrypted access token for links in later e-mails and send the queued
+ * messages right after the response (the database queued them; the minute worker is the fallback).
  */
-export async function notifyReservationCreated(reservationId: string): Promise<void> {
-  void reservationId;
+export async function notifyReservationCreated(
+  reservationId: string,
+  accessToken: string,
+): Promise<void> {
+  const admin = createAdminClient();
+  await admin.rpc("store_access_token", { p_reservation_id: reservationId, p_token: accessToken });
+  after(() => processEmailQueue().then(() => undefined));
 }
 
-/** E-mail to the owner that a guest asked for cancellation (B6). Filled in by Z11. */
-export async function notifyCancellationRequested(token: string): Promise<void> {
-  void token;
+/** Any status change done by staff or the guest: send what the database queued. */
+export async function flushEmails(): Promise<void> {
+  after(() => processEmailQueue().then(() => undefined));
 }

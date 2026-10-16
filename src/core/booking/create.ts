@@ -200,7 +200,7 @@ export async function createGuestReservation(
     .single();
   if (error) return { error: error.code === "23P01" ? "unavailable" : "generic" };
 
-  await notifyReservationCreated(data.id).catch(() => undefined);
+  await notifyReservationCreated(data.id, data.access_token).catch(() => undefined);
   redirect(`/r/${data.access_token}`);
 }
 

@@ -191,6 +191,69 @@ export type Database = {
           },
         ]
       }
+      email_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          payload: Json
+          provider_id: string | null
+          reservation_id: string | null
+          send_after: string
+          sent_at: string | null
+          status: string
+          tenant_id: string
+          to_email: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind: string
+          last_error?: string | null
+          payload?: Json
+          provider_id?: string | null
+          reservation_id?: string | null
+          send_after?: string
+          sent_at?: string | null
+          status?: string
+          tenant_id: string
+          to_email?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          payload?: Json
+          provider_id?: string | null
+          reservation_id?: string | null
+          send_after?: string
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string
+          to_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_outbox_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_outbox_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fees: {
         Row: {
           active: boolean
@@ -1200,6 +1263,7 @@ export type Database = {
       }
       reservations: {
         Row: {
+          access_token_enc: string | null
           access_token_hash: string
           adults: number
           cancellation_request_note: string | null
@@ -1231,6 +1295,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_token_enc?: string | null
           access_token_hash: string
           adults?: number
           cancellation_request_note?: string | null
@@ -1262,6 +1327,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_token_enc?: string | null
           access_token_hash?: string
           adults?: number
           cancellation_request_note?: string | null
@@ -1865,6 +1931,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      access_token_key: { Args: never; Returns: string }
       cancel_reservation: {
         Args: { p_reason?: string; p_reservation_id: string }
         Returns: undefined
@@ -1877,6 +1944,30 @@ export type Database = {
           p_to: string
         }
         Returns: undefined
+      }
+      claim_email_jobs: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          payload: Json
+          provider_id: string | null
+          reservation_id: string | null
+          send_after: string
+          sent_at: string | null
+          status: string
+          tenant_id: string
+          to_email: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "email_outbox"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       confirm_payment: {
         Args: { p_reservation_id: string }
@@ -1898,7 +1989,18 @@ export type Database = {
         Args: { p_reservation_id: string }
         Returns: undefined
       }
+      enqueue_scheduled_emails: { Args: never; Returns: number }
       expire_pending_reservations: { Args: never; Returns: string[] }
+      finish_email_job: {
+        Args: {
+          p_error: string
+          p_id: string
+          p_ok: boolean
+          p_provider_id: string
+          p_to: string
+        }
+        Returns: undefined
+      }
       free_units: {
         Args: { p_check_in: string; p_check_out: string; p_tenant_id: string }
         Returns: {
@@ -1924,6 +2026,7 @@ export type Database = {
         Args: { p_tenant_id: string }
         Returns: string
       }
+      ping_job_worker: { Args: never; Returns: undefined }
       platform_create_tenant: {
         Args: {
           p_country?: string
@@ -1953,6 +2056,10 @@ export type Database = {
         Args: { p_note?: string; p_token: string }
         Returns: boolean
       }
+      reservation_access_token: {
+        Args: { p_reservation_id: string }
+        Returns: string
+      }
       reservation_by_token: { Args: { p_token: string }; Returns: Json }
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }
@@ -1961,6 +2068,10 @@ export type Database = {
       stay_nights: {
         Args: { p_check_in: string; p_check_out: string; p_unit_id: string }
         Returns: unknown
+      }
+      store_access_token: {
+        Args: { p_reservation_id: string; p_token: string }
+        Returns: undefined
       }
       tenant_by_host: {
         Args: { p_host: string }
