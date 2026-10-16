@@ -344,6 +344,29 @@ export type Database = {
         Returns: boolean;
       };
       my_tenant_ids: { Args: never; Returns: string[] };
+      platform_create_tenant: {
+        Args: {
+          p_country?: string;
+          p_currency?: string;
+          p_hostname: string;
+          p_name: string;
+          p_slug: string;
+        };
+        Returns: string;
+      };
+      platform_set_module: {
+        Args: {
+          p_module_key: string;
+          p_status: string;
+          p_tenant_id: string;
+          p_trial_ends_at?: string;
+        };
+        Returns: undefined;
+      };
+      platform_set_tenant_status: {
+        Args: { p_status: string; p_tenant_id: string };
+        Returns: undefined;
+      };
       tenant_by_host: {
         Args: { p_host: string };
         Returns: {

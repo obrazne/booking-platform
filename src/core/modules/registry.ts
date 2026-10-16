@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { isEnabledStatus, resolveEnabled } from "./resolve";
 import type { BookingEventName, ModuleEvent, ModuleManifest, SlotName } from "./types";
 
+/** All modules known to the code (control center lists them with their switches). */
+export function listModules(): readonly ModuleManifest[] {
+  return MODULES;
+}
+
 export function getModule(key: string): ModuleManifest | undefined {
   return MODULES.find((m) => m.key === key);
 }
