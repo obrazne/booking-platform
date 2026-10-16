@@ -302,6 +302,27 @@ blokácie · iCal kanály · nastavenia (platobné údaje a lehota, storno podmi
 - Daň za ubytovanie podľa B3. Doklady cez adaptér fakturačného nástroja klienta (A5) — keď bude známy Janin nástroj.
 - Právne dokumenty (VOP, storno, ochrana údajov) dodáva klient (príp. právna firma); systém ich odkazuje a ukladá znenie súhlasu.
 
+## B10. Zóna hosťa (účet hosťa)
+
+Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia ide aj bez účtu; účet je pohodlie pre opakovaných hostí.
+
+- **Vstup:** prístupový odkaz z e-mailu (bez účtu, len k jednej rezervácii) alebo **účet** — prihlásenie kódom/odkazom na e-mail
+  (bez hesla, menej trenia). Účet vznikne voliteľne po rezervácii („Uložiť si údaje pre ďalšie pobyty“) alebo neskôr; existujúce rezervácie
+  sa priradia cez **overený e-mail**.
+- **Účet hosťa je u konkrétneho klienta** (na jeho doméne, s `tenant_id`), nie spoločný pre celú platformu. Dôvod: za údaje hostí zodpovedá
+  každý klient zvlášť, platforma ich nesmie spájať naprieč klientmi. Ten istý e-mail tak môže mať účet u dvoch ubytovateľov.
+- **Obsah zóny:**
+  - nadchádzajúce a minulé pobyty (stav, termín, rozpis, platobné údaje kým nie je zaplatené)
+  - **dokumenty od majiteľa:** spoločné pri objekte (napr. ubytovací poriadok) a pre konkrétnu rezerváciu; súkromné úložisko s dočasnými
+    odkazmi (nie verejné adresy)
+  - doklady a faktúry (z fakturačného adaptéra)
+  - **pokyny k príchodu a prístupové kódy** — viditeľné až pri potvrdenom pobyte, X dní pred príchodom
+  - **„Rezervovať znova“** — ten istý objekt s predvyplnenými hosťami a službami, hosť vyberie len termín
+  - **správy s majiteľom** pri rezervácii (modul Správy, A15/B6) — dovtedy kontakt WhatsApp/telefón
+  - žiadosť o storno, úprava kontaktných údajov, **správa marketingového súhlasu** (odvolanie jedným klikom)
+- Vzhľad v téme klienta (A12), rovnaký jazyk ako košík (`docs/vizual-stranka-hosta.md`). Podklad z WordPress fázy: `docs/archiv-wp/ucet-hosta-navrh.md`.
+- **MVP:** prístupový odkaz k rezervácii. **Účet a zóna hneď po MVP** (Fáza 4); dátový model pripravený už teraz.
+
 ---
 
 # ČASŤ C — MVP: CHALET STRÖMY
@@ -331,7 +352,8 @@ blokácie · iCal kanály · nastavenia (platobné údaje a lehota, storno podmi
 | služby (modul) bez doplňujúcich polí, poplatok za zviera | vlastné polia a dostupnosť služieb, upsell pred príchodom |
 | prevod s QR, 24 h lehota, automatické zrušenie, ručné potvrdenie platby | Stripe, záloha a doplatok, párovanie platieb z banky |
 | e-maily z B6 (okrem recenzie) | SMS, push notifikácie (moduly) |
-| administrácia z B8, ručná rezervácia, CSV | štatistiky, online check-in, účet hosťa, recenzie |
+| administrácia z B8, ručná rezervácia, CSV | štatistiky, online check-in, recenzie |
+| prístupový odkaz k rezervácii (stav, platba, storno) | účet a zóna hosťa (B10) — hneď po MVP |
 | iCal export a import s upozornením na kolíziu | API prepojenie s OTA |
 | stránka hosťa pre klienta s webom + katalóg pre showroom | vkladací widget (hneď po MVP, úloha 3e) |
 | — | doklady cez fakturačný nástroj (keď bude známy Janin nástroj) |

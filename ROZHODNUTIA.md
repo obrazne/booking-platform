@@ -2,6 +2,14 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Zóna hosťa
+
+- Hosť bude mať **účet a vlastnú zónu** (Martin): pobyty, PDF od majiteľa, doklady, pokyny k príchodu, zopakovanie rezervácie, správy majiteľke.
+  Rezervácia ostáva možná aj bez účtu.
+- **Účet je u konkrétneho klienta, nie spoločný na platforme** — za údaje hostí zodpovedá každý ubytovateľ zvlášť a platforma ich nesmie
+  spájať (Claude, technické/právne). Prihlásenie bez hesla (kód/odkaz na e-mail).
+- V MVP prístupový odkaz, účet a zóna hneď po MVP; dátový model sa pripraví hneď (Z13).
+
 ## 2026-10-16 — Ručné rezervácie a provízia
 
 - **Ručná rezervácia zapísaná v systéme sa ráta do provízie** rovnako ako priama rezervácia (Martin). Majiteľ dostane všetky výhody

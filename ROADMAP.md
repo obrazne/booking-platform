@@ -64,6 +64,12 @@ Export per jednotka (tajný odkaz), import kanálov (Booking, Airbnb) s pravidel
 majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného behu. Na konci: všetko nasadené na staging a Martinovi krátky postup,
 čo si preklikať (rezervácia ako hosť na STRÖMY, potvrdenie platby, kalendár, iCal).
 
+### Z13 — Príprava dátového modelu na zónu hosťa (B10)
+Len dáta a testy, bez rozhrania: hosť ako záznam klienta (`tenant_id`, e-mail jedinečný v rámci klienta), voliteľné prepojenie na prihlásenie
+(Supabase Auth), priradenie rezervácií cez overený e-mail, dokumenty pri objekte a pri rezervácii v súkromnom úložisku (dočasné odkazy),
+viditeľnosť prístupových kódov až pri potvrdenom pobyte. RLS: hosť vidí len svoje rezervácie u daného klienta. Ak už niečo z toho Z7 urobila,
+len to over a doplň chýbajúce.
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -100,6 +106,7 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 
 ## Fáza 4 — Po spustení 🔧 + 🧠
 - [ ] Stripe (karta), záloha a doplatok
+- [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
 - [ ] Vkladací widget, ďalšie moduly podľa katalógu
 
@@ -125,6 +132,7 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Zóna hosťa (B10) v architektúre, Fáza 4 a príprava dát Z13. (Claude chat)
 - 2026-10-16 — Schválený vizuál stránky hosťa → `docs/vizual-stranka-hosta.md`, odkaz v Z9. (Claude chat)
 - 2026-10-16 — Z8: administrácia objektov (zoznam, založenie s predvolenou jednotkou a sezónou; editor s kartami Údaje — údaje, texty
   viacjazyčne, vybavenie z číselníkov, neverejné pokyny k príchodu; Fotky — nahrávanie so zmenšením v prehliadači na 2 000 px, popis,
