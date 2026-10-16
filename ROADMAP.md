@@ -8,7 +8,7 @@
 ## Aktuálne
 - **Kde sme (16. 10.):** fronta Z1–Z15 hotová na stagingu https://booking-platform-obrazne.vercel.app — kostra platformy a MVP pre Chalet STRÖMY
   + showroom (rezervácia, platba prevodom s QR, e-maily, iCal, administrácia, stránka podľa vizuálu v1). Chýba: doklady, nasadenie u Jany (3d, 3e).
-- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie od Claude chatu.
+- **Ďalší krok pre Claude Code:** fronta Z16 → Z19 (kontrola pred ukážkou, vyhľadávací pás, zóna hosťa, sekcie v administrácii).
 - **Ďalší krok pre Martina:** preklikať staging (stránka STRÖMY podľa vizuálu v1, košík, rezervácia, administrácia); odpovedať na otázky nižšie.
 - **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z15, ďalšia fronta (rozhranie sekcií, zóna hosťa, doklady).
 
@@ -16,8 +16,47 @@
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
 po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom `/dalej`. Keď sú všetky ✅, sekciu vyprázdni.*
 
-*Fronta je prázdna. Hotové Z1–Z15 (analýza, kostra platformy, MVP Chalet STRÖMY: doména, administrácia, stránka hosťa, rezervácie,
+*Hotové Z1–Z15 (analýza, kostra platformy, MVP Chalet STRÖMY: doména, administrácia, stránka hosťa, rezervácie,
 e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — detail v Denníku a histórii Gitu.*
+
+**Kontext pre frontu Z16–Z19:** MVP je postavené. Teraz ho skontrolujeme pred ukážkou Jane a staviame veci „hneď po MVP“ z `ARCHITEKTURA.md`
+(časť C → *Neskôr*, A17, B7, B10). Rovnaké pravidlá ako doteraz (`tenant_id` + RLS + testy, centy, preklady, téma, A18). Stále len staging.
+
+### Z16 — Kontrola pred ukážkou
+Cieľ: Jana uvidí stránku bez chýb. Výstup `docs/kontrola-mvp.md` (čo sa skontrolovalo, nálezy, čo opravené, čo ostáva).
+1. **Automatické testy prehliadačom (Playwright):** rezervácia ako hosť na STRÖMY na počítači aj na mobile (390 px) — termín v kalendári,
+   košík 3 kroky, služba, súhlasy, platobné údaje s QR, prístupový odkaz, žiadosť o storno; administrácia — Platba prijatá, ručná rezervácia,
+   blokácia, kolízia z iCal. Spúšťať lokálne proti stagingu; do CI len ak to ide bez platených služieb.
+2. **Nezávislá kontrola bezpečnosti** samostatným agentom, ktorý kód nepísal: RLS na každej tabuľke s `tenant_id`, oprávnenia v serverových
+   akciách a API (worker, iCal, prístupové tokeny), nič tajné v kóde pre prehliadač, ochrana formulárov proti robotom a zahlteniu, hlavičky.
+3. **Prístupnosť a mobil:** kalendár ovládateľný klávesnicou a čítačkou, kontrast, žiadne vodorovné rolovanie na 390 px, veľkosti tlačidiel.
+4. **Rýchlosť:** veľkosti a formáty fotiek, načítanie detailu na mobile (Lighthouse), zbytočné dotazy do databázy.
+Jasné chyby oprav hneď; čo mení správanie pre hosťa alebo majiteľa, zapíš do *Otázky pre Martina*.
+
+### Z17 — Vyhľadávací pás na web klienta (A17, úroveň 2)
+Krátky kód, ktorý klient vloží do svojho webu (Elementor → HTML widget): **príchod, odchod, počet hostí → „Pozrieť pobyt“** presmeruje
+na rezervačnú stránku klienta s predvyplneným termínom (parametre, ktoré už spracúva Z9). V téme klienta, štýly izolované od webu klienta
+(Shadow DOM), bez cookies a sledovania, klávesnica, mobil. Pri výbere termínu stačí jednoduchý kalendár; obsadené dni a min. noci
+skontroluje až rezervačná stránka (kalendár s cenami na webe klienta je neskôr). V administrácii stránka **„Na váš web“**: kód na skopírovanie,
+náhľad a krátky návod pre Elementor. Testovacia HTML stránka mimo aplikácie, ktorá pás vloží ako cudzí web.
+
+### Z18 — Účet a zóna hosťa (B10)
+Rozhranie nad dátami zo Z13, na doméne klienta:
+1. **Prihlásenie bez hesla** kódom na e-mail. E-mail s kódom ide **cez náš systém e-mailov (Z11) v téme klienta**, nie predvolenými e-mailmi
+   Supabase (tie sú spoločné pre všetkých klientov a majú prísne limity). Ponuka „Uložiť si údaje pre ďalšie pobyty“ po rezervácii.
+2. **Zóna:** nadchádzajúce a minulé pobyty (stav, termín, rozpis, platobné údaje s QR kým nie je zaplatené), dokumenty (dočasné odkazy),
+   pokyny k príchodu a kódy podľa pravidiel zo Z13, **Rezervovať znova** (objekt, hostia a služby predvyplnené, hosť vyberie termín),
+   žiadosť o storno, úprava kontaktu, **odvolanie marketingového súhlasu jedným klikom** (zapíše sa do histórie súhlasov).
+   Správy s majiteľom zatiaľ nie — kontakt WhatsApp/telefón ako v košíku. Doklady skry, kým nie je adaptér.
+3. **Administrácia:** nahrávanie dokumentov pri objekte a pri rezervácii (viditeľnosť „vždy / po potvrdení“), úprava pokynov k príchodu.
+4. Vzhľad: jazyk košíka a stránky hosťa (`docs/vizual-stranka-hosta.md`), pokojný „dashboard“ — karta najbližšieho pobytu hore, ostatné
+   ako zoznam. Martin ho môže neskôr doladiť na plátne, takže drž jednoduché komponenty. Testy RLS: hosť nevidí cudzie pobyty ani iného klienta.
+
+### Z19 — Sekcie stránky v administrácii (B7)
+V editore objektu záložka **Stránka**: zoznam sekcií s vypínačom (kalendár sa vypnúť nedá), presúvanie (aj klávesnicou), formulár sekcie
+generovaný zo zod schémy typu (texty s prekladmi — zatiaľ slovenčina, výber fotiek z fotiek objektu), „Pridať sekciu“ z typov, ktoré tam
+ešte nie sú, „Obnoviť podľa predlohy“ s potvrdením, náhľad stránky. Bočný panel podľa A18. Údaje zo systému (ceny, storno…) sa vo formulári
+neupravujú — len odkaz, kde sa menia.
 
 ---
 
@@ -84,6 +123,7 @@ e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — de
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Fronta Z16–Z19: kontrola pred ukážkou, vyhľadávací pás (A17), zóna hosťa (B10), sekcie v administrácii (B7). (Claude chat)
 - 2026-10-16 — Z15: stránka hosťa podľa vizuálu v1 (rozdiel oproti Z9): **prilepený tmavý pruh** po zrolovaní pod úvod (názov, termín
   a noci, Spolu + cena na osobu, „Pozrieť pobyt“; bez termínu posunie na kalendár; skrytý pri otvorenom košíku), malý panel pri úvode
   bez „Rozbaliť“, **„Pozrieť pobyt“** na stránke, v pruhu aj na mobile (záväzné tlačidlo len v kroku 3), služby na stránke nie sú
