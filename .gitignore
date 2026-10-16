@@ -1,0 +1,23 @@
+# Závislosti a buildy
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Tajomstvá — nikdy necommitovať
+.env
+.env.*
+!.env.example
+*.pem
+
+# Supabase lokálne
+supabase/.temp/
+supabase/.branches/
+
+# Systém a editory
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+.vercel
