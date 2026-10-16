@@ -43,6 +43,7 @@ import {
 } from "@/core/booking/guest-booking";
 import { tr } from "@/core/i18n/localized";
 import { cn } from "@/lib/utils";
+import { InteractiveMap } from "./interactive-map";
 import { OsmMap } from "./osm-map";
 import {
   defineSection,
@@ -505,12 +506,13 @@ const location = defineSection({
           />
           <div className="flex flex-wrap items-stretch gap-8">
             {loc ? (
-              <OsmMap
+              <InteractiveMap
                 latitude={loc.latitude}
                 longitude={loc.longitude}
                 approximate={loc.approximate}
                 zoom={loc.approximate ? 12 : 13}
                 label={tv("mapOf", { place: p.city ?? p.name })}
+                zoomLabels={{ in: tv("zoomIn"), out: tv("zoomOut") }}
                 className="border-line min-h-[320px] flex-[2_1_520px] rounded-lg border sm:min-h-[400px]"
               />
             ) : null}

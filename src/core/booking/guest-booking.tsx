@@ -362,7 +362,7 @@ export function Counter({
       : "size-8 rounded-full";
   return (
     <div className="flex items-center justify-between gap-3 py-1">
-      <span className={cn("text-sm", tone === "accent" && "text-white/90")}>{label}</span>
+      <span className={cn("text-sm", tone === "accent" && "text-white")}>{label}</span>
       <div className="flex items-center gap-2">
         <Button
           type="button"

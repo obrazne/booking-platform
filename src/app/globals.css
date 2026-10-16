@@ -157,6 +157,21 @@
   .band {
     background: linear-gradient(180deg, #f8f7f3 0%, #f1f2ee 100%);
   }
+  /* Text levels on the accent surface (cart summary, panel): secondary text is a light tint of the accent,
+     not plain white — so the important things (dates, total, button) stand out. Contrast stays ≥ 4.5 : 1. */
+  .text-on-accent-muted {
+    color: color-mix(in oklab, #fff 80%, var(--surface-accent));
+  }
+  .text-on-accent-soft {
+    color: color-mix(in oklab, #fff 88%, var(--surface-accent));
+  }
+  /* Dark backdrop for the big photo in the gallery: a very dark shade of the accent, not blue. */
+  .bg-accent-night {
+    background: color-mix(in oklab, #000 62%, var(--surface-accent));
+  }
+  .bg-accent-deep {
+    background: color-mix(in oklab, #000 20%, var(--surface-accent));
+  }
   /* Button on a coloured surface: graphite, black on hover, light edge (A12 v2). */
   .btn-on-accent {
     background: var(--color-cta-dark);

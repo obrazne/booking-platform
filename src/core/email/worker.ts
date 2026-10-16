@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadEmailContext } from "./context";
-import { sendEmail } from "./send";
+import { isReservedRecipient, sendEmail } from "./send";
 import { renderEmail, renderIcalConflict, type EmailKind } from "./templates";
 
 /**
@@ -17,6 +17,19 @@ export async function processEmailQueue(
   for (const job of jobs ?? []) {
     try {
       if (job.kind === "owner_ical_conflict") {
+        // Conflicts of a channel that was switched off or removed (also browser tests) are not worth an e-mail.
+        const channelId = (job.payload as { channel_id?: string } | null)?.channel_id;
+        const { data: channel } = channelId
+          ? await admin.from("ical_channels").select("active").eq("id", channelId).maybeSingle()
+          : { data: null };
+        if (!channel?.active) {
+          await admin
+            .from("email_outbox")
+            .update({ status: "skipped", last_error: "channel inactive or removed" })
+            .eq("id", job.id);
+          stats.skipped += 1;
+          continue;
+        }
         const mail = await icalConflictMail(
           job.tenant_id,
           (job.payload ?? {}) as Record<string, unknown>,
@@ -47,6 +60,16 @@ export async function processEmailQueue(
         continue;
       }
       const ctx = await loadEmailContext(job.reservation_id);
+      // Test reservations (guest e-mail on a reserved domain such as booking-platform.test): no e-mail to anybody,
+      // not even to the owner — keeps the sending quota for real guests.
+      if (ctx && isReservedRecipient(ctx.r.guest_email)) {
+        await admin
+          .from("email_outbox")
+          .update({ status: "skipped", last_error: "test reservation" })
+          .eq("id", job.id);
+        stats.skipped += 1;
+        continue;
+      }
       const mail = ctx
         ? await renderEmail(
             job.kind as EmailKind,

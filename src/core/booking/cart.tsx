@@ -383,10 +383,9 @@ function StepStay({ wide }: { wide: boolean }) {
                 busy={data.busy}
                 today={data.today}
                 value={range}
-                onChange={(r) => {
-                  b.setRange(r);
-                  if (r.checkIn && r.checkOut) b.setCartCalendar(false);
-                }}
+                // The calendar stays open after choosing: the guest sees arrival, departure and the nights
+                // between; hiding it is their choice ("Hotovo, skryť kalendár").
+                onChange={b.setRange}
                 months={wide ? 2 : 1}
                 stayPrice={b.stayPrice}
               />
@@ -923,29 +922,36 @@ function Summary({ compact }: { compact?: boolean }) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const label = "font-mono text-[11px] font-medium tracking-[0.1em] uppercase text-on-accent-muted";
 
   return (
     <>
+      {/* 1 · Where: quiet kicker, name in white */}
       {!compact ? (
         <div className="grid gap-1">
           {data.propertyCity ? (
-            <span className="kicker kicker-sans text-xs text-[#ffe0c8]">{data.propertyCity}</span>
+            <span className="kicker kicker-sans text-on-accent-muted text-xs">
+              {data.propertyCity}
+            </span>
           ) : null}
-          <span className="text-xl font-extrabold tracking-tight">{data.propertyName}</span>
+          <span className="text-xl font-extrabold tracking-tight text-white">
+            {data.propertyName}
+          </span>
         </div>
       ) : null}
 
+      {/* 2 · When and who: the stay as a card */}
       {!compact ? (
-        <div className="rounded-lg border border-white/22 bg-white/10">
+        <div className="rounded-lg border border-white/25 bg-white/12">
           <div className="flex items-center justify-between gap-3 px-3.5 py-3">
             <div className="grid gap-0.5">
-              <span className="text-[15px] font-bold">
+              <span className="text-[15px] font-bold text-white">
                 {range.checkIn && range.checkOut
                   ? `${d.long(range.checkIn)} – ${d.long(range.checkOut)}`
                   : t("cart.selectDates")}
               </span>
               {nights ? (
-                <span className="text-[13px] text-white/95">
+                <span className="text-on-accent-muted text-[13px]">
                   {t("cart.nightsGuests", { nights, guests: b.adults + b.children })}
                 </span>
               ) : null}
@@ -957,81 +963,80 @@ function Summary({ compact }: { compact?: boolean }) {
                   b.setStep(1);
                   b.setCartCalendar(true);
                 }}
-                className="min-h-[34px] rounded-full bg-white/14 px-3 text-[13px] font-medium"
+                className="min-h-[34px] rounded-full bg-white/15 px-3 text-[13px] font-medium text-white hover:bg-white/25"
               >
                 {t("cart.change")}
               </button>
             ) : null}
           </div>
-          <div className="border-t border-white/22 px-3.5 py-1.5">
+          <div className="text-on-accent-soft border-t border-white/20 px-3.5 py-1.5">
             <Guests tone="accent" />
           </div>
         </div>
       ) : null}
 
+      {/* 3 · How much: the one big number */}
       <div className="grid gap-1.5">
-        <span className="kicker text-[11px] text-white/95">{block.label}</span>
-        <span className="text-[34px] leading-none font-extrabold tracking-tight tabular-nums">
+        <span className={label}>{block.label}</span>
+        <span className="text-[38px] leading-none font-extrabold tracking-tight text-white tabular-nums">
           {block.value}
         </span>
-        <span className="text-[13px] text-white/95">{block.note}</span>
-        {lines.length > 0 ? (
+        <span className="text-on-accent-muted text-[13px]">{block.note}</span>
+        {lines.length > 0 && !compact ? (
           <button
             type="button"
-            aria-expanded={showLines || compact}
+            aria-expanded={showLines}
             onClick={() => setShowLines(!showLines)}
-            className={cn(
-              "justify-self-start py-1 text-[13px] font-medium underline underline-offset-[3px]",
-              compact && "hidden",
-            )}
+            className="text-on-accent-soft justify-self-start py-1 text-[13px] font-medium underline underline-offset-[3px] hover:text-white"
           >
             {showLines ? t("cart.hideBreakdown") : t("cart.breakdown")}
           </button>
         ) : null}
         {showLines || compact ? (
-          <dl className="grid gap-2 border-t border-white/22 pt-2.5">
+          <dl className="mt-1 grid gap-2 border-t border-white/20 pt-2.5">
             {lines.map((l, i) => (
               <div key={i} className="flex justify-between gap-3 text-[13px]">
-                <dt className="text-white/95">
+                <dt className="text-on-accent-muted">
                   {l.labelKey === "touristTax" ? t("touristTax") : tr(l.name, data.locale)}
                 </dt>
-                <dd className="tabular-nums">{money(l.amountCents)}</dd>
+                <dd className="text-white tabular-nums">{money(l.amountCents)}</dd>
               </div>
             ))}
           </dl>
         ) : null}
       </div>
 
+      {/* 4 · Chosen extras */}
       {chosen.length > 0 && !compact ? (
-        <div className="grid gap-2 border-t border-white/18 pt-3.5">
-          <span className="kicker text-[11px] text-white/95">{t("v2.yourExtras")}</span>
+        <div className="grid gap-2 border-t border-white/20 pt-3.5">
+          <span className={label}>{t("v2.yourExtras")}</span>
           {chosen.map((l, i) => (
             <div key={i} className="flex justify-between gap-3 text-sm">
-              <span className="text-white/90">{tr(l.name, data.locale)}</span>
-              <span className="font-medium tabular-nums">{money(l.amountCents)}</span>
+              <span className="text-white">{tr(l.name, data.locale)}</span>
+              <span className="font-medium text-white tabular-nums">{money(l.amountCents)}</span>
             </div>
           ))}
         </div>
       ) : null}
 
-      <div className="mt-auto grid gap-[18px] border-t border-white/18 pt-5">
-        <ul className="grid gap-2 text-[13px] text-white/88">
+      {/* 5 · Reassurance, set apart in a deeper tone: facts, one testimonial, the person who answers */}
+      <div className="bg-accent-deep -mx-[26px] mt-auto -mb-6 grid gap-4 px-[26px] pt-5 pb-6 max-lg:mx-0 max-lg:mb-0 max-lg:rounded-lg max-lg:px-4">
+        <ul className="text-on-accent-soft grid gap-2 text-[13px]">
           {data.trust.map((line) => (
             <li key={line} className="inline-flex items-start gap-2">
-              <Check className="mt-0.5 size-4 shrink-0" /> {line}
+              <Check className="text-on-accent-muted mt-0.5 size-4 shrink-0" /> {line}
             </li>
           ))}
         </ul>
         {!compact ? <TestimonialCarousel tone="accent" /> : null}
-        <div className="flex items-center gap-3">
-          <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white/16 text-[13px] font-bold text-white/95">
+        <div className="flex items-center gap-3 border-t border-white/15 pt-4">
+          <span className="text-primary inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-bold">
             {initials}
           </span>
-          <span className="grid min-w-0 flex-1 gap-px">
-            <span className="text-[13px] font-medium">
-              {contact?.name
-                ? t("cart.contactTitle", { name: contact.name })
-                : t("cart.contactFallback")}
+          <span className="grid min-w-0 flex-1 leading-tight">
+            <span className="text-on-accent-muted text-xs">{t("v2.questions")}</span>
+            <span className="text-[15px] font-bold text-white">
+              {contact?.name ?? t("v2.ownerFallback")}
             </span>
           </span>
           {wa ? (
@@ -1040,7 +1045,7 @@ function Summary({ compact }: { compact?: boolean }) {
               target="_blank"
               rel="noreferrer"
               aria-label={t("cart.whatsapp")}
-              className="inline-flex size-9 items-center justify-center rounded-full border border-white/22 bg-white/10"
+              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
             >
               <MessageCircle className="size-4" />
             </a>
@@ -1049,7 +1054,7 @@ function Summary({ compact }: { compact?: boolean }) {
             <a
               href={`tel:${contact.phone.replace(/\s/g, "")}`}
               aria-label={t("cart.call")}
-              className="inline-flex size-9 items-center justify-center rounded-full border border-white/22 bg-white/10"
+              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
             >
               <Phone className="size-4" />
             </a>

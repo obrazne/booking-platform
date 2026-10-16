@@ -760,7 +760,11 @@
         "other": "priamo od hostí"
       },
       "reviewsOrigin": "Vybrané hodnotenia hostí, ktoré majiteľ zverejnil so súhlasom. Zdroj: {sources}.",
-      "moreReviews": "Ďalšie hodnotenia na webe ubytovania"
+      "moreReviews": "Ďalšie hodnotenia na webe ubytovania",
+      "questions": "Otázky k pobytu? Odpovedá",
+      "ownerFallback": "majiteľ",
+      "zoomIn": "Priblížiť",
+      "zoomOut": "Oddialiť"
     }
   },
   "reservations": {

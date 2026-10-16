@@ -190,7 +190,7 @@ function GalleryWindow() {
             </div>
 
             {current ? (
-              <div className="absolute inset-0 flex flex-col gap-3.5 bg-[#0f1c27] px-4 pt-[18px] pb-[22px] sm:px-6">
+              <div className="bg-accent-night absolute inset-0 flex flex-col gap-3.5 px-4 pt-[18px] pb-[22px] sm:px-6">
                 <div className="flex items-center justify-between gap-3">
                   <button
                     type="button"
@@ -199,7 +199,7 @@ function GalleryWindow() {
                   >
                     <ArrowLeft className="size-4" /> {t("v2.allPhotos")}
                   </button>
-                  <span className="font-mono text-xs text-[#8a97a5]">
+                  <span className="font-mono text-xs text-white/70">
                     {single! + 1} / {photos.length}
                   </span>
                 </div>
@@ -221,13 +221,32 @@ function GalleryWindow() {
                     }}
                   >
                     <Image
+                      key={current.url}
                       src={current.url}
                       alt={current.alt}
                       fill
-                      sizes="90vw"
+                      sizes={BIG_SIZES}
+                      quality={80}
                       className="object-contain"
                       priority
                     />
+                    {/* Neighbours load in advance, so the arrows switch at once. */}
+                    {[1, -1, 2].map((delta) => {
+                      const p = photos[(single! + delta + photos.length) % photos.length];
+                      return p && p.url !== current.url ? (
+                        <Image
+                          key={`pre:${p.url}`}
+                          src={p.url}
+                          alt=""
+                          aria-hidden
+                          fill
+                          sizes={BIG_SIZES}
+                          quality={80}
+                          loading="eager"
+                          className="invisible object-contain"
+                        />
+                      ) : null;
+                    })}
                   </div>
                   <button
                     type="button"
@@ -239,9 +258,9 @@ function GalleryWindow() {
                   </button>
                 </div>
                 {current.alt ? (
-                  <span className="text-center text-sm text-[#c9d1d9]">{current.alt}</span>
+                  <span className="text-center text-sm text-white/85">{current.alt}</span>
                 ) : null}
-                <div className="flex shrink-0 justify-center gap-2.5 overflow-hidden sm:px-16">
+                <div className="flex shrink-0 justify-center gap-2.5 overflow-x-auto px-1.5 py-1.5 sm:px-16">
                   {strip.map((p) => (
                     <button
                       key={p.url}
@@ -251,7 +270,9 @@ function GalleryWindow() {
                       aria-current={p.index === single}
                       className={cn(
                         "relative h-[60px] w-[96px] shrink-0 overflow-hidden rounded-md sm:h-[104px] sm:w-[170px]",
-                        p.index === single ? "ring-2 ring-white" : "opacity-50 hover:opacity-80",
+                        p.index === single
+                          ? "ring-2 ring-white ring-offset-2 ring-offset-transparent"
+                          : "opacity-50 hover:opacity-80",
                       )}
                     >
                       <Image src={p.url} alt="" fill sizes="170px" className="object-cover" />
@@ -316,3 +337,5 @@ function GalleryWindow() {
 }
 
 const touchX = { current: 0 };
+/** One size for the big photo and its preloaded neighbours (the browser reuses the same file). */
+const BIG_SIZES = "(min-width: 1280px) 1200px, 100vw";

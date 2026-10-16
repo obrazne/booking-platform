@@ -111,6 +111,16 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   const cart = page.getByRole("dialog");
   await expect(cart.getByRole("button", { name: "Nasledujúci mesiac" }).first()).toBeVisible();
   expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore);
+  // After choosing both days the calendar stays open (the guest sees the range); hiding it is the guest's choice.
+  const stay = await freeStay(3);
+  await pickStay(cart, stay.checkIn, stay.checkOut);
+  await expect(cart.getByRole("button", { name: "Hotovo, skryť kalendár" })).toBeVisible();
+  await expect(cart.locator(`button[data-date="${stay.checkIn}"]`).first()).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await cart.getByRole("button", { name: "Hotovo, skryť kalendár" }).click();
+  await expect(cart.getByRole("button", { name: "Zmeniť termín" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
@@ -119,4 +129,13 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   await expect(
     page.getByRole("dialog").getByRole("button", { name: "Zmeniť termín" }),
   ).toBeVisible();
+});
+
+test("surroundings map is interactive (OpenStreetMap, zoom buttons)", async ({ page }, info) => {
+  test.skip(info.project.name === "mobile", "desktop");
+  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.locator("#okolie").scrollIntoViewIfNeeded();
+  const map = page.locator("#okolie").getByRole("region", { name: /Mapa/ });
+  await expect(map.locator(".leaflet-tile-loaded").first()).toBeVisible({ timeout: 20_000 });
+  await expect(map.getByRole("button", { name: "Priblížiť" })).toBeVisible();
 });
