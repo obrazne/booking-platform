@@ -34,7 +34,7 @@ select is((select primary_color from public.tenant_themes), '#112233', 'receptio
 
 reset request.jwt.claims;
 set local role anon;
-select is((select primary_color from public.tenant_theme('10000000-0000-0000-0000-00000000000b')), '#0071e3',
+select is((select primary_color from public.tenant_theme('10000000-0000-0000-0000-00000000000b')), '#2f5d50',
   'guest reads theme via function; owner A did not change tenant B');
 select throws_ok('select count(*) from public.tenant_themes', '42501', null, 'anon cannot read the table');
 
