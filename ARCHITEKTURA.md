@@ -195,15 +195,111 @@ Platba (vrátane Stripe) a celý rezervačný tok bežia vždy v aplikácii. Kli
 
 ---
 
-# ČASŤ B — DOMÉNOVÉ POŽIADAVKY (z v1, na revíziu)
+# ČASŤ B — DOMÉNA (v2, 16. 10. 2026)
 
-Požiadavky z architektúry v1 (`docs/archiv-wp/architektura-wp.md`) platia ako **zámer**: dátový model objekt → jednotka,
-rezervácia ako hlavička + položky, konfiguračná matica objektu, dostupnosť a iCal, cenotvorba s vekovými pásmami a sezónami,
-doplnkové služby s vlastnými poliami a dostupnosťou, rezervačný tok a stavy, komunikácia, zóna hosťa, legislatíva.
+*Prevzaté z v1 (`docs/archiv-wp/architektura-wp.md`, schválené v auguste) a z rozhodnutí WordPress fázy, prispôsobené aplikácii.
+Martin môže čokoľvek zmeniť; otvorené obchodné otázky sú v ROADMAP → Otázky. WordPress riešenia z v1 neplatia.*
 
-**Neplatí z v1:** všetko viazané na WordPress (WP administrácia, JetBooking, používateľská rola WordPressu, klonovanie webov podľa balíka).
+## B1. Dátový model
 
-Kapitoly sa revidujú v Claude chate po jednej a zapisujú sem ako B1, B2, … (ROADMAP Fáza 2).
+```
+KLIENT (tenant)
+  └── OBJEKT (property) ── režim: celok / po jednotkách · cenový model: za noc / za osobu a noc · platobný režim
+        ├── JEDNOTKA (unit) ◄── na ňu sa viaže dostupnosť a cena; pri režime „celok“ má objekt práve jednu (v rozhraní skrytú)
+        ├── FOTKY · VYBAVENIE · TYP · REGIÓN · VHODNÉ PRE
+        ├── SEZÓNA (season) ── termíny (aj každoročne opakované), min./max. nocí, povolené dni príchodu, priorita
+        ├── CENA (rate) ── jednotka × sezóna → za noc, alebo za osobu a noc podľa vekového pásma
+        ├── POPLATOK (fee) ── automatický alebo voliteľný (zviera, záverečné upratovanie), vratná kaucia zvlášť (nie je tržba)
+        ├── ZĽAVA (discount) ── dĺžka pobytu, promo kód; neskôr early bird, last minute, vernostná
+        ├── SLUŽBA (service, modul) ── cena: fixne za pobyt / za osobu / za noc / za osobu a noc / za kus
+        └── iCAL KANÁL ── import z Bookingu/Airbnb, export nášho kalendára (na jednotke)
+
+REZERVÁCIA (hlavička) ── číslo (rad klienta), stav, zdroj (priama / booking / airbnb / ručná / iná), objednávateľ, počty osôb
+  │                       podľa vekových pásiem, jazyk, mena, termín platby, poznámka
+  ├── POLOŽKA (reservation_item) ── jednotka + termín [príchod, odchod)          [rozhranie zatiaľ vždy 1]
+  ├── RIADKY CENY (reservation_line) ── zamrazený rozpis podľa poradia A5 (noci po sezónach, poplatky, služby, zľavy, daň), sadzba DPH na riadku
+  ├── PLATBA (payment) ── poskytovateľ (prevod / karta / na mieste), suma, VS, stav, prijatá kedy a kým
+  ├── HISTÓRIA STAVOV ── kto, kedy, z čoho na čo
+  ├── SÚHLASY ── typ, znenie (verzia), čas
+  └── PRÍSTUPOVÝ ODKAZ ── token pre hosťa bez účtu (detail, platba, žiadosť o storno; neskôr check-in a recenzia)
+
+OBSADENOSŤ (occupancy) ── jedna tabuľka všetkého, čo blokuje jednotku: potvrdené a čakajúce rezervácie, dočasná blokácia,
+                          udalosti z iCal, blokácia majiteľom · obmedzenie v databáze proti prekryvu
+```
+
+- Texty objektu, jednotky, služieb a pravidiel sú **viacjazyčné** (A6). Fotky v úložisku s cestou podľa klienta.
+- **Neskôr (dátovo pripravené):** zložená jednotka (celý chalet = apartmán + zvyšok — rezervácia celku blokuje časti a naopak),
+  vekové pásma v rozhraní, cena za osobu, záloha a doplatok, vlastné polia služieb a dostupnosť služieb, recenzie, údaje ubytovaných z check-inu.
+
+## B2. Dostupnosť
+
+- **Dvojitej rezervácii bráni databáza:** obmedzenie nad tabuľkou obsadenosti (jednotka + rozsah nocí `[)`) pre blokujúce záznamy.
+  Pri kolízii pri importe z iCal sa nič neprepíše — vznikne upozornenie majiteľovi aj Martinovi (A16).
+- **Upratovací deň medzi pobytmi** voliteľne na objekte (rozsah obsadenosti sa predĺži).
+- **Min. počet nocí a povolené dni príchodu podľa sezóny dňa príchodu**; cena sa počíta **po nociach podľa sezóny každej noci**
+  (napr. 21.–24. 12. = 2 × zimná + 1 × Vianoce). Prekryv sezón rieši priorita.
+- **Dočasná blokácia** počas vypĺňania (cca 30 min) a pri prevode do termínu platby (predvolene 24 h, nastaviteľné).
+- **iCal:** export per jednotka (tajný odkaz), import kanálov s pravidelnou synchronizáciou (čo najčastejšie, plánovaná úloha v Supabase).
+- Pri režime „po jednotkách“ vráti vyhľadávanie objekt, ak je voľná aspoň jedna jednotka.
+
+## B3. Cenotvorba
+
+- Poradie výpočtu podľa A5; **výpočet je čistá funkcia** (vstup: objekt, termín, osoby, služby, kód → riadky ceny), testovaná jednotkovými testmi,
+  rovnaká pre stránku hosťa aj server. **Server vždy prepočíta cenu sám** (neverí prehliadaču) a pri vytvorení ju zamrazí.
+- Aj pri cene za noc sa **vždy zbiera počet osôb** (kapacita, daň, kniha ubytovaných).
+- **Daň za ubytovanie:** sadzba na osobu a noc podľa obce, oslobodenia podľa vekového pásma, prepínač „zahrnutá v cene“ (STRÖMY áno).
+- **DPH:** sadzba na riadku; klient platca / neplatca. Sadzby potvrdí účtovník.
+- Zaokrúhľovanie na centy na riadku, súčet z riadkov.
+
+## B4. Doplnkové služby (modul `services`)
+
+- Služba = názov, popis, cenový model, cena, aktívna, poradie. Hosť ju volí v rezervácii (množstvo, ak dáva zmysel).
+- **Bez doplňujúcich polí** v MVP (dátum večere, číslo letu) — majiteľ sa dohodne s hosťom e-mailom; hosť má pole poznámka (rozhodnutie z 13. 10.).
+- Neskôr: vlastné polia, vlastná dostupnosť, objednávka po rezervácii (upsell pred príchodom — Premium+).
+
+## B5. Rezervačný tok a stavy
+
+```
+           ┌── prevod ──► ČAKÁ NA PLATBU (termín blokovaný do lehoty, QR + VS) ──┬── platba prijatá ──► POTVRDENÁ
+NOVÁ ──────┤                                                                     └── lehota vypršala ──► ZRUŠENÁ (automaticky, termín uvoľnený)
+           └── karta (neskôr) ──────────────────────────────────────────────────────────────────────► POTVRDENÁ
+POTVRDENÁ ──► PREBIEHA ──► UKONČENÁ          · storno: hosť len žiada, rozhoduje majiteľ · majiteľ môže zrušiť
+RUČNÁ REZERVÁCIA (majiteľ, napr. telefón) ──► rovno POTVRDENÁ alebo ČAKÁ NA PLATBU
+```
+
+- Storno podmienky sa hosťovi zobrazia pri rezervácii a uložia sa ich znenie (súhlas). Výpočet storno poplatku zobrazí majiteľovi návrh.
+- Číslovanie rezervácií podľa klienta (napr. `2026-0001`). Zmeny stavov len cez databázové funkcie s históriou.
+
+## B6. Komunikácia (e-mail; SMS neskôr ako modul)
+
+| Komu | Správa |
+|---|---|
+| hosť | rezervácia prijatá + platobné údaje (QR) · pripomienka pred koncom lehoty · platba prijatá / potvrdenie · zrušenie (vypršanie, storno) · pokyny pred príchodom (X dní vopred, s neverejnými údajmi objektu) · žiadosť o recenziu (neskôr) |
+| majiteľ | nová rezervácia · lehota platby vypršala · kolízia z iCal · žiadosť hosťa o storno |
+
+Šablóny prekladateľné, v téme klienta (A7, A12), fronta s opakovaním. Prístupové kódy a Wi-Fi len v e-maile pred príchodom, nikdy na verejnej stránke.
+
+## B7. Stránka hosťa
+
+- **Klient s vlastným webom (A17):** štíhly tok — objekt (galéria, hlavné údaje, kalendár s cenami, cenník sezón, v cene zahrnuté),
+  termín a osoby (predvyplnené z widgetu cez parametre adresy), služby, údaje objednávateľa, poznámka, súhlasy (VOP a storno — povinné,
+  informácia o spracúvaní údajov, **marketingový súhlas nepovinný a nezaškrtnutý**), súhrn s rozpisom ceny, odoslanie → platobné údaje.
+  Neindexuje sa.
+- **Showroom / klient bez webu:** katalóg objektov s filtrami (typ, región, počet osôb, termín), detail objektu, potom rovnaký tok.
+- Po odoslaní: stránka a e-mail s prístupovým odkazom na rezerváciu (stav, platba, žiadosť o storno). Účet hosťa neskôr.
+
+## B8. Administrácia majiteľa (MVP)
+
+Prehľad (dnešné príchody a odchody, čakajúce platby) · **kalendár obsadenosti** (mesiac, jednotky, rezervácie a blokácie) ·
+**rezervácie** (zoznam s filtrami + bočný panel: stav, rozpis, platba prijatá, zrušenie, poznámky, história) · ručná rezervácia ·
+objekt a jednotky (texty, fotky, vybavenie, pravidlá, neverejné pokyny k príchodu) · sezóny a ceny · poplatky a zľavy · služby (modul) ·
+blokácie · iCal kanály · nastavenia (platobné údaje a lehota, storno podmienky, odkazy na právne dokumenty) · export CSV.
+
+## B9. Legislatíva
+
+- Kniha ubytovaných: pri rezervácii objednávateľ a počty osôb; údaje všetkých hostí cez online check-in (neskôr, modul).
+- Daň za ubytovanie podľa B3. Doklady cez adaptér fakturačného nástroja klienta (A5) — keď bude známy Janin nástroj.
+- Právne dokumenty (VOP, storno, ochrana údajov) dodáva klient (príp. právna firma); systém ich odkazuje a ukladá znenie súhlasu.
 
 ---
 
@@ -222,4 +318,19 @@ Kapitoly sa revidujú v Claude chate po jednej a zapisujú sem ako B1, B2, … (
 - Počas vývoja beží aplikácia s **ukážkovými dátami**: viac druhov objektov (aby sa dalo filtrovať, mal sa archív a pod.) — vymyslené.
 - Medzi nimi **Chalet STRÖMY s reálnymi fotkami a údajmi** na prezentáciu Jane. Ukazovať ho ďalším záujemcom až s jej súhlasom.
 - Neskôr samostatný **ukážkový klient** na predaj, ktorého dáta sa každú noc obnovia.
-- *Presný rozsah a plán 4 týždňov — doplní sa po revízii časti B.*
+- **Showroom (vymyslené, voľne použiteľné fotky):** 6 objektov podľa konfiguračnej matice v1 — chalet (celok, za noc), horská chata (celok),
+  vila (celok), apartmánový dom (4 jednotky), penzión (6 izieb), glamping (3 jednotky); rôzne regióny, typy a sezóny, aby fungovali filtre.
+  Cena za osobu a záloha sa v ukážke zatiaľ len opíšu, kým nie sú v rozhraní.
+
+## Rozsah MVP (prvý mesiac)
+
+| V MVP | Neskôr |
+|---|---|
+| objekt celok, cena za noc, sezóny s min. nocami, zľava od N nocí, promo kód | jednotky v rozhraní, cena za osobu, vekové pásma v rozhraní |
+| služby (modul) bez doplňujúcich polí, poplatok za zviera | vlastné polia a dostupnosť služieb, upsell pred príchodom |
+| prevod s QR, 24 h lehota, automatické zrušenie, ručné potvrdenie platby | Stripe, záloha a doplatok, párovanie platieb z banky |
+| e-maily z B6 (okrem recenzie) | SMS, push notifikácie (moduly) |
+| administrácia z B8, ručná rezervácia, CSV | štatistiky, online check-in, účet hosťa, recenzie |
+| iCal export a import s upozornením na kolíziu | API prepojenie s OTA |
+| stránka hosťa pre klienta s webom + katalóg pre showroom | vkladací widget (hneď po MVP, úloha 3e) |
+| — | doklady cez fakturačný nástroj (keď bude známy Janin nástroj) |

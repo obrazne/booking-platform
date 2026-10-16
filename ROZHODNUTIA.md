@@ -2,6 +2,16 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Doména (časť B) a rozsah MVP
+
+- Doménové požiadavky prevzaté z v1 (schválené v auguste) a z rozhodnutí WordPress fázy, prispôsobené aplikácii — `ARCHITEKTURA.md` B1–B9.
+  Martin: veci, na ktorých sme sa už zhodli, sa nemajú znova odsúhlasovať; stavia sa ďalej.
+- **Obsadenosť ako jedna tabuľka s obmedzením proti prekryvu v databáze**; cena po nociach podľa sezóny každej noci, min. noci podľa dňa príchodu.
+- **Výpočet ceny ako čistá funkcia s testami**, server vždy prepočíta a zamrazí.
+- **Ručná rezervácia** majiteľom (telefón) je v MVP — inak by majiteľ viedol druhý kalendár mimo systému.
+- **Služby bez doplňujúcich polí** (pokračuje rozhodnutie z 13. 10.), poznámka hosťa ostáva.
+- **Rozsah MVP** podľa tabuľky v časti C; showroom so 6 vymyslenými objektmi + Chalet STRÖMY s reálnymi údajmi.
+
 ## 2026-10-16 — Čistý projekt namiesto kópie Rental Van (po analýze Z1)
 
 - **Platforma sa začne čistým Next.js projektom** a z existujúcich aplikácií sa prenášajú vybrané časti. Nahrádza „základ: Rental Van“.

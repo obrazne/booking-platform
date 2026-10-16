@@ -6,101 +6,60 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová a nasadená na staging https://booking-platform-obrazne.vercel.app
-  (za prihlásením do Vercelu). Martin je správca platformy a majiteľ ukážkových klientov. Tabuľky objektov a rezervácií čakajú na časť B.
-- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na zadanie doménových tabuliek po revízii časti B.
-- **Ďalší krok pre Martina:** preklikať staging (prihlásenie, `/admin`, Tím s bočným panelom, `/platform`, založenie klienta, zapnutie modulu).
-- **Claude chat:** revízia časti B (dostupnosť, cenotvorba, služby, tok, …) → potom zadanie doménových tabuliek.
+- **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová na stagingu https://booking-platform-obrazne.vercel.app. Časť B (doména) a rozsah MVP
+  sú v `ARCHITEKTURA.md` (B1–B9, časť C). **Stavia sa MVP pre Chalet STRÖMY + showroom** (Z7–Z12).
+- **Ďalší krok pre Claude Code:** fronta Z7 → Z12, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
+- **Ďalší krok pre Martina:** preklikať staging; odpovedať na otázky nižšie, keď bude čas (neblokujú prácu).
+- **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z12.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
 po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom `/dalej`. Keď sú všetky ✅, sekciu vyprázdni.*
 
-### Z1 ✅ — Analýza Rental Van a Credit Managera (LEN ČÍTANIE)
+*Hotové Z1–Z6 (analýza, projekt, klienti a oddelenie dát, preklady a téma, moduly a administrácia, riadiace centrum) — detail v Denníku a histórii Gitu.*
 
-**Cieľ:** zistiť, čo z dvoch existujúcich Martinových aplikácií prevezmeme do platformy, aby sa architektúra v2
-písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie, nič v tých aplikáciách nemeň.**
+**Kontext pre celú frontu Z7–Z12:** staviame **MVP pre Chalet STRÖMY a showroom** podľa `ARCHITEKTURA.md` **časť B (B1–B9) a časť C**
+(rozsah MVP v tabuľke). Dátový model staviaj **celý podľa B1** (aj veci mimo rozhrania MVP: jednotky, cena za osobu, vekové pásma, poplatky,
+zložená jednotka len pripraviť), rozhranie len pre to, čo je v MVP. Všetko s `tenant_id`, RLS a testami; peniaze v centoch; texty cez preklady;
+vzhľad podľa A12 a A18. Technické detaily rozhoduješ sám a zapisuješ do Denníka.
 
-**1. Nájdi ich.** Aplikácie sa volajú *Rental Van* a *Credit Manager*. Martin nevie presne, kde sú:
-- lokálne skús `~/Antigravity/Projekty` (Windows: `%USERPROFILE%\Antigravity\Projekty`),
-- na GitHube môžu byť pod účtom `obrazne` alebo pod Martinovým druhým účtom. Pozri `gh auth status` a `gh repo list <účet>`
-  pre všetky prihlásené účty; hľadaj názvy s *rental*, *van*, *credit*.
-- Ak ich nenájdeš alebo nájdeš viac kandidátov, **opýtaj sa Martina**, nehádaj.
-- Ak treba repozitár stiahnuť, naklonuj ho do dočasného priečinka mimo tohto repozitára. Lokálne kópie len čítaj.
+### Z7 — Doménové tabuľky, obsadenosť a výpočet ceny
+1. Migrácie podľa B1: objekty, jednotky, fotky (úložisko s cestou podľa klienta), číselníky (typ, vybavenie, región, vhodné pre — s prekladmi),
+   sezóny, ceny, poplatky, zľavy (dĺžka pobytu, promo kód), služby (modul `services`), iCal kanály, rezervácia (hlavička, položky, riadky ceny,
+   platby, história stavov, súhlasy, prístupový token), **obsadenosť s obmedzením proti prekryvu** (B2).
+2. RLS a pgTAP testy: oddelenie klientov, **test, že databáza odmietne dvojitú rezerváciu** aj súbežne vytvorené rezervácie.
+3. **Výpočet ceny ako čistá funkcia** (B3) s jednotkovými testmi — vrátane prípadov STRÖMY: 21.–24. 12. = 2 × 850 + 1 × 1 200; min. nocí podľa
+   sezóny dňa príchodu; zľava od 6. noci; promo kód; služby za osobu, za noc, za osobu a noc, fixne; daň zahrnutá v cene.
+4. **Seed:** Chalet STRÖMY z `docs/podklady/chalet-stromy-podklady.md` (údaje, sezóny opakované každý rok, ceny, služby a poplatok za zviera
+   s orientačnými cenami, zľava −10 % od 6 nocí, storno podmienky, 3 referencie). Fotky: Martinove lokálne kópie z booking-demo
+   (`podklady/fotky-stromy/`, mimo Gitu), ak nie sú, opýtaj sa. **Prístupové kódy a Wi-Fi do seedu nedávaj.**
+   Showroom: 6 vymyslených objektov podľa časti C pod Ukážkovým klientom, fotky z voľne použiteľných zdrojov (zapíš zdroj a licenciu).
 
-**2. Čo zistiť pri každej aplikácii** (do jedného dokumentu, stručne, s cestami k súborom):
-- **Stack a verzie:** framework (Next.js? App Router / Pages? alebo Vite/React?), jazyk (TypeScript?), UI knižnica a štýlovanie,
-  formuláre a validácia, správa stavu, dátumové knižnice, ďalšie dôležité balíčky.
-- **Štruktúra projektu:** priečinky, ako sú rozdelené stránky, komponenty, prístup k dátam.
-- **Supabase:** prihlasovanie a roly, schéma a migrácie (sú v repozitári? ako sa spúšťajú?), použitie RLS, úložisko súborov,
-  edge funkcie. **Názvy** premenných prostredia, nikdy hodnoty.
-- **Administrácia (hlavne Rental Van):** rozloženie, navigácia, tabuľky a filtre, formuláre, detail záznamu, kalendár, oprávnenia.
-- **Bočný panel (hlavne Credit Manager):** kde je implementovaný, ako funguje (URL, história, mobil), čo by sa dalo vziať ako komponent.
-- **E-maily (hlavne Rental Van):** cez čo sa posielajú (SMTP? služba?), šablóny, odkiaľ sa spúšťajú.
-- **Rezervácie a dostupnosť (Rental Van):** ako sa ukladá obsadenosť a ako sa bráni dvojitej rezervácii (kód aj databáza).
-- **Nasadenie:** Vercel, vetvy, náhľady, cron úlohy.
-- **Testy, preklady (i18n), kvalita kódu:** čo existuje, čo chýba, zjavný technický dlh.
+### Z8 — Administrácia: objekty, ceny, služby
+Editor objektu a jednotky (texty viacjazyčne, fotky so zmenšením v prehliadači, vybavenie, pravidlá, **neverejné pokyny k príchodu**),
+sezóny a ceny (prehľadne, kontrola prekryvov), poplatky a zľavy, služby (modul), blokácie termínov, nastavenia klienta (platobné údaje —
+IBAN, príjemca, lehota v hodinách; storno podmienky; odkazy na VOP a ochranu údajov). Všetko v kostre administrácie a s bočným panelom.
 
-**3. Odporúčanie** (dôležitejšie ako opis):
-- Čo **prevziať** (konkrétne komponenty, nastavenia, vzory) a čo **nie** a prečo.
-- Kde existujúci kód **nezodpovedá dohodnutej architektúre** (`ARCHITEKTURA.md` časť A): viac klientov a `tenant_id` s RLS,
-  preklady, peniaze v centoch, moduly. Čo by sa muselo prerobiť.
-- Návrh: začať z kópie Rental Van, alebo z čistého Next.js projektu a preniesť vybrané časti? S odôvodnením.
+### Z9 — Stránka hosťa a vytvorenie rezervácie
+Podľa B7: katalóg s filtrami (showroom), detail objektu s kalendárom dostupnosti a cien, rezervačný tok (termín a osoby aj z parametrov adresy,
+služby, údaje, poznámka, súhlasy vrátane nepovinného marketingového, súhrn s rozpisom). Server prepočíta cenu, vytvorí rezerváciu so stavom
+*čaká na platbu*, blokáciou do lehoty a zamrazenými riadkami. Potom stránka s platobnými údajmi a **QR PAY by square** (VS = číslo rezervácie)
+a **prístupový odkaz** na rezerváciu (stav, platobné údaje, žiadosť o storno). V téme klienta, mobil prvý, neindexovať. Ochrana proti robotom.
 
-**Výstup:** `docs/analyza-existujucich-appiek.md`. Potom Denník, `Aktuálne`, commit a push. Do kódu tých aplikácií nič necommituj.
+### Z10 — Rezervácie v administrácii
+Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × jednotky; rezervácie, blokácie, iCal), prehľad na úvodnej stránke
+(dnešné príchody, odchody, čakajúce platby), potvrdenie platby, zrušenie, žiadosti o storno, **ručná rezervácia**, poznámky, história stavov,
+export CSV. **Plánovaná úloha:** automatické zrušenie po lehote a uvoľnenie termínu.
 
-### Z2 ✅ — Projekt, prostredia a nasadenie
+### Z11 — E-maily
+Transakčná služba s API (vyber sám, bezplatný plán; ak by niečo stálo peniaze, opýtaj sa). Šablóny s prekladmi a témou klienta, fronta s opakovaním,
+záznam odoslaných. Správy z B6 (bez žiadosti o recenziu); pokyny pred príchodom X dní vopred (nastaviteľné). Na stagingu posielaj z testovacej
+domény služby alebo presmeruj všetko na Martinov e-mail; **vlastnú odosielaciu doménu (DNS) nenastavuj bez Martina.**
 
-**Kontext pre celú frontu Z2–Z6:** staviame **kostru platformy** podľa `ARCHITEKTURA.md` časť A (A1–A9, A12, A13, A17, A18) a podľa
-`docs/analyza-existujucich-appiek.md` (čo preniesť z Rental Van a Credit Managera). **Nie** tabuľky objektov, jednotiek, cien a rezervácií
-(časť B ešte nie je zrevidovaná). Názvy v kóde a databáze po anglicky, rozhranie len cez preklady. Detaily riešenia volíš sám a zapisuješ
-do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
-
-1. Čistý **Next.js** (aktuálna stabilná verzia, App Router, strict TypeScript, ESLint, Prettier), **Tailwind + shadcn/ui** vygenerované nanovo.
-   Navrhni štruktúru priečinkov tak, aby jadro a moduly boli oddelené (napr. `src/core`, `src/modules/<modul>`, `src/platform` pre riadiace centrum).
-2. **Supabase:** lokálny vývoj cez Supabase CLI (ak na Martinovom počítači nejde Docker, pracuj priamo so stagingom a zapíš to).
-   Založ **staging** projekt na účte Obrazne (`booking-platform-staging`, región EÚ). Produkčný projekt zatiaľ nie.
-3. **Vercel:** projekt na účte Obrazne napojený na tento repozitár (bezplatný plán počas vývoja), náhľady pre vetvy, `main` → staging.
-4. **CI (GitHub Actions):** typová kontrola, lint, testy pri každom pushi.
-5. `.env.example` s názvami premenných, postup spustenia a nasadenia do `CLAUDE.md`.
-
-**Martin:** keď treba, požiadaj ho o prihlásenie (Supabase CLI, Vercel) — urob to naraz na začiatku, nie po jednom.
-
-### Z3 ✅ — Klienti, používatelia a oddelenie dát
-
-1. Migrácie: `tenants` (názov, krajina, mena, jazyky, stav), `tenant_domains` (hostname → klient), `profiles`, `memberships`
-   (používateľ ↔ klient, M:N, rola `owner` / `reception` / `cleaning`), `platform_admins`, `audit_log`.
-2. Pomocné funkcie podľa vzoru Credit Managera (`SECURITY DEFINER`, `search_path=''`): napr. `is_platform_admin()`, `is_tenant_member(tenant_id, roles)`.
-   **RLS na každej tabuľke.**
-3. **Automatické testy oddelenia** (pgTAP s asserciami): používateľ klienta A nevidí ani nezmení nič z klienta B; rola upratovanie nevidí, čo nemá.
-4. **Prihlásenie** cez `@supabase/ssr` (e-mail + heslo pre ľudí klienta a Martina), **určenie klienta podľa domény** (subdoména / vlastná doména,
-   pri lokálnom vývoji náhradný spôsob).
-5. Seed: Martin (`info@obrazne.sk`) ako správca platformy, klient **„Ukážkový klient“** a klient **„Chalet STRÖMY“** (len záznam klienta, bez objektov).
-
-### Z4 ✅ — Preklady, peniaze, téma
-
-1. **Preklady** (knižnicu vyber sám): slovenčina, štruktúra pripravená na ďalšie jazyky, žiadne natvrdo písané texty. Formátovanie dátumov
-   a **súm z centov s menou** cez `Intl` podľa jazyka; pomocné funkcie pre peniaze (sčítanie v centoch, žiadne desatinné čísla).
-2. **Téma klienta** (A12): záznam témy (logo, farby, písma z vybranej ponuky, zaoblenie, svetlý/tmavý režim) → CSS premenné podľa domény;
-   **automatická kontrola kontrastu**; predvolená téma platformy podľa vizuálneho smeru (A12: Apple — zaoblené prvky, tenké linky, málo farieb).
-
-### Z5 ✅ — Moduly a kostra administrácie
-
-1. **Register modulov v kóde** (A3): manifest modulu (kľúč, názov, závislosti, položky menu, miesta v rozhraní), tabuľky `modules`
-   a `tenant_modules` (stav `trial` / `active` / `off`, koniec skúšky), funkcia „je modul zapnutý pre klienta“; miesta v rozhraní (sloty)
-   a **udalosti** (zatiaľ kostra, jadro o moduloch nevie). Vypnutie skryje, nič nemaže.
-2. **Kostra administrácie** (A18): rozloženie s bočnou navigáciou (preniesť z RV `AdminShell`/`AdminSidebar` a CM pásu ikon), mobilné menu,
-   tmavý režim, menu skladané z modulov, prepínanie klienta pre používateľa s viacerými členstvami.
-3. **Spoločný bočný panel so záznamom** (A18): stav v URL, Späť zavrie, Esc a klik mimo, na mobile celá obrazovka.
-4. Spoločné komponenty: zoznam s filtrami, triedením, stránkovaním na serveri a CSV exportom (vzor RV `InquiryList`).
-5. Ukážkový modul (napr. prázdny modul „Doplnkové služby“ s jednou položkou menu), aby bolo vidno, že zapínanie funguje.
-
-### Z6 ✅ — Riadiace centrum (kostra)
-
-1. Prístup len pre správcu platformy. Zoznam klientov, založenie klienta (minimálne údaje + doména), detail klienta.
-2. **Vypínače modulov** so stavom a dátumom konca skúšky; každá zmena do `audit_log` (kto, kedy, čo).
-3. Ukážka témy klienta (náhľad farieb a písma).
-4. Na konci: nasadené na staging, Martinovi pošli adresu a krátky postup, čo si môže preklikať (prihlásenie, založenie klienta, zapnutie modulu).
+### Z12 — iCal
+Export per jednotka (tajný odkaz), import kanálov (Booking, Airbnb) s pravidelnou synchronizáciou, udalosti do obsadenosti, **kolízia = upozornenie**
+majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného behu. Na konci: všetko nasadené na staging a Martinovi krátky postup,
+čo si preklikať (rezervácia ako hosť na STRÖMY, potvrdenie platby, kalendár, iCal).
 
 ---
 
@@ -112,13 +71,13 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [x] Z1 — Rental Van a Credit Manager → `docs/analyza-existujucich-appiek.md`
 
 ## Fáza 2 — Architektúra v2 🧠
-- [ ] Revízia doménových kapitol z v1 (časť B): dostupnosť a iCal, cenotvorba, doplnkové služby, rezervačný tok a stavy,
+- [x] Revízia doménových kapitol z v1 (časť B): dostupnosť a iCal, cenotvorba, doplnkové služby, rezervačný tok a stavy,
       platby, komunikácia, zóna hosťa a administrácia majiteľa, legislatíva
-- [ ] Dátový model v2 (schéma tabuliek s `tenant_id`, členstvá, moduly)
+- [x] Dátový model v2 (B1; schému tabuliek navrhne Claude Code v Z7)
 - [ ] Katalóg modulov, napájacie miesta, priradenie do balíkov
 - [ ] Riadiace centrum — obrazovky a údaje
 - [ ] Prevádzka: výber transakčnej e-mailovej služby, úložisko pre nezávislú zálohu, upozornenia, postup pri výpadku
-- [ ] Presný rozsah MVP pre Chalet STRÖMY a plán 4 týždňov (časť C)
+- [x] Presný rozsah MVP pre Chalet STRÖMY (časť C) — plán = fronta Z7–Z12
 - [ ] Obchodný model platformy: ceny, mikro-provízia (definícia obratu), odporúčací program, fakturácia klientom, DPH (A10)
 - [ ] Sprievodca zakladaním klienta a pohľad klienta na stav (A11)
 - [ ] Vzhľad: rozsah premenných dizajnového systému, svetlý a tmavý režim (A12)
@@ -126,7 +85,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [ ] Meranie: vlastné štatistiky, Google Analytics so súhlasom, ID klienta (A14)
 - [ ] Podpora: chatbot (Smartsupp?), návody pre majiteľov, kto rieši čo (A15)
 - [ ] Paralelný chod s Bookingom a Airbnb: synchronizácia, kolízie, postup pri dvojitej rezervácii (A16)
-- [ ] Showroom: zoznam ukážkových objektov rôznych druhov + Chalet STRÖMY s reálnymi údajmi (časť C)
+- [x] Showroom: zoznam ukážkových objektov rôznych druhov + Chalet STRÖMY s reálnymi údajmi (časť C)
 
 ## Fáza 3 — MVP Chalet STRÖMY 🔧 + 🧠 *(cca 4 týždne po uzavretí Fázy 2)*
 - [x] 3a0 Kostra platformy (Z2–Z6): projekt, prostredia, klienti a oddelenie dát, preklady, téma, moduly, administrácia, riadiace centrum
@@ -148,6 +107,8 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Ručné rezervácie** (majiteľ zapíše telefonickú rezerváciu) — rátajú sa do percent z obratu? (obchodný model)
+- **Jana:** skutočné ceny služieb a poplatku za zviera, storno pásma 11–13 a 15–29 dní, je platiteľka DPH?
 - Supabase aj Vercel CLI sa z tvojho PC nevedia spojiť (Transport error / zaseknuté). Nevadí — Vercel je napojený cez web a databáza cez MCP; ak chceš CLI, treba pozrieť firewall/antivírus/proxy pre PowerShell.
 - Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
@@ -160,6 +121,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Časť B (doména B1–B9) a rozsah MVP v architektúre; fronta Z7–Z12 (MVP Chalet STRÖMY + showroom). (Claude chat)
 - 2026-10-16 — Z2 a Z6 dokončené: Martin napojil Vercel cez web (CLI sa nepripojí), staging https://booking-platform-obrazne.vercel.app
   priradený Ukážkovému klientovi; Martin (účet si založil sám) pridaný do `platform_admins` a ako `owner` oboch klientov (zapísané v audite). (Claude Code)
 - 2026-10-16 — Z6 (bez nasadenia): riadiace centrum `/platform` — klienti, založenie (funkcia `platform_create_tenant`: klient + doména + téma + audit
