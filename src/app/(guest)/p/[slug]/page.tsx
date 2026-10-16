@@ -8,7 +8,7 @@ import {
   listPublicProperties,
   listTerms,
 } from "@/core/booking/catalog";
-import { BookingProvider, MobileBar } from "@/core/booking/guest-booking";
+import { BookingProvider, MobileBar, StickyBar } from "@/core/booking/guest-booking";
 import { photoUrl } from "@/core/booking/photo";
 import { expandRanges } from "@/core/booking/ranges";
 import { formatMoney } from "@/core/format/format";
@@ -154,6 +154,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         ) : null}
         <PropertySections sections={detail.sections} data={sectionData} modules={modules} />
       </main>
+      <StickyBar />
       <MobileBar />
     </BookingProvider>
   );

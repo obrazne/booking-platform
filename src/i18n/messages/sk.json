@@ -360,9 +360,6 @@
     },
     "property": {
       "gallery": "Fotky",
-      "showAll": "Všetky fotky ({count})",
-      "overview": "O ubytovaní",
-      "amenities": "Vybavenie",
       "included": "V cene",
       "rules": "Pravidlá pobytu",
       "checkIn": "Príchod od {time}",
@@ -378,7 +375,6 @@
       "nights": "{count, plural, one {# noc} few {# noci} other {# nocí}}",
       "perNight": "za noc",
       "perPersonNight": "za osobu a noc",
-      "reviews": "Hostia o nás",
       "cancellation": "Storno podmienky",
       "units": "Ubytovacie jednotky",
       "unitCapacity": "až {count} hostí",
@@ -388,16 +384,11 @@
       "backToWeb": "Späť na web",
       "allPhotos": "Všetkých {count} fotiek",
       "availability": "Dostupnosť a ceny",
-      "availabilityLead": "Ceny sú za celý objekt a noc.",
       "fromNight": "od {price} / noc",
       "fromPersonNight": "od {price} / osoba a noc",
-      "expand": "Rozbaliť",
       "arrival": "Príchod",
       "departure": "Odchod",
       "guestsLabel": "Hostia",
-      "continueToDetails": "Pokračovať k údajom",
-      "servicesLine": "K pobytu si môžete objednať: {list}.",
-      "dates": "Termíny",
       "otherDays": "Všetky ostatné dni",
       "fromNightRich": "od <b>{price}</b> / noc",
       "fromPersonNightRich": "od <b>{price}</b> / osoba a noc",
@@ -554,8 +545,7 @@
       "trips": "Počet ciest",
       "payTitle": "Súhrn a platba",
       "stayWithServices": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {services}",
-      "selectDates": "Vyberte termín",
-      "book": "Rezervovať"
+      "selectDates": "Vyberte termín"
     },
     "sections": {
       "highlights": {

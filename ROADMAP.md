@@ -6,92 +6,18 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová na stagingu https://booking-platform-obrazne.vercel.app. Časť B (doména) a rozsah MVP
-  sú v `ARCHITEKTURA.md` (B1–B9, časť C). **Stavia sa MVP pre Chalet STRÖMY + showroom** (Z7–Z12).
-- **Ďalší krok pre Claude Code:** fronta Z10 → Z15, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
-- **Ďalší krok pre Martina:** preklikať staging; odpovedať na otázky nižšie, keď bude čas (neblokujú prácu).
-- **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z12.
+- **Kde sme (16. 10.):** fronta Z1–Z15 hotová na stagingu https://booking-platform-obrazne.vercel.app — kostra platformy a MVP pre Chalet STRÖMY
+  + showroom (rezervácia, platba prevodom s QR, e-maily, iCal, administrácia, stránka podľa vizuálu v1). Chýba: doklady, nasadenie u Jany (3d, 3e).
+- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie od Claude chatu.
+- **Ďalší krok pre Martina:** preklikať staging (stránka STRÖMY podľa vizuálu v1, košík, rezervácia, administrácia); odpovedať na otázky nižšie.
+- **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z15, ďalšia fronta (rozhranie sekcií, zóna hosťa, doklady).
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
 po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom `/dalej`. Keď sú všetky ✅, sekciu vyprázdni.*
 
-*Hotové Z1–Z6 (analýza, projekt, klienti a oddelenie dát, preklady a téma, moduly a administrácia, riadiace centrum) — detail v Denníku a histórii Gitu.*
-
-**Kontext pre celú frontu Z7–Z12:** staviame **MVP pre Chalet STRÖMY a showroom** podľa `ARCHITEKTURA.md` **časť B (B1–B9) a časť C**
-(rozsah MVP v tabuľke). Dátový model staviaj **celý podľa B1** (aj veci mimo rozhrania MVP: jednotky, cena za osobu, vekové pásma, poplatky,
-zložená jednotka len pripraviť), rozhranie len pre to, čo je v MVP. Všetko s `tenant_id`, RLS a testami; peniaze v centoch; texty cez preklady;
-vzhľad podľa A12 a A18. Technické detaily rozhoduješ sám a zapisuješ do Denníka.
-
-### Z7 ✅ — Doménové tabuľky, obsadenosť a výpočet ceny
-1. Migrácie podľa B1: objekty, jednotky, fotky (úložisko s cestou podľa klienta), číselníky (typ, vybavenie, región, vhodné pre — s prekladmi),
-   sezóny, ceny, poplatky, zľavy (dĺžka pobytu, promo kód), služby (modul `services`), iCal kanály, rezervácia (hlavička, položky, riadky ceny,
-   platby, história stavov, súhlasy, prístupový token), **obsadenosť s obmedzením proti prekryvu** (B2).
-2. RLS a pgTAP testy: oddelenie klientov, **test, že databáza odmietne dvojitú rezerváciu** aj súbežne vytvorené rezervácie.
-3. **Výpočet ceny ako čistá funkcia** (B3) s jednotkovými testmi — vrátane prípadov STRÖMY: 21.–24. 12. = 2 × 850 + 1 × 1 200; min. nocí podľa
-   sezóny dňa príchodu; zľava od 6. noci; promo kód; služby za osobu, za noc, za osobu a noc, fixne; daň zahrnutá v cene.
-4. **Seed:** Chalet STRÖMY z `docs/podklady/chalet-stromy-podklady.md` (údaje, sezóny opakované každý rok, ceny, služby a poplatok za zviera
-   s orientačnými cenami, zľava −10 % od 6 nocí, storno podmienky, 3 referencie). Fotky: Martinove lokálne kópie z booking-demo
-   (`podklady/fotky-stromy/`, mimo Gitu), ak nie sú, opýtaj sa. **Prístupové kódy a Wi-Fi do seedu nedávaj.**
-   Showroom: 6 vymyslených objektov podľa časti C pod Ukážkovým klientom, fotky z voľne použiteľných zdrojov (zapíš zdroj a licenciu).
-
-### Z8 ✅ — Administrácia: objekty, ceny, služby
-Editor objektu a jednotky (texty viacjazyčne, fotky so zmenšením v prehliadači, vybavenie, pravidlá, **neverejné pokyny k príchodu**),
-sezóny a ceny (prehľadne, kontrola prekryvov), poplatky a zľavy, služby (modul), blokácie termínov, nastavenia klienta (platobné údaje —
-IBAN, príjemca, lehota v hodinách; storno podmienky; odkazy na VOP a ochranu údajov). Všetko v kostre administrácie a s bočným panelom.
-
-### Z9 ✅ — Stránka hosťa a vytvorenie rezervácie
-Podľa B7: katalóg s filtrami (showroom), detail objektu s kalendárom dostupnosti a cien, rezervačný tok (termín a osoby aj z parametrov adresy,
-služby, údaje, poznámka, súhlasy vrátane nepovinného marketingového, súhrn s rozpisom). Server prepočíta cenu, vytvorí rezerváciu so stavom
-*čaká na platbu*, blokáciou do lehoty a zamrazenými riadkami. Potom stránka s platobnými údajmi a **QR PAY by square** (VS = číslo rezervácie)
-a **prístupový odkaz** na rezerváciu (stav, platobné údaje, žiadosť o storno). V téme klienta, mobil prvý, neindexovať. Ochrana proti robotom.
-**Vizuál: podľa `docs/vizual-stranka-hosta.md`** (schválené 16. 10.) — kalendár s cenami v dňoch a bublinou pri prechode myšou ako
-samostatný komponent, košík ako bočný panel v troch krokoch (Váš pobyt → Údaje a želania → Platba), detail služby posunom v paneli,
-kontakt na majiteľa (WhatsApp, telefón), na mobile spodný pás a výber termínu v spodnom okne. Bez akýchkoľvek nátlakových prvkov.
-
-### Z10 ✅ — Rezervácie v administrácii
-Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × jednotky; rezervácie, blokácie, iCal), prehľad na úvodnej stránke
-(dnešné príchody, odchody, čakajúce platby), potvrdenie platby, zrušenie, žiadosti o storno, **ručná rezervácia**, poznámky, história stavov,
-export CSV. **Plánovaná úloha:** automatické zrušenie po lehote a uvoľnenie termínu.
-
-### Z11 ✅ — E-maily
-Transakčná služba s API (vyber sám, bezplatný plán; ak by niečo stálo peniaze, opýtaj sa). Šablóny s prekladmi a témou klienta, fronta s opakovaním,
-záznam odoslaných. Správy z B6 (bez žiadosti o recenziu); pokyny pred príchodom X dní vopred (nastaviteľné). Na stagingu posielaj z testovacej
-domény služby alebo presmeruj všetko na Martinov e-mail; **vlastnú odosielaciu doménu (DNS) nenastavuj bez Martina.**
-
-### Z12 ✅ — iCal
-Export per jednotka (tajný odkaz), import kanálov (Booking, Airbnb) s pravidelnou synchronizáciou, udalosti do obsadenosti, **kolízia = upozornenie**
-majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného behu. Na konci: všetko nasadené na staging a Martinovi krátky postup,
-čo si preklikať (rezervácia ako hosť na STRÖMY, potvrdenie platby, kalendár, iCal).
-
-### Z13 ✅ — Príprava dátového modelu na zónu hosťa (B10)
-Len dáta a testy, bez rozhrania: hosť ako záznam klienta (`tenant_id`, e-mail jedinečný v rámci klienta), voliteľné prepojenie na prihlásenie
-(Supabase Auth), priradenie rezervácií cez overený e-mail, dokumenty pri objekte a pri rezervácii v súkromnom úložisku (dočasné odkazy),
-viditeľnosť prístupových kódov až pri potvrdenom pobyte. RLS: hosť vidí len svoje rezervácie u daného klienta. Ak už niečo z toho Z7 urobila,
-len to over a doplň chýbajúce.
-
-### Z14 — Detail objektu zo sekcií
-Podľa `ARCHITEKTURA.md` → B7 *Detail objektu sa skladá zo sekcií* a `ROZHODNUTIA.md` (16. 10.).
-1. Migrácia: sekcie stránky objektu (`tenant_id`, objekt, typ, poradie, zapnutá, obsah ako JSON s prekladmi) + RLS a pgTAP testy.
-   Predlohy podľa typu ubytovania ako dáta (výber a poradie typov), použité pri založení nového objektu.
-2. Register typov sekcií v kóde: typ = komponent + zod schéma obsahu; moduly pridávajú typy cez svoj manifest (`services` → služby).
-   Neplatný obsah sa nevykreslí a zapíše sa do logu, stránka nespadne.
-3. Detail objektu zo Z9 prestav na vykresľovanie zo sekcií (doterajšie časti → typy sekcií). Kalendár s cenami je povinný.
-   Prázdna sekcia sa skryje. Údaje zo systému (za objekt / za osobu, min. noci, storno, príchod/odchod, vybavenie, ceny) sa dosadzujú
-   z dát, nepíšu sa do obsahu sekcie.
-4. Seed: sekcie pre Chalet STRÖMY (predloha „celý objekt“) a pre objekty showroomu (rôzne predlohy, nech je vidieť rozdiel).
-5. Rozhranie v administrácii **nestavaj** (príde po MVP). Typy sekcií a ich vzhľad stavaj rovno podľa **vizuálu v1**
-   (`docs/vizual-stranka-hosta.md` → *Detail objektu*) — zvyšok vizuálu v1 dorobí Z15.
-6. Pravidlo vzhľadu: prvky prichytené k okraju obrazovky (bočný panel na stránke aj v administrácii, prilepený pruh, spodný pás na mobile)
-   majú **rovné rohy**; zaoblené sú len prvky, ktoré na stránke plávajú (karty, tlačidlá, bubliny). Uprav, kde to dnes nesedí.
-
-### Z15 — Stránka hosťa podľa vizuálu v1
-Martin schválil vizuál **v1 (16. 10.)**: popis `docs/vizual-stranka-hosta.md` (začni sekciou *Zmeny oproti prvému popisu*), zdroj plátna
-`docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Košík v troch krokoch, kalendár a mobilný pás už sú zo Z9 —
-**dorob len rozdiel:** detail objektu ako vizuálne sekcie v poradí podľa popisu (ak to nespravila Z14), **služby na stránke vôbec nie**
-(len v košíku), malý pravý panel bez „Rozbaliť“, **prilepený pruh** pri rolovaní (skrytý pri otvorenom košíku), **texty tlačidiel**
-(„Pozrieť pobyt“ na stránke aj v pruhu a na mobile, záväzné tlačidlo až v kroku 3), rovné rohy pri okrajoch obrazovky.
-Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
+*Fronta je prázdna. Hotové Z1–Z15 (analýza, kostra platformy, MVP Chalet STRÖMY: doména, administrácia, stránka hosťa, rezervácie,
+e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — detail v Denníku a histórii Gitu.*
 
 ---
 
@@ -158,6 +84,19 @@ Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z15: stránka hosťa podľa vizuálu v1 (rozdiel oproti Z9): **prilepený tmavý pruh** po zrolovaní pod úvod (názov, termín
+  a noci, Spolu + cena na osobu, „Pozrieť pobyt“; bez termínu posunie na kalendár; skrytý pri otvorenom košíku), malý panel pri úvode
+  bez „Rozbaliť“, **„Pozrieť pobyt“** na stránke, v pruhu aj na mobile (záväzné tlačidlo len v kroku 3), služby na stránke nie sú
+  (len v košíku), galéria na mobile cez celú šírku. Overené: STRÖMY 21.–24. 12., 8 osôb = 2 900 € v paneli, pruhu aj košíku. (Claude Code)
+- 2026-10-16 — Z14: detail objektu zo sekcií (B7). Tabuľka `property_sections` (typ, poradie, zapnutá, obsah JSON s prekladmi) + RLS,
+  kalendár sa nedá vypnúť (aj v DB), **predlohy `section_templates`** (celý objekt, penzión s izbami, apartmány, glamping) — nový objekt
+  dostane predlohu automaticky (podľa typu ubytovania, inak podľa režimu), existujúce doplnené. Register typov v kóde
+  (`src/core/sections`: komponent + zod schéma; moduly cez `sections` v manifeste — `services` → „Na objednávku“, v predlohách nie je).
+  Neplatný obsah alebo neznámy typ sa zapíše do logu a sekcia sa vynechá; prázdna sekcia sa skryje. Údaje zo systému (ceny, min. noci,
+  storno, príchod/odchod, vybavenie, spôsob účtovania → nadpis cenníka) idú z dát. 15 typov podľa vizuálu v1 (galéria, úvod s panelom,
+  čo vás čaká, fotka cez šírku, kalendár na svetlom páse, tmavý cenník, v cene, jednotky, o objekte, okolie, referencie, časté otázky,
+  dobré vedieť, kontakt, záverečná výzva). Seed: STRÖMY s textami sekcií, showroom s rôznymi predlohami. Rovné rohy pri okrajoch
+  obrazovky už sedeli (panely, spodný pás). 11 nových pgTAP testov (spolu 108) + 3 unit. (Claude Code)
 - 2026-10-16 — Z13: dáta pre zónu hosťa (bez rozhrania). `guests` u klienta (e-mail jedinečný v rámci klienta; ten istý e-mail
   u dvoch klientov = dvaja hostia), rezervácia sa pri vzniku priradí hosťovi (trigger, existujúce doplnené), prepojenie na prihlásenie
   `claim_guest_account` len s overeným e-mailom, RLS: hosť vidí len svoje rezervácie, položky, riadky a platby u daného klienta.

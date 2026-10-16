@@ -486,6 +486,84 @@ export function CalendarSummary() {
   );
 }
 
+/**
+ * Dark bar that slides in from the top once the guest scrolls past the intro (visual v1): name, dates, total,
+ * View stay. Hidden while the cart is open. Without dates it leads to the calendar.
+ */
+export function StickyBar() {
+  const t = useTranslations("guest");
+  const { data, range, price, total, money, open, openCart } = useBooking();
+  const perPerson = usePerPerson();
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const intro = document.querySelector("[data-intro]");
+    if (!intro) {
+      const onScroll = () => setPast(window.scrollY > 640);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+    const io = new IntersectionObserver(([e]) =>
+      setPast(!e!.isIntersecting && e!.boundingClientRect.top < 0),
+    );
+    io.observe(intro);
+    return () => io.disconnect();
+  }, []);
+  if (!past || open) return null;
+  const ready = Boolean(price?.ok);
+  const fmt = new Intl.DateTimeFormat(data.locale, {
+    day: "numeric",
+    month: "numeric",
+    timeZone: "UTC",
+  });
+  const d = (x: IsoDate) => fmt.format(new Date(`${x}T00:00:00Z`));
+  const go = () => {
+    if (ready) openCart(1);
+    else document.getElementById("termin")?.scrollIntoView({ behavior: "smooth" });
+  };
+  return (
+    <div className="bg-ink animate-in slide-in-from-top fade-in fixed inset-x-0 top-0 z-30 hidden shadow-[0_18px_40px_-24px_rgba(17,33,47,0.6)] duration-200 lg:block">
+      <div
+        role="button"
+        tabIndex={-1}
+        onClick={go}
+        className="mx-auto flex w-full max-w-6xl cursor-pointer flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-3"
+      >
+        <div className="flex min-w-0 items-center gap-4">
+          <span className="truncate text-lg font-extrabold tracking-tight text-white">
+            {data.propertyName}
+          </span>
+          <span className="rounded-full border border-white/15 px-3.5 py-1.5 text-sm text-[#f3f5f7]">
+            {range.checkIn && range.checkOut
+              ? `${d(range.checkIn)} – ${d(range.checkOut)} · ${t("booking.nights", {
+                  count: diffDays(range.checkIn, range.checkOut),
+                })}`
+              : t("cart.selectDates")}
+          </span>
+        </div>
+        <div className="flex items-center gap-5">
+          {ready ? (
+            <div className="grid text-right">
+              <span className="text-lg font-extrabold text-white tabular-nums">{money(total)}</span>
+              <span className="text-xs text-[#b6c1cc]">{perPerson}</span>
+            </div>
+          ) : null}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              go();
+            }}
+            className="text-ink inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 font-bold"
+          >
+            {t("property.viewStay")} <ChevronRight className="size-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Bottom bar on phones: sum, short description, Book. */
 export function MobileBar() {
   const t = useTranslations("guest");
@@ -522,7 +600,7 @@ export function MobileBar() {
         ) : null}
       </div>
       <Button type="button" className="rounded-full" onClick={() => openCart(1)}>
-        {t("cart.book")}
+        {t("property.viewStay")}
       </Button>
     </div>
   );

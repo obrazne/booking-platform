@@ -93,7 +93,7 @@ const gallery = defineSection({
   schema: z.object({}).passthrough(),
   render: ({ data }) =>
     data.photos.length === 0 ? null : (
-      <Container className="pt-6">
+      <Container className="px-0 sm:px-6 sm:pt-6">
         <Gallery photos={data.photos} title={data.property.name} />
       </Container>
     ),
@@ -129,7 +129,10 @@ const intro = defineSection({
     const perex = pick(content.perex, data.locale, tr(p.summary, data.locale));
     return (
       <Container>
-        <div className="flex flex-wrap items-start gap-12 pt-12 pb-16 sm:pt-14 sm:pb-[72px]">
+        <div
+          data-intro
+          className="flex flex-wrap items-start gap-12 pt-12 pb-16 sm:pt-14 sm:pb-[72px]"
+        >
           <div className="grid min-w-0 flex-[999_1_520px] gap-5">
             <Heading
               as="h1"

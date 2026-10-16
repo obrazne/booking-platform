@@ -20,7 +20,7 @@ export function Gallery({
   if (photos.length === 0) return null;
   return (
     <div className="relative">
-      <div className="grid gap-2 overflow-hidden rounded-3xl sm:grid-cols-4 sm:grid-rows-2">
+      <div className="grid gap-2 overflow-hidden sm:grid-cols-4 sm:grid-rows-2 sm:rounded-3xl">
         {photos.slice(0, 5).map((p, i) => (
           <button
             key={p.url}
