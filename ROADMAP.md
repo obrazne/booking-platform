@@ -86,6 +86,12 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
 - [ ] Vkladací widget, ďalšie moduly podľa katalógu
 
+## Fáza 5 — Značka a predajný web 🧠 + 🔧 *(po MVP; cieľ: hotové pred eventom v eXtreme parku Žilina)*
+- [ ] Značka produktu: názov, doména, vizuál 🧠
+- [ ] Obchodný model a cenník uzavretý (Fáza 2) — až potom texty webu 🧠
+- [ ] Predajný web vo WordPresse s CrocoBuilderom na Martinovom hostingu: funkcie, moduly, screenshoty, dopyt 🔧
+- [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
+
 ## Otázky pre Martina
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
@@ -96,6 +102,7 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Predajný web: WordPress + CrocoBuilder po MVP a značke (Fáza 5, ROZHODNUTIA). (Claude chat)
 - 2026-10-16 — Veľký obraz: do architektúry doplnené A10–A16 (obchodný model, sprievodca klienta, vzhľad, notifikácie, meranie,
   podpora, paralelný chod s OTA) a showroom; nové body vo Fáze 2 a Otázkach. (Claude chat)
 - 2026-10-16 — Založený repozitár (Martin) a riadiace súbory (Claude chat): `ARCHITEKTURA.md` v2 časť A, `ROZHODNUTIA.md` zo 16. 10.,

@@ -2,6 +2,14 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Predajný web
+
+- **Predajný web (showcase) vo WordPresse s CrocoBuilderom**, nie v aplikácii. Dôvody: obsahový web, ktorý Martin mení sám bez nasadzovania kódu;
+  overený postup (obrazne.sk, MCP, Rank Math, GTM, cookie banner); oddelenie — zmena webu nerozbije rezervácie; využije existujúci hosting.
+- **Prepojenie s aplikáciou:** rovnaké farby a písma, skutočné screenshoty, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie.
+- **Poradie:** MVP pre Chalet STRÖMY → značka a obchodný model → predajný web (cieľ pred eventom v Žiline). Texty typu „platíte len za to,
+  čo využijete“ musia sedieť s cenníkom.
+
 ## 2026-10-16 — Veľký obraz: čo ešte patrí do produktu
 
 - **Spolupráca:** technické detaily rozhoduje Claude a zapisuje sem; Martin rozhoduje o peniazoch, práve a o tom, čo uvidia klienti.
