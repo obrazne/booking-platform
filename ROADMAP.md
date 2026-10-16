@@ -54,7 +54,7 @@ Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × 
 (dnešné príchody, odchody, čakajúce platby), potvrdenie platby, zrušenie, žiadosti o storno, **ručná rezervácia**, poznámky, história stavov,
 export CSV. **Plánovaná úloha:** automatické zrušenie po lehote a uvoľnenie termínu.
 
-### Z11 — E-maily
+### Z11 ✅ — E-maily
 Transakčná služba s API (vyber sám, bezplatný plán; ak by niečo stálo peniaze, opýtaj sa). Šablóny s prekladmi a témou klienta, fronta s opakovaním,
 záznam odoslaných. Správy z B6 (bez žiadosti o recenziu); pokyny pred príchodom X dní vopred (nastaviteľné). Na stagingu posielaj z testovacej
 domény služby alebo presmeruj všetko na Martinov e-mail; **vlastnú odosielaciu doménu (DNS) nenastavuj bez Martina.**
@@ -140,6 +140,9 @@ Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- Ochrana stagingu: adresy *.vercel.app sú za prihlásením do Vercelu (aj chalet-stromy-demo.vercel.app). Ak chceš ukázať stránku Jane,
+  treba buď vypnúť Vercel Deployment Protection pre produkčné nasadenie (stránka je neindexovaná, dáta ukážkové), alebo napojiť
+  vlastnú doménu. Ktoré?
 - Fotky showroomu: kľúč Pexels API (zadarmo) do `.env.local` ako `PEXELS_API_KEY` — potom ich doplním. Dovtedy zástupné obrázky.
 - Kľúč Resend bol poslaný v chate — po dokončení Z11 ho v Resende vymeň za nový.
 - **Jana:** skutočné ceny služieb a poplatku za zviera, storno pásma 11–13 a 15–29 dní, je platiteľka DPH? (zatiaľ orientačne)
@@ -155,6 +158,14 @@ Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z11: e-maily cez **Resend** (bezplatný plán, kľúč v `.env.local` a vo Verceli). Databáza zapisuje správy do fronty
+  `email_outbox` (triggery na históriu stavov a žiadosť o storno; funkcia na pripomienku platby v posledných 6 h a pokyny pred príchodom
+  X dní vopred), aplikácia ich vykreslí (preklady, farba témy) a odošle s opakovaním (2–16 min, potom failed). Platobné údaje s QR
+  PAY by square ako vložený obrázok. Odkaz na rezerváciu v neskorších e-mailoch: token šifrovaný kľúčom z Vault (lookup ostáva cez hash).
+  Worker `/api/jobs/run` volá **pg_cron + pg_net každú minútu** (tajomstvo v Vault; staging chránený Vercelom → vytvorený
+  „automation bypass“ token pre tento worker). Na stagingu všetko **presmerované na info@obrazne.sk** (príjemca v predmete), odosielateľ
+  testovacia doména Resend — vlastnú doménu (DNS) som nenastavoval. STRÖMY dostal na stagingu adresu `chalet-stromy-demo.vercel.app`
+  (odkazy v e-mailoch na doménu klienta). Overené: 2 testovacie e-maily odoslané. (Claude Code)
 - 2026-10-16 — Z10: rezervácie v administrácii — zoznam (stav, zdroj, príchod od–do, hľadanie, triedenie, stránkovanie, CSV) a bočný
   panel (rozpis, platba s VS a splatnosťou, **Platba prijatá**, Hosť prišiel / Pobyt ukončený, zrušenie s dôvodom, žiadosť hosťa
   o storno a jej zamietnutie, interné poznámky, história stavov s autorom, súhlasy). Kalendár obsadenosti mesiac × jednotky
