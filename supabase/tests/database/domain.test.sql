@@ -122,9 +122,9 @@ select is((select count(*)::int from public.reservations), 0, 'owner B sees none
 -- Guest (anon) -------------------------------------------------------------------------------------
 reset request.jwt.claims;
 set local role anon;
-select results_eq('select slug from public.properties order by slug', array['chalet-a', 'chalet-b'],
+select results_eq($$ select slug from public.properties where tenant_id in ('10000000-0000-0000-0000-00000000000a', '10000000-0000-0000-0000-00000000000b') order by slug $$, array['chalet-a', 'chalet-b'],
   'guest sees only published properties');
-select is((select count(*)::int from public.discounts), 1, 'guest sees the stay discount but not the promo code');
+select is((select count(*)::int from public.discounts where tenant_id = '10000000-0000-0000-0000-00000000000a'), 1, 'guest sees the stay discount but not the promo code');
 
 select * from finish();
 rollback;
