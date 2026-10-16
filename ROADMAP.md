@@ -98,8 +98,9 @@ neupravujú — len odkaz, kde sa menia.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
-- **Captcha a limit požiadaviek** na formulári hosťa (Z16): súhlasíš s Cloudflare Turnstile (zadarmo, treba účet Cloudflare)?
-  Bez toho sa dá formulár zahltiť a zneužiť na posielanie e-mailov s menom klienta.
+- **Captcha (Cloudflare Turnstile):** Martin súhlasí (16. 10.), ale účet Cloudflare ešte nemá. **Treba dorobiť:** Martin založí
+  účet Cloudflare a pošle kľúče Turnstile (site key + secret) → Claude Code ich zapojí do formulára hosťa, promo kódu a prihlásenia
+  do zóny hosťa + jednoduchý limit požiadaviek podľa IP. Dovtedy formulár chráni len skryté pole a podpísaný čas.
 - Ochrana stagingu: adresy *.vercel.app sú za prihlásením do Vercelu (aj chalet-stromy-demo.vercel.app). Ak chceš ukázať stránku Jane,
   treba buď vypnúť Vercel Deployment Protection pre produkčné nasadenie (stránka je neindexovaná, dáta ukážkové), alebo napojiť
   vlastnú doménu. Ktoré?
@@ -118,6 +119,7 @@ neupravujú — len odkaz, kde sa menia.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Martin súhlasí s Cloudflare Turnstile (zadarmo); čaká sa na jeho účet Cloudflare a kľúče — zapísané v Otázkach. (Claude Code)
 - 2026-10-16 — Z17: účet a zóna hosťa na doméne klienta (`/ucet`). **Prihlásenie kódom na e-mail** — kód vydá Supabase, ale e-mail
   posiela náš systém v téme klienta (nie spoločné e-maily Supabase); limit 5 kódov a 8 chybných pokusov za hodinu na e-mail,
   odpoveď neprezradí, či e-mail má pobyty; **účtom personálu a správcu platformy sa kód neposiela** (tie sa prihlasujú heslom).

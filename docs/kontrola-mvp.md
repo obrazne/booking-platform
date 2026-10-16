@@ -43,7 +43,7 @@ escapované, CSV chránené proti vzorcom, worker s porovnaním tajomstva v kon�
 
 **Ostáva (nie je to blokujúce pre ukážku):**
 - **Obmedzenie počtu požiadaviek a captcha** na formulári hosťa a promo kódoch (proti zahlteniu a zneužitiu e-mailov) —
-  návrh: Cloudflare Turnstile (zadarmo) + jednoduchý limit podľa IP. Otázka pre Martina.
+  Cloudflare Turnstile (zadarmo) + jednoduchý limit podľa IP — Martin súhlasí, čaká sa na jeho účet Cloudflare a kľúče.
 - Pred spustením zóny hosťa (Z17) overiť nastavenie prihlásenia na Supabase stagingu/produkcii: registrácia vypnutá alebo
   povinné potvrdenie e-mailu (inak by si niekto mohol založiť účet s cudzím e-mailom). Z17 to rieši kódom na e-mail.
 - Hosť cez API vidí aj interné stĺpce svojej rezervácie (šifrovaný token, dôvod zrušenia) — pri Z17 obmedziť stĺpce.
@@ -71,5 +71,5 @@ escapované, CSV chránené proti vzorcom, worker s porovnaním tajomstva v kon�
   moduly sa čítajú dvakrát (rozloženie + detail) — zlúčiť pri ďalšej úprave, na rýchlosť to vplyv takmer nemá.
 
 ## Otázky pre Martina z kontroly
-- Captcha a limit požiadaviek: súhlasíš s Cloudflare Turnstile (zadarmo, treba účet Cloudflare)?
+- Captcha: Martin súhlasí s Cloudflare Turnstile (16. 10.), dorobí sa po založení účtu Cloudflare.
 - Testy prehliadačom v CI: ak vypneš ochranu Vercelu na stagingu, môžu bežať pri každom pushi.
