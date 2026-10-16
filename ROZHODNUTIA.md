@@ -2,6 +2,21 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Veľký obraz: čo ešte patrí do produktu
+
+- **Spolupráca:** technické detaily rozhoduje Claude a zapisuje sem; Martin rozhoduje o peniazoch, práve a o tom, čo uvidia klienti.
+- **Obchodný model platformy** (Martinove faktúry klientom: zriadenie, mesačný poplatok, mikro-provízia, moduly, odporúčací program)
+  sa do systému doplní; model sa ešte navrhne tak, aby bol výhodný pre klientov aj pre Martina (`ARCHITEKTURA.md` A10).
+- **Predajné materiály** s vymyslenými číslami a citátom sú zatiaľ len pracovná idea; von až s reálnymi číslami. Údaje u Jany
+  (podiel priamych rezervácií, provízie OTA) zbierať od začiatku ako východiskový stav.
+- **Showroom:** vývoj s vymyslenými objektmi rôznych druhov + Chalet STRÖMY s reálnymi fotkami a údajmi na prezentáciu Jane.
+- **Odchod z OTA je cieľ produktu**; prechodné obdobie sa aj tak musí riešiť (synchronizácia, upozornenia, postup pri dvojitej rezervácii).
+- **Sprievodca zakladaním klienta** ako checklist v riadiacom centre; klient vidí, čo od neho čakáme.
+- **Podpora cez chatbot** (napr. Smartsupp, vkladá sa kódom) a dokumentáciu, aby Martin netelefonoval celý deň.
+- **Vzhľad:** premenné (farby, písma, logo, svetlý/tmavý režim) v cene; zmena rozloženia za príplatok.
+- **Push notifikácie na mobil = upsell modul**; e-mail o novej rezervácii ostáva v jadre (inak by majiteľ prehliadol rezerváciu).
+- **Meranie povinne:** vlastné štatistiky z databázy + Google Analytics a pod. so súhlasom, aby sa výsledky dali ukazovať klientom.
+
 ## 2026-10-16 — Základné rozhodnutia pred stavbou
 
 - **Kto sa prihlasuje:** klient = firma majiteľa a môže mať viac objektov. Na jedného klienta viac používateľov s rolami

@@ -66,6 +66,14 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Riadiace centrum — obrazovky a údaje
 - [ ] Prevádzka: výber transakčnej e-mailovej služby, úložisko pre nezávislú zálohu, upozornenia, postup pri výpadku
 - [ ] Presný rozsah MVP pre Chalet STRÖMY a plán 4 týždňov (časť C)
+- [ ] Obchodný model platformy: ceny, mikro-provízia (definícia obratu), odporúčací program, fakturácia klientom, DPH (A10)
+- [ ] Sprievodca zakladaním klienta a pohľad klienta na stav (A11)
+- [ ] Vzhľad: rozsah premenných dizajnového systému, svetlý a tmavý režim (A12)
+- [ ] Notifikácie: inštalovateľná administrácia, push ako modul (A13)
+- [ ] Meranie: vlastné štatistiky, Google Analytics so súhlasom, ID klienta (A14)
+- [ ] Podpora: chatbot (Smartsupp?), návody pre majiteľov, kto rieši čo (A15)
+- [ ] Paralelný chod s Bookingom a Airbnb: synchronizácia, kolízie, postup pri dvojitej rezervácii (A16)
+- [ ] Showroom: zoznam ukážkových objektov rôznych druhov + Chalet STRÖMY s reálnymi údajmi (časť C)
 
 ## Fáza 3 — MVP Chalet STRÖMY 🔧 + 🧠 *(cca 4 týždne po uzavretí Fázy 2)*
 - [ ] 3a Základ: projekt, databáza pre viac klientov, prihlásenie, objekt, cenník, sezóny, blokované dni
@@ -82,8 +90,13 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
 - Supabase platený plán: pri objednávke pozrieť limity a nastaviť strop výdavkov.
+- Účtovník: DPH pri nákupe zahraničných služieb (Supabase, Vercel, e-mailová služba) pri registrácii podľa §7a.
+- Jana: začať zbierať východiskové čísla (podiel priamych rezervácií, provízie Bookingu a Airbnb za posledný rok).
+- Jana: súhlas s použitím fotiek a údajov chaletu v ukážke pre ďalších záujemcov.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Veľký obraz: do architektúry doplnené A10–A16 (obchodný model, sprievodca klienta, vzhľad, notifikácie, meranie,
+  podpora, paralelný chod s OTA) a showroom; nové body vo Fáze 2 a Otázkach. (Claude chat)
 - 2026-10-16 — Založený repozitár (Martin) a riadiace súbory (Claude chat): `ARCHITEKTURA.md` v2 časť A, `ROZHODNUTIA.md` zo 16. 10.,
   podklady z booking-demo v `docs/podklady`, `docs/biznis`, `docs/archiv-wp`. Zadanie Z1. (Claude chat)

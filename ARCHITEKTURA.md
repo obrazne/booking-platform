@@ -102,6 +102,54 @@ PLATFORMA (Martin)
 - **Účty:** všetko na Obrazne s.r.o., dvojfaktorové overenie, heslá v správcovi hesiel. Platené plány pred prvým platiacim klientom.
 - **Zmluvné a poistné:** dostupnosť, obmedzenie zodpovednosti, export pri odchode, spracúvanie údajov; poistenie zodpovednosti (preveriť).
 
+## A10. Obchodný model platformy (na návrh)
+
+- Systém musí vedieť podklady pre Martinove faktúry klientom: zriadenie, mesačný poplatok podľa balíka, mikro-provízia z obratu,
+  moduly navyše a skúšobné doby, odporúčací program (zľava pre nového klienta, mesiac zadarmo pre odporúčateľa — masterdokument).
+- **Otvorené:** čo presne je „obrat“ pre mikro-províziu (s daňou za ubytovanie a službami? len zaplatené rezervácie? čo storná?),
+  ako sa z podkladu stane faktúra (Martinov fakturačný nástroj), DPH pri nákupe zahraničných služieb (účtovník).
+  Model sa navrhne tak, aby bol výhodný pre klientov aj pre Martina.
+
+## A11. Zakladanie klienta (sprievodca)
+
+- V riadiacom centre **checklist zakladania klienta**: firma, objekty a jednotky, cenník a sezóny, fotky a texty, doména,
+  e-mailová doména (DNS), fakturačný nástroj, iCal, právne texty, vzhľad, testovacia rezervácia.
+- **Klient vidí stav** (odkaz alebo e-mail): čo je hotové a čo od neho čakáme („dodajte cenník“) — motivuje ho dodať podklady.
+- Cieľ: nový klient za hodinu práce Martina, nie za deň.
+
+## A12. Vzhľad pre klienta
+
+- Rezervačná stránka a e-maily stavané na **premenných dizajnového systému**: farby, písma, logo, svetlý a tmavý režim.
+  Nastavuje sa bez zásahu do kódu (súčasť balíkov).
+- **Zmena rozloženia** (layoutu) je platená práca navyše, nie nastavenie.
+
+## A13. Notifikácie a mobil
+
+- Administrácia ako **inštalovateľná webová aplikácia** (bez App Store).
+- **E-mail majiteľovi o novej rezervácii je v jadre.** Push notifikácie na mobil sú **modul (upsell)**.
+
+## A14. Meranie
+
+- **Vlastné štatistiky z databázy** (bez cookies, spoľahlivé): zdroj rezervácie (priama / Booking / Airbnb / iný), obsadenosť, tržby,
+  podiel priamych rezervácií v čase — podklad pre štatistiky v administrácii a prípadové štúdie.
+- **Nástroje návštevnosti** (Google Analytics a pod.) na rezervačnej stránke s cookie súhlasom (Consent Mode). Klient si môže
+  doplniť vlastné ID (GA4, Meta pixel) v nastaveniach.
+
+## A15. Podpora
+
+- Martin nechce celý deň telefonovať → podpora cez **chat s chatbotom** (napr. Smartsupp, vkladá sa kódom do akejkoľvek stránky)
+  a **dokumentáciu / návody pre majiteľov**.
+- Rozlišovať dve roviny: **podpora pre majiteľov** (otázky k systému → Martin, chatbot nad návodmi) a **otázky hostí** k objektu
+  (→ majiteľ; automatizovaný recepčný je samostatný Premium+ modul).
+- Chat na rezervačnej stránke hostí len so súhlasom s cookies.
+
+## A16. Odchod z OTA a paralelný chod
+
+- Cieľ produktu: klienti postupne **opúšťajú Booking a Airbnb** a stavajú na vlastnom kanáli. Prechodné obdobie (prvý rok paralelne)
+  je však najrizikovejšie pre reputáciu klienta — dvojitá rezervácia cez oneskorený iCal.
+- Preto: čo najčastejšia synchronizácia na našej strane, upozornenie Martinovi aj majiteľovi pri kolízii, spísaný postup pri dvojitej rezervácii.
+- Štatistika podielu priamych rezervácií v čase ukazuje klientovi pokrok pri odchode z OTA (predajný argument).
+
 ---
 
 # ČASŤ B — DOMÉNOVÉ POŽIADAVKY (z v1, na revíziu)
@@ -122,4 +170,10 @@ Kapitoly sa revidujú v Claude chate po jednej a zapisujú sem ako B1, B2, … (
 - Doplnkové služby: šéfkuchár / raňajky, transfer z letiska (prvý modul).
 - Platba len prevodom s QR, 24 h držanie termínu (nastaviteľné), e-maily hosťovi a majiteľovi, iCal s Bookingom a Airbnb.
 - Dátový model celý, rozhranie len pre tento prípad. Podklady: `docs/podklady/chalet-stromy-podklady.md`.
+
+## Showroom (ukážkové dáta)
+
+- Počas vývoja beží aplikácia s **ukážkovými dátami**: viac druhov objektov (aby sa dalo filtrovať, mal sa archív a pod.) — vymyslené.
+- Medzi nimi **Chalet STRÖMY s reálnymi fotkami a údajmi** na prezentáciu Jane. Ukazovať ho ďalším záujemcom až s jej súhlasom.
+- Neskôr samostatný **ukážkový klient** na predaj, ktorého dáta sa každú noc obnovia.
 - *Presný rozsah a plán 4 týždňov — doplní sa po revízii časti B.*
