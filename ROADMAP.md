@@ -6,11 +6,13 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** architektúra časť A dohodnutá, analýza Z1 hotová, rozhodnutý čistý Next.js projekt. **Začína sa stavať kostra platformy** (Z2–Z6)
-  — bez tabuliek objektov a rezervácií, tie počkajú na revíziu časti B v chate.
-- **Ďalší krok pre Claude Code:** fronta Z2 → Z6, **robiť za sebou bez prerušenia** (pravidlá v `CLAUDE.md` → *Režim práce*).
-- **Ďalší krok pre Martina:** na začiatku Z2 sa prihlásiť do Supabase CLI a Vercelu, keď o to Claude Code požiada; inak nič.
-- **Claude chat:** súbežne s Martinom revízia časti B (dostupnosť, cenotvorba, služby, tok, …) → potom zadanie doménových tabuliek.
+- **Kde sme (16. 10.):** kostra platformy stojí lokálne aj na staging databáze — Z3, Z4, Z5 hotové, Z6 hotové okrem nasadenia,
+  Z2 hotové okrem Vercelu. CI (typy, lint, formát, unit testy + 44 pgTAP testov oddelenia klientov) prechádza.
+- **Ďalší krok pre Claude Code:** po Martinovom prihlásení do Vercel CLI napojiť projekt, nasadiť staging a dokončiť Z2 a Z6;
+  Martina pridať ako správcu platformy a majiteľa ukážkových klientov.
+- **Ďalší krok pre Martina:** dokončiť prihlásenie Supabase + Vercel CLI (terminál v Claude Code), založiť si účet v Supabase
+  (Authentication → Add user, info@obrazne.sk, Auto Confirm) a dať vedieť.
+- **Claude chat:** revízia časti B (dostupnosť, cenotvorba, služby, tok, …) → potom zadanie doménových tabuliek.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
@@ -66,7 +68,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 
 **Martin:** keď treba, požiadaj ho o prihlásenie (Supabase CLI, Vercel) — urob to naraz na začiatku, nie po jednom.
 
-### Z3 — Klienti, používatelia a oddelenie dát
+### Z3 ✅ — Klienti, používatelia a oddelenie dát
 
 1. Migrácie: `tenants` (názov, krajina, mena, jazyky, stav), `tenant_domains` (hostname → klient), `profiles`, `memberships`
    (používateľ ↔ klient, M:N, rola `owner` / `reception` / `cleaning`), `platform_admins`, `audit_log`.
@@ -77,14 +79,14 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
    pri lokálnom vývoji náhradný spôsob).
 5. Seed: Martin (`info@obrazne.sk`) ako správca platformy, klient **„Ukážkový klient“** a klient **„Chalet STRÖMY“** (len záznam klienta, bez objektov).
 
-### Z4 — Preklady, peniaze, téma
+### Z4 ✅ — Preklady, peniaze, téma
 
 1. **Preklady** (knižnicu vyber sám): slovenčina, štruktúra pripravená na ďalšie jazyky, žiadne natvrdo písané texty. Formátovanie dátumov
    a **súm z centov s menou** cez `Intl` podľa jazyka; pomocné funkcie pre peniaze (sčítanie v centoch, žiadne desatinné čísla).
 2. **Téma klienta** (A12): záznam témy (logo, farby, písma z vybranej ponuky, zaoblenie, svetlý/tmavý režim) → CSS premenné podľa domény;
    **automatická kontrola kontrastu**; predvolená téma platformy podľa vizuálneho smeru (A12: Apple — zaoblené prvky, tenké linky, málo farieb).
 
-### Z5 — Moduly a kostra administrácie
+### Z5 ✅ — Moduly a kostra administrácie
 
 1. **Register modulov v kóde** (A3): manifest modulu (kľúč, názov, závislosti, položky menu, miesta v rozhraní), tabuľky `modules`
    a `tenant_modules` (stav `trial` / `active` / `off`, koniec skúšky), funkcia „je modul zapnutý pre klienta“; miesta v rozhraní (sloty)
@@ -106,7 +108,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 
 ## Fáza 0 — Organizácia projektu
 - [x] Repozitár `obrazne/booking-platform`, riadiace súbory, podklady prenesené z booking-demo (Claude chat, 16. 10.)
-- [ ] Martin: lokálny priečinok (mimo `~/Antigravity`) a Claude Code v ňom 🧠
+- [x] Martin: lokálny priečinok (mimo `~/Antigravity`) a Claude Code v ňom 🧠 (`G:\!WEBYooking-platform`)
 
 ## Fáza 1 — Analýza existujúcich aplikácií 🔧
 - [x] Z1 — Rental Van a Credit Manager → `docs/analyza-existujucich-appiek.md`
@@ -148,6 +150,9 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- Prihlásenie do Supabase CLI a Vercel CLI (blokuje nasadenie na Vercel; migrácie zatiaľ idú cez Supabase MCP).
+- Tvoj účet na stagingu: Supabase → Authentication → Add user (info@obrazne.sk, vlastné heslo, Auto Confirm). Potom ťa Claude Code pridá ako správcu.
+- Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
 - Supabase platený plán: pri objednávke pozrieť limity a nastaviť strop výdavkov.
@@ -158,6 +163,27 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z6 (bez nasadenia): riadiace centrum `/platform` — klienti, založenie (funkcia `platform_create_tenant`: klient + doména + téma + audit
+  v jednej transakcii), vypínače modulov so skúškou, stav klienta, náhľad témy, záznam zmien. Akcie sú DB funkcie s kontrolou správcu,
+  bez service kľúča — aplikácia nepotrebuje `SUPABASE_SECRET_KEY` na nič. (Claude Code)
+- 2026-10-16 — Z5: register modulov v kóde (`src/modules/index.ts` jediné miesto; manifest s menu, slotmi, udalosťami, závislosťami),
+  tabuľky `modules` + `tenant_modules` (mení len správca), vypnutý modul = stránka 404 a zmizne z menu, dáta ostávajú. Kostra administrácie
+  (pás ikon s rozbalením na hover a pripnutím ako v CM, mobilné menu, prepínanie klienta, tmavý režim), bočný panel `?panel=typ:id`
+  (Späť zatvorí, zdieľateľný odkaz, na mobile celá obrazovka), zoznam s filtrami/triedením/stránkovaním na serveri a CSV (stredník + BOM
+  pre Excel, ochrana pred vzorcami). Ukážka na stránke Tím; modul Doplnkové služby ako prázdna kostra. (Claude Code)
+- 2026-10-16 — Z4: next-intl bez jazyka v URL (jazyk z cookie, neskôr z profilu/klienta) — rezervačná stránka beží na doméne klienta,
+  prefix v URL netreba. Peniaze: `Money {amount (centy), currency}`, percentá v bázických bodoch, rozdelenie bez straty centu.
+  Téma: `tenant_themes`, 5 písiem na výber, kontrast tlačidiel sa dopočíta, nízky kontrast akcentu hlási validácia; predvolená téma
+  modrý akcent #0071e3, zaoblenie 12 px. `tenants.timezone` pridané (dátumy v časovom pásme klienta). (Claude Code)
+- 2026-10-16 — Z3: tabuľky `tenants`, `tenant_domains`, `profiles`, `memberships`, `platform_admins`, `audit_log`; pomocné funkcie podľa CM
+  (`SECURITY DEFINER`, prázdny search_path). Majiteľ nemôže meniť skratku ani stav klienta (trigger). Audit len cez `write_audit()`.
+  Supabase advisor hlási, že pomocné funkcie sú volateľné cez API — zámerne (odpovedajú len o volajúcom; `tenant_by_host` a
+  `tenant_theme` sú verejné pre rezervačnú stránku). Prihlásenie `@supabase/ssr` + `proxy.ts` (Next 16), overenie cez `getClaims()`.
+  Klient podľa domény; lokálne `*.localhost`, mimo produkcie `DEV_TENANT_HOST`. Registrácia vypnutá. (Claude Code)
+- 2026-10-16 — Z2 (bez Vercelu): Next.js 16.4, React 19, strict TS, Tailwind 4, shadcn/ui (Radix, preset nova), Prettier, Vitest, CI v GitHub
+  Actions (typy, lint, formát, testy + job `database` so `supabase db start` a pgTAP — Docker na Martinovom PC nie je, testy DB beží CI).
+  `cacheComponents` vypnuté — aplikácia je celá dynamická (doména, prihlásenie). Staging `booking-platform-staging` (Frankfurt);
+  kvôli limitu 2 bezplatných projektov pozastavený `credit-manager-dev` (Martin súhlasil). Postup v `CLAUDE.md`. (Claude Code)
 - 2026-10-16 — Fronta Z2–Z6 (kostra platformy), režim práce bez prerušenia, vizuálny smer a bočný panel (A12, A18). (Claude chat)
 - 2026-10-16 — Po analýze Z1 rozhodnuté: čistý Next.js projekt namiesto kópie Rental Van (ROZHODNUTIA, ARCHITEKTURA A1). (Claude chat)
 - 2026-10-16 — Z1: analýza `obrazne/van-rental` a `obrazne/credit-manager` (len čítanie, klony v dočasnom priečinku) → `docs/analyza-existujucich-appiek.md`.

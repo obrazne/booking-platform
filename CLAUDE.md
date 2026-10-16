@@ -75,11 +75,49 @@ Po každej dokončenej úlohe commit a push, aby Claude chat videl priebeh.
 
 Všetky účty sú na Obrazne s.r.o. (GitHub `obrazne`, Supabase účet info@obrazne.sk, Vercel). Počas vývoja stačia bezplatné plány;
 pred spustením prvého platiaceho klienta sa prechádza na platené. Prostredia: lokálne → staging → produkcia (dva Supabase projekty).
-*Projekty a prístupy sa doplnia, keď vzniknú.*
+| Prostredie | Kde | Poznámka |
+|---|---|---|
+| Lokálne | `npm run dev` → http://ukazka.localhost:3000, http://stromy.localhost:3000 | Docker na Martinovom PC nie je → lokálna databáza nebeží, aplikácia sa pripája na staging |
+| Staging DB | Supabase `booking-platform-staging` (ref `uzsuwokyiprkzfirvrmb`, Frankfurt), organizácia Obrazne sro | bezplatný plán; limit 2 aktívne projekty → `credit-manager-dev` pozastavený (Martin 16. 10.) |
+| Staging app | Vercel — *doplní sa po prihlásení* | `main` → staging, vetvy → náhľady |
+| Produkcia | zatiaľ nie | |
+
+**Spustenie lokálne:** `npm install` (pri chybe `EALLOWSCRIPTS` dočasne `NPM_CONFIG_USERCONFIG=<prázdny súbor>` — Martinov globálny npm
+má `allow-scripts`), skopírovať `.env.example` → `.env.local` a doplniť URL a publishable kľúč stagingu (Supabase → Project Settings → API),
+`npm run dev`. Kontroly: `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`.
+
+**Databáza:** migrácie v `supabase/migrations/` (len pridávajú), testy RLS v `supabase/tests/database/` (pgTAP) — spúšťa ich CI
+(`supabase db start` + `supabase test db` v GitHub Actions). Na staging: `npx supabase link --project-ref uzsuwokyiprkzfirvrmb`,
+potom `npx supabase db push`. Typy: `npm run db:types`. Seed (`supabase/seed.sql`) je idempotentný.
+Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supabase_migrations.schema_migrations` sú zosúladené s názvami súborov.
+
+**Účty v aplikácii:** registrácia je vypnutá. Ľudia klienta a Martin sa zakladajú v Supabase (Authentication → Add user) alebo neskôr
+pozvánkou z riadiaceho centra; správca platformy = riadok v `platform_admins`.
 
 ## Mapa kódu
 
-*Zatiaľ žiadny kód — aplikácia sa začne stavať po uzavretí architektúry v2 (ROADMAP Fáza 2).*
+Next.js 16 (App Router, strict TS) · Tailwind 4 + shadcn/ui (Radix) · next-intl · @supabase/ssr · zod · Vitest.
+
+| Kde | Čo |
+|---|---|
+| `src/proxy.ts` | obnova prihlásenia, ochrana `/admin` a `/platform` |
+| `src/app/(auth)/login` | prihlásenie e-mail + heslo |
+| `src/app/page.tsx` | vstup rezervačnej stránky klienta podľa domény (zatiaľ len téma a názov) |
+| `src/app/admin/*` | administrácia majiteľa: prehľad, tím (vzor zoznamu + bočného panela + CSV), stránky modulov |
+| `src/app/platform/*` | riadiace centrum: klienti, založenie, moduly, stav, téma, audit |
+| `src/core/auth` | prihlásený používateľ, členstvá, správca platformy |
+| `src/core/tenant` | klient podľa domény (`tenant_by_host`), aktívny klient v administrácii (cookie, overené členstvom) |
+| `src/core/money`, `src/core/format` | peniaze v centoch, formátovanie súm a dátumov cez `Intl` |
+| `src/core/theme` | téma klienta → CSS premenné, kontrola kontrastu, ponuka písiem, svetlý/tmavý režim |
+| `src/core/modules` | manifest modulu, register, sloty (`ModuleSlot`), udalosti (`emitBookingEvent`), vypínače |
+| `src/core/admin` | `AdminShell` (pás ikon, pripnutie, mobilné menu), `RecordPanel` (`?panel=typ:id`), `DataListToolbar`, `SortHeader`, `Pagination`, `list-params` |
+| `src/modules/<kľúč>/` | moduly; zoznam v `src/modules/index.ts` (jediné miesto) — prvý: `services` |
+| `src/i18n/` | preklady (`messages/sk.json`, menné priestory `modules.<kľúč>` pre moduly) |
+| `src/lib/supabase/` | klienti Supabase (server, prehliadač, admin) a typy DB |
+| `supabase/` | migrácie, pgTAP testy, seed, `config.toml` |
+
+**Nový modul:** priečinok `src/modules/<kľúč>/` s `manifest.ts` (navItems, slots, events, dependsOn), preklady pod `modules.<kľúč>`,
+riadok v `public.modules` cez migráciu, zápis do `src/modules/index.ts`, stránka v `src/app/admin/<cesta>/page.tsx` s kontrolou `isModuleEnabled`.
 
 ## Priečinky
 
