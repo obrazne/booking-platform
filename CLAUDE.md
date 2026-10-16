@@ -41,6 +41,18 @@ Príkaz **`/dalej`** (`.claude/commands/dalej.md`) stiahne novinky a pokračuje 
 - **Ozvi sa skôr, nie po dvoch hodinách.** Ak sa niečo nedarí ani po 2 pokusoch alebo zhruba do 30 minút, zastav,
   napíš Martinovi krátko čo nejde, prečo a 1–2 možnosti s odporúčaním. Medzitým pokračuj v častiach, ktoré na tom nezávisia.
 
+**Režim práce — za sebou bez prerušenia** (Martin 16. 10.: „nech robí viacero fáz za sebou, nech sa ma nepýta na každú vec“).
+Úlohy z fronty rob jednu za druhou, kým nie je fronta prázdna. Technické detaily rozhoduj sám rozumne podľa `ARCHITEKTURA.md`,
+zapíš ich do *Denníka* (čo a prečo) a pokračuj. Neblokujúce otázky zapíš do *Otázky pre Martina* a pracuj ďalej.
+**Zastav a opýtaj sa Martina len vtedy, keď:**
+- by si mazal alebo nevratne menil dáta, ktoré nie sú testovacie,
+- ide o nasadenie do produkcie alebo o reálne dáta klienta či hostí,
+- niečo stojí peniaze (platený plán, nová platená služba),
+- ide o právne texty, osobné údaje alebo by sa oslabila bezpečnosť (RLS, kľúče),
+- riešenie by bolo v rozpore s `ARCHITEKTURA.md` alebo by menilo to, čo uvidí klient (mimo už dohodnutého),
+- si zaseknutý (2 pokusy / ~30 minút) a nedá sa to obísť ani odložiť.
+Po každej dokončenej úlohe commit a push, aby Claude chat videl priebeh.
+
 **Po dokončení úlohy:**
 1. Odškrtni ju v `ROADMAP.md` (`- [x]`) a aktualizuj sekciu *Aktuálne*.
 2. Pridaj riadok do *Denníka* (najnovšie hore): `RRRR-MM-DD — čo sa spravilo a kde (Claude Code)`.

@@ -6,12 +6,11 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** rozhodnutý prechod z WordPressu na vlastnú aplikáciu. Technické základy sú dohodnuté
-  (`ARCHITEKTURA.md` časť A, `ROZHODNUTIA.md`). **Kód sa zatiaľ nepíše** — najprv analýza existujúcich aplikácií a architektúra v2.
-- **Ďalší krok pre Claude Code:** fronta je prázdna. Z1 hotová (`docs/analyza-existujucich-appiek.md`): odporúčanie začať čistým Next.js
-  projektom a preniesť vybrané časti, nie kópiou Rental Van.
-- **Ďalší krok pre Martina:** prečítať analýzu Z1 a odpovedať na otázku o bočnom paneli (*Otázky pre Martina*).
-- **Claude chat:** pokračuje s Martinom v architektúre v2 (časť B po kapitolách).
+- **Kde sme (16. 10.):** architektúra časť A dohodnutá, analýza Z1 hotová, rozhodnutý čistý Next.js projekt. **Začína sa stavať kostra platformy** (Z2–Z6)
+  — bez tabuliek objektov a rezervácií, tie počkajú na revíziu časti B v chate.
+- **Ďalší krok pre Claude Code:** fronta Z2 → Z6, **robiť za sebou bez prerušenia** (pravidlá v `CLAUDE.md` → *Režim práce*).
+- **Ďalší krok pre Martina:** na začiatku Z2 sa prihlásiť do Supabase CLI a Vercelu, keď o to Claude Code požiada; inak nič.
+- **Claude chat:** súbežne s Martinom revízia časti B (dostupnosť, cenotvorba, služby, tok, …) → potom zadanie doménových tabuliek.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
@@ -50,6 +49,59 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 
 **Výstup:** `docs/analyza-existujucich-appiek.md`. Potom Denník, `Aktuálne`, commit a push. Do kódu tých aplikácií nič necommituj.
 
+### Z2 — Projekt, prostredia a nasadenie
+
+**Kontext pre celú frontu Z2–Z6:** staviame **kostru platformy** podľa `ARCHITEKTURA.md` časť A (A1–A9, A12, A13, A17, A18) a podľa
+`docs/analyza-existujucich-appiek.md` (čo preniesť z Rental Van a Credit Managera). **Nie** tabuľky objektov, jednotiek, cien a rezervácií
+(časť B ešte nie je zrevidovaná). Názvy v kóde a databáze po anglicky, rozhranie len cez preklady. Detaily riešenia volíš sám a zapisuješ
+do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
+
+1. Čistý **Next.js** (aktuálna stabilná verzia, App Router, strict TypeScript, ESLint, Prettier), **Tailwind + shadcn/ui** vygenerované nanovo.
+   Navrhni štruktúru priečinkov tak, aby jadro a moduly boli oddelené (napr. `src/core`, `src/modules/<modul>`, `src/platform` pre riadiace centrum).
+2. **Supabase:** lokálny vývoj cez Supabase CLI (ak na Martinovom počítači nejde Docker, pracuj priamo so stagingom a zapíš to).
+   Založ **staging** projekt na účte Obrazne (`booking-platform-staging`, región EÚ). Produkčný projekt zatiaľ nie.
+3. **Vercel:** projekt na účte Obrazne napojený na tento repozitár (bezplatný plán počas vývoja), náhľady pre vetvy, `main` → staging.
+4. **CI (GitHub Actions):** typová kontrola, lint, testy pri každom pushi.
+5. `.env.example` s názvami premenných, postup spustenia a nasadenia do `CLAUDE.md`.
+
+**Martin:** keď treba, požiadaj ho o prihlásenie (Supabase CLI, Vercel) — urob to naraz na začiatku, nie po jednom.
+
+### Z3 — Klienti, používatelia a oddelenie dát
+
+1. Migrácie: `tenants` (názov, krajina, mena, jazyky, stav), `tenant_domains` (hostname → klient), `profiles`, `memberships`
+   (používateľ ↔ klient, M:N, rola `owner` / `reception` / `cleaning`), `platform_admins`, `audit_log`.
+2. Pomocné funkcie podľa vzoru Credit Managera (`SECURITY DEFINER`, `search_path=''`): napr. `is_platform_admin()`, `is_tenant_member(tenant_id, roles)`.
+   **RLS na každej tabuľke.**
+3. **Automatické testy oddelenia** (pgTAP s asserciami): používateľ klienta A nevidí ani nezmení nič z klienta B; rola upratovanie nevidí, čo nemá.
+4. **Prihlásenie** cez `@supabase/ssr` (e-mail + heslo pre ľudí klienta a Martina), **určenie klienta podľa domény** (subdoména / vlastná doména,
+   pri lokálnom vývoji náhradný spôsob).
+5. Seed: Martin (`info@obrazne.sk`) ako správca platformy, klient **„Ukážkový klient“** a klient **„Chalet STRÖMY“** (len záznam klienta, bez objektov).
+
+### Z4 — Preklady, peniaze, téma
+
+1. **Preklady** (knižnicu vyber sám): slovenčina, štruktúra pripravená na ďalšie jazyky, žiadne natvrdo písané texty. Formátovanie dátumov
+   a **súm z centov s menou** cez `Intl` podľa jazyka; pomocné funkcie pre peniaze (sčítanie v centoch, žiadne desatinné čísla).
+2. **Téma klienta** (A12): záznam témy (logo, farby, písma z vybranej ponuky, zaoblenie, svetlý/tmavý režim) → CSS premenné podľa domény;
+   **automatická kontrola kontrastu**; predvolená téma platformy podľa vizuálneho smeru (A12: Apple — zaoblené prvky, tenké linky, málo farieb).
+
+### Z5 — Moduly a kostra administrácie
+
+1. **Register modulov v kóde** (A3): manifest modulu (kľúč, názov, závislosti, položky menu, miesta v rozhraní), tabuľky `modules`
+   a `tenant_modules` (stav `trial` / `active` / `off`, koniec skúšky), funkcia „je modul zapnutý pre klienta“; miesta v rozhraní (sloty)
+   a **udalosti** (zatiaľ kostra, jadro o moduloch nevie). Vypnutie skryje, nič nemaže.
+2. **Kostra administrácie** (A18): rozloženie s bočnou navigáciou (preniesť z RV `AdminShell`/`AdminSidebar` a CM pásu ikon), mobilné menu,
+   tmavý režim, menu skladané z modulov, prepínanie klienta pre používateľa s viacerými členstvami.
+3. **Spoločný bočný panel so záznamom** (A18): stav v URL, Späť zavrie, Esc a klik mimo, na mobile celá obrazovka.
+4. Spoločné komponenty: zoznam s filtrami, triedením, stránkovaním na serveri a CSV exportom (vzor RV `InquiryList`).
+5. Ukážkový modul (napr. prázdny modul „Doplnkové služby“ s jednou položkou menu), aby bolo vidno, že zapínanie funguje.
+
+### Z6 — Riadiace centrum (kostra)
+
+1. Prístup len pre správcu platformy. Zoznam klientov, založenie klienta (minimálne údaje + doména), detail klienta.
+2. **Vypínače modulov** so stavom a dátumom konca skúšky; každá zmena do `audit_log` (kto, kedy, čo).
+3. Ukážka témy klienta (náhľad farieb a písma).
+4. Na konci: nasadené na staging, Martinovi pošli adresu a krátky postup, čo si môže preklikať (prihlásenie, založenie klienta, zapnutie modulu).
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -77,7 +129,8 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Showroom: zoznam ukážkových objektov rôznych druhov + Chalet STRÖMY s reálnymi údajmi (časť C)
 
 ## Fáza 3 — MVP Chalet STRÖMY 🔧 + 🧠 *(cca 4 týždne po uzavretí Fázy 2)*
-- [ ] 3a Základ: projekt, databáza pre viac klientov, prihlásenie, objekt, cenník, sezóny, blokované dni
+- [ ] 3a0 Kostra platformy (Z2–Z6): projekt, prostredia, klienti a oddelenie dát, preklady, téma, moduly, administrácia, riadiace centrum
+- [ ] 3a Doména: objekt, cenník, sezóny, blokované dni (po revízii časti B)
 - [ ] 3b Rezervácia pre hostí: dostupnosť, výpočet ceny, služby, údaje hosťa, súhlasy (aj marketingový), dočasná blokácia, iCal
 - [ ] 3c Platba prevodom s QR, stavy rezervácie, e-maily
 - [ ] 3d Doklady cez fakturačný nástroj, prehľad rezervácií pre majiteľa, export, testovanie, spustenie popri Bookingu
@@ -95,8 +148,6 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
-- Bočný panel: Credit Manager má len navigačný panel a záložky detailu, nie panel so záznamom vysunutý sprava (A1 „vzor bočného panelu“).
-  Myslel si taký panel? Potom ho navrhneme nanovo (stav v URL, Späť ho zavrie, na mobile cez celú obrazovku) — `docs/analyza-existujucich-appiek.md`.
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
 - Supabase platený plán: pri objednávke pozrieť limity a nastaviť strop výdavkov.
@@ -107,6 +158,7 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Fronta Z2–Z6 (kostra platformy), režim práce bez prerušenia, vizuálny smer a bočný panel (A12, A18). (Claude chat)
 - 2026-10-16 — Po analýze Z1 rozhodnuté: čistý Next.js projekt namiesto kópie Rental Van (ROZHODNUTIA, ARCHITEKTURA A1). (Claude chat)
 - 2026-10-16 — Z1: analýza `obrazne/van-rental` a `obrazne/credit-manager` (len čítanie, klony v dočasnom priečinku) → `docs/analyza-existujucich-appiek.md`.
   Odporúčanie: čistý Next.js, prevziať kostru adminu, vzory rezervácie (RV) a bezpečnostné SQL vzory (CM). (Claude Code)

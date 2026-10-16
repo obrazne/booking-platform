@@ -130,6 +130,9 @@ PLATFORMA (Martin)
 
 - Rezervačná stránka a e-maily stavané na **premenných dizajnového systému**: farby, písma, logo, svetlý a tmavý režim.
   Nastavuje sa bez zásahu do kódu (súčasť balíkov).
+- **Vizuálny smer platformy** (administrácia, riadiace centrum, predvolená téma rezervácie — rovnaký základ ako ostatné Martinove aplikácie):
+  moderný a pokojný v duchu Apple — **zaoblené prvky, tenké linky, málo farieb** (neutrálne odtiene + jedna akcentová), veľa vzduchu,
+  jemné a plynulé animácie a prechody, svetlý aj tmavý režim.
 - **Zmena rozloženia** (layoutu) je platená práca navyše, nie nastavenie.
 - **Ako to funguje:** komponenty (tlačidlá, polia, kalendár, karty) sú pre všetkých rovnaké a používajú len premenné. Každý klient má v databáze
   **tému**: logo, hlavná a doplnková farba, pozadie, písmo nadpisov a textu (z vybranej ponuky), zaoblenie rohov, svetlý/tmavý režim.
@@ -182,6 +185,13 @@ Platba (vrátane Stripe) a celý rezervačný tok bežia vždy v aplikácii. Kli
 - Pri klientovi s vlastným prezentačným webom je rezervačná stránka **štíhly tok** (kalendár, cena, služby, pokladňa), nie druhý prezentačný web,
   a **neindexuje sa** vo vyhľadávačoch (nekonkuruje webu klienta).
 - Showroom s viacerými objektmi a filtrovaním je pre ukážky a klientov bez vlastného webu.
+
+## A18. Vzory rozhrania
+
+- **Bočný panel so záznamom:** klik na rezerváciu, hosťa či objekt v zozname vysunie detail sprava cez časť stránky — používateľ neodíde zo zoznamu.
+  Stav panelu je v URL (napr. `?panel=booking:<id>`) so zápisom do histórie: **Späť ho zavrie**, odkaz sa dá poslať, Esc a klik mimo zatvárajú.
+  Na mobile ide cez celú obrazovku. Jeden spoločný komponent pre celú aplikáciu (Martin 16. 10.: „vytiahne sa na časť obsahu, aby človek neodchádzal“).
+- **Navigácia administrácie:** zbaľovací bočný pás (ikony, rozbalenie, pripnutie), položky menu dodávajú moduly; na mobile menu zo strany.
 
 ---
 
