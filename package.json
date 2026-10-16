@@ -16,7 +16,8 @@
     "db:push": "supabase db push",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
     "e2e": "playwright test",
-    "demo-data": "node scripts/demo-data.mjs"
+    "demo-data": "node scripts/demo-data.mjs",
+    "tour:screens": "node scripts/tour-screens.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

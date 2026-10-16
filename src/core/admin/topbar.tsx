@@ -10,6 +10,7 @@ import {
   LogOut,
   Monitor,
   Moon,
+  Sparkles,
   Sun,
   UserRound,
 } from "lucide-react";
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { switchTenant } from "@/app/admin/actions";
 import { signOut } from "@/app/(auth)/login/actions";
+import { openTour } from "@/core/tours/tour-dialog";
 
 export function TenantSwitcher({
   tenants,
@@ -67,7 +69,13 @@ export function TenantSwitcher({
   );
 }
 
-export function UserMenu({ email }: { email: string | null }) {
+export function UserMenu({
+  email,
+  whatsNew = false,
+}: {
+  email: string | null;
+  whatsNew?: boolean;
+}) {
   const t = useTranslations();
   const { theme, setTheme } = useTheme();
 
@@ -98,6 +106,11 @@ export function UserMenu({ email }: { email: string | null }) {
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
+        {whatsNew ? (
+          <DropdownMenuItem onSelect={openTour}>
+            <Sparkles /> {t("tours.menu")}
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem onSelect={() => void signOut()}>
           <LogOut /> {t("common.signOut")}
         </DropdownMenuItem>

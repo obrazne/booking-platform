@@ -1219,5 +1219,97 @@
     "countWarning": "Zvýraznených je {count} — mriežka vyzerá najlepšie pri 3, 6 alebo 9.",
     "save": "Uložiť",
     "noAmenities": "Objekt nemá vybavenie — pridajte ho v Údajoch."
+  },
+  "tours": {
+    "menu": "Čo je nové",
+    "kicker": "Čo je nové",
+    "progress": "{n} z {total}",
+    "slides": "Snímky prehliadky",
+    "goTo": "Snímka {n}",
+    "back": "Späť",
+    "next": "Ďalej",
+    "done": "Hotovo",
+    "showMe": "Ukázať mi to",
+    "close": "Zavrieť prehliadku",
+    "owner": {
+      "dashboard": {
+        "title": "Prehľad na jednom mieste",
+        "body": "Po prihlásení vidíte, kto prichádza, čo čaká na platbu a čo treba vybaviť. Stačí kliknúť na riadok a ste pri veci."
+      },
+      "reservations": {
+        "title": "Rezervácie a bočný panel",
+        "body": "Všetky rezervácie v jednom zozname s filtrom podľa stavu a dátumu. Klik na rezerváciu otvorí bočný panel s hosťom, cenou, históriou a poznámkami."
+      },
+      "payment": {
+        "title": "Platba prijatá jedným klikom",
+        "body": "Keď vám príde platba na účet, v paneli rezervácie kliknete na Platba prijatá. Rezervácia sa potvrdí a hosť dostane e-mail sám."
+      },
+      "calendar": {
+        "title": "Kalendár obsadenosti",
+        "body": "Celý mesiac na prvý pohľad: vaše rezervácie, termíny z Bookingu a Airbnb aj vlastné blokácie. Farby hovoria, odkiaľ termín prišiel."
+      },
+      "manual": {
+        "title": "Rezervácia po telefóne",
+        "body": "Keď hosť zavolá, zapíšete ho ručne. Systém skontroluje voľný termín, vypočíta cenu a pošle mu potvrdenie ako pri rezervácii z webu."
+      },
+      "property": {
+        "title": "Objekt a jeho stránka",
+        "body": "Údaje, fotky a poloha objektu na jednom mieste. Stránku pre hostí skladáte z hotových sekcií — zapnete, zoradíte a doplníte text."
+      },
+      "pricing": {
+        "title": "Ceny a sezóny",
+        "body": "Sezóny s vlastnou cenou za noc, minimálny počet nocí a poplatky. Hosť vždy vidí presnú sumu ešte pred rezerváciou."
+      },
+      "services": {
+        "title": "Doplnkové služby",
+        "body": "Šéfkuchár, raňajky alebo transfer si hosť objedná rovno v košíku. Služba sa pripočíta k cene a uvidíte ju pri rezervácii."
+      },
+      "documents": {
+        "title": "Dokumenty pre hostí",
+        "body": "Ubytovací poriadok alebo pokyny k príchodu nahráte raz. Hosť ich nájde na stránke rezervácie — niektoré až po zaplatení."
+      },
+      "ical": {
+        "title": "Prepojenie s Bookingom a Airbnb",
+        "body": "Vložíte odkazy na kalendáre z portálov a obsadenosť sa stráži sama. Pri kolízii termínov vás hneď upozorníme."
+      },
+      "settings": {
+        "title": "Nastavenia",
+        "body": "Kontakt, bankový účet pre QR platbu, storno podmienky a kedy hosťom posielať pokyny. Nastavíte raz, platí pre všetky rezervácie."
+      }
+    },
+    "admin": {
+      "tenants": {
+        "title": "Riadiace centrum",
+        "body": "Zoznam všetkých klientov platformy s ich stavom. Odtiaľto spravujete, kto čo používa a či všetko beží."
+      },
+      "newTenant": {
+        "title": "Nový klient za pár minút",
+        "body": "Zadáte názov, skratku a doménu. Klient dostane vlastnú rezervačnú stránku a administráciu, ktorú si potom doplní."
+      },
+      "detail": {
+        "title": "Detail klienta",
+        "body": "Domény, stav a všetko podstatné o jednom klientovi na jednej stránke. Odtiaľ sa dostanete ku každému nastaveniu."
+      },
+      "modules": {
+        "title": "Moduly a skúšky",
+        "body": "Moduly ako Doplnkové služby zapínate klientovi natrvalo alebo na skúšku s dátumom konca. Po skúške sa modul sám vypne."
+      },
+      "health": {
+        "title": "Zdravie klienta",
+        "body": "Posledná rezervácia, kalendáre s chybou a neodoslané e-maily. Keď niečo nefunguje, uvidíte to skôr ako klient."
+      },
+      "theme": {
+        "title": "Vzhľad podľa klienta",
+        "body": "Farby, písmo a zaoblenie rezervačnej stránky podľa značky klienta. Náhľad ukáže, ako stránka bude vyzerať."
+      },
+      "audit": {
+        "title": "Záznam zmien",
+        "body": "Kto, kedy a čo zmenil — napríklad zapnutý modul alebo zmenený stav klienta. Pomôže pri otázkach aj pri hľadaní chyby."
+      },
+      "ownerView": {
+        "title": "Pohľad majiteľa",
+        "body": "Z menu prejdete do administrácie klienta a vidíte ju presne ako majiteľ. Tak mu ľahko poradíte po telefóne."
+      }
+    }
   }
 }

@@ -17,6 +17,8 @@ import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
 import { getEnabledModules } from "@/core/modules/registry";
 import { getActiveMembership } from "@/core/tenant/active";
+import { TourDialog } from "@/core/tours/tour-dialog";
+import { tourIsNewForUser } from "@/core/tours/server";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const t = await getTranslations();
@@ -54,6 +56,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     );
   }
   if (admin) items.push({ href: "/platform", label: t("nav.platform"), icon: <Shield /> });
+  const tourNew = active ? await tourIsNewForUser("owner") : false;
 
   return (
     <AdminShell
@@ -67,11 +70,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               activeId={active.tenantId}
             />
           ) : null}
-          <UserMenu email={user?.email ?? null} />
+          <UserMenu email={user?.email ?? null} whatsNew={Boolean(active)} />
         </>
       }
     >
       {children}
+      {active ? <TourDialog tourKey="owner" autoOpen={tourNew} /> : null}
     </AdminShell>
   );
 }

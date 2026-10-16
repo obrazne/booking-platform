@@ -102,7 +102,7 @@ ukážkové sú jasne označené, napr. e-mailom hosťa na vyhradenej testovacej
 5. E-maily, ktoré pri tom vzniknú, nech nezahltia schránku (najviac pár; inak ich vlož ako už odoslané).
 6. Na konci Martinovi **krátky návod v termináli**: kde sa prihlásiť, čo kde nájde (adresy stagingu), ako dáta obnoviť.
 
-### Z22 — Prehliadka „Čo je nové“ (A15)
+### Z22 ✅ — Prehliadka „Čo je nové“ (A15)
 Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 1. Komponent prehliadky: okno (zaoblenie 10, stmavené pozadie, téma platformy), snímka obrazovky hore, nadpis + dve vety, bodky postupu,
    Späť / Ďalej / „Ukázať mi to“ (otvorí stránku), Esc zatvorí. Na mobile cez celú obrazovku, posun prstom.
@@ -184,6 +184,12 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z22: **prehliadka „Čo je nové“** pre majiteľa (11 snímok) a správcu (8 snímok, riadiace centrum). Okno so snímkou,
+  nadpisom, dvoma vetami, bodkami, Späť / Ďalej / Ukázať mi to, Esc a šípky; na mobile cez celú obrazovku s posunom prstom. Otvorí sa
+  samo raz po prihlásení pri novej verzii (`profiles.tours_seen`, funkcia `mark_tour_seen` — každý zapisuje len sebe), znova z menu účtu
+  **Čo je nové**. Snímky `npm run tour:screens` z ukážkových dát (1440 px) → `public/tours/`; e-maily a mená mimo ukážky rozmazané,
+  karty na spoločnej stránke riadiaceho centra zvýraznené rámikom. Na stagingu pribudol testovací účet qa-admin@booking-platform.test
+  (správca platformy, prihlásenie len odkazom cez serverový kľúč) kvôli snímkam. Playwright `tour.spec.ts` (počítač aj 390 px, axe). (Claude Code)
 - 2026-10-16 — Z21: **ukážkové dáta STRÖMY na stagingu** (`npm run demo-data`, `-- --reset`). Rezervácie cez tú istú databázovú funkciu
   a výpočet ceny ako web: (a) 2026-0088 12.–15. 2. 2027, čaká na platbu, so šéfkuchárom; (b) 2026-0089 24.–28. 12. 2026, potvrdená
   a zaplatená, s dokumentom k rezervácii; (c) 2026-0090 7.–10. 8. 2026, ukončená. Ubytovací poriadok (PDF) pri objekte, 2 udalosti

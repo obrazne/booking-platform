@@ -858,6 +858,7 @@ export type Database = {
           full_name: string | null
           id: string
           locale: string
+          tours_seen: Json
           updated_at: string
         }
         Insert: {
@@ -866,6 +867,7 @@ export type Database = {
           full_name?: string | null
           id: string
           locale?: string
+          tours_seen?: Json
           updated_at?: string
         }
         Update: {
@@ -874,6 +876,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           locale?: string
+          tours_seen?: Json
           updated_at?: string
         }
         Relationships: []
@@ -2462,6 +2465,10 @@ export type Database = {
       }
       is_tenant_owner: { Args: { p_tenant_id: string }; Returns: boolean }
       is_tenant_staff: { Args: { p_tenant_id: string }; Returns: boolean }
+      mark_tour_seen: {
+        Args: { p_tour: string; p_version: string }
+        Returns: undefined
+      }
       my_tenant_ids: { Args: never; Returns: string[] }
       next_reservation_number: {
         Args: { p_tenant_id: string }
