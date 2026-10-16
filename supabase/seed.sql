@@ -17,3 +17,9 @@ on conflict (hostname) do nothing;
 insert into public.platform_admins (user_id)
 select p.id from public.profiles p where p.email = 'info@obrazne.sk'
 on conflict (user_id) do nothing;
+
+insert into public.tenant_themes (tenant_id, primary_color, heading_font, body_font)
+values
+  ('a0000000-0000-4000-8000-000000000001', '#0071e3', 'geist', 'geist'),
+  ('a0000000-0000-4000-8000-000000000002', '#2f5d50', 'lora', 'inter')
+on conflict (tenant_id) do nothing;

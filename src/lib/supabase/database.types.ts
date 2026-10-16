@@ -176,6 +176,53 @@ export type Database = {
           },
         ];
       };
+      tenant_themes: {
+        Row: {
+          background_color: string;
+          body_font: string;
+          color_mode: string;
+          heading_font: string;
+          logo_path: string | null;
+          primary_color: string;
+          radius: number;
+          secondary_color: string;
+          tenant_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          background_color?: string;
+          body_font?: string;
+          color_mode?: string;
+          heading_font?: string;
+          logo_path?: string | null;
+          primary_color?: string;
+          radius?: number;
+          secondary_color?: string;
+          tenant_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          background_color?: string;
+          body_font?: string;
+          color_mode?: string;
+          heading_font?: string;
+          logo_path?: string | null;
+          primary_color?: string;
+          radius?: number;
+          secondary_color?: string;
+          tenant_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tenant_themes_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: true;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tenants: {
         Row: {
           country: string;
@@ -187,6 +234,7 @@ export type Database = {
           name: string;
           slug: string;
           status: string;
+          timezone: string;
           updated_at: string;
         };
         Insert: {
@@ -199,6 +247,7 @@ export type Database = {
           name: string;
           slug: string;
           status?: string;
+          timezone?: string;
           updated_at?: string;
         };
         Update: {
@@ -211,6 +260,7 @@ export type Database = {
           name?: string;
           slug?: string;
           status?: string;
+          timezone?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -237,6 +287,10 @@ export type Database = {
           name: string;
           slug: string;
         }[];
+      };
+      tenant_theme: {
+        Args: { p_tenant_id: string };
+        Returns: Database["public"]["Tables"]["tenant_themes"]["Row"][];
       };
       write_audit: {
         Args: {

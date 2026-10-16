@@ -4,7 +4,8 @@
     "signOut": "Odhlásiť sa",
     "save": "Uložiť",
     "cancel": "Zrušiť",
-    "close": "Zavrieť"
+    "close": "Zavrieť",
+    "signIn": "Prihlásiť sa"
   },
   "auth": {
     "title": "Prihlásenie",
@@ -17,5 +18,10 @@
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy."
+  },
+  "booking": {
+    "placeholder": "Rezervácia sa pripravuje.",
+    "notFound": "Táto adresa nepatrí žiadnemu ubytovaniu.",
+    "checkAvailability": "Overiť dostupnosť"
   }
 }
