@@ -90,7 +90,15 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
       priceModel: s.price_model,
       amountCents: s.amount_cents,
     })),
-    money: (cents) => formatMoney(money(cents, tenant.currency), locale),
+    // Whole amounts without cents ("700 €"), like the approved visual.
+    money: (cents) =>
+      cents % 100 === 0
+        ? new Intl.NumberFormat(locale, {
+            style: "currency",
+            currency: tenant.currency,
+            maximumFractionDigits: 0,
+          }).format(cents / 100)
+        : formatMoney(money(cents, tenant.currency), locale),
   };
 
   return (

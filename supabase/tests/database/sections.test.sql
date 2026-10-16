@@ -47,7 +47,8 @@ set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000b1","role":"authenticated"}';
 update public.property_sections set content = '{"title":{"sk":"x"}}' where property_id = '20000000-0000-0000-0000-00000000000a';
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
-select is((select count(*)::int from public.property_sections where content ? 'title'), 0,
+select is((select count(*)::int from public.property_sections
+           where property_id = '20000000-0000-0000-0000-00000000000a' and content ? 'title'), 0,
   'owner of another tenant cannot change sections');
 update public.property_sections set content = '{"title":{"sk":"Ahoj"}}'
   where property_id = '20000000-0000-0000-0000-00000000000a' and type = 'faq';
