@@ -68,6 +68,18 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   await expect(page.getByText("E2E kanál · Iný")).toBeVisible();
   await expect(page.getByText("Kolízia").first()).toBeVisible();
 
+  // Document for guests at the property (private storage, shown in the guest zone).
+  await page.goto(`${ADMIN_URL}/admin/properties/b0000000-0000-4000-8000-000000000100/documents`);
+  await page.getByLabel("Názov").fill("E2E poriadok");
+  await page.getByLabel("Kedy ich hosť uvidí").selectOption("always");
+  await page.getByLabel("Súbor").setInputFiles({
+    name: "poriadok.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4 1 0 obj<<>>endobj trailer<<>> %%EOF"),
+  });
+  await page.getByRole("button", { name: "Nahrať" }).click();
+  await expect(page.getByText("E2E poriadok")).toBeVisible();
+
   // The reservation itself is untouched by the conflict.
   const { data: r } = await db
     .from("reservations")

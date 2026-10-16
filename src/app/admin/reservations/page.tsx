@@ -20,6 +20,9 @@ import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { money } from "@/core/money/money";
 import { diffDays } from "@/core/pricing/dates";
 import { getTenantInfo } from "@/core/tenant/info";
+import { DocumentsManager } from "@/core/admin/documents";
+import { tr } from "@/core/i18n/localized";
+import { createClient } from "@/lib/supabase/server";
 import { NoteForm, ReservationActions } from "./panel-actions";
 import {
   getReservationDetail,
@@ -55,6 +58,17 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
   const panel = parsePanel(sp.panel);
   const detail =
     panel?.type === "reservation" ? await getReservationDetail(active.tenantId, panel.id) : null;
+  const [documents, td] = await Promise.all([
+    detail
+      ? (await createClient())
+          .from("documents")
+          .select("id, title, visible_when")
+          .eq("reservation_id", detail.id)
+          .order("created_at")
+          .then((r) => r.data ?? [])
+      : Promise.resolve([]),
+    getTranslations("documents"),
+  ]);
   const fmt = (cents: number, currency = tenant.currency) =>
     formatMoney(money(cents, currency), locale);
   const when = (iso: string) => formatDateTime(iso, locale, tenant.timezone, "short");
@@ -296,6 +310,19 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
                         : p.status}
                   </p>
                 ))}
+              </section>
+
+              <section className="grid gap-2">
+                <h3 className="font-medium">{td("heading")}</h3>
+                <DocumentsManager
+                  tenantId={active.tenantId}
+                  reservationId={detail.id}
+                  documents={documents.map((d) => ({
+                    id: d.id,
+                    title: tr(d.title, locale),
+                    visibleWhen: d.visible_when,
+                  }))}
+                />
               </section>
 
               <section className="grid gap-2">

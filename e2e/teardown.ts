@@ -18,5 +18,31 @@ export default async function teardown() {
     .eq("kind", "block")
     .like("label", "E2E%");
   await db.from("ical_channels").delete().eq("tenant_id", STROMY).like("name", "E2E%");
-  console.log(`[e2e] cleanup: ${ids.length} reservations`);
+  const { data: docs } = await db
+    .from("documents")
+    .select("id, storage_path")
+    .eq("tenant_id", STROMY)
+    .eq("title->>sk", "E2E poriadok");
+  if (docs?.length) {
+    await db.storage.from("guest-documents").remove(docs.map((d) => d.storage_path));
+    await db
+      .from("documents")
+      .delete()
+      .in(
+        "id",
+        docs.map((d) => d.id),
+      );
+  }
+  // Login identities created by the guest account test.
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const testUsers = (users?.users ?? []).filter(
+    (u) => u.email?.startsWith("e2e-") && u.email.endsWith(`@${TEST_DOMAIN}`),
+  );
+  for (const u of testUsers) await db.auth.admin.deleteUser(u.id);
+  await db
+    .from("guest_auth_attempts")
+    .delete()
+    .eq("tenant_id", STROMY)
+    .like("email", `%@${TEST_DOMAIN}`);
+  console.log(`[e2e] cleanup: ${ids.length} reservations, ${testUsers.length} guest logins`);
 }

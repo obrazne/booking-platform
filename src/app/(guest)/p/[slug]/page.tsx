@@ -138,6 +138,14 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
           adults: Number(one(sp.adults)) || 2,
           children: Number(one(sp.children)) || 0,
           open: hasDates,
+          // "Book again" from the guest zone: services=id:qty,id:qty (only services of this property count).
+          services: Object.fromEntries(
+            one(sp.services)
+              .split(",")
+              .map((x) => x.split(":"))
+              .filter(([id, q]) => catalog.services.some((s) => s.id === id) && Number(q) > 0)
+              .map(([id, q]) => [id!, Math.min(Number(q), 50)]),
+          ),
         },
       }}
     >

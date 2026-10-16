@@ -5,7 +5,7 @@ import { getGuestSettings } from "@/core/booking/catalog";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { getTenantTheme } from "@/core/theme/load";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, CircleUser } from "lucide-react";
 import { ThemeStyle } from "@/core/theme/theme-style";
 
 // The booking page lives next to the client's own website and must not compete with it in search (A17).
@@ -15,11 +15,12 @@ export default async function GuestLayout({ children }: LayoutProps<"/">) {
   const tenant = await getTenantFromHost();
   if (!tenant) return <>{children}</>;
   const supabase = await createClient();
-  const [theme, settings, t, tp, { data: contact }] = await Promise.all([
+  const [theme, settings, t, tp, ta, { data: contact }] = await Promise.all([
     getTenantTheme(tenant.id),
     getGuestSettings(tenant.id),
     getTranslations("guest.footer"),
     getTranslations("guest.property"),
+    getTranslations("guest.account"),
     supabase.rpc("tenant_public_contact", { p_tenant_id: tenant.id }).maybeSingle(),
   ]);
   return (
@@ -33,10 +34,16 @@ export default async function GuestLayout({ children }: LayoutProps<"/">) {
           <Link href="/" className="font-heading text-lg font-semibold tracking-tight">
             {tenant.name}
           </Link>
+          <Link
+            href="/ucet"
+            className="text-muted-foreground hover:text-foreground ml-auto inline-flex min-h-11 items-center gap-1.5 text-sm"
+          >
+            <CircleUser className="size-4" /> {ta("menu")}
+          </Link>
           {contact?.website_url ? (
             <a
               href={contact.website_url}
-              className="text-muted-foreground hover:text-foreground ml-auto inline-flex items-center gap-1 text-sm"
+              className="text-muted-foreground hover:text-foreground ml-6 inline-flex items-center gap-1 text-sm"
             >
               {tp("backToWeb")} <ArrowUpRight className="size-4" />
             </a>

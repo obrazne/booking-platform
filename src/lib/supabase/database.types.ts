@@ -369,6 +369,83 @@ export type Database = {
           },
         ]
       }
+      guest_auth_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          kind: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          kind: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          kind?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_auth_attempts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_consent_events: {
+        Row: {
+          created_at: string
+          granted: boolean
+          guest_id: string
+          id: string
+          kind: string
+          source: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted: boolean
+          guest_id: string
+          id?: string
+          kind?: string
+          source?: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          granted?: boolean
+          guest_id?: string
+          id?: string
+          kind?: string
+          source?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_consent_events_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guest_consent_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guests: {
         Row: {
           country: string | null
@@ -2218,6 +2295,14 @@ export type Database = {
       guest_arrival_instructions: {
         Args: { p_reservation_id: string }
         Returns: Json
+      }
+      guest_request_cancellation: {
+        Args: { p_note?: string; p_reservation_id: string }
+        Returns: boolean
+      }
+      guest_set_marketing: {
+        Args: { p_granted: boolean; p_tenant_id: string }
+        Returns: boolean
       }
       ical_apply: {
         Args: { p_channel_id: string; p_events: Json }

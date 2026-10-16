@@ -8,6 +8,8 @@ import { diffDays } from "@/core/pricing/dates";
 import { payBySquareSvg } from "@/core/payments/pay-by-square";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+import { startAccountFromReservation } from "@/core/guest/auth";
 import { CancelForm } from "./cancel-form";
 
 type Summary = {
@@ -160,6 +162,20 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           </div>
         </dl>
       </section>
+
+      {r.status !== "cancelled" ? (
+        <section className="bg-surface border-line grid gap-3 rounded-3xl border p-6">
+          <h2 className="font-heading text-ink text-xl font-bold">
+            {t("account.saveDetailsTitle")}
+          </h2>
+          <p className="text-muted-foreground text-sm">{t("account.saveDetailsText")}</p>
+          <form action={startAccountFromReservation.bind(null, token)}>
+            <Button type="submit" variant="outline" className="rounded-full">
+              {t("account.saveDetails")}
+            </Button>
+          </form>
+        </section>
+      ) : null}
 
       {r.status === "pending_payment" || r.status === "confirmed" ? (
         <section className="grid gap-3">

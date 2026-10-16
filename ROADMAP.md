@@ -33,7 +33,7 @@ Cieľ: Jana uvidí stránku bez chýb. Výstup `docs/kontrola-mvp.md` (čo sa sk
 4. **Rýchlosť:** veľkosti a formáty fotiek, načítanie detailu na mobile (Lighthouse), zbytočné dotazy do databázy.
 Jasné chyby oprav hneď; čo mení správanie pre hosťa alebo majiteľa, zapíš do *Otázky pre Martina*.
 
-### Z17 — Účet a zóna hosťa (B10)
+### Z17 ✅ — Účet a zóna hosťa (B10)
 Rozhranie nad dátami zo Z13, na doméne klienta:
 1. **Prihlásenie bez hesla** kódom na e-mail. E-mail s kódom ide **cez náš systém e-mailov (Z11) v téme klienta**, nie predvolenými e-mailmi
    Supabase (tie sú spoločné pre všetkých klientov a majú prísne limity). Ponuka „Uložiť si údaje pre ďalšie pobyty“ po rezervácii.
@@ -118,6 +118,16 @@ neupravujú — len odkaz, kde sa menia.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z17: účet a zóna hosťa na doméne klienta (`/ucet`). **Prihlásenie kódom na e-mail** — kód vydá Supabase, ale e-mail
+  posiela náš systém v téme klienta (nie spoločné e-maily Supabase); limit 5 kódov a 8 chybných pokusov za hodinu na e-mail,
+  odpoveď neprezradí, či e-mail má pobyty; **účtom personálu a správcu platformy sa kód neposiela** (tie sa prihlasujú heslom).
+  Po overení sa priradia doterajšie pobyty (overený e-mail). Na stránke rezervácie „Vytvoriť účet“ (kód na e-mail rezervácie).
+  Zóna: najbližší pobyt ako karta hore, ďalšie a minulé ako zoznam; detail pobytu — platba s QR kým nie je zaplatené, pokyny
+  k príchodu a kódy podľa pravidiel Z13 (inak vysvetlenie kedy), dokumenty (odkaz platný 10 min), rozpis, žiadosť o storno,
+  **Rezervovať znova** (objekt, jednotka, hostia a služby predvyplnené); úprava kontaktu, **odvolanie marketingového súhlasu
+  jedným klikom s históriou** (`guest_consent_events`), kontakt WhatsApp/telefón, odhlásenie. Doklady skryté. Administrácia:
+  záložka Dokumenty pri objekte a dokumenty v paneli rezervácie (vždy / po potvrdení). Pokyny k príchodu sa upravujú v Údajoch
+  objektu (zo Z8). 9 pgTAP testov, Playwright test celej zóny (6/6 testov prehliadačom). (Claude Code)
 - 2026-10-16 — Z16: kontrola pred ukážkou → `docs/kontrola-mvp.md`. **Playwright** (`npm run e2e`, lokálne proti stagingu): rezervácia
   hosťa na PC aj mobile 390 px (kalendár, košík, služba, súhlasy, QR, odkaz, storno), majiteľ (ručná rezervácia, Platba prijatá,
   blokácia, kolízia z iCal), kalendár klávesnicou, axe bez nálezov — 5/5. **Nezávislá bezpečnostná kontrola** (samostatný agent):

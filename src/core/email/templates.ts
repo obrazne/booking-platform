@@ -332,3 +332,32 @@ export async function renderIcalConflict(
     text: [t("ownerGreeting"), t("owner_ical_conflict.intro", vars), tenant.adminUrl].join("\n\n"),
   };
 }
+
+/** One-time login code for the guest zone (B10), in the tenant's colour. Sent directly, never stored in the outbox. */
+export function renderLoginCode(
+  tenant: { name: string; accent: string; locale: string },
+  to: string,
+  code: string,
+): OutgoingEmail {
+  const locale = (tenant.locale in MESSAGES ? tenant.locale : "sk") as keyof typeof MESSAGES;
+  const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: "emails" });
+  const subject = t("guest_login_code.subject", { code, property: tenant.name });
+  const codeBlock = `<p style="margin:8px 0 22px;font-family:'JetBrains Mono',Consolas,monospace;font-size:32px;letter-spacing:.3em;font-weight:700">${esc(code)}</p>`;
+  return {
+    to,
+    subject,
+    fromName: tenant.name,
+    html: layout(tenant.accent, t("guest_login_code.title"), [
+      p(t("guest_login_code.greeting")),
+      p(t("guest_login_code.intro", { property: tenant.name })),
+      codeBlock,
+      p(t("guest_login_code.note")),
+    ]),
+    text: [
+      t("guest_login_code.greeting"),
+      t("guest_login_code.intro", { property: tenant.name }),
+      code,
+      t("guest_login_code.note"),
+    ].join("\n\n"),
+  };
+}

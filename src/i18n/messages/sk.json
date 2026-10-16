@@ -190,7 +190,8 @@
       "arrival": "Príchod",
       "pricing": "Sezóny a ceny",
       "extras": "Poplatky a zľavy",
-      "units": "Jednotky"
+      "units": "Jednotky",
+      "documents": "Dokumenty"
     },
     "fields": {
       "name": "Názov",
@@ -627,6 +628,53 @@
         "choose": "Vybrať termín",
         "write": "Napísať správu"
       }
+    },
+    "account": {
+      "menu": "Môj účet",
+      "loginKicker": "Môj účet",
+      "loginTitle": "Vaše pobyty.",
+      "loginSubtitle": "Bez hesla, stačí kód z e-mailu.",
+      "email": "E-mail",
+      "sendCode": "Poslať kód",
+      "codeSent": "Na váš e-mail sme poslali kód. Platí 1 hodinu.",
+      "code": "Kód z e-mailu",
+      "verify": "Prihlásiť sa",
+      "otherEmail": "Použiť iný e-mail",
+      "errors": {
+        "invalid": "Skontrolujte e-mail.",
+        "limit": "Priveľa pokusov. Skúste to o hodinu.",
+        "send": "Kód sa nepodarilo odoslať. Skúste to znova.",
+        "code": "Kód nesedí alebo už neplatí."
+      },
+      "hello": "Dobrý deň{name, select, none {} other {, {name}}}.",
+      "helloSub": "Vaše pobyty u {tenant}.",
+      "next": "Najbližší pobyt",
+      "upcoming": "Ďalšie pobyty",
+      "past": "Minulé pobyty",
+      "empty": "Zatiaľ tu nie je žiadny pobyt. Pobyty sa zobrazia podľa e-mailu, s ktorým ste rezervovali.",
+      "detail": "Detail pobytu",
+      "rebook": "Rezervovať znova",
+      "payBy": "Zaplaťte do {date}",
+      "arrival": "Pokyny k príchodu",
+      "arrivalLater": "Pokyny k príchodu a prístupové kódy uvidíte tu {days, plural, one {deň} few {# dni} other {# dní}} pred príchodom, keď bude pobyt zaplatený.",
+      "documents": "Dokumenty",
+      "contactTitle": "Kontaktné údaje",
+      "name": "Meno a priezvisko",
+      "phone": "Telefón",
+      "country": "Krajina (kód, napr. SK)",
+      "save": "Uložiť",
+      "saved": "Uložené.",
+      "marketingTitle": "Novinky e-mailom",
+      "marketingOn": "Posielame vám novinky a ponuky. Odhlásiť sa môžete jedným klikom.",
+      "marketingOff": "Novinky vám neposielame.",
+      "marketingRevoke": "Odhlásiť z noviniek",
+      "marketingGrant": "Chcem dostávať novinky",
+      "signOut": "Odhlásiť sa",
+      "questions": "Otázky k pobytu?",
+      "saveDetailsTitle": "Uložte si údaje pre ďalšie pobyty.",
+      "saveDetailsText": "Pošleme vám kód na e-mail. Potom tu nájdete všetky svoje pobyty, dokumenty a pokyny k príchodu.",
+      "saveDetails": "Vytvoriť účet",
+      "back": "Späť na moje pobyty"
     }
   },
   "reservations": {
@@ -792,7 +840,14 @@
       "intro": "pri synchronizácii kalendára {channel} sa objavila udalosť, ktorá sa prekrýva s existujúcou rezerváciou alebo blokáciou ({dates}). Nič sme neprepísali — skontrolujte to, prosím, v administrácii."
     },
     "ownerGreeting": "Dobrý deň,",
-    "openAdmin": "Otvoriť v administrácii"
+    "openAdmin": "Otvoriť v administrácii",
+    "guest_login_code": {
+      "subject": "{code} — váš kód na prihlásenie ({property})",
+      "title": "Kód na prihlásenie",
+      "intro": "Na prihlásenie do svojich pobytov u {property} zadajte tento kód:",
+      "note": "Kód platí 1 hodinu. Ak ste o prihlásenie nežiadali, správu pokojne ignorujte.",
+      "greeting": "Dobrý deň,"
+    }
   },
   "ical": {
     "title": "Synchronizácia kalendárov (iCal)",
@@ -825,5 +880,24 @@
     "copy": "Kopírovať",
     "copied": "Skopírované.",
     "exportFor": "Export pre {name}"
+  },
+  "documents": {
+    "tab": "Dokumenty",
+    "heading": "Dokumenty pre hostí",
+    "empty": "Zatiaľ žiadne dokumenty.",
+    "title": "Názov",
+    "titlePlaceholder": "Napr. Ubytovací poriadok",
+    "visibility": "Kedy ich hosť uvidí",
+    "visible": {
+      "always": "vždy",
+      "confirmed": "po potvrdení pobytu"
+    },
+    "file": "Súbor",
+    "upload": "Nahrať",
+    "uploading": "Nahrávam…",
+    "uploaded": "Dokument nahraný.",
+    "uploadFailed": "Dokument sa nepodarilo nahrať.",
+    "tooLarge": "Súbor je väčší ako 10 MB.",
+    "hint": "PDF alebo obrázok do 10 MB. Hostia ich uvidia vo svojom účte (odkaz platí 10 minút)."
   }
 }

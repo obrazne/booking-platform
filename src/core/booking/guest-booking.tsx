@@ -74,6 +74,8 @@ export type BookingData = {
     adults: number;
     children: number;
     open: boolean;
+    /** Services pre-selected by "Book again" (id → quantity). */
+    services?: Record<string, number>;
   };
 };
 
@@ -139,7 +141,7 @@ export function BookingProvider({
   const [children, setChildren] = useState(data.initial.children);
   const [infants, setInfants] = useState(0);
   const [pets, setPets] = useState(0);
-  const [services, setServices] = useState<Record<string, number>>({});
+  const [services, setServices] = useState<Record<string, number>>(data.initial.services ?? {});
   const [open, setOpen] = useState(data.initial.open);
   const [step, setStep] = useState<Step>(1);
   const [promo, setPromo] = useState<Ctx["promo"]>(null);

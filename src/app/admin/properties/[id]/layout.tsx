@@ -18,6 +18,7 @@ export default async function PropertyLayout({
     { href: `${base}/photos`, label: t("tabs.photos") },
     { href: `${base}/pricing`, label: t("tabs.pricing") },
     { href: `${base}/extras`, label: t("tabs.extras") },
+    { href: `${base}/documents`, label: t("tabs.documents") },
     ...(property.booking_mode === "units"
       ? [{ href: `${base}/units`, label: t("tabs.units") }]
       : []),
