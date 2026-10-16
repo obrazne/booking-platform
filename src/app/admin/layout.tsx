@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { LayoutDashboard, Shield, Users } from "lucide-react";
+import { CalendarCheck, LayoutDashboard, Shield, Users } from "lucide-react";
 import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
@@ -34,9 +34,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <AdminShell
-      brand={
-        <span className="font-heading truncate text-sm font-semibold">{t("common.appName")}</span>
-      }
+      brand={{ icon: <CalendarCheck />, label: t("common.appName") }}
       items={items}
       topbar={
         <>

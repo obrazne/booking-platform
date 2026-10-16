@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Building2, LayoutDashboard } from "lucide-react";
+import { Building2, LayoutDashboard, Shield } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
 import { UserMenu } from "@/core/admin/topbar";
 import { getCurrentUser, isPlatformAdmin } from "@/core/auth/session";
@@ -11,9 +11,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
 
   return (
     <AdminShell
-      brand={
-        <span className="font-heading truncate text-sm font-semibold">{t("platform.title")}</span>
-      }
+      brand={{ icon: <Shield />, label: t("platform.title") }}
       items={
         admin
           ? [

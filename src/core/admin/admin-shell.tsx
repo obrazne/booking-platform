@@ -87,6 +87,14 @@ function NavList({
   );
 }
 
+function BrandMark({ icon }: { icon: ReactNode }) {
+  return (
+    <span className="bg-primary text-primary-foreground flex size-7 shrink-0 items-center justify-center rounded-lg [&_svg]:size-4">
+      {icon}
+    </span>
+  );
+}
+
 /**
  * Admin layout (A18): collapsible icon rail that expands on hover and can be pinned (desktop),
  * slide-in menu on mobile. Navigation items come from the core and from enabled modules.
@@ -97,7 +105,8 @@ export function AdminShell({
   topbar,
   children,
 }: {
-  brand: ReactNode;
+  /** Product mark: icon stays visible in the collapsed rail, label appears when expanded. */
+  brand: { icon: ReactNode; label: string };
   items: ShellNavItem[];
   topbar: ReactNode;
   children: ReactNode;
@@ -131,7 +140,17 @@ export function AdminShell({
             hovered && !pinned && "shadow-xl",
           )}
         >
-          <div className="flex h-14 items-center overflow-hidden px-3.5">{brand}</div>
+          <div className="flex h-14 items-center gap-3 overflow-hidden px-3.5">
+            <BrandMark icon={brand.icon} />
+            <span
+              className={cn(
+                "font-heading truncate text-sm font-semibold transition-opacity duration-200",
+                expanded ? "opacity-100" : "opacity-0",
+              )}
+            >
+              {brand.label}
+            </span>
+          </div>
           <div className="flex-1 overflow-x-hidden overflow-y-auto px-2">
             <NavList items={items} expanded={expanded} />
           </div>
@@ -168,7 +187,10 @@ export function AdminShell({
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="bg-sidebar w-72 p-3">
           <SheetHeader className="px-1">
-            <SheetTitle>{brand}</SheetTitle>
+            <SheetTitle className="flex items-center gap-3">
+              <BrandMark icon={brand.icon} />
+              <span className="font-heading text-sm font-semibold">{brand.label}</span>
+            </SheetTitle>
           </SheetHeader>
           <NavList items={items} expanded onNavigate={() => setMobileOpen(false)} />
         </SheetContent>
