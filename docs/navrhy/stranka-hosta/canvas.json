@@ -54,6 +54,21 @@
       "w": 390,
       "h": 844,
       "title": "07 Mobil — galéria v2"
+    },
+    "Potvrdenie.dc.html": {
+      "x": 0,
+      "y": 5900,
+      "w": 1440,
+      "h": 1900,
+      "title": "08 Potvrdenie rezervácie — počítač (klikací: stav hore)",
+      "is_interactive": true
+    },
+    "MobilPotvrdenie.dc.html": {
+      "x": 1520,
+      "y": 5900,
+      "w": 390,
+      "h": 2700,
+      "title": "09 Mobil — potvrdenie rezervácie"
     }
   },
   "createdOnFiles": {
@@ -107,6 +122,13 @@
       "w": 520,
       "fill": "orange",
       "text": "Fotky sú zástupné rámy, v aplikácii pôjdu reálne fotky zo seedu. Ceny služieb a vzdialenosti sú orientačné, kým ich Jana nepotvrdí."
+    },
+    "potvrdenie": {
+      "x": 1990,
+      "y": 5900,
+      "w": 380,
+      "fill": "orange",
+      "text": "Potvrdenie na mobile: QR kód sa nedá naskenovať tým istým telefónom — preto sú hore údaje s tlačidlom Kopírovať a QR je druhá možnosť (z počítača, iného telefónu alebo uložený obrázok v bankovej aplikácii)."
     }
   },
   "order": [
@@ -116,7 +138,9 @@
     "MobilKosik.dc.html",
     "MobilKosikRozpis.dc.html",
     "MobilDetailV2.dc.html",
-    "MobilGaleria.dc.html"
+    "MobilGaleria.dc.html",
+    "Potvrdenie.dc.html",
+    "MobilPotvrdenie.dc.html"
   ],
   "pages": [],
   "title": "Rezervačná stránka — návrh"

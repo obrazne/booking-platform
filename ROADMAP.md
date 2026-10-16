@@ -9,7 +9,7 @@
 - **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
   kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
   captcha (čaká na účet Cloudflare).
-- **Ďalší krok pre Claude Code:** Z19 — stránka hosťa, galéria a košík podľa vizuálu v2. Veci na web klienta zatiaľ nie.
+- **Ďalší krok pre Claude Code:** Z20 — potvrdenie rezervácie podľa vizuálu v2.1. Veci na web klienta zatiaľ nie.
 - **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
 - **Claude chat:** kontrola výsledkov Z16–Z19, doklady, obchodný model, otázky pre Janu.
 
@@ -71,6 +71,20 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
    naraz jedno okno, Esc a Späť zatvoria jednu úroveň; posunutý panel v úvode len na širokej obrazovke.
 6. Over Playwrightom na počítači aj 390 px (aj prístupnosť) a pridaj do `docs/kontrola-mvp.md`. Seed: STRÖMY a showroom s kategóriami fotiek,
    miestami v okolí (orientačné, označ ako ukážkové) a referenciami.
+
+
+### Z20 — Potvrdenie rezervácie podľa vizuálu v2.1
+Martin schválil návrh **potvrdenia** (`docs/vizual-stranka-hosta.md` → *Potvrdenie rezervácie (v2.1)*, dosky `Potvrdenie` a `MobilPotvrdenie`
+v `docs/navrhy/stranka-hosta/`). Prerob stránku `/r/<kód>` (`src/app/(guest)/r/[token]/page.tsx`) — logika rezervácie, platby a storna ostáva.
+1. **Najprv over, prečo sa stránka zobrazuje bez hlavičky a päty** (Martin ju videl „úplne čistú“): `(guest)/layout.tsx` vynechá hlavičku,
+   keď klienta nespozná podľa adresy — skontroluj, na akú adresu ide presmerovanie po odoslaní a odkaz v e-maile (staging má viac adries).
+   Odkaz musí vždy viesť na doménu klienta a stránka mať jeho hlavičku, pätu a tému.
+2. Rozloženie podľa popisu: úvod s krstným menom a stavom, karta platby (QR + riadky s **Kopírovať**), zelený pruh po zaplatení,
+   **Čo bude ďalej** (kroky podľa stavu; počet dní pred príchodom z nastavenia pokynov), rozpis, účet hosťa, zmena plánov (formulár storna
+   až po kliknutí), **zelený panel vpravo** s hlavnou fotkou objektu nad úvodom, doplnkami, sumou, **Pridať do kalendára** (.ics s pobytom,
+   adresa len ak ju pravidlá polohy dovolia) a kontaktom na majiteľa. Stavy zrušená / prebieha / ukončená podľa popisu.
+3. **Mobil:** údaje s Kopírovať pred QR, **Uložiť QR** (obrázok), zvyšok pod sebou.
+4. Texty cez preklady, farby z témy, pravidlá vzhľadu v2. Playwright: oba stavy (čaká na platbu, potvrdená) na počítači aj 390 px, prístupnosť.
 
 ---
 
@@ -143,6 +157,7 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Vizuál **v2.1: potvrdenie rezervácie** (počítač aj mobil, stav čaká/zaplatené, Kopírovať, Pridať do kalendára) → `docs/navrhy/stranka-hosta/`, `docs/vizual-stranka-hosta.md`; úloha Z20. (Claude chat)
 - 2026-10-16 — Z19: stránka hosťa, galéria a košík podľa **vizuálu v2**. Dáta (migrácia len pridáva): tabuľka **referencií**
   (skopírované z objektov, zvýraznené max. 5, zdroj, mesiac pobytu, zverejnená) + `reviews_url`, **kategória fotky** (albumy),
   **zvýraznené vybavenie** s popisom, **poloha** presná / približná (pri približnej návštevník nevidí ulicu ani súradnice ani cez API —

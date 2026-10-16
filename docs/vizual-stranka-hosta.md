@@ -1,8 +1,8 @@
-# Vizuál stránky hosťa — v2 (schválené 16. 10. 2026)
+# Vizuál stránky hosťa — v2.1 (schválené 16. 10. 2026)
 
 *Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design). **v2 schválená 16. 10. 2026.**
 Zdroj plátna: `docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Platné dosky: `Main.dc.html` (počítač, klikací),
-`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu). `Mobil.dc.html` je z v1 — neplatí.
+`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. `Mobil.dc.html` je z v1 — neplatí.
 Je to **zámer, nie pixelová predloha** — farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov a z dát objektu (sekcie B7).*
 
 ## Zmeny oproti v1
@@ -118,6 +118,29 @@ grafitové „Pozrieť pobyt“. Klik kamkoľvek otvorí košík; **bez termínu
   zbalený termín s hostiami, doplnky ako riadky, referencia; **zelený pás dole** (suma + „Rozpis a podmienky ▴“ | grafitové Pokračovať);
   ťuk na sumu vysunie zospodu rozpis, istoty a Janu (horné rohy zaoblené).
 - **Výber termínu** (`MobilKalendar`): spodné okno cez celú obrazovku, mesiace pod sebou, „Potvrdiť termín“.
+
+## Potvrdenie rezervácie (v2.1) — stránka po odoslaní a odkaz z e-mailu (`/r/<kód>`)
+
+Musí vyzerať ako **ten istý web**: rovnaká hlavička (názov, Účet, Späť na web) a päta ako detail objektu, téma klienta.
+- **Úvod** (jemný prechod ako horná časť detailu): zelená fajka, číslo rezervácie (mono), štítok stavu (čaká na platbu = teplý tón,
+  potvrdená = akcent); nadpis s **krstným menom** hosťa — „Ďakujeme, Peter. Termín vám držíme.“ / po zaplatení „Tešíme sa na vás, Peter.
+  Pobyt je potvrdený.“; veta, kam prišiel e-mail a kedy je rezervácia záväzná. Vpravo karta s hlavnou fotkou objektu a termínom.
+- **Platba** (len kým čaká na platbu): kicker „Platba prevodom“, nadpis „Naskenujte a zaplaťte. Trvá to minútu.“; karta: vľavo **QR PAY by square**
+  (na svetlom pozadí, popis „Otvorte bankovú aplikáciu a naskenujte kód“), vpravo riadky Suma (veľká) · IBAN (mono, po štvoriciach) ·
+  Variabilný symbol · Príjemca — pri prvých troch tlačidlo **Kopírovať** (→ „Skopírované“), dole hodiny + „Zaplaťte do … — dovtedy vám termín držíme“.
+  Po zaplatení namiesto karty zelený pruh „Platba X € prijatá {dátum}. Rezervácia je záväzná.“
+- **Čo bude ďalej** — 4 kroky vedľa seba (na mobile pod sebou s čiarou): zaplatíte (do …) → potvrdíme platbu → pokyny k príchodu
+  (X dní vopred podľa nastavenia) → príchod (dátum, čas). Hotové kroky s fajkou v akcente, aktuálny zvýraznený.
+- **Rozpis ceny** (zoznam, hodnoty vpravo) + Spolu.
+- **Účet hosťa** ako nenápadný riadok „Uložte si údaje na ďalší pobyt“ + „Vytvoriť účet“ (Z17).
+- **Zmena plánov** — jedna veta so storno pravidlom a odkazom „Požiadať o zrušenie“ (formulár až po kliknutí).
+- **Vpravo zelený panel** (prilepený pri rolovaní): „Váš pobyt“, príchod / odchod s časmi, hostia, doplnky, suma („Na úhradu“ / „Zaplatené“),
+  grafitové **Pridať do kalendára** (súbor .ics s pobytom — nie iCal synchronizácia), Jana s WhatsAppom a telefónom.
+- Iné stavy: **zrušená** — úvod „Rezervácia je zrušená“ + dôvod/refundácia podľa storna, bez platby a krokov; **prebieha / ukončená** —
+  úvod „Príjemný pobyt“ / „Ďakujeme za návštevu“, pri ukončenej „Rezervovať znova“.
+- **Mobil:** úvod → **platba: najprv údaje s Kopírovať**, QR až pod nimi s vetou „Platíte z počítača alebo iného telefónu? Naskenujte kód.
+  Alebo ho uložte a otvorte v bankovej aplikácii.“ + **Uložiť QR** (obrázok) — QR sa nedá naskenovať tým istým telefónom →
+  kroky → zelená karta pobytu → rozpis → účet → zmena plánov → päta.
 
 ## Neskôr (zapísané nápady)
 
