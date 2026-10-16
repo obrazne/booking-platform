@@ -5,3 +5,4 @@ package-lock.json
 supabase/.temp
 src/lib/supabase/database.types.ts
 *.md
+docs/
