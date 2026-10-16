@@ -1,18 +1,50 @@
 {
   "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-10-16T13:50:00Z"},
+  "createdOnFiles": { "v": 1, "at": "2026-10-16T13:50:00Z" },
   "title": "Rezervačná stránka — návrh",
-  "launch": {"view": "canvas"},
+  "launch": { "view": "canvas" },
   "pages": [],
   "boards": {
-    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 4200, "title": "01 Detail objektu — počítač (klikací kalendár)", "expand": "fill", "is_interactive": true},
-    "Mobil.dc.html": {"x": 1520, "y": 0, "w": 390, "h": 844, "title": "02 Mobil — detail s pásom ceny"},
-    "MobilKalendar.dc.html": {"x": 1990, "y": 0, "w": 390, "h": 844, "title": "03 Mobil — výber termínu"}
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 4200,
+      "title": "01 Detail objektu — počítač (klikací kalendár)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Mobil.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "02 Mobil — detail s pásom ceny"
+    },
+    "MobilKalendar.dc.html": {
+      "x": 1990,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "03 Mobil — výber termínu"
+    }
   },
   "order": ["Main.dc.html", "Mobil.dc.html", "MobilKalendar.dc.html"],
   "notes": {
-    "titul": {"x": 0, "y": -300, "text": "Rezervačná stránka — Chalet STRÖMY, návrh v1", "kind": "title1", "maxW": 2380},
-    "fotky": {"x": 1520, "y": 960, "w": 300, "fill": "orange", "text": "Fotky sú zatiaľ zástupné rámy. V aplikácii pôjdu reálne fotky chaletu zo seedu.\n\nCeny služieb sú orientačné, kým ich Jana nepotvrdí."}
+    "titul": {
+      "x": 0,
+      "y": -300,
+      "text": "Rezervačná stránka — Chalet STRÖMY, návrh v1",
+      "kind": "title1",
+      "maxW": 2380
+    },
+    "fotky": {
+      "x": 1520,
+      "y": 960,
+      "w": 300,
+      "fill": "orange",
+      "text": "Fotky sú zatiaľ zástupné rámy. V aplikácii pôjdu reálne fotky chaletu zo seedu.\n\nCeny služieb sú orientačné, kým ich Jana nepotvrdí."
+    }
   },
   "designSystems": []
 }
