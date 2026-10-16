@@ -191,6 +191,61 @@ export type Database = {
           },
         ]
       }
+      documents: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string | null
+          reservation_id: string | null
+          storage_path: string
+          tenant_id: string
+          title: Json
+          visible_when: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id?: string | null
+          reservation_id?: string | null
+          storage_path: string
+          tenant_id: string
+          title: Json
+          visible_when?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string | null
+          reservation_id?: string | null
+          storage_path?: string
+          tenant_id?: string
+          title?: Json
+          visible_when?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_outbox: {
         Row: {
           attempts: number
@@ -307,6 +362,56 @@ export type Database = {
           },
           {
             foreignKeyName: "fees_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guests: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string
+          id: string
+          marketing_consent: boolean
+          marketing_consent_at: string | null
+          name: string | null
+          phone: string | null
+          tenant_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          marketing_consent?: boolean
+          marketing_consent_at?: string | null
+          name?: string | null
+          phone?: string | null
+          tenant_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          marketing_consent?: boolean
+          marketing_consent_at?: string | null
+          name?: string | null
+          phone?: string | null
+          tenant_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1278,6 +1383,7 @@ export type Database = {
           currency: string
           guest_country: string | null
           guest_email: string
+          guest_id: string | null
           guest_name: string
           guest_note: string | null
           guest_phone: string | null
@@ -1310,6 +1416,7 @@ export type Database = {
           currency: string
           guest_country?: string | null
           guest_email: string
+          guest_id?: string | null
           guest_name: string
           guest_note?: string | null
           guest_phone?: string | null
@@ -1342,6 +1449,7 @@ export type Database = {
           currency?: string
           guest_country?: string | null
           guest_email?: string
+          guest_id?: string | null
           guest_name?: string
           guest_note?: string | null
           guest_phone?: string | null
@@ -1367,6 +1475,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
             referencedColumns: ["id"]
           },
           {
@@ -1935,6 +2050,10 @@ export type Database = {
     }
     Functions: {
       access_token_key: { Args: never; Returns: string }
+      arrival_instructions_visible: {
+        Args: { p_reservation_id: string }
+        Returns: boolean
+      }
       cancel_reservation: {
         Args: { p_reason?: string; p_reservation_id: string }
         Returns: undefined
@@ -1972,6 +2091,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      claim_guest_account: { Args: { p_tenant_id: string }; Returns: string }
       confirm_payment: {
         Args: { p_reservation_id: string }
         Returns: undefined
@@ -1988,6 +2108,7 @@ export type Database = {
           number: string
         }[]
       }
+      current_guest_id: { Args: { p_tenant_id: string }; Returns: string }
       dismiss_cancellation_request: {
         Args: { p_reservation_id: string }
         Returns: undefined
@@ -2010,6 +2131,10 @@ export type Database = {
           property_id: string
           unit_id: string
         }[]
+      }
+      guest_arrival_instructions: {
+        Args: { p_reservation_id: string }
+        Returns: Json
       }
       ical_apply: {
         Args: { p_channel_id: string; p_events: Json }

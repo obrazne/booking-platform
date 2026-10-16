@@ -64,7 +64,7 @@ Export per jednotka (tajný odkaz), import kanálov (Booking, Airbnb) s pravidel
 majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného behu. Na konci: všetko nasadené na staging a Martinovi krátky postup,
 čo si preklikať (rezervácia ako hosť na STRÖMY, potvrdenie platby, kalendár, iCal).
 
-### Z13 — Príprava dátového modelu na zónu hosťa (B10)
+### Z13 ✅ — Príprava dátového modelu na zónu hosťa (B10)
 Len dáta a testy, bez rozhrania: hosť ako záznam klienta (`tenant_id`, e-mail jedinečný v rámci klienta), voliteľné prepojenie na prihlásenie
 (Supabase Auth), priradenie rezervácií cez overený e-mail, dokumenty pri objekte a pri rezervácii v súkromnom úložisku (dočasné odkazy),
 viditeľnosť prístupových kódov až pri potvrdenom pobyte. RLS: hosť vidí len svoje rezervácie u daného klienta. Ak už niečo z toho Z7 urobila,
@@ -158,6 +158,11 @@ Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z13: dáta pre zónu hosťa (bez rozhrania). `guests` u klienta (e-mail jedinečný v rámci klienta; ten istý e-mail
+  u dvoch klientov = dvaja hostia), rezervácia sa pri vzniku priradí hosťovi (trigger, existujúce doplnené), prepojenie na prihlásenie
+  `claim_guest_account` len s overeným e-mailom, RLS: hosť vidí len svoje rezervácie, položky, riadky a platby u daného klienta.
+  Dokumenty pri objekte alebo rezervácii v súkromnom buckete `guest-documents` (dočasné odkazy vydá server), viditeľnosť
+  „vždy / po potvrdení“. Prístupové kódy `guest_arrival_instructions` len pri potvrdenom pobyte X dní pred príchodom. 12 nových testov. (Claude Code)
 - 2026-10-16 — Z12: iCal. Export pre každú jednotku `/ical/<token>.ics` (len „obsadené“, bez údajov hostí); pre každý importovaný kanál
   samostatná adresa bez jeho vlastných udalostí (`?exclude=`), aby sa kalendáre neodrážali. Import kanálov (Booking, Airbnb, iný) —
   `ical_apply` v jednej transakcii: nové udalosti blokujú, **kolízia sa uloží ako neblokujúci konflikt a príde e-mail majiteľovi**
