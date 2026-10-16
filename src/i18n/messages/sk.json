@@ -41,7 +41,12 @@
   "nav": {
     "dashboard": "Prehľad",
     "team": "Tím",
-    "platform": "Riadiace centrum"
+    "platform": "Riadiace centrum",
+    "properties": "Objekty",
+    "settings": "Nastavenia",
+    "reservations": "Rezervácie",
+    "calendar": "Kalendár",
+    "blocks": "Blokácie"
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
@@ -106,7 +111,220 @@
       "nav": "Doplnkové služby",
       "title": "Doplnkové služby",
       "dashboardHint": "Šéfkuchár, transfer z letiska a ďalšie služby k pobytu.",
-      "emptyState": "Služby sa budú dať pridávať po dokončení domény (časť B)."
+      "emptyState": "Služby sa budú dať pridávať po dokončení domény (časť B).",
+      "newService": "Nová služba",
+      "name": "Názov",
+      "description": "Popis",
+      "priceModel": "Výpočet",
+      "amount": "Cena",
+      "maxQuantity": "Max. počet",
+      "property": "Objekt",
+      "allProperties": "Všetky objekty",
+      "active": "Aktívna",
+      "empty": "Zatiaľ žiadne služby."
     }
+  },
+  "forms": {
+    "saved": "Uložené.",
+    "deleted": "Zmazané.",
+    "save": "Uložiť",
+    "add": "Pridať",
+    "delete": "Zmazať",
+    "edit": "Upraviť",
+    "confirmDelete": "Naozaj zmazať?",
+    "yes": "Áno",
+    "no": "Nie",
+    "optional": "nepovinné",
+    "errors": {
+      "generic": "Uloženie sa nepodarilo. Skúste to znova.",
+      "duplicate": "Taký záznam už existuje.",
+      "overlap": "Termín sa prekrýva s existujúcim záznamom.",
+      "forbidden": "Na túto zmenu nemáte oprávnenie.",
+      "invalid": "Skontrolujte vyplnené údaje.",
+      "upload": "Fotku sa nepodarilo nahrať."
+    }
+  },
+  "priceModels": {
+    "per_stay": "za pobyt",
+    "per_night": "za noc",
+    "per_person": "za osobu",
+    "per_person_night": "za osobu a noc",
+    "per_item": "za kus"
+  },
+  "properties": {
+    "title": "Objekty",
+    "new": "Nový objekt",
+    "empty": "Zatiaľ žiadne objekty.",
+    "create": "Založiť objekt",
+    "status": {
+      "draft": "Koncept",
+      "published": "Zverejnený",
+      "archived": "Archív"
+    },
+    "bookingMode": {
+      "label": "Spôsob prenájmu",
+      "whole": "Celý objekt",
+      "units": "Po jednotkách"
+    },
+    "pricingModel": {
+      "label": "Cena",
+      "per_night": "Za noc",
+      "per_person_night": "Za osobu a noc"
+    },
+    "tabs": {
+      "details": "Údaje",
+      "texts": "Texty",
+      "photos": "Fotky",
+      "amenities": "Vybavenie",
+      "arrival": "Príchod",
+      "pricing": "Sezóny a ceny",
+      "extras": "Poplatky a zľavy",
+      "units": "Jednotky"
+    },
+    "fields": {
+      "name": "Názov",
+      "slug": "Adresa v odkaze",
+      "slugHint": "Malé písmená, číslice a pomlčky.",
+      "statusLabel": "Stav",
+      "street": "Ulica",
+      "city": "Obec",
+      "postalCode": "PSČ",
+      "country": "Krajina",
+      "maxGuests": "Max. počet hostí",
+      "bedrooms": "Spálne",
+      "bathrooms": "Kúpeľne",
+      "checkIn": "Príchod od",
+      "checkOut": "Odchod do",
+      "cleaningGap": "Upratovacie dni medzi pobytmi",
+      "petsAllowed": "Zvieratá povolené",
+      "touristTaxIncluded": "Daň za ubytovanie je zahrnutá v cene",
+      "touristTax": "Daň za ubytovanie (na dospelého a noc)",
+      "contactEmail": "Kontaktný e-mail",
+      "contactPhone": "Kontaktný telefón",
+      "summary": "Krátky popis",
+      "description": "Popis",
+      "houseRules": "Pravidlá pobytu",
+      "included": "V cene",
+      "arrival": "Pokyny k príchodu",
+      "arrivalHint": "Neverejné. Pošlú sa hosťovi e-mailom pred príchodom (kódy, Wi-Fi). Nikdy sa nezobrazia na stránke.",
+      "latitude": "Zemepisná šírka",
+      "longitude": "Zemepisná dĺžka"
+    },
+    "photos": {
+      "upload": "Nahrať fotky",
+      "uploading": "Nahrávam…",
+      "hint": "Fotky sa pred nahraním zmenšia na 2 000 px. Prvá fotka je hlavná.",
+      "alt": "Popis fotky",
+      "moveUp": "Posunúť vyššie",
+      "moveDown": "Posunúť nižšie",
+      "empty": "Zatiaľ žiadne fotky."
+    },
+    "amenitiesGroups": {
+      "property_type": "Typ",
+      "region": "Región",
+      "amenity": "Vybavenie",
+      "suitable_for": "Vhodné pre"
+    },
+    "units": {
+      "name": "Názov jednotky",
+      "maxGuests": "Kapacita",
+      "add": "Pridať jednotku",
+      "wholeHint": "Objekt sa prenajíma celý — jednotka je skrytá a slúži na kalendár a ceny.",
+      "active": "Aktívna"
+    }
+  },
+  "pricing": {
+    "seasons": "Sezóny",
+    "newSeason": "Nová sezóna",
+    "name": "Názov",
+    "priority": "Priorita",
+    "priorityHint": "Pri prekryve platí sezóna s vyššou prioritou.",
+    "isDefault": "Predvolená (platí pre všetky ostatné dni)",
+    "minNights": "Min. nocí",
+    "maxNights": "Max. nocí",
+    "arrivalDays": "Povolené dni príchodu",
+    "anyDay": "Ľubovoľný deň",
+    "color": "Farba",
+    "ranges": "Termíny",
+    "rangeFrom": "Od",
+    "rangeTo": "Do",
+    "repeatYearly": "Opakovať každý rok",
+    "addRange": "Pridať termín",
+    "rate": "Cena",
+    "ratePerNight": "Cena za noc",
+    "ratePerPerson": "Cena za osobu a noc",
+    "overlapWarning": "Termíny sezón {a} a {b} sa prekrývajú — platí vyššia priorita.",
+    "noDefault": "Chýba predvolená sezóna: dni mimo sezón nebudú mať cenu.",
+    "weekdays": {
+      "1": "Po",
+      "2": "Ut",
+      "3": "St",
+      "4": "Št",
+      "5": "Pi",
+      "6": "So",
+      "7": "Ne"
+    }
+  },
+  "extras": {
+    "fees": "Poplatky",
+    "newFee": "Nový poplatok",
+    "feeKind": {
+      "label": "Druh",
+      "automatic": "Vždy",
+      "optional": "Na výber hosťa",
+      "pet": "Za zviera"
+    },
+    "deposit": "Vratná kaucia (nie je tržba)",
+    "amount": "Suma",
+    "priceModel": "Výpočet",
+    "active": "Aktívny",
+    "discounts": "Zľavy",
+    "newDiscount": "Nová zľava",
+    "discountKind": {
+      "label": "Druh",
+      "length_of_stay": "Za dĺžku pobytu",
+      "promo": "Promo kód"
+    },
+    "percent": "Percent",
+    "fixedAmount": "alebo pevná suma",
+    "code": "Kód",
+    "minNights": "Od počtu nocí",
+    "minGuests": "Min. hostí",
+    "maxGuests": "Max. hostí",
+    "bookedFrom": "Rezervované od",
+    "bookedUntil": "Rezervované do",
+    "stayFrom": "Pobyt od",
+    "stayUntil": "Pobyt do",
+    "excludedFrom": "Neplatí od",
+    "excludedUntil": "Neplatí do",
+    "notStacking": "Zľavy sa nesčítavajú — hosť dostane najvýhodnejšiu."
+  },
+  "settings": {
+    "title": "Nastavenia",
+    "payment": "Platba prevodom",
+    "iban": "IBAN",
+    "accountHolder": "Príjemca",
+    "bic": "BIC (nepovinné)",
+    "dueHours": "Lehota na zaplatenie (hodiny)",
+    "dueHint": "Po lehote sa nezaplatená rezervácia zruší a termín uvoľní.",
+    "holdMinutes": "Dočasná blokácia počas rezervácie (minúty)",
+    "cancellation": "Storno podmienky",
+    "legal": "Právne dokumenty",
+    "termsUrl": "Odkaz na obchodné podmienky",
+    "privacyUrl": "Odkaz na ochranu osobných údajov",
+    "notifications": "Upozornenia",
+    "ownerEmail": "E-mail pre nové rezervácie",
+    "arrivalDays": "Pokyny k príchodu poslať (dní vopred)",
+    "vatPayer": "Platca DPH"
+  },
+  "blocks": {
+    "title": "Blokácie termínov",
+    "hint": "Osobné použitie, údržba. Blokácia nemá údaje hosťa ani cenu.",
+    "unit": "Objekt / jednotka",
+    "from": "Od (prvá noc)",
+    "to": "Do (deň odchodu)",
+    "label": "Poznámka",
+    "add": "Blokovať",
+    "empty": "Žiadne blokácie."
   }
 }

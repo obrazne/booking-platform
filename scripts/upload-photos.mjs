@@ -9,9 +9,13 @@ const [manifestPath] = process.argv.slice(2);
 if (!manifestPath) throw new Error("usage: upload-photos.mjs <manifest.json>");
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
-  auth: { persistSession: false },
-});
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY,
+  {
+    auth: { persistSession: false },
+  },
+);
 
 let sort = 0;
 for (const photo of manifest.photos) {
@@ -20,7 +24,11 @@ for (const photo of manifest.photos) {
   const body = await readFile(path.join(manifest.dir, photo.file));
   const { error: upErr } = await supabase.storage
     .from("property-photos")
-    .upload(objectPath, body, { contentType: "image/jpeg", upsert: true, cacheControl: "31536000" });
+    .upload(objectPath, body, {
+      contentType: "image/jpeg",
+      upsert: true,
+      cacheControl: "31536000",
+    });
   if (upErr) throw upErr;
   const { error: dbErr } = await supabase.from("photos").upsert(
     {

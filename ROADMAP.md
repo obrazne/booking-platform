@@ -35,7 +35,7 @@ vzhľad podľa A12 a A18. Technické detaily rozhoduješ sám a zapisuješ do De
    (`podklady/fotky-stromy/`, mimo Gitu), ak nie sú, opýtaj sa. **Prístupové kódy a Wi-Fi do seedu nedávaj.**
    Showroom: 6 vymyslených objektov podľa časti C pod Ukážkovým klientom, fotky z voľne použiteľných zdrojov (zapíš zdroj a licenciu).
 
-### Z8 — Administrácia: objekty, ceny, služby
+### Z8 ✅ — Administrácia: objekty, ceny, služby
 Editor objektu a jednotky (texty viacjazyčne, fotky so zmenšením v prehliadači, vybavenie, pravidlá, **neverejné pokyny k príchodu**),
 sezóny a ceny (prehľadne, kontrola prekryvov), poplatky a zľavy, služby (modul), blokácie termínov, nastavenia klienta (platobné údaje —
 IBAN, príjemca, lehota v hodinách; storno podmienky; odkazy na VOP a ochranu údajov). Všetko v kostre administrácie a s bočným panelom.
@@ -125,6 +125,12 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z8: administrácia objektov (zoznam, založenie s predvolenou jednotkou a sezónou; editor s kartami Údaje — údaje, texty
+  viacjazyčne, vybavenie z číselníkov, neverejné pokyny k príchodu; Fotky — nahrávanie so zmenšením v prehliadači na 2 000 px, popis,
+  poradie, mazanie; Sezóny a ceny — tabuľka cenníka, termíny aj cez Nový rok, dni príchodu, min./max. nocí, ceny po jednotkách,
+  upozornenie na prekryv sezón a chýbajúcu predvolenú; Poplatky a zľavy; Jednotky pri režime po jednotkách), služby (modul), blokácie,
+  nastavenia klienta (IBAN, lehota, blokácia, storno, právne odkazy, e-mail majiteľa, dni pred príchodom). Testovací prístup bez hesla:
+  `scripts/qa-login-link.mjs` vytvorí používateľa qa@booking-platform.test (majiteľ ukážkových klientov) a jednorazový odkaz cez `/auth/confirm`. (Claude Code)
 - 2026-10-16 — Z7: dátový model B1 celý (objekty, jednotky, číselníky, fotky, vekové pásma, sezóny s opakovanými rozsahmi aj cez Nový rok,
   ceny, poplatky vrátane vratnej kaucie, zľavy, služby, iCal kanály, rezervácia s položkami/riadkami/platbami/históriou/súhlasmi/poznámkami,
   obsadenosť). **Dvojitej rezervácii bráni `EXCLUDE USING gist` nad obsadenosťou** (aj pre súbežné zápisy); upratovací deň predlžuje rozsah;

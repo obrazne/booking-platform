@@ -91,6 +91,9 @@ má `allow-scripts`), skopírovať `.env.example` → `.env.local` a doplniť UR
 potom `npx supabase db push`. Typy: `npm run db:types`. Seed (`supabase/seed.sql`) je idempotentný.
 Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supabase_migrations.schema_migrations` sú zosúladené s názvami súborov.
 
+**Testovanie administrácie v prehliadači bez hesla:** `node --env-file=.env.local scripts/qa-login-link.mjs http://localhost:3000` → otvoriť vypísaný odkaz
+(používateľ qa@booking-platform.test, majiteľ ukážkových klientov, len staging). Fotky z disku: `scripts/upload-photos.mjs <manifest>`.
+
 **Účty v aplikácii:** registrácia je vypnutá. Ľudia klienta a Martin sa zakladajú v Supabase (Authentication → Add user) alebo neskôr
 pozvánkou z riadiaceho centra; správca platformy = riadok v `platform_admins`.
 
