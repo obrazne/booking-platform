@@ -468,18 +468,16 @@ async function createDemo() {
   // Control centre: the services module in trial, with an audit record.
   const trialEnds = addDays(today, 30);
   must(
-    await db
-      .from("tenant_modules")
-      .upsert(
-        {
-          tenant_id: TENANT,
-          module_key: "services",
-          status: "trial",
-          trial_ends_at: trialEnds,
-          updated_by: martin.id,
-        },
-        { onConflict: "tenant_id,module_key" },
-      ),
+    await db.from("tenant_modules").upsert(
+      {
+        tenant_id: TENANT,
+        module_key: "services",
+        status: "trial",
+        trial_ends_at: trialEnds,
+        updated_by: martin.id,
+      },
+      { onConflict: "tenant_id,module_key" },
+    ),
     "module",
   );
   must(
