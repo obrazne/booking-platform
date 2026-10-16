@@ -1877,6 +1877,13 @@ export type Database = {
         }[]
       }
       expire_pending_reservations: { Args: never; Returns: string[] }
+      free_units: {
+        Args: { p_check_in: string; p_check_out: string; p_tenant_id: string }
+        Returns: {
+          property_id: string
+          unit_id: string
+        }[]
+      }
       is_module_enabled: {
         Args: { p_module_key: string; p_tenant_id: string }
         Returns: boolean

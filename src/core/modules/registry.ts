@@ -30,6 +30,24 @@ export const getEnabledModules = cache(async (tenantId: string): Promise<ModuleM
   return resolveEnabled(MODULES, keys);
 });
 
+/** Module switch checked by the database function — works for anonymous guests too (no access to tenant_modules). */
+export const isModuleEnabledPublic = cache(
+  async (tenantId: string, key: string): Promise<boolean> => {
+    const supabase = await createClient();
+    const { data } = await supabase.rpc("is_module_enabled", {
+      p_tenant_id: tenantId,
+      p_module_key: key,
+    });
+    return data === true;
+  },
+);
+
+/** Keys of modules switched on for the tenant, checked publicly (guest pages, price contributors). */
+export async function enabledModuleKeysPublic(tenantId: string): Promise<string[]> {
+  const flags = await Promise.all(MODULES.map((m) => isModuleEnabledPublic(tenantId, m.key)));
+  return MODULES.filter((_, i) => flags[i]).map((m) => m.key);
+}
+
 export async function isModuleEnabled(tenantId: string, key: string): Promise<boolean> {
   return (await getEnabledModules(tenantId)).some((m) => m.key === key);
 }

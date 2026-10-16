@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 
-select plan(31);
+select plan(32);
 
 -- Fixtures -----------------------------------------------------------------------------------------
 insert into auth.users (id, email, aud, role, instance_id)
@@ -125,6 +125,8 @@ set local role anon;
 select results_eq($$ select slug from public.properties where tenant_id in ('10000000-0000-0000-0000-00000000000a', '10000000-0000-0000-0000-00000000000b') order by slug $$, array['chalet-a', 'chalet-b'],
   'guest sees only published properties');
 select is((select count(*)::int from public.discounts where tenant_id = '10000000-0000-0000-0000-00000000000a'), 1, 'guest sees the stay discount but not the promo code');
+
+select lives_ok('select count(*) from public.terms', 'guest reads catalogue terms');
 
 select * from finish();
 rollback;
