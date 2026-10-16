@@ -2,10 +2,21 @@
   "common": {
     "appName": "Booking platforma",
     "signOut": "Odhlásiť sa",
+    "signIn": "Prihlásiť sa",
     "save": "Uložiť",
+    "saved": "Uložené.",
     "cancel": "Zrušiť",
     "close": "Zavrieť",
-    "signIn": "Prihlásiť sa"
+    "search": "Hľadať",
+    "all": "Všetko",
+    "exportCsv": "Export CSV",
+    "previous": "Predchádzajúca",
+    "next": "Ďalšia",
+    "pageOf": "Strana {page} z {pages}",
+    "results": "{count, plural, one {# záznam} few {# záznamy} other {# záznamov}}",
+    "noResults": "Žiadne záznamy.",
+    "detail": "Detail",
+    "error": "Niečo sa nepodarilo. Skúste to znova."
   },
   "auth": {
     "title": "Prihlásenie",
@@ -16,12 +27,86 @@
     "invalidCredentials": "Nesprávny e-mail alebo heslo.",
     "missingFields": "Vyplňte e-mail aj heslo."
   },
+  "shell": {
+    "menu": "Menu",
+    "pin": "Pripnúť panel",
+    "unpin": "Odopnúť panel",
+    "switchTenant": "Prepnúť ubytovanie",
+    "colorMode": "Vzhľad",
+    "light": "Svetlý",
+    "dark": "Tmavý",
+    "system": "Podľa systému",
+    "account": "Účet"
+  },
+  "nav": {
+    "dashboard": "Prehľad",
+    "team": "Tím",
+    "platform": "Riadiace centrum"
+  },
   "admin": {
-    "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy."
+    "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
+    "dashboardTitle": "Prehľad",
+    "dashboardHint": "Rezervácie a obsadenosť pribudnú po dokončení domény (časť B)."
+  },
+  "team": {
+    "title": "Tím",
+    "name": "Meno",
+    "email": "E-mail",
+    "role": "Rola",
+    "memberSince": "Členom od",
+    "roles": {
+      "owner": "Majiteľ",
+      "reception": "Recepcia",
+      "cleaning": "Upratovanie"
+    }
   },
   "booking": {
     "placeholder": "Rezervácia sa pripravuje.",
     "notFound": "Táto adresa nepatrí žiadnemu ubytovaniu.",
     "checkAvailability": "Overiť dostupnosť"
+  },
+  "platform": {
+    "title": "Riadiace centrum",
+    "tenants": "Klienti",
+    "newTenant": "Nový klient",
+    "name": "Názov",
+    "slug": "Skratka (subdoména)",
+    "slugHint": "Malé písmená, číslice a pomlčky, napr. chalet-stromy.",
+    "domain": "Doména",
+    "domainHint": "Napr. rezervacia.chaletstromy.sk alebo chalet-stromy.localhost pri vývoji.",
+    "country": "Krajina",
+    "currency": "Mena",
+    "status": "Stav",
+    "statuses": {
+      "onboarding": "Zakladá sa",
+      "active": "Aktívny",
+      "suspended": "Pozastavený"
+    },
+    "create": "Založiť klienta",
+    "created": "Klient bol založený.",
+    "slugTaken": "Táto skratka alebo doména už existuje.",
+    "invalidInput": "Skontrolujte vyplnené údaje.",
+    "modules": "Moduly",
+    "moduleStatus": {
+      "trial": "Skúška",
+      "active": "Aktívny",
+      "off": "Vypnutý"
+    },
+    "trialEndsAt": "Koniec skúšky",
+    "trialNeedsDate": "Pri skúške vyplňte dátum konca.",
+    "domains": "Domény",
+    "theme": "Téma",
+    "themePreview": "Náhľad témy",
+    "audit": "Záznam zmien",
+    "auditEmpty": "Zatiaľ žiadne zmeny.",
+    "forbidden": "Riadiace centrum je len pre správcu platformy."
+  },
+  "modules": {
+    "services": {
+      "nav": "Doplnkové služby",
+      "title": "Doplnkové služby",
+      "dashboardHint": "Šéfkuchár, transfer z letiska a ďalšie služby k pobytu.",
+      "emptyState": "Služby sa budú dať pridávať po dokončení domény (časť B)."
+    }
   }
 }

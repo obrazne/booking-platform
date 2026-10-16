@@ -23,3 +23,9 @@ values
   ('a0000000-0000-4000-8000-000000000001', '#0071e3', 'geist', 'geist'),
   ('a0000000-0000-4000-8000-000000000002', '#2f5d50', 'lora', 'inter')
 on conflict (tenant_id) do nothing;
+
+insert into public.tenant_modules (tenant_id, module_key, status, trial_ends_at)
+values
+  ('a0000000-0000-4000-8000-000000000001', 'services', 'active', null),
+  ('a0000000-0000-4000-8000-000000000002', 'services', 'trial', current_date + 30)
+on conflict (tenant_id, module_key) do nothing;

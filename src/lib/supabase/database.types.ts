@@ -94,6 +94,21 @@ export type Database = {
           },
         ];
       };
+      modules: {
+        Row: {
+          created_at: string;
+          key: string;
+        };
+        Insert: {
+          created_at?: string;
+          key: string;
+        };
+        Update: {
+          created_at?: string;
+          key?: string;
+        };
+        Relationships: [];
+      };
       platform_admins: {
         Row: {
           created_at: string;
@@ -172,6 +187,55 @@ export type Database = {
             columns: ["tenant_id"];
             isOneToOne: false;
             referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tenant_modules: {
+        Row: {
+          module_key: string;
+          status: string;
+          tenant_id: string;
+          trial_ends_at: string | null;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          module_key: string;
+          status?: string;
+          tenant_id: string;
+          trial_ends_at?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          module_key?: string;
+          status?: string;
+          tenant_id?: string;
+          trial_ends_at?: string | null;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tenant_modules_module_key_fkey";
+            columns: ["module_key"];
+            isOneToOne: false;
+            referencedRelation: "modules";
+            referencedColumns: ["key"];
+          },
+          {
+            foreignKeyName: "tenant_modules_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tenant_modules_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -271,6 +335,10 @@ export type Database = {
     };
     Functions: {
       is_platform_admin: { Args: never; Returns: boolean };
+      is_module_enabled: {
+        Args: { p_module_key: string; p_tenant_id: string };
+        Returns: boolean;
+      };
       is_tenant_member: {
         Args: { p_roles?: string[]; p_tenant_id: string };
         Returns: boolean;

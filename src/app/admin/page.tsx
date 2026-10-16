@@ -1,28 +1,32 @@
-import { getTranslations } from "next-intl/server";
-import { getMemberships } from "@/core/auth/session";
-import { signOut } from "@/app/(auth)/login/actions";
-import { Button } from "@/components/ui/button";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ModuleSlot } from "@/core/modules/module-slot";
+import { getActiveMembership } from "@/core/tenant/active";
 
-export default async function AdminHome() {
-  const t = await getTranslations();
-  const memberships = await getMemberships();
+export default async function AdminDashboard() {
+  const t = await getTranslations("admin");
+  const active = await getActiveMembership();
+
+  if (!active) {
+    return <p className="text-muted-foreground max-w-prose">{t("noMembership")}</p>;
+  }
 
   return (
-    <main className="mx-auto grid w-full max-w-2xl gap-6 p-8">
-      {memberships.length === 0 ? (
-        <p className="text-muted-foreground">{t("admin.noMembership")}</p>
-      ) : (
-        <ul className="grid gap-2">
-          {memberships.map((m) => (
-            <li key={m.tenantId}>{m.tenantName}</li>
-          ))}
-        </ul>
-      )}
-      <form action={signOut}>
-        <Button variant="outline" type="submit">
-          {t("common.signOut")}
-        </Button>
-      </form>
-    </main>
+    <div className="grid gap-6">
+      <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("dashboardTitle")}</h1>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>{active.tenantName}</CardTitle>
+            <CardDescription>{t("dashboardHint")}</CardDescription>
+          </CardHeader>
+        </Card>
+        <ModuleSlot
+          name="admin.dashboard.cards"
+          tenantId={active.tenantId}
+          locale={await getLocale()}
+        />
+      </div>
+    </div>
   );
 }
