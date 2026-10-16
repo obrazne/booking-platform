@@ -1276,6 +1276,38 @@ export type Database = {
           },
         ]
       }
+      request_attempts: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_hash: string
+          tenant_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_hash: string
+          tenant_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_attempts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reservation_consents: {
         Row: {
           created_at: string
@@ -2434,6 +2466,16 @@ export type Database = {
       }
       guest_set_marketing: {
         Args: { p_granted: boolean; p_tenant_id: string }
+        Returns: boolean
+      }
+      hit_request_limit: {
+        Args: {
+          p_action: string
+          p_ip_hash: string
+          p_max: number
+          p_tenant_id: string
+          p_window_seconds: number
+        }
         Returns: boolean
       }
       ical_apply: {

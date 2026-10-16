@@ -85,7 +85,8 @@ pred spustením prvého platiaceho klienta sa prechádza na platené. Prostredia
 **Spustenie lokálne:** `npm install` (pri chybe `EALLOWSCRIPTS` dočasne `NPM_CONFIG_USERCONFIG=<prázdny súbor>` — Martinov globálny npm
 má `allow-scripts`), skopírovať `.env.example` → `.env.local` a doplniť URL a publishable kľúč stagingu (Supabase → Project Settings → API),
 `npm run dev`. Kontroly: `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`.
-**Testy prehliadačom (Playwright, `e2e/`):** `npm run build && npm start -- -p 3100`, potom `npm run e2e` — hosť (PC aj mobil 390 px),
+**Testy prehliadačom (Playwright, `e2e/`):** `npm run e2e:server` (build + `npm start -p 3100` s testovacími kľúčmi Turnstile,
+ktoré vždy prejdú — skutočné kľúče z `.env.local` by robotovi ukázali výzvu), potom `npm run e2e` — hosť (PC aj mobil 390 px),
 administrácia, prístupnosť (axe). Bežia proti **stagingu** cez `.env.local`, testovacie dáta majú e-mail `@booking-platform.test`
 (e-maily sa na túto doménu neposielajú) a po behu sa zmažú. Rýchlosť detailu na mobile: `node scripts/perf-check.mjs`.
 
@@ -119,6 +120,7 @@ Next.js 16 (App Router, strict TS) · Tailwind 4 + shadcn/ui (Radix) · next-int
 | `src/app/platform/*` | riadiace centrum: klienti, založenie, moduly, stav, téma, audit |
 | `src/core/auth` | prihlásený používateľ, členstvá, správca platformy |
 | `src/core/tenant` | klient podľa domény (`tenant_by_host`), aktívny klient v administrácii (cookie, overené členstvom) |
+| `src/core/security` | ochrana formulárov hosťa: captcha Cloudflare Turnstile (`captcha.tsx` widget, `turnstile.ts` siteverify), limit podľa IP (`guard.ts` → `hit_request_limit`) |
 | `src/core/money`, `src/core/format` | peniaze v centoch, formátovanie súm a dátumov cez `Intl` |
 | `src/core/theme` | téma klienta → CSS premenné, kontrola kontrastu, ponuka písiem, svetlý/tmavý režim |
 | `src/core/modules` | manifest modulu, register, sloty (`ModuleSlot`), udalosti (`emitBookingEvent`), vypínače |

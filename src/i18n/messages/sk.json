@@ -448,6 +448,7 @@
       "promo": "Zľavový kód",
       "promoApply": "Použiť",
       "promoNotApplicable": "Kód sa na tento pobyt nevzťahuje.",
+      "captchaFailed": "Overenie, že nie ste robot, sa nepodarilo načítať. Obnovte stránku, prípadne vypnite blokovanie reklám.",
       "summary": "Súhrn",
       "total": "Spolu",
       "deposit": "Vratná kaucia (platí sa zvlášť)",
@@ -468,6 +469,8 @@
         "unavailable": "Termín už nie je voľný. Vyberte iný, prosím.",
         "price": "Pre tento termín sa nedá rezervovať.",
         "consent": "Potvrďte obchodné podmienky a storno podmienky.",
+        "captcha": "Overenie, že nie ste robot, sa nepodarilo. Skúste to znova.",
+        "limit": "Priveľa pokusov z vašej siete. Skúste to o hodinu.",
         "generic": "Rezerváciu sa nepodarilo odoslať. Skúste to znova."
       },
       "priceErrors": {
@@ -660,6 +663,8 @@
       "errors": {
         "invalid": "Skontrolujte e-mail.",
         "limit": "Priveľa pokusov. Skúste to o hodinu.",
+        "captcha": "Overenie, že nie ste robot, sa nepodarilo. Skúste to znova.",
+        "captchaFailed": "Overenie, že nie ste robot, sa nepodarilo načítať. Obnovte stránku, prípadne vypnite blokovanie reklám.",
         "send": "Kód sa nepodarilo odoslať. Skúste to znova.",
         "code": "Kód nesedí alebo už neplatí."
       },

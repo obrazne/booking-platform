@@ -8,7 +8,7 @@
 ## Aktuálne
 - **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
   kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
-  captcha (čaká na účet Cloudflare).
+  (captcha Cloudflare Turnstile je zapojená).
 - **Ďalší krok pre Claude Code:** fronta Z20 → Z22 (potvrdenie rezervácie, ukážkové dáta, prehliadka „Čo je nové“). Veci na web klienta zatiaľ nie.
 - **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
 - **Claude chat:** kontrola výsledkov Z16–Z19, doklady, obchodný model, otázky pre Janu.
@@ -163,9 +163,8 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 - **Mapa (Z19):** zatiaľ dlaždice priamo z OpenStreetMap (zadarmo, mierne používanie). Pred ostrou prevádzkou s väčšou návštevnosťou
   odporúčam poskytovateľa dlaždíc s bezplatným limitom (MapTiler alebo Stadia — treba účet). Súhlasíš?
 - **STRÖMY (Z19):** miesta v okolí a popisy zvýrazneného vybavenia sú orientačné — nech ich Jana skontroluje v administrácii.
-- **Captcha (Cloudflare Turnstile):** widget `booking-platform` vytvorený v Martinovom účte Cloudflare (16. 10., cez `cf`), kľúče sú
-  v `.env.local` a vo Verceli (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`). **Ostáva zapojiť** do formulára hosťa, promo kódu
-  a prihlásenia do zóny + limit podľa IP (Claude Code, po Z19). Pre vlastné domény klientov treba doménu pridať do widgetu.
+- **Captcha:** zapojená (pozri Denník). Pri napojení vlastnej domény klienta treba doménu pridať do widgetu `booking-platform`
+  v Cloudflare (Turnstile → Hostname Management), inak sa overenie na tej doméne nenačíta.
 - Ochrana stagingu: adresy *.vercel.app sú za prihlásením do Vercelu (aj chalet-stromy-demo.vercel.app). Ak chceš ukázať stránku Jane,
   treba buď vypnúť Vercel Deployment Protection pre produkčné nasadenie (stránka je neindexovaná, dáta ukážkové), alebo napojiť
   vlastnú doménu. Ktoré?
@@ -184,6 +183,15 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — **Captcha Cloudflare Turnstile** (managed) v kroku Platba košíka (odoslanie rezervácie aj overenie promo kódu)
+  a pri žiadosti o kód do zóny hosťa; token sa overuje na serveri cez siteverify popri HMAC tokene a honeypote (`src/core/security/`).
+  Token platí raz → po kontrole promo kódu a po odmietnutom odoslaní sa widget obnoví. Overenie zlyhá „nakrátko“ (bez tokenu alebo
+  bez spojenia s Cloudflare = nie). Bez `TURNSTILE_SECRET_KEY` / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` sa captcha vynechá (lokálne, CI).
+  **Limit podľa IP** za hodinu: rezervácia 10, promo kód 30, žiadosť o kód 10, zadanie kódu 30 (zadanie kódu bez druhej captchy —
+  kód je tajomstvo a chyby na e-mail sú už obmedzené). Tabuľka `request_attempts` ukladá len HMAC odtlačok IP, funkcia
+  `hit_request_limit` počíta atomicky, prekročené pokusy nezapisuje a staré riadky (> 1 deň) maže; požiadavky bez verejnej IP
+  (lokálny server, Playwright) sa neobmedzujú, chyba DB hostí neblokuje. Migrácia na stagingu, pgTAP test (8), unit testy (5).
+  Playwright: `npm run e2e:server` (build + štart s verejnými testovacími kľúčmi Turnstile, ktoré vždy prejdú). (Claude Code)
 - 2026-10-16 — Z22: **prehliadka „Čo je nové“** pre majiteľa (11 snímok) a správcu (8 snímok, riadiace centrum). Okno so snímkou,
   nadpisom, dvoma vetami, bodkami, Späť / Ďalej / Ukázať mi to, Esc a šípky; na mobile cez celú obrazovku s posunom prstom. Otvorí sa
   samo raz po prihlásení pri novej verzii (`profiles.tours_seen`, funkcia `mark_tour_seen` — každý zapisuje len sebe), znova z menu účtu

@@ -10,6 +10,7 @@ import { tr } from "@/core/i18n/localized";
 import { enabledModuleKeysPublic } from "@/core/modules/registry";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { priceContributorsFor } from "@/modules/price-contributors";
+import { guardGuestAction } from "@/core/security/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import { getPublicProperty } from "./catalog";
@@ -18,7 +19,7 @@ import { issueFormToken, verifyFormToken } from "./form-token";
 import { notifyReservationCreated } from "./notify";
 
 export type BookingState = {
-  error: null | "invalid" | "unavailable" | "price" | "consent" | "generic";
+  error: null | "invalid" | "unavailable" | "price" | "consent" | "captcha" | "limit" | "generic";
   details?: string[];
 };
 
@@ -69,6 +70,7 @@ const schema = z.object({
     .optional()
     .default(""),
   form_token: z.string().max(200),
+  captcha_token: z.string().max(2048).optional().default(""),
   // Honeypot: real people never see this field.
   website: z.string().max(0).optional().default(""),
 });
@@ -99,6 +101,8 @@ export async function createGuestReservation(
 
   const tenant = await getTenantFromHost();
   if (!tenant) return { error: "generic" };
+  const blocked = await guardGuestAction(tenant.id, "reservation", v.captcha_token);
+  if (blocked) return { error: blocked };
   const locale = await getLocale();
   const detail = await getPublicProperty(tenant, v.slug);
   const catalog = detail.catalogs[v.unit_id];
@@ -253,7 +257,14 @@ export async function holdTerm(
   return error ? null : (data as string);
 }
 
-/** Checks a promo code for the stay on the server (codes are never sent to the browser). Returns the discount line. */
+export type PromoPreview =
+  | { ok: true; name: Record<string, string>; amountCents: number }
+  | { ok: false; error: "none" | "captcha" | "limit" };
+
+/**
+ * Checks a promo code for the stay on the server (codes are never sent to the browser). Returns the discount line.
+ * Behind the captcha and the IP limit, so codes cannot be guessed by a script.
+ */
 export async function previewPromo(input: {
   slug: string;
   unitId: string;
@@ -262,13 +273,17 @@ export async function previewPromo(input: {
   adults: number;
   children: number;
   code: string;
-}): Promise<{ name: Record<string, string>; amountCents: number } | null> {
+  captchaToken: string;
+}): Promise<PromoPreview> {
+  const none = { ok: false, error: "none" } as const;
   const tenant = await getTenantFromHost();
   const code = input.code.trim().toUpperCase();
-  if (!tenant || !code || !/^[A-Z0-9_-]{1,40}$/.test(code)) return null;
+  if (!tenant || !code || !/^[A-Z0-9_-]{1,40}$/.test(code)) return none;
+  const blocked = await guardGuestAction(tenant.id, "promo", input.captchaToken);
+  if (blocked) return { ok: false, error: blocked };
   const detail = await getPublicProperty(tenant, input.slug);
   const catalog = detail.catalogs[input.unitId];
-  if (!catalog) return null;
+  if (!catalog) return none;
   const admin = createAdminClient();
   const { data } = await admin
     .from("discounts")
@@ -295,7 +310,7 @@ export async function previewPromo(input: {
       toDiscounts(data ?? []),
     ),
   );
-  if (!price.ok) return null;
+  if (!price.ok) return none;
   const line = price.lines.find((l) => l.kind === "discount" && l.meta.code);
-  return line ? { name: line.name ?? {}, amountCents: line.amountCents } : null;
+  return line ? { ok: true, name: line.name ?? {}, amountCents: line.amountCents } : none;
 }

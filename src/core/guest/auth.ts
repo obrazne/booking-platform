@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { renderLoginCode } from "@/core/email/templates";
 import { sendEmail } from "@/core/email/send";
+import { guardGuestAction } from "@/core/security/guard";
 import { getTenantFromHost, type PublicTenant } from "@/core/tenant/current";
 import { getTenantTheme } from "@/core/theme/load";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -18,7 +19,7 @@ const FAILS_PER_HOUR = 8;
 
 export type LoginState = {
   step: "email" | "code";
-  error: null | "invalid" | "limit" | "send" | "code";
+  error: null | "invalid" | "limit" | "captcha" | "send" | "code";
 };
 
 const emailSchema = z.email().max(254);
@@ -100,6 +101,12 @@ export async function requestGuestCode(_: LoginState, form: FormData): Promise<L
   if (!parsed.success) return { step: "email", error: "invalid" };
   const tenant = await getTenantFromHost();
   if (!tenant) return { step: "email", error: "send" };
+  const blocked = await guardGuestAction(
+    tenant.id,
+    "login_code",
+    String(form.get("captcha_token") ?? ""),
+  );
+  if (blocked) return { step: "email", error: blocked };
   const error = await sendCode(tenant, parsed.data);
   if (error) return { step: "email", error };
   await rememberEmail(parsed.data);
@@ -112,6 +119,10 @@ export async function verifyGuestCode(_: LoginState, form: FormData): Promise<Lo
   const tenant = await getTenantFromHost();
   if (!tenant || !emailSchema.safeParse(email).success) return { step: "email", error: "invalid" };
   if (!/^\d{6,10}$/.test(code)) return { step: "code", error: "code" };
+  // The code itself is the secret (and failures per e-mail are limited) — here only the IP limit, no second captcha.
+  if (await guardGuestAction(tenant.id, "login_verify", null, { captcha: false })) {
+    return { step: "code", error: "limit" };
+  }
   if ((await attempts(tenant.id, email, "verify_failed")) >= FAILS_PER_HOUR) {
     return { step: "code", error: "limit" };
   }

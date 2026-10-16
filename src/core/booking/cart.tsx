@@ -36,6 +36,7 @@ import {
   type BookingState,
 } from "@/core/booking/create";
 import { tr } from "@/core/i18n/localized";
+import { Captcha, captchaEnabled } from "@/core/security/captcha";
 import type { Service } from "@/core/pricing/types";
 import { cn } from "@/lib/utils";
 import {
@@ -115,6 +116,14 @@ export function Cart() {
   const { holdId, failed } = useHold(b.open && b.step === 3);
   const [formToken, setFormToken] = useState("");
   const [sheet, setSheet] = useState(false);
+  // Turnstile token (valid once): a new one after every promo check and every refused submit.
+  const [captcha, setCaptcha] = useState("");
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const [handledState, setHandledState] = useState(state);
+  if (state !== handledState) {
+    setHandledState(state);
+    if (state.error) setCaptchaReset((n) => n + 1);
+  }
   useEffect(() => {
     if (b.open && b.step === 3 && !formToken) void startBookingForm().then(setFormToken);
   }, [b.open, b.step, formToken]);
@@ -133,7 +142,7 @@ export function Cart() {
           }
         : {
             label: pending ? t("booking.submitting") : t("booking.submit"),
-            disabled: pending || failed || !formToken || !ready,
+            disabled: pending || failed || !formToken || !ready || (captchaEnabled && !captcha),
             submit: true,
           };
   const ctaButton = (
@@ -169,6 +178,10 @@ export function Cart() {
                 holdId={holdId}
                 failed={failed}
                 formToken={formToken}
+                captcha={captcha}
+                onCaptcha={setCaptcha}
+                captchaReset={captchaReset}
+                renewCaptcha={() => setCaptchaReset((n) => n + 1)}
               />
             )}
           </div>
@@ -714,18 +727,27 @@ function StepPayment({
   holdId,
   failed,
   formToken,
+  captcha,
+  onCaptcha,
+  captchaReset,
+  renewCaptcha,
 }: {
   action: (form: FormData) => void;
   state: BookingState;
   holdId: string;
   failed: boolean;
   formToken: string;
+  captcha: string;
+  onCaptcha: (token: string) => void;
+  captchaReset: number;
+  renewCaptcha: () => void;
 }) {
   const t = useTranslations("guest");
   const b = useBooking();
   const { data, money, total, range, promo, setPromo, lines } = b;
   const [code, setCode] = useState(promo?.code ?? "");
-  const [promoMissing, setPromoMissing] = useState(false);
+  const [promoError, setPromoError] = useState<null | "none" | "captcha" | "limit">(null);
+  const [captchaFailed, setCaptchaFailed] = useState(false);
   const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
   const cancellation = data.settings.cancellationPolicy || t("booking.consentCancellation");
 
@@ -739,9 +761,13 @@ function StepPayment({
       adults: b.adults,
       children: b.children,
       code,
+      captchaToken: captcha,
     });
-    setPromoMissing(!r);
-    setPromo(r ? { code: code.trim().toUpperCase(), ...r } : null);
+    renewCaptcha(); // the token was used up by this check
+    setPromoError(r.ok ? null : r.error);
+    if (r.ok)
+      setPromo({ code: code.trim().toUpperCase(), name: r.name, amountCents: r.amountCents });
+    else if (r.error === "none") setPromo(null);
   }
 
   return (
@@ -758,6 +784,7 @@ function StepPayment({
           ["pets", b.pets],
           ["hold_id", holdId],
           ["form_token", formToken],
+          ["captcha_token", captcha],
           ["promo_code", promo?.code ?? ""],
           ["guest_name", b.guest.name],
           ["guest_email", b.guest.email],
@@ -811,7 +838,7 @@ function StepPayment({
             value={code}
             onChange={(e) => {
               setCode(e.target.value);
-              setPromoMissing(false);
+              setPromoError(null);
             }}
             className="border-line min-h-11 rounded-lg uppercase"
           />
@@ -819,14 +846,18 @@ function StepPayment({
             type="button"
             variant="outline"
             className="min-h-11 rounded-full"
-            disabled={!code.trim()}
+            disabled={!code.trim() || (captchaEnabled && !captcha)}
             onClick={applyPromo}
           >
             {t("booking.promoApply")}
           </Button>
         </div>
-        {promoMissing ? (
-          <p className="text-muted-foreground text-xs">{t("booking.promoNotApplicable")}</p>
+        {promoError ? (
+          <p className="text-muted-foreground text-xs">
+            {promoError === "none"
+              ? t("booking.promoNotApplicable")
+              : t(`booking.errors.${promoError}`)}
+          </p>
         ) : null}
       </div>
 
@@ -878,6 +909,19 @@ function StepPayment({
           )}
         </p>
       </div>
+      <Captcha
+        onToken={(token) => {
+          onCaptcha(token);
+          if (token) setCaptchaFailed(false);
+        }}
+        onFail={() => setCaptchaFailed(true)}
+        resetKey={captchaReset}
+      />
+      {captchaFailed ? (
+        <p role="alert" className="text-sm text-[#b5532f]">
+          {t("booking.captchaFailed")}
+        </p>
+      ) : null}
       {state.error ? (
         <p role="alert" className="text-sm text-[#b5532f]">
           {t(`booking.errors.${state.error}`)}
