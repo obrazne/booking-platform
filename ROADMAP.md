@@ -8,7 +8,7 @@
 ## Aktuálne
 - **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová na stagingu https://booking-platform-obrazne.vercel.app. Časť B (doména) a rozsah MVP
   sú v `ARCHITEKTURA.md` (B1–B9, časť C). **Stavia sa MVP pre Chalet STRÖMY + showroom** (Z7–Z12).
-- **Ďalší krok pre Claude Code:** fronta Z7 → Z12, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
+- **Ďalší krok pre Claude Code:** fronta Z10 → Z14, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
 - **Ďalší krok pre Martina:** preklikať staging; odpovedať na otázky nižšie, keď bude čas (neblokujú prácu).
 - **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z12.
 
@@ -69,6 +69,21 @@ Len dáta a testy, bez rozhrania: hosť ako záznam klienta (`tenant_id`, e-mail
 (Supabase Auth), priradenie rezervácií cez overený e-mail, dokumenty pri objekte a pri rezervácii v súkromnom úložisku (dočasné odkazy),
 viditeľnosť prístupových kódov až pri potvrdenom pobyte. RLS: hosť vidí len svoje rezervácie u daného klienta. Ak už niečo z toho Z7 urobila,
 len to over a doplň chýbajúce.
+
+### Z14 — Detail objektu zo sekcií
+Podľa `ARCHITEKTURA.md` → B7 *Detail objektu sa skladá zo sekcií* a `ROZHODNUTIA.md` (16. 10.).
+1. Migrácia: sekcie stránky objektu (`tenant_id`, objekt, typ, poradie, zapnutá, obsah ako JSON s prekladmi) + RLS a pgTAP testy.
+   Predlohy podľa typu ubytovania ako dáta (výber a poradie typov), použité pri založení nového objektu.
+2. Register typov sekcií v kóde: typ = komponent + zod schéma obsahu; moduly pridávajú typy cez svoj manifest (`services` → služby).
+   Neplatný obsah sa nevykreslí a zapíše sa do logu, stránka nespadne.
+3. Detail objektu zo Z9 prestav na vykresľovanie zo sekcií (doterajšie časti → typy sekcií). Kalendár s cenami je povinný.
+   Prázdna sekcia sa skryje. Údaje zo systému (za objekt / za osobu, min. noci, storno, príchod/odchod, vybavenie, ceny) sa dosadzujú
+   z dát, nepíšu sa do obsahu sekcie.
+4. Seed: sekcie pre Chalet STRÖMY (predloha „celý objekt“) a pre objekty showroomu (rôzne predlohy, nech je vidieť rozdiel).
+5. Rozhranie v administrácii **nestavaj** (príde po MVP). Vzhľad sekcií nemeň nad rámec `docs/vizual-stranka-hosta.md` —
+   nová verzia vizuálu príde samostatnou úlohou.
+6. Pravidlo vzhľadu: prvky prichytené k okraju obrazovky (bočný panel na stránke aj v administrácii, prilepený pruh, spodný pás na mobile)
+   majú **rovné rohy**; zaoblené sú len prvky, ktoré na stránke plávajú (karty, tlačidlá, bubliny). Uprav, kde to dnes nesedí.
 
 ---
 
@@ -132,6 +147,7 @@ len to over a doplň chýbajúce.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Stránka objektu zo sekcií (B7, rozhodnutie), pravidlo rovných rohov pri okraji obrazovky; úloha Z14. (Claude chat)
 - 2026-10-16 — Z9: stránka hosťa v téme klienta, neindexovaná. Katalóg s filtrami (typ, región, hostia, termín cez `free_units`);
   klient s jedným objektom ide rovno na detail aj s parametrami z widgetu. Detail: galéria, údaje, popis, jednotky (výber), vybavenie,
   v cene, cenník sezón, pravidlá, storno, referencie a rezervačný box s **kalendárom ako samostatným komponentom**

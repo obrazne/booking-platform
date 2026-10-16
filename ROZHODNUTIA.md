@@ -2,6 +2,20 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Stránka objektu zo sekcií, nie builder
+
+- Každé ubytovanie je iné, ale **voľný builder (štýl Elementor) nebude** — klient by si rozbil vzhľad a mobil, stránky by sa rozišli,
+  preklady by boli chaos a podpora drahá; zmena rozloženia ostáva platená práca (A12).
+- Namiesto toho **knižnica pevných typov sekcií** (rovnaké pre všetkých, vzhľad z témy, presne dané polia). Pri objekte sa určuje len
+  **ktoré sekcie, v akom poradí a ich texty**. **Predlohy podľa typu ubytovania** (celý objekt, penzión s izbami, apartmány, glamping) =
+  prednastavený výber a poradie; volí sa pri zakladaní klienta. Prázdna sekcia sa skryje.
+- **Čo vyplýva z dát, sa nepíše:** „platíte za celý objekt“, min. noci, storno, príchod/odchod, vybavenie sa zobrazujú z nastavení cien
+  a objektu — klient píše menej a stránka si nemôže protirečiť s výpočtom ceny.
+- **Načasovanie:** dátový model a vykresľovanie zo sekcií hneď (Z14); rozhranie na vypínanie a presúvanie sekcií v administrácii po MVP —
+  pre STRÖMY sekcie nastavíme my. (Martin súhlasil s návrhom Claude.)
+- Súvisiace pravidlo vzhľadu: **zaoblené sú prvky, ktoré na stránke „plávajú“** (karty, tlačidlá, bubliny); **čo je prichytené k okraju
+  obrazovky, má rovné rohy** (bočný panel, prilepený pruh, spodný pás na mobile) — platí aj pre bočný panel administrácie.
+
 ## 2026-10-16 — Zóna hosťa
 
 - Hosť bude mať **účet a vlastnú zónu** (Martin): pobyty, PDF od majiteľa, doklady, pokyny k príchodu, zopakovanie rezervácie, správy majiteľke.

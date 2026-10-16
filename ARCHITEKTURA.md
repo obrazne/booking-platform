@@ -288,6 +288,18 @@ RUČNÁ REZERVÁCIA (majiteľ, napr. telefón) ──► rovno POTVRDENÁ alebo 
   Neindexuje sa.
 - **Showroom / klient bez webu:** katalóg objektov s filtrami (typ, región, počet osôb, termín), detail objektu, potom rovnaký tok.
 - Po odoslaní: stránka a e-mail s prístupovým odkazom na rezerváciu (stav, platba, žiadosť o storno). Účet hosťa neskôr.
+- **Detail objektu sa skladá zo sekcií** (nie builder):
+  - **Typy sekcií** sú pevné a spoločné pre všetkých klientov; každý typ = komponent so schémou polí (zod), vzhľad len z témy (A12).
+    Základná sada: galéria · úvod s údajmi · „čo vás čaká“ (ikony z vybavenia) · pás s fotkou · kalendár s cenami (povinný, nedá sa vypnúť) ·
+    cenník sezón · v cene · priestory a izby · okolie a mapa · referencie · časté otázky · pravidlá a storno · kontakt na majiteľa · záverečná výzva.
+    Moduly môžu pridať vlastný typ sekcie cez register (napr. `services` → služby na objednávku); jadro typy modulov nepozná.
+  - **Pri objekte** sa ukladá zoznam sekcií: typ, poradie, zapnutá, obsah (texty viacjazyčne, odkazy na fotky). **Prázdna sekcia sa skryje.**
+  - **Predlohy podľa typu ubytovania** (celý objekt, penzión s izbami, apartmány, glamping) = prednastavený výber a poradie sekcií;
+    použijú sa pri založení objektu, potom sa dajú upraviť.
+  - **Údaje, ktoré systém pozná, sa nepíšu ručne:** spôsob účtovania (za objekt / za osobu), min. noci, storno, čas príchodu a odchodu,
+    vybavenie, ceny sa do sekcií dosadzujú z nastavení objektu a cien — texty a výpočet si nemôžu protirečiť.
+  - **MVP:** dátový model a vykresľovanie zo sekcií; sekcie pre STRÖMY a showroom nastaví seed. Rozhranie v administrácii
+    (vypínač, presúvanie, formulár sekcie) po MVP.
 
 ## B8. Administrácia majiteľa (MVP)
 
