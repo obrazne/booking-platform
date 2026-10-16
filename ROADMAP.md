@@ -23,7 +23,7 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 zložená jednotka len pripraviť), rozhranie len pre to, čo je v MVP. Všetko s `tenant_id`, RLS a testami; peniaze v centoch; texty cez preklady;
 vzhľad podľa A12 a A18. Technické detaily rozhoduješ sám a zapisuješ do Denníka.
 
-### Z7 — Doménové tabuľky, obsadenosť a výpočet ceny
+### Z7 ✅ — Doménové tabuľky, obsadenosť a výpočet ceny
 1. Migrácie podľa B1: objekty, jednotky, fotky (úložisko s cestou podľa klienta), číselníky (typ, vybavenie, región, vhodné pre — s prekladmi),
    sezóny, ceny, poplatky, zľavy (dĺžka pobytu, promo kód), služby (modul `services`), iCal kanály, rezervácia (hlavička, položky, riadky ceny,
    platby, história stavov, súhlasy, prístupový token), **obsadenosť s obmedzením proti prekryvu** (B2).
@@ -110,6 +110,8 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- Fotky showroomu: kľúč Pexels API (zadarmo) do `.env.local` ako `PEXELS_API_KEY` — potom ich doplním. Dovtedy zástupné obrázky.
+- Kľúč Resend bol poslaný v chate — po dokončení Z11 ho v Resende vymeň za nový.
 - **Jana:** skutočné ceny služieb a poplatku za zviera, storno pásma 11–13 a 15–29 dní, je platiteľka DPH? (zatiaľ orientačne)
 - Supabase aj Vercel CLI sa z tvojho PC nevedia spojiť (Transport error / zaseknuté). Nevadí — Vercel je napojený cez web a databáza cez MCP; ak chceš CLI, treba pozrieť firewall/antivírus/proxy pre PowerShell.
 - Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.
@@ -123,6 +125,14 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z7: dátový model B1 celý (objekty, jednotky, číselníky, fotky, vekové pásma, sezóny s opakovanými rozsahmi aj cez Nový rok,
+  ceny, poplatky vrátane vratnej kaucie, zľavy, služby, iCal kanály, rezervácia s položkami/riadkami/platbami/históriou/súhlasmi/poznámkami,
+  obsadenosť). **Dvojitej rezervácii bráni `EXCLUDE USING gist` nad obsadenosťou** (aj pre súbežné zápisy); upratovací deň predlžuje rozsah;
+  kolízia z iCal sa uloží ako neblokujúci konflikt. Rezervácia vzniká len funkciou `create_reservation` so service kľúčom (server prepočíta cenu),
+  stavy len cez funkcie s históriou, hosť cez odkaz s tokenom (uložený len hash). Výpočet ceny `src/core/pricing` — **zľavy sa nesčítavajú,
+  vyhráva najvýhodnejšia**; služby sú cenový príspevok modulu. 75 pgTAP + 35 unit testov. Seed: STRÖMY s reálnymi údajmi a 26 fotkami
+  v úložisku, showroom 6 vymyslených objektov (zatiaľ bez fotiek — otvorené zdroje sú slabé, viď Otázky), demo IBAN.
+  Lokálne PC: AVG skenovanie HTTPS blokovalo CLI — Martin vypol, Supabase a Vercel CLI fungujú. (Claude Code)
 - 2026-10-16 — Ručné rezervácie sa rátajú do provízie, blokácie bez údajov hosťa a ceny (ROZHODNUTIA, A10, B2). (Claude chat)
 - 2026-10-16 — Časť B (doména B1–B9) a rozsah MVP v architektúre; fronta Z7–Z12 (MVP Chalet STRÖMY + showroom). (Claude chat)
 - 2026-10-16 — Z2 a Z6 dokončené: Martin napojil Vercel cez web (CLI sa nepripojí), staging https://booking-platform-obrazne.vercel.app
