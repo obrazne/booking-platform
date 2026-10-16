@@ -21,3 +21,7 @@ Thumbs.db
 .vscode/
 *.log
 .vercel
+
+# Next.js / TypeScript
+*.tsbuildinfo
+next-env.d.ts
