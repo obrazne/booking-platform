@@ -22,7 +22,7 @@ e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — de
 **Kontext pre frontu Z16–Z18:** MVP je postavené. Teraz ho skontrolujeme pred ukážkou Jane a ladíme **len našu aplikáciu** (B7, B10).
 **Nič, čo sa vkladá na web klienta (vyhľadávací pás, widget, úprava Janinho webu), teraz nerob** — Martin 16. 10. Rovnaké pravidlá ako doteraz (`tenant_id` + RLS + testy, centy, preklady, téma, A18). Stále len staging.
 
-### Z16 — Kontrola pred ukážkou
+### Z16 ✅ — Kontrola pred ukážkou
 Cieľ: Jana uvidí stránku bez chýb. Výstup `docs/kontrola-mvp.md` (čo sa skontrolovalo, nálezy, čo opravené, čo ostáva).
 1. **Automatické testy prehliadačom (Playwright):** rezervácia ako hosť na STRÖMY na počítači aj na mobile (390 px) — termín v kalendári,
    košík 3 kroky, služba, súhlasy, platobné údaje s QR, prístupový odkaz, žiadosť o storno; administrácia — Platba prijatá, ručná rezervácia,
@@ -98,6 +98,8 @@ neupravujú — len odkaz, kde sa menia.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Captcha a limit požiadaviek** na formulári hosťa (Z16): súhlasíš s Cloudflare Turnstile (zadarmo, treba účet Cloudflare)?
+  Bez toho sa dá formulár zahltiť a zneužiť na posielanie e-mailov s menom klienta.
 - Ochrana stagingu: adresy *.vercel.app sú za prihlásením do Vercelu (aj chalet-stromy-demo.vercel.app). Ak chceš ukázať stránku Jane,
   treba buď vypnúť Vercel Deployment Protection pre produkčné nasadenie (stránka je neindexovaná, dáta ukážkové), alebo napojiť
   vlastnú doménu. Ktoré?
@@ -116,6 +118,14 @@ neupravujú — len odkaz, kde sa menia.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z16: kontrola pred ukážkou → `docs/kontrola-mvp.md`. **Playwright** (`npm run e2e`, lokálne proti stagingu): rezervácia
+  hosťa na PC aj mobile 390 px (kalendár, košík, služba, súhlasy, QR, odkaz, storno), majiteľ (ručná rezervácia, Platba prijatá,
+  blokácia, kolízia z iCal), kalendár klávesnicou, axe bez nálezov — 5/5. **Nezávislá bezpečnostná kontrola** (samostatný agent):
+  opravené 2 vážne (hosť si mohol zmeniť e-mail vo svojom zázname a prevziať cudzie budúce rezervácie; holdom sa dal zablokovať
+  celý kalendár) a ďalšie (podpísaný čas formulára, SSRF pri iCal, časové pásmo, e-mail v profile, token exportu, presmerovanie
+  po prihlásení, bezpečnostné hlavičky) — migrácia + 9 pgTAP testov (spolu 117). Prístupnosť: popisy dní kalendára, fotiek a QR,
+  kontrast druhej vety nadpisov (`#84888e`). Rýchlosť: fotky cez `next/image` (AVIF), detail na mobile LCP 2,4 s. Testovacie
+  e-maily na `*.test` sa neodosielajú. Ostáva: captcha a limit požiadaviek (otázka). (Claude Code)
 - 2026-10-16 — Referencie: samostatná tabuľka, zvýraznené v košíku, pravidlá EÚ o recenziách (B1, rozhodnutie). Úloha príde spolu s košíkom v2. (Claude chat)
 - 2026-10-16 — Vyhľadávací pás na web klienta vyradený z fronty (Martin: teraz ladíme len našu aplikáciu); fronta Z16–Z18. (Claude chat)
 - 2026-10-16 — Fronta Z16–Z19 (kontrola, vyhľadávací pás, zóna hosťa, sekcie v administrácii). (Claude chat)

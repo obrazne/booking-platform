@@ -67,7 +67,7 @@ export async function freeStay(
 export async function pickStay(scope: Locator, checkIn: string, checkOut: string) {
   for (const date of [checkIn, checkOut]) {
     for (let i = 0; i < 24; i++) {
-      const day = scope.locator(`button[data-date="${date}"]`);
+      const day = scope.locator(`button[data-date="${date}"]`).filter({ visible: true });
       if ((await day.count()) > 0) {
         await day.first().click();
         break;

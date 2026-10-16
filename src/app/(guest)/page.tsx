@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -148,11 +149,12 @@ export default async function GuestHome({ searchParams }: PageProps<"/">) {
             >
               <div className="bg-muted relative aspect-[4/3] overflow-hidden">
                 {p.photo ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- public storage images
-                  <img
+                  <Image
                     src={photoUrl(p.photo.storage_path)}
                     alt={tr(p.photo.alt, locale)}
-                    className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="from-primary/20 to-brand-secondary/20 flex size-full items-center justify-center bg-gradient-to-br">

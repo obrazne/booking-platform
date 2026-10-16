@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
@@ -235,13 +236,9 @@ const photoBand = defineSection({
     const photo = data.photos[content.photo ?? 1] ?? data.photos[0];
     if (!photo) return null;
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- public storage images
-      <img
-        src={photo.url}
-        alt={photo.alt}
-        loading="lazy"
-        className="h-[320px] w-full object-cover sm:h-[560px]"
-      />
+      <div className="relative h-[320px] w-full sm:h-[560px]">
+        <Image src={photo.url} alt={photo.alt} fill sizes="100vw" className="object-cover" />
+      </div>
     );
   },
 });

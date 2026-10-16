@@ -5,6 +5,13 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Property photos from Supabase Storage are resized and served as AVIF/WebP by Next (Z16 — speed on phones).
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
+    ],
+  },
   // Security headers (Z16). Admin and control center never in a frame; guest pages stay frameable for now —
   // embedding on the client's site will get a per-tenant allowlist (frame-ancestors) when the widget is built.
   async headers() {

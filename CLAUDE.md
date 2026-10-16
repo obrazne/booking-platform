@@ -85,6 +85,9 @@ pred spustením prvého platiaceho klienta sa prechádza na platené. Prostredia
 **Spustenie lokálne:** `npm install` (pri chybe `EALLOWSCRIPTS` dočasne `NPM_CONFIG_USERCONFIG=<prázdny súbor>` — Martinov globálny npm
 má `allow-scripts`), skopírovať `.env.example` → `.env.local` a doplniť URL a publishable kľúč stagingu (Supabase → Project Settings → API),
 `npm run dev`. Kontroly: `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`.
+**Testy prehliadačom (Playwright, `e2e/`):** `npm run build && npm start -- -p 3100`, potom `npm run e2e` — hosť (PC aj mobil 390 px),
+administrácia, prístupnosť (axe). Bežia proti **stagingu** cez `.env.local`, testovacie dáta majú e-mail `@booking-platform.test`
+(e-maily sa na túto doménu neposielajú) a po behu sa zmažú. Rýchlosť detailu na mobile: `node scripts/perf-check.mjs`.
 
 **Databáza:** migrácie v `supabase/migrations/` (len pridávajú), testy RLS v `supabase/tests/database/` (pgTAP) — spúšťa ich CI
 (`supabase db start` + `supabase test db` v GitHub Actions). Na staging: `npx supabase link --project-ref uzsuwokyiprkzfirvrmb`,

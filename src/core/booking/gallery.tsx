@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,17 +29,19 @@ export function Gallery({
             onClick={() => setOpen(true)}
             aria-label={p.alt || title}
             className={cn(
-              "overflow-hidden",
+              "relative overflow-hidden",
               i === 0
                 ? "aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-auto"
                 : "hidden aspect-[4/3] sm:block",
             )}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element -- public storage images */}
-            <img
+            <Image
               src={p.url}
               alt={p.alt}
-              className="size-full object-cover transition-transform duration-500 hover:scale-[1.02]"
+              fill
+              priority={i === 0}
+              sizes={i === 0 ? "(min-width: 640px) 50vw, 100vw" : "25vw"}
+              className="object-cover transition-transform duration-500 hover:scale-[1.02]"
             />
           </button>
         ))}
@@ -59,13 +62,14 @@ export function Gallery({
           <DialogTitle>{title}</DialogTitle>
           <div className="grid gap-3 sm:grid-cols-2">
             {photos.map((p) => (
-              // eslint-disable-next-line @next/next/no-img-element -- public storage images
-              <img
+              <Image
                 key={p.url}
                 src={p.url}
                 alt={p.alt}
-                loading="lazy"
-                className="w-full rounded-2xl object-cover"
+                width={1200}
+                height={800}
+                sizes="(min-width: 640px) 32rem, 100vw"
+                className="h-auto w-full rounded-2xl object-cover"
               />
             ))}
           </div>

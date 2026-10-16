@@ -57,7 +57,7 @@
 
 :root {
   --line: #e9e5db;
-  --ink-soft: #9a9a93;
+  --ink-soft: #84888e; /* second sentence of headings; 3:1 for large text (WCAG AA) */
   --tooltip: #11212f;
   --ink: #11212f;
   --surface: #fbfaf9;

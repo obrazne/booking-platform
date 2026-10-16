@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
@@ -600,7 +601,7 @@ export function MobileBar() {
           </span>
         ) : null}
       </div>
-      <Button type="button" className="rounded-full" onClick={() => openCart(1)}>
+      <Button type="button" size="lg" className="h-11 rounded-full" onClick={() => openCart(1)}>
         {t("property.viewStay")}
       </Button>
     </div>
@@ -745,13 +746,9 @@ function StepStay() {
         {data.photos.length > 0 ? (
           <div className="grid h-44 grid-cols-3 grid-rows-2 gap-1 overflow-hidden">
             {data.photos.slice(0, 3).map((p, i) => (
-              // eslint-disable-next-line @next/next/no-img-element -- public storage images
-              <img
-                key={i}
-                src={p.url}
-                alt={p.alt}
-                className={cn("size-full min-h-0 object-cover", i === 0 && "col-span-2 row-span-2")}
-              />
+              <div key={i} className={cn("relative min-h-0", i === 0 && "col-span-2 row-span-2")}>
+                <Image src={p.url} alt={p.alt} fill sizes="320px" className="object-cover" />
+              </div>
             ))}
           </div>
         ) : null}
@@ -909,10 +906,11 @@ function StepStay() {
           {recommendation && ready ? (
             <div className="flex items-center gap-3">
               {data.services[recommendation.id]?.image ? (
-                // eslint-disable-next-line @next/next/no-img-element -- public storage images
-                <img
+                <Image
                   src={data.services[recommendation.id]!.image!}
                   alt=""
+                  width={56}
+                  height={56}
                   className="size-14 rounded-xl object-cover"
                 />
               ) : null}
@@ -1108,12 +1106,15 @@ function ServiceDetail() {
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto">
         {extra?.image || data.photos[0] ? (
-          // eslint-disable-next-line @next/next/no-img-element -- public storage images
-          <img
-            src={extra?.image ?? data.photos[0]!.url}
-            alt=""
-            className="h-56 w-full object-cover"
-          />
+          <div className="relative h-56 w-full">
+            <Image
+              src={extra?.image ?? data.photos[0]!.url}
+              alt=""
+              fill
+              sizes="480px"
+              className="object-cover"
+            />
+          </div>
         ) : null}
         <CartHeader kicker={tm(s.priceModel)} onBack={back} />
         <div className="grid gap-4 px-6 pt-2 pb-6">
