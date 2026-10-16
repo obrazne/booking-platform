@@ -22,13 +22,11 @@ for (const photo of manifest.photos) {
   sort += 1;
   const objectPath = `${manifest.tenantId}/${manifest.propertyId}/${path.basename(photo.file).toLowerCase()}`;
   const body = await readFile(path.join(manifest.dir, photo.file));
-  const { error: upErr } = await supabase.storage
-    .from("property-photos")
-    .upload(objectPath, body, {
-      contentType: "image/jpeg",
-      upsert: true,
-      cacheControl: "31536000",
-    });
+  const { error: upErr } = await supabase.storage.from("property-photos").upload(objectPath, body, {
+    contentType: "image/jpeg",
+    upsert: true,
+    cacheControl: "31536000",
+  });
   if (upErr) throw upErr;
   const { error: dbErr } = await supabase.from("photos").upsert(
     {
