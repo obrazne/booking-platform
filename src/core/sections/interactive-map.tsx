@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import "leaflet/dist/leaflet.css";
 import { cn } from "@/lib/utils";
 import { OsmMap } from "./osm-map";
 
@@ -105,11 +104,13 @@ export function InteractiveMap({
         />
       ) : null}
       <div
-        ref={ref}
         role="region"
         aria-label={label}
         className={cn("absolute inset-0 z-0", !ready && "invisible")}
-      />
+      >
+        {/* Leaflet adds its own classes to this element — React must never re-render its attributes. */}
+        <div ref={ref} className="h-full w-full" />
+      </div>
     </div>
   );
 }
