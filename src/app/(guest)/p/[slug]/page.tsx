@@ -7,6 +7,7 @@ import {
   getPublicProperty,
   listPublicProperties,
   listTerms,
+  publicLocation,
 } from "@/core/booking/catalog";
 import { BookingProvider, MobileBar, StickyBar } from "@/core/booking/guest-booking";
 import { photoUrl } from "@/core/booking/photo";
@@ -36,10 +37,11 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
   ]);
   const detail = await getPublicProperty(tenant, slug);
   const { property: p, units, photos, seasons, catalogs, settings, serviceRows, contact } = detail;
-  const [terms, all, modules] = await Promise.all([
+  const [terms, all, modules, location] = await Promise.all([
     listTerms(tenant.id),
     listPublicProperties(tenant.id),
     enabledModuleKeysPublic(tenant.id),
+    publicLocation(p.id),
   ]);
 
   const unit = units.find((u) => u.id === one(sp.unit)) ?? units[0];
@@ -69,6 +71,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
   const sectionData: SectionData = {
     locale,
     property: p,
+    location,
     units,
     unitId: unit.id,
     photos: photoList,

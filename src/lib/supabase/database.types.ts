@@ -764,6 +764,7 @@ export type Database = {
       photos: {
         Row: {
           alt: Json
+          category: string | null
           created_at: string
           height: number | null
           id: string
@@ -777,6 +778,7 @@ export type Database = {
         }
         Insert: {
           alt?: Json
+          category?: string | null
           created_at?: string
           height?: number | null
           id?: string
@@ -790,6 +792,7 @@ export type Database = {
         }
         Update: {
           alt?: Json
+          category?: string | null
           created_at?: string
           height?: number | null
           id?: string
@@ -894,6 +897,7 @@ export type Database = {
           id: string
           included: Json
           latitude: number | null
+          location_mode: string
           longitude: number | null
           max_guests: number
           name: string
@@ -930,6 +934,7 @@ export type Database = {
           id?: string
           included?: Json
           latitude?: number | null
+          location_mode?: string
           longitude?: number | null
           max_guests?: number
           name: string
@@ -966,6 +971,7 @@ export type Database = {
           id?: string
           included?: Json
           latitude?: number | null
+          location_mode?: string
           longitude?: number | null
           max_guests?: number
           name?: string
@@ -987,6 +993,54 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "properties_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_places: {
+        Row: {
+          created_at: string
+          distance: string | null
+          how: Json
+          id: string
+          name: Json
+          property_id: string
+          sort: number
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          distance?: string | null
+          how?: Json
+          id?: string
+          name: Json
+          property_id: string
+          sort?: number
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          distance?: string | null
+          how?: Json
+          id?: string
+          name?: Json
+          property_id?: string
+          sort?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_places_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_places_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1083,16 +1137,25 @@ export type Database = {
       }
       property_terms: {
         Row: {
+          highlight_note: Json
+          highlight_sort: number
+          highlighted: boolean
           property_id: string
           tenant_id: string
           term_id: string
         }
         Insert: {
+          highlight_note?: Json
+          highlight_sort?: number
+          highlighted?: boolean
           property_id: string
           tenant_id: string
           term_id: string
         }
         Update: {
+          highlight_note?: Json
+          highlight_sort?: number
+          highlighted?: boolean
           property_id?: string
           tenant_id?: string
           term_id?: string
@@ -1911,6 +1974,7 @@ export type Database = {
           owner_notification_email: string | null
           payment_due_hours: number
           privacy_url: string | null
+          reviews_url: string | null
           tenant_id: string
           terms_url: string | null
           updated_at: string
@@ -1930,6 +1994,7 @@ export type Database = {
           owner_notification_email?: string | null
           payment_due_hours?: number
           privacy_url?: string | null
+          reviews_url?: string | null
           tenant_id: string
           terms_url?: string | null
           updated_at?: string
@@ -1949,6 +2014,7 @@ export type Database = {
           owner_notification_email?: string | null
           payment_due_hours?: number
           privacy_url?: string | null
+          reviews_url?: string | null
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string
@@ -2089,6 +2155,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "terms_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      testimonials: {
+        Row: {
+          author_name: string
+          body: Json
+          created_at: string
+          featured: boolean
+          id: string
+          property_id: string | null
+          published: boolean
+          sort: number
+          source: string
+          source_url: string | null
+          stay_month: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_name: string
+          body: Json
+          created_at?: string
+          featured?: boolean
+          id?: string
+          property_id?: string | null
+          published?: boolean
+          sort?: number
+          source?: string
+          source_url?: string | null
+          stay_month?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          body?: Json
+          created_at?: string
+          featured?: boolean
+          id?: string
+          property_id?: string | null
+          published?: boolean
+          sort?: number
+          source?: string
+          source_url?: string | null
+          stay_month?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "testimonials_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -2366,6 +2495,16 @@ export type Database = {
         Args: { p_status: string; p_tenant_id: string }
         Returns: undefined
       }
+      property_public_location: {
+        Args: { p_property_id: string }
+        Returns: {
+          approximate: boolean
+          latitude: number
+          longitude: number
+          postal_code: string
+          street: string
+        }[]
+      }
       purge_expired_holds: { Args: { p_unit_id: string }; Returns: undefined }
       release_hold: { Args: { p_hold_id: string }; Returns: undefined }
       request_cancellation: {
@@ -2410,6 +2549,7 @@ export type Database = {
           whatsapp_phone: string
         }[]
       }
+      tenant_reviews_url: { Args: { p_tenant_id: string }; Returns: string }
       tenant_theme: {
         Args: { p_tenant_id: string }
         Returns: {

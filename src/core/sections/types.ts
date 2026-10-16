@@ -21,7 +21,19 @@ export const headingFields = {
  */
 export type SectionData = {
   locale: string;
-  property: Tables<"properties">;
+  /** Public columns only — street, exact position and contacts come through `location` (B1). */
+  property: Omit<
+    Tables<"properties">,
+    "street" | "postal_code" | "latitude" | "longitude" | "contact_email" | "contact_phone"
+  >;
+  /** Exact pin and address, or a rounded area when the owner chose an approximate location. */
+  location: {
+    latitude: number;
+    longitude: number;
+    approximate: boolean;
+    street: string | null;
+    postalCode: string | null;
+  } | null;
   units: Omit<Tables<"units">, "ical_export_token">[];
   unitId: string;
   photos: { url: string; alt: string }[];

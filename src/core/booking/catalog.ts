@@ -7,6 +7,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { toDiscounts, toFees, toSeasons, toServices, type PricingCatalog } from "./pricing-input";
 
+/** Property columns a guest may read (no street, exact coordinates or contacts — see property_public_location). */
+export const PUBLIC_PROPERTY_COLUMNS =
+  "id, tenant_id, slug, name, summary, description, house_rules, included, testimonials, status, booking_mode, pricing_model, city, country, max_guests, bedrooms, bathrooms, check_in_from, check_out_until, cleaning_gap_days, pets_allowed, tourist_tax_included, tourist_tax_cents, accommodation_vat_bp, sort, created_at, updated_at, tagline, location_mode";
+
 /** Published properties of the tenant for the catalogue (guest view, RLS for anonymous). */
 export const listPublicProperties = cache(async (tenantId: string) => {
   const supabase = await createClient();
@@ -50,7 +54,7 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   const { data: p } = await supabase
     .from("properties")
     .select(
-      "*, units(id, tenant_id, property_id, name, description, max_guests, bedrooms, is_default, active, sort, created_at, rates(*)), photos(*), property_terms(term_id), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content)",
+      `${PUBLIC_PROPERTY_COLUMNS}, units(id, tenant_id, property_id, name, description, max_guests, bedrooms, is_default, active, sort, created_at, rates(*)), photos(*), property_terms(term_id), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content)`,
     )
     .eq("tenant_id", tenant.id)
     .eq("slug", slug)
@@ -141,3 +145,19 @@ export async function busyNights(unitId: string, from: string, to: string): Prom
   });
   return (data ?? []).map((r) => String(r.nights ?? r));
 }
+
+/** Pin or rounded area of a published property (approximate = no street, B1). */
+export const publicLocation = cache(async (propertyId: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .rpc("property_public_location", { p_property_id: propertyId })
+    .maybeSingle();
+  if (!data || data.latitude === null || data.longitude === null) return null;
+  return {
+    latitude: Number(data.latitude),
+    longitude: Number(data.longitude),
+    approximate: Boolean(data.approximate),
+    street: data.street ?? null,
+    postalCode: data.postal_code ?? null,
+  };
+});

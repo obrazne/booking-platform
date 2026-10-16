@@ -122,11 +122,7 @@ const intro = defineSection({
         value: t("untilTime", { time: p.check_out_until.slice(0, 5) }),
       },
     ].filter((f) => f !== null);
-    const kicker = pick(
-      content.kicker,
-      data.locale,
-      [p.city, p.street].filter(Boolean).join(" · "),
-    );
+    const kicker = pick(content.kicker, data.locale, [p.city].filter(Boolean).join(" · "));
     const perex = pick(content.perex, data.locale, tr(p.summary, data.locale));
     return (
       <Container>
@@ -454,10 +450,11 @@ const location = defineSection({
   render: async ({ content, data }) => {
     const p = data.property;
     const text = content.text ? tr(content.text, data.locale) : "";
-    const hasMap = p.latitude !== null && p.longitude !== null;
+    const loc = data.location;
+    const hasMap = loc !== null;
     if (!text && !hasMap) return null;
     const t = await getTranslations("guest.sections.location");
-    const address = [p.street, [p.postal_code, p.city].filter(Boolean).join(" ")]
+    const address = [loc?.street, [loc?.postalCode, p.city].filter(Boolean).join(" ")]
       .filter(Boolean)
       .join(", ");
     return (
@@ -476,7 +473,7 @@ const location = defineSection({
           ) : null}
           {hasMap ? (
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${loc!.latitude},${loc!.longitude}`}
               target="_blank"
               rel="noreferrer"
               className="border-line text-ink inline-flex min-h-11 items-center gap-2 justify-self-start rounded-full border px-5 text-sm font-medium"
