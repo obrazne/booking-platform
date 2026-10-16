@@ -21,17 +21,29 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await pickStay(calendar, stay.checkIn, stay.checkOut);
   const cart = page.getByRole("dialog");
   await expect(cart).toBeVisible();
-  await expect(cart).toContainText("Spolu");
-  await expect(cart).toContainText("na osobu a noc");
-  await cart.getByRole("button", { name: "Pokračovať" }).click();
-
-  // Step 2: contact and a service.
-  await cart.locator("#c-name").fill(`E2E ${info.project.name}`);
-  await cart.locator("#c-email").fill(`e2e-${Date.now()}@${TEST_DOMAIN}`);
-  await cart.locator("#c-phone").fill("+421900000000");
+  if (info.project.name === "desktop") {
+    // Green summary: total for the nights and the price per person and night.
+    await expect(cart).toContainText("Spolu za 3 noci");
+    await expect(cart).toContainText("na osobu a noc");
+  } else {
+    // Phones: the cart covers the whole screen, the green bar shows the sum; the breakdown slides up.
+    expect((await cart.boundingBox())!.width).toBeGreaterThanOrEqual(389);
+    await cart.getByRole("button", { name: /Rozpis a podmienky/ }).click();
+    await expect(cart.getByRole("definition").first()).toContainText("€");
+    await cart.getByRole("button", { name: /Rozpis a podmienky/ }).click();
+  }
+  // Step 1 (v2): extras as rows right under the dates.
   const breakfast = cart.getByRole("button", { name: "Raňajky v chalete", exact: true });
   await breakfast.click();
   await expect(breakfast).toHaveAttribute("aria-pressed", "true");
+  await expect(cart.getByText("Vaše doplnky").first()).toBeAttached();
+  await cart.getByRole("button", { name: "Pokračovať" }).click();
+
+  // Step 2: contact.
+  await cart.locator("#c-name").fill(`E2E ${info.project.name}`);
+  await cart.locator("#c-email").fill(`e2e-${Date.now()}@${TEST_DOMAIN}`);
+  await cart.locator("#c-phone").fill("+421900000000");
+  await expect(cart.getByText("Raňajky v chalete").first()).toBeVisible();
   await cart.getByRole("button", { name: "K platbe" }).click();
 
   // Step 3: consents (marketing stays unchecked) and the binding button.
@@ -69,4 +81,42 @@ test("calendar works with the keyboard", async ({ page }, info) => {
   await expect(day).toHaveAttribute("aria-label", /\d{4}/);
   await page.keyboard.press("Enter");
   await expect(day).toHaveAttribute("aria-pressed", "true");
+});
+
+test("v2 windows: gallery levels, Back closes one level, dates and next free stay open the cart", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "mobile", "desktop layout");
+  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  const scrollBefore = await page.evaluate(() => window.scrollY);
+
+  // Gallery: photo on the page → window with albums → big photo; Esc and Back close one level each.
+  await page
+    .locator("main")
+    .getByRole("button", { name: /Chalet STRÖMY večer/ })
+    .first()
+    .click();
+  const gallery = page.getByRole("dialog");
+  await expect(gallery.getByRole("button", { name: /Všetky · \d+/ })).toBeVisible();
+  await gallery.getByRole("button", { name: /Sauna/ }).first().click();
+  await expect(gallery.getByRole("button", { name: "Všetky fotky" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(gallery.getByRole("button", { name: "Všetky fotky" })).toHaveCount(0);
+  await expect(gallery).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  // Arrival | Departure in the green panel opens the cart with the calendar — the page does not scroll.
+  await page.getByRole("button", { name: "Vybrať termín" }).first().click();
+  const cart = page.getByRole("dialog");
+  await expect(cart.getByRole("button", { name: "Nasledujúci mesiac" }).first()).toBeVisible();
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  // Nearest free stay (computed on the server) opens the cart with those dates.
+  await page.getByRole("button", { name: /Najbližší voľný termín/ }).click();
+  await expect(
+    page.getByRole("dialog").getByRole("button", { name: "Zmeniť termín" }),
+  ).toBeVisible();
 });

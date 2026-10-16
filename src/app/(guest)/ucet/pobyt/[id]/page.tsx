@@ -88,7 +88,7 @@ export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">
       </div>
 
       {pending && stay.payment ? (
-        <section className="bg-card border-line grid gap-6 rounded-3xl border p-6 sm:grid-cols-[1fr_200px]">
+        <section className="bg-card border-line grid gap-6 rounded-lg border p-6 sm:grid-cols-[1fr_200px]">
           <div className="grid content-start gap-3">
             <h2 className="font-heading text-xl font-bold">{tg("reservation.payTitle")}</h2>
             {stay.payment_due_at ? (
@@ -127,7 +127,7 @@ export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">
       ) : null}
 
       {active ? (
-        <section className="bg-surface border-line grid gap-3 rounded-3xl border p-6">
+        <section className="bg-surface border-line grid gap-3 rounded-lg border p-6">
           <h2 className="font-heading inline-flex items-center gap-2 text-xl font-bold">
             <KeyRound className="text-primary size-5" /> {t("arrival")}
           </h2>

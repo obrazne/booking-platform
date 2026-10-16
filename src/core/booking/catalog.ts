@@ -54,7 +54,7 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   const { data: p } = await supabase
     .from("properties")
     .select(
-      `${PUBLIC_PROPERTY_COLUMNS}, units(id, tenant_id, property_id, name, description, max_guests, bedrooms, is_default, active, sort, created_at, rates(*)), photos(*), property_terms(term_id), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content)`,
+      `${PUBLIC_PROPERTY_COLUMNS}, units(id, tenant_id, property_id, name, description, max_guests, bedrooms, is_default, active, sort, created_at, rates(*)), photos(*), property_terms(term_id, highlighted, highlight_note, highlight_sort), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content), property_places(name, how, distance, sort)`,
     )
     .eq("tenant_id", tenant.id)
     .eq("slug", slug)
@@ -63,7 +63,14 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   if (!p) notFound();
 
   const servicesOn = await isModuleEnabledPublic(tenant.id, "services");
-  const [{ data: discounts }, { data: services }, settings, { data: contact }] = await Promise.all([
+  const [
+    { data: discounts },
+    { data: services },
+    settings,
+    { data: contact },
+    { data: testimonials },
+    { data: reviewsUrl },
+  ] = await Promise.all([
     supabase
       .from("discounts")
       .select("*")
@@ -77,6 +84,14 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
       .or(`property_id.eq.${p.id},property_id.is.null`),
     getGuestSettings(tenant.id),
     supabase.rpc("tenant_public_contact", { p_tenant_id: tenant.id }).maybeSingle(),
+    supabase
+      .from("testimonials")
+      .select("id, body, author_name, source, source_url, stay_month, featured, sort")
+      .eq("tenant_id", tenant.id)
+      .or(`property_id.eq.${p.id},property_id.is.null`)
+      .order("featured", { ascending: false })
+      .order("sort"),
+    supabase.rpc("tenant_reviews_url", { p_tenant_id: tenant.id }),
   ]);
 
   const units = [...p.units].filter((u) => u.active).sort((a, b) => a.sort - b.sort);
@@ -109,6 +124,12 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
     units,
     photos: [...p.photos].sort((a, b) => a.sort - b.sort),
     termIds: p.property_terms.map((t) => t.term_id),
+    highlighted: p.property_terms
+      .filter((t) => t.highlighted)
+      .sort((a, b) => a.highlight_sort - b.highlight_sort),
+    places: [...p.property_places].sort((a, b) => a.sort - b.sort),
+    testimonials: testimonials ?? [],
+    reviewsUrl: (reviewsUrl as string | null) ?? null,
     sections: p.property_sections,
     seasons,
     catalogs,

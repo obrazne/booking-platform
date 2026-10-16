@@ -10,7 +10,12 @@ import { resizeImage } from "@/lib/image-resize";
 import { createClient } from "@/lib/supabase/client";
 import { deletePhoto, movePhoto, registerPhoto, updatePhotoAlt } from "../../actions";
 
-export type PhotoItem = { id: string; url: string; alt: Record<string, string> };
+export type PhotoItem = {
+  id: string;
+  url: string;
+  alt: Record<string, string>;
+  category: string | null;
+};
 
 export function PhotoUploader({ tenantId, propertyId }: { tenantId: string; propertyId: string }) {
   const t = useTranslations();
@@ -85,6 +90,26 @@ export function PhotoCard({
           locales={locales}
           value={photo.alt}
         />
+        <div className="grid gap-1.5">
+          <label htmlFor={`cat-${photo.id}`} className="text-sm font-medium">
+            {t("properties.photos.category")}
+          </label>
+          <select
+            id={`cat-${photo.id}`}
+            name="category"
+            defaultValue={photo.category ?? ""}
+            className="border-input bg-background h-9 rounded-md border px-3 text-sm shadow-xs"
+          >
+            <option value="">{t("properties.photos.noCategory")}</option>
+            {(["exterior", "interior", "bedrooms", "wellness", "surroundings"] as const).map(
+              (c) => (
+                <option key={c} value={c}>
+                  {t(`guest.v2.albums.${c}`)}
+                </option>
+              ),
+            )}
+          </select>
+        </div>
         <div className="flex items-center gap-1">
           <SubmitButton variant="outline">{t("forms.save")}</SubmitButton>
           <span className="flex-1" />

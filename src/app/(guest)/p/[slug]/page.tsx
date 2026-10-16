@@ -18,7 +18,8 @@ import { money } from "@/core/money/money";
 import { enabledModuleKeysPublic } from "@/core/modules/registry";
 import { addDays, isIsoDate, todayIso } from "@/core/pricing/dates";
 import { PropertySections } from "@/core/sections/render";
-import type { SectionData } from "@/core/sections/types";
+import type { GuestTestimonial, SectionData } from "@/core/sections/types";
+import { nextFreeStay } from "@/core/booking/next-free";
 import { Container } from "@/core/sections/ui";
 import { getTenantFromHost } from "@/core/tenant/current";
 
@@ -63,7 +64,29 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
   const photoList = photos.map((ph) => ({
     url: photoUrl(ph.storage_path),
     alt: tr(ph.alt, locale),
+    category: ph.category ?? null,
   }));
+  const testimonials: GuestTestimonial[] = detail.testimonials
+    .map((r) => ({
+      id: r.id,
+      author: r.author_name,
+      text: tr(r.body, locale),
+      source: r.source,
+      sourceUrl: r.source_url,
+      stayMonth: r.stay_month,
+      featured: r.featured,
+    }))
+    .filter((r) => r.text);
+  const termById = new Map(terms.map((x) => [x.id, x]));
+  const highlights = detail.highlighted
+    .map((h) => {
+      const term = termById.get(h.term_id);
+      return term
+        ? { key: term.key, name: tr(term.name, locale), note: tr(h.highlight_note, locale) }
+        : null;
+    })
+    .filter((x) => x !== null);
+  const nextFree = nextFreeStay(catalog, busy, today);
   const contactInfo = contact
     ? { name: contact.contact_name, phone: contact.contact_phone, whatsapp: contact.whatsapp_phone }
     : null;
@@ -80,12 +103,19 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
     amenities: terms
       .filter((x) => x.kind === "amenity" && detail.termIds.includes(x.id))
       .map((x) => ({ key: x.key, name: tr(x.name, locale) })),
+    highlights,
+    places: detail.places.map((pl) => ({
+      name: tr(pl.name, locale),
+      how: tr(pl.how, locale),
+      distance: pl.distance,
+    })),
     cancellationPolicy: policy,
+    cancellationShort: policyFirst || null,
+    trust,
+    nextFree,
+    reviewsUrl: detail.reviewsUrl,
     contact: contactInfo,
-    testimonials: (Array.isArray(p.testimonials) ? p.testimonials : []) as {
-      author: string;
-      text: string;
-    }[],
+    testimonials,
     services: serviceRows.map((s) => ({
       id: s.id,
       name: tr(s.name, locale),
@@ -115,7 +145,10 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         locale,
         modules,
         propertyName: p.booking_mode === "units" ? `${p.name} — ${unit.name}` : p.name,
+        propertyCity: p.city,
         photos: photoList,
+        testimonials,
+        reviewsUrl: detail.reviewsUrl,
         settings: {
           paymentDueHours: settings.paymentDueHours,
           holdMinutes: settings.holdMinutes,

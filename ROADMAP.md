@@ -52,7 +52,7 @@ generovaný zo zod schémy typu (texty s prekladmi — zatiaľ slovenčina, výb
 ešte nie sú, „Obnoviť podľa predlohy“ s potvrdením, náhľad stránky. Bočný panel podľa A18. Údaje zo systému (ceny, storno…) sa vo formulári
 neupravujú — len odkaz, kde sa menia.
 
-### Z19 — Stránka hosťa, galéria a košík podľa vizuálu v2
+### Z19 ✅ — Stránka hosťa, galéria a košík podľa vizuálu v2
 Martin schválil **v2 (16. 10.)**. Čítaj `docs/vizual-stranka-hosta.md` — najprv *Zmeny oproti v1* a *Pravidlá vzhľadu* (platia pre celú časť
 pre hosťa, aj pre zónu hosťa zo Z17), zdroj plátna `docs/navrhy/stranka-hosta/` (platné dosky sú vymenované v hlavičke popisu).
 Architektúra: `ARCHITEKTURA.md` B1 (fotky s kategóriou, poloha a miesta v okolí, referencie), B7 (typy sekcií), A12 (predvolená téma v2),
@@ -119,6 +119,9 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Mapa (Z19):** zatiaľ dlaždice priamo z OpenStreetMap (zadarmo, mierne používanie). Pred ostrou prevádzkou s väčšou návštevnosťou
+  odporúčam poskytovateľa dlaždíc s bezplatným limitom (MapTiler alebo Stadia — treba účet). Súhlasíš?
+- **STRÖMY (Z19):** miesta v okolí a popisy zvýrazneného vybavenia sú orientačné — nech ich Jana skontroluje v administrácii.
 - **Captcha (Cloudflare Turnstile):** widget `booking-platform` vytvorený v Martinovom účte Cloudflare (16. 10., cez `cf`), kľúče sú
   v `.env.local` a vo Verceli (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`). **Ostáva zapojiť** do formulára hosťa, promo kódu
   a prihlásenia do zóny + limit podľa IP (Claude Code, po Z19). Pre vlastné domény klientov treba doménu pridať do widgetu.
@@ -140,6 +143,20 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z19: stránka hosťa, galéria a košík podľa **vizuálu v2**. Dáta (migrácia len pridáva): tabuľka **referencií**
+  (skopírované z objektov, zvýraznené max. 5, zdroj, mesiac pobytu, zverejnená) + `reviews_url`, **kategória fotky** (albumy),
+  **zvýraznené vybavenie** s popisom, **poloha** presná / približná (pri približnej návštevník nevidí ulicu ani súradnice ani cez API —
+  funkcia `property_public_location` zaokrúhli na ~1 km) a **miesta v okolí**, téma v2 (doplnková medená farba na štítky, zaoblenie 10,
+  tmavší odtieň akcentu pre plochy s bielym textom). Sekcie v2: úvod (galéria 1+2+5, referencia so šípkami, malá mapa, karta údajov,
+  zelený panel), čo vás čaká (mriežka 3/2 so šachovnicou), kalendár na páse, okolie s mapou **OpenStreetMap (statické dlaždice, bez
+  cookies a kľúča)**, tichý cenník s „v cene“, **pohľad dovnútra** (mozaika), referencie, dobré vedieť, zelená záverečná výzva
+  s **najbližším voľným termínom** (počíta server). Predlohy v2 a existujúce stránky prestavané (texty sekcií ostali). **Galéria v okne**
+  (albumy, mriežka, veľká fotka s pásom náhľadov, referencie vpravo; mobil prepínač Fotky/Referencie). **Košík v2** (do 1040 px, kroky
+  vľavo, zelený súhrn vpravo s tlačidlom dole, doplnky ako rozbaľovacie riadky v kroku 1, zbaľovací kalendár; mobil cez celú obrazovku,
+  zelený pás, rozpis zospodu). Správanie: tlačidlá neposúvajú stránku, naraz jedno okno, Esc a Späť zatvoria jednu úroveň.
+  Administrácia: Referencie (zoznam + panel), album pri fotkách, záložka Poloha a okolie, zvýraznené vybavenie v záložke Stránka
+  (upozornenie, ak počet nie je 3/6/9), odkaz na hodnotenia v Nastaveniach. Seed: kategórie fotiek, okolie (orientačné, ukážkové),
+  referencie. 11 nových pgTAP (spolu 139), Playwright 9/9 na PC aj 390 px vrátane axe → `docs/kontrola-mvp.md`. (Claude Code)
 - 2026-10-16 — Vizuál stránky hosťa **v2 schválený** (galéria a referencie ako Booking, mapa, košík v2, mobil) → `docs/navrhy/stranka-hosta/`, `docs/vizual-stranka-hosta.md`; architektúra (B1, B7, A12), rozhodnutie; úloha Z19. (Claude chat)
 - 2026-10-16 — Z18: v editore objektu záložka **Stránka** — sekcie v poradí s vypínačom (kalendár je povinný, nedá sa vypnúť ani
   odstrániť), presúvanie šípkami aj klávesnicou (Alt + šípka na riadku), úprava v bočnom paneli (A18) cez **formulár generovaný zo zod

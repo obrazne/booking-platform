@@ -1,4 +1,4 @@
-import { contrastRatio, isHexColor, readableTextOn } from "./contrast";
+import { contrastRatio, isHexColor, readableTextOn, surfaceForWhiteText } from "./contrast";
 
 /** Fonts a client can choose from (A12: limited set so the look cannot be broken). */
 export const FONT_KEYS = ["geist", "inter", "manrope", "lora", "playfair", "roboto"] as const;
@@ -26,11 +26,11 @@ export type Theme = {
 export const DEFAULT_THEME: Theme = {
   logoPath: null,
   primaryColor: "#2f5d50",
-  secondaryColor: "#6e6e73",
+  secondaryColor: "#ad5a2b",
   backgroundColor: "#ffffff",
   headingFont: "roboto",
   bodyFont: "roboto",
-  radius: 16,
+  radius: 10,
   colorMode: "light",
 };
 
@@ -65,6 +65,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
     "--sidebar-primary-foreground": readableTextOn(theme.primaryColor),
     "--brand-secondary": theme.secondaryColor,
     "--brand-secondary-foreground": readableTextOn(theme.secondaryColor),
+    // Coloured surfaces with white text (green panel, bar, cart summary): darker when the accent is light (A12 v2).
+    "--surface-accent": surfaceForWhiteText(theme.primaryColor),
     "--brand-background": theme.backgroundColor,
     "--radius": `${theme.radius / 16}rem`,
     "--app-font-sans": `var(--font-${theme.bodyFont})`,

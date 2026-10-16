@@ -214,9 +214,14 @@ export async function updatePhotoAlt(_: ActionResult, form: FormData): Promise<A
   const id = z.uuid().safeParse(form.get("id"));
   const propertyId = z.uuid().safeParse(form.get("property_id"));
   if (!id.success || !propertyId.success) return fail("invalid");
+  const category = z
+    .enum(["exterior", "interior", "bedrooms", "wellness", "surroundings"])
+    .nullable()
+    .catch(null)
+    .parse(form.get("category") || null);
   const { error } = await supabase
     .from("photos")
-    .update({ alt: localizedFromForm(form, "alt", tenant.locales) })
+    .update({ alt: localizedFromForm(form, "alt", tenant.locales), category })
     .eq("id", id.data);
   if (error) return fail(dbErrorKey(error));
   return done(propertyId.data, "/photos");

@@ -10,6 +10,9 @@ import { sectionTypes } from "@/core/sections/registry";
 import type { FieldSchema } from "@/core/sections/schema-form";
 import { createClient } from "@/lib/supabase/server";
 import { getPropertyForEdit, photoUrl } from "../../data";
+import { Input } from "@/components/ui/input";
+import { ActionForm, SubmitButton } from "@/core/admin/form";
+import { saveHighlights } from "../../location-actions";
 import { AddSection, ResetSections, SectionEditor, SectionList } from "./sections-ui";
 
 /** Where the facts shown by a section are changed (they are never typed into the section, B7). */
@@ -67,6 +70,27 @@ export default async function PropertyPageSections({
       getEnabledModules(tenant.id),
     ]);
   const types = sectionTypes(modules.map((m) => m.key));
+  const th = await getTranslations("highlightsAdmin");
+  const { data: propTerms } = await supabase
+    .from("property_terms")
+    .select("term_id, highlighted, highlight_note, highlight_sort")
+    .eq("property_id", property.id);
+  const amenityRows = (propTerms ?? [])
+    .map((pt) => {
+      const term = (terms ?? []).find((x) => x.id === pt.term_id);
+      return term
+        ? {
+            termId: pt.term_id,
+            name: tr(term.name, locale),
+            highlighted: pt.highlighted,
+            note: tr(pt.highlight_note, locale),
+            sort: pt.highlight_sort,
+          }
+        : null;
+    })
+    .filter((x) => x !== null)
+    .sort((a, b) => Number(b.highlighted) - Number(a.highlighted) || a.sort - b.sort);
+  const highlightedCount = amenityRows.filter((a) => a.highlighted).length;
   const name = (type: string) =>
     t.has(`types.${type}` as never) ? t(`types.${type}` as "types.gallery") : type;
   const base = `/admin/properties/${property.id}`;
@@ -130,6 +154,56 @@ export default async function PropertyPageSections({
 
       <SectionList sections={rows} />
       <p className="text-muted-foreground text-xs">{t("keyboardHint")}</p>
+
+      <section className="border-border grid gap-3 rounded-xl border p-4">
+        <div className="grid gap-1">
+          <h3 className="font-medium">{th("title")}</h3>
+          <p className="text-muted-foreground text-sm">{th("lead")}</p>
+        </div>
+        {highlightedCount % 3 !== 0 ? (
+          <p role="status" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            {th("countWarning", { count: highlightedCount })}
+          </p>
+        ) : null}
+        {amenityRows.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{th("noAmenities")}</p>
+        ) : (
+          <ActionForm action={saveHighlights.bind(null, property.id)} className="gap-2">
+            {amenityRows.map((a) => (
+              <div
+                key={a.termId}
+                className="grid grid-cols-[auto_1fr_2fr_4.5rem] items-center gap-3"
+              >
+                <input
+                  type="checkbox"
+                  name={`hl_${a.termId}`}
+                  defaultChecked={a.highlighted}
+                  aria-label={th("highlight", { name: a.name })}
+                  className="size-4"
+                />
+                <span className="text-sm">{a.name}</span>
+                <Input
+                  name={`note_${a.termId}`}
+                  defaultValue={a.note}
+                  maxLength={80}
+                  placeholder={th("note")}
+                  aria-label={`${th("note")}: ${a.name}`}
+                />
+                <Input
+                  name={`sort_${a.termId}`}
+                  type="number"
+                  min={0}
+                  defaultValue={a.sort}
+                  aria-label={`${t("listLabel")}: ${a.name}`}
+                />
+              </div>
+            ))}
+            <div>
+              <SubmitButton variant="outline">{th("save")}</SubmitButton>
+            </div>
+          </ActionForm>
+        )}
+      </section>
 
       <div className="border-border grid gap-4 border-t pt-4 sm:grid-cols-2">
         <div className="grid gap-2">

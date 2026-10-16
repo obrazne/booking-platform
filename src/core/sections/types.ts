@@ -36,13 +36,23 @@ export type SectionData = {
   } | null;
   units: Omit<Tables<"units">, "ical_export_token">[];
   unitId: string;
-  photos: { url: string; alt: string }[];
+  photos: GuestPhoto[];
   seasons: Season[];
   catalog: PricingCatalog;
   amenities: { key: string; name: string }[];
+  /** Highlighted amenities for "What awaits you" (B1 v2), in their order, with a one-line note. */
+  highlights: { key: string; name: string; note: string }[];
+  places: { name: string; how: string; distance: string | null }[];
   cancellationPolicy: string;
+  /** First sentence of the cancellation policy ("Storno zdarma do 30 dní pred príchodom"). */
+  cancellationShort: string | null;
+  /** Facts for the final call and the cart (cancellation, hold, direct payment). */
+  trust: string[];
+  /** Nearest bookable stay (computed from occupancy, minimum nights and prices). */
+  nextFree: { checkIn: string; checkOut: string; nights: number; totalCents: number } | null;
+  reviewsUrl: string | null;
   contact: { name: string | null; phone: string | null; whatsapp: string | null } | null;
-  testimonials: { author: string; text: string }[];
+  testimonials: GuestTestimonial[];
   services: {
     id: string;
     name: string;
@@ -51,6 +61,18 @@ export type SectionData = {
     amountCents: number;
   }[];
   money: (cents: number) => string;
+};
+
+export type GuestPhoto = { url: string; alt: string; category: string | null };
+
+export type GuestTestimonial = {
+  id: string;
+  author: string;
+  text: string;
+  source: string;
+  sourceUrl: string | null;
+  stayMonth: string | null;
+  featured: boolean;
 };
 
 export type SectionProps<C> = { content: C; data: SectionData };

@@ -20,7 +20,12 @@ export default async function PropertyPhotosPage({
           {photos.map((p, i) => (
             <PhotoCard
               key={p.id}
-              photo={{ id: p.id, url: photoUrl(p.storage_path), alt: asLocalized(p.alt) }}
+              photo={{
+                id: p.id,
+                url: photoUrl(p.storage_path),
+                alt: asLocalized(p.alt),
+                category: p.category,
+              }}
               propertyId={property.id}
               locales={tenant.locales}
               first={i === 0}

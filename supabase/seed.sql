@@ -18,10 +18,10 @@ insert into public.platform_admins (user_id)
 select u.id from auth.users u where u.email = 'info@obrazne.sk'
 on conflict (user_id) do nothing;
 
-insert into public.tenant_themes (tenant_id, primary_color, heading_font, body_font)
+insert into public.tenant_themes (tenant_id, primary_color, secondary_color, heading_font, body_font, radius)
 values
-  ('a0000000-0000-4000-8000-000000000001', '#0071e3', 'geist', 'geist'),
-  ('a0000000-0000-4000-8000-000000000002', '#2f5d50', 'roboto', 'roboto')
+  ('a0000000-0000-4000-8000-000000000001', '#0071e3', '#ad5a2b', 'geist', 'geist', 10),
+  ('a0000000-0000-4000-8000-000000000002', '#2f5d50', '#ad5a2b', 'roboto', 'roboto', 10)
 on conflict (tenant_id) do nothing;
 
 insert into public.tenant_modules (tenant_id, module_key, status, trial_ends_at)

@@ -102,6 +102,15 @@ export default async function SettingsPage() {
                 defaultValue={s?.privacy_url ?? ""}
               />
             </Field>
+            <Field label={t("reviewsUrl")} hint={t("reviewsUrlHint")} htmlFor="reviews_url">
+              <Input
+                id="reviews_url"
+                name="reviews_url"
+                type="url"
+                placeholder="https://"
+                defaultValue={s?.reviews_url ?? ""}
+              />
+            </Field>
           </CardContent>
         </Card>
         <Card>

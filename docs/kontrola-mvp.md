@@ -73,3 +73,28 @@ escapované, CSV chránené proti vzorcom, worker s porovnaním tajomstva v kon�
 ## Otázky pre Martina z kontroly
 - Captcha: Martin súhlasí s Cloudflare Turnstile (16. 10.), dorobí sa po založení účtu Cloudflare.
 - Testy prehliadačom v CI: ak vypneš ochranu Vercelu na stagingu, môžu bežať pri každom pushi.
+
+## Doplnok — stránka hosťa v2 (Z19)
+
+Overené Playwrightom lokálne proti stagingu (`npm run e2e`), 9/9:
+
+| Test | Počítač | Mobil 390 px |
+|---|---|---|
+| Rezervácia STRÖMY v košíku v2: termín → doplnky už v kroku 1 (rozbaľovacie riadky) → údaje → súhlasy → QR | ✅ | ✅ (košík cez celú obrazovku, zelený pás, rozpis zospodu) |
+| Galéria v okne: albumy, veľká fotka, Esc vráti na mriežku, „Späť“ v prehliadači zatvorí okno | ✅ | — |
+| Príchod/Odchod v zelenom paneli otvorí košík s kalendárom — stránka sa neposunie | ✅ | — |
+| Najbližší voľný termín (počíta server z obsadenosti, min. nocí a cien) otvorí košík s týmto termínom | ✅ | — |
+| Prístupnosť (axe, WCAG 2.1 AA) detailu aj košíka | ✅ bez nálezov | ✅ bez nálezov |
+| Zóna hosťa, administrácia, sekcie v administrácii (regresia) | ✅ | — |
+
+Úpravy kvôli prístupnosti oproti plátnu: drobné texty na zelenej ploche sú takmer biele (nie 70 % priehľadnosti),
+mená pri referenciách na zelenej ploche svetlejšia medená (`#ffe0c8`); vodorovne posúvateľné referencie na mobile sú ovládateľné klávesnicou.
+
+Rýchlosť detailu na mobile (spomalená sieť a CPU): LCP ~3 s, ~1 MB, ~40 požiadaviek — pribudli mapové dlaždice OpenStreetMap
+(malá mapa 9, veľká 15, načítajú sa až pri posune) a viac údajov (referencie, okolie). Server na Verceli je bližšie k databáze ako
+lokálny počítač, takže odozva bude kratšia; ďalšie zrýchlenie: spojiť dotazy detailu do jednej funkcie v databáze.
+
+**Mapa:** dlaždice priamo z `tile.openstreetmap.org` — bez kľúča a cookies, s uvedením zdroja. Pravidlá OSM dovoľujú mierne používanie;
+pri ostrej prevádzke s väčšou návštevnosťou treba poskytovateľa dlaždíc (napr. MapTiler/Stadia, majú bezplatné limity) — otázka pre Martina.
+**Poloha:** pri „približnej“ polohe hosť nevidí ulicu ani presné súradnice ani cez API (stĺpce sú pre návštevníka skryté, poloha ide
+cez funkciu, ktorá ju zaokrúhli na ~1 km).

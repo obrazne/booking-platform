@@ -5,7 +5,9 @@ import type { Localized } from "./types";
 
 /** Page-width container of the guest page. */
 export function Container({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("mx-auto w-full max-w-6xl px-4 sm:px-6", className)}>{children}</div>;
+  return (
+    <div className={cn("mx-auto w-full max-w-[1180px] px-5 sm:px-6", className)}>{children}</div>
+  );
 }
 
 /** Kicker + two-sentence title (first sentence dark, second soft), the heading of every section (visual v1). */
@@ -29,7 +31,9 @@ export function Heading({
   return (
     <div className={cn("grid gap-3", center && "justify-items-center text-center")}>
       {kicker ? (
-        <p className={cn("kicker", tone === "dark" ? "text-[#8fb4e8]" : "text-muted-foreground")}>
+        <p
+          className={cn("kicker kicker-sans", tone === "dark" ? "text-[#f5c4a1]" : "text-accent-2")}
+        >
           {kicker}
         </p>
       ) : null}

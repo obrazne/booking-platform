@@ -46,12 +46,12 @@ export async function StayCard({ stay, big }: { stay: Stay; big?: boolean }) {
   return (
     <article
       className={cn(
-        "bg-card border-line grid gap-4 rounded-3xl border p-5",
+        "bg-card border-line grid gap-4 rounded-lg border p-5",
         big && "shadow-[0_24px_60px_-40px_rgba(17,33,47,0.25)] sm:grid-cols-[220px_1fr] sm:p-6",
       )}
     >
       {big && stay.property?.photo ? (
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-auto">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-lg sm:aspect-auto">
           <Image
             src={stay.property.photo}
             alt=""

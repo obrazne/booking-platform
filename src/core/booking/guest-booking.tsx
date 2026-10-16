@@ -2,7 +2,7 @@
 
 import {
   createContext,
-  useActionState,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -10,41 +10,19 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
-import {
-  ArrowLeft,
-  Check,
-  ChevronRight,
-  Circle,
-  CircleCheck,
-  MessageCircle,
-  Minus,
-  Phone,
-  Plus,
-  X,
-} from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 import { AvailabilityCalendar, type CalendarSelection } from "@/core/booking/availability-calendar";
-import {
-  createGuestReservation,
-  holdTerm,
-  previewPromo,
-  startBookingForm,
-  type BookingState,
-} from "@/core/booking/create";
 import { toPricingInput, type PricingCatalog } from "@/core/booking/pricing-input";
-import { tr } from "@/core/i18n/localized";
 import { calculatePrice } from "@/core/pricing/calculate";
 import { diffDays, type IsoDate } from "@/core/pricing/dates";
 import type { PriceLine, PricingResult, Service } from "@/core/pricing/types";
+import type { GuestPhoto, GuestTestimonial } from "@/core/sections/types";
 import { cn } from "@/lib/utils";
 import { priceContributorsFor } from "@/modules/price-contributors";
+import { Cart } from "./cart";
+import { GalleryModal } from "./gallery-modal";
 
 export type BookingData = {
   slug: string;
@@ -55,7 +33,10 @@ export type BookingData = {
   locale: string;
   modules: string[];
   propertyName: string;
-  photos: { url: string; alt: string }[];
+  propertyCity: string | null;
+  photos: GuestPhoto[];
+  testimonials: GuestTestimonial[];
+  reviewsUrl: string | null;
   settings: {
     paymentDueHours: number;
     holdMinutes: number;
@@ -79,7 +60,8 @@ export type BookingData = {
   };
 };
 
-type Step = 1 | 2 | 3 | "service";
+export type Step = 1 | 2 | 3;
+type Layer = "cart" | "gallery" | "photo";
 
 type Ctx = {
   data: BookingData;
@@ -99,33 +81,46 @@ type Ctx = {
   lines: PriceLine[];
   total: number;
   open: boolean;
-  openCart: (step?: Step) => void;
+  /** Opens the cart (closing the gallery — one window at a time). `calendar` shows the date picker. */
+  openCart: (step?: Step, opts?: { calendar?: boolean; range?: CalendarSelection }) => void;
   closeCart: () => void;
   step: Step;
   setStep: (s: Step) => void;
+  cartCalendar: boolean;
+  setCartCalendar: (v: boolean) => void;
+  gallery: { open: boolean; photo: number | null; highlight: number | null };
+  openGallery: (index?: number) => void;
+  showPhoto: (index: number | null) => void;
+  closeGallery: () => void;
   money: (cents: number, digits?: number) => string;
   stayPrice: (checkIn: IsoDate, checkOut: IsoDate) => number | null;
   minRate: number | null;
   promo: { code: string; name: Record<string, string>; amountCents: number } | null;
   setPromo: (p: { code: string; name: Record<string, string>; amountCents: number } | null) => void;
-  /** Service shown in the detail view of the cart. */
-  detailId: string | null;
-  showService: (id: string) => void;
   guest: GuestFields;
   setGuest: (g: GuestFields) => void;
 };
 
-type GuestFields = { name: string; email: string; phone: string; country: string; note: string };
+export type GuestFields = {
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  note: string;
+};
 
 const BookingContext = createContext<Ctx | null>(null);
 
-function useBooking(): Ctx {
+export function useBooking(): Ctx {
   const ctx = useContext(BookingContext);
   if (!ctx) throw new Error("BookingProvider missing");
   return ctx;
 }
 
-/** State of the guest's booking shared by the page calendar, the side panel, the mobile bar and the cart. */
+/**
+ * State of the guest's booking shared by the page, the side panel, the bars, the gallery and the cart (visual v2).
+ * At most one window is open; Esc and the browser's Back close one level (photo → gallery → page, cart → page).
+ */
 export function BookingProvider({
   data,
   children: content,
@@ -133,7 +128,7 @@ export function BookingProvider({
   data: BookingData;
   children: ReactNode;
 }) {
-  const [range, setRange] = useState<CalendarSelection>({
+  const [range, setRangeState] = useState<CalendarSelection>({
     checkIn: data.initial.checkIn,
     checkOut: data.initial.checkOut,
   });
@@ -144,8 +139,13 @@ export function BookingProvider({
   const [services, setServices] = useState<Record<string, number>>(data.initial.services ?? {});
   const [open, setOpen] = useState(data.initial.open);
   const [step, setStep] = useState<Step>(1);
+  const [cartCalendar, setCartCalendar] = useState(!data.initial.checkIn);
+  const [gallery, setGallery] = useState<Ctx["gallery"]>({
+    open: false,
+    photo: null,
+    highlight: null,
+  });
   const [promo, setPromo] = useState<Ctx["promo"]>(null);
-  const [detailId, setDetailId] = useState<string | null>(null);
   const [guest, setGuest] = useState<GuestFields>({
     name: "",
     email: "",
@@ -154,6 +154,53 @@ export function BookingProvider({
     note: "",
   });
   const { catalog, locale, today, modules } = data;
+
+  // History layers: every window level adds an entry, Back (popstate) closes the top one.
+  const layers = useRef<Layer[]>([]);
+  /** History steps we take ourselves (closing from the UI) — their popstate must not close another level. */
+  const ownPops = useRef(0);
+  const push = useCallback((layer: Layer) => {
+    layers.current.push(layer);
+    window.history.pushState({ bookingLayer: layer }, "");
+  }, []);
+  const closeLayer = useCallback((layer: Layer) => {
+    if (layer === "photo") setGallery((g) => ({ ...g, photo: null }));
+    else if (layer === "gallery") setGallery({ open: false, photo: null, highlight: null });
+    else setOpen(false);
+  }, []);
+  useEffect(() => {
+    const onPop = () => {
+      if (ownPops.current > 0) {
+        ownPops.current -= 1;
+        return;
+      }
+      const top = layers.current.pop();
+      if (top) closeLayer(top);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [closeLayer]);
+  /** Closes a level from the UI; the matching history entries are removed too (without closing twice). */
+  const pop = useCallback(
+    (layer: Layer) => {
+      const i = layers.current.lastIndexOf(layer);
+      if (i < 0) {
+        closeLayer(layer);
+        return;
+      }
+      const removed = layers.current.slice(i);
+      layers.current = layers.current.slice(0, i);
+      for (const l of removed) closeLayer(l);
+      ownPops.current += 1; // history.go(-n) fires a single popstate
+      window.history.go(-removed.length);
+    },
+    [closeLayer],
+  );
+  // A cart opened by URL parameters (widget with dates) also closes with Back.
+  const initialOpen = data.initial.open;
+  useEffect(() => {
+    if (initialOpen) push("cart");
+  }, [initialOpen, push]);
 
   const money = (cents: number, digits = 2) =>
     new Intl.NumberFormat(locale, {
@@ -221,14 +268,15 @@ export function BookingProvider({
   };
   const rates = Object.values(catalog.rates).filter((r) => r > 0);
   const minRate = rates.length > 0 ? Math.min(...rates) : null;
+  const setRange = (r: CalendarSelection) => {
+    setRangeState(r);
+    setPromo(null);
+  };
 
   const value: Ctx = {
     data,
     range,
-    setRange: (r) => {
-      setRange(r);
-      setPromo(null);
-    },
+    setRange,
     adults,
     setAdults,
     children,
@@ -243,58 +291,84 @@ export function BookingProvider({
     lines,
     total,
     open,
-    openCart: (s) => {
+    openCart: (s, opts) => {
+      const next = opts?.range ?? range;
+      if (opts?.range) setRange(opts.range);
+      setCartCalendar(Boolean(opts?.calendar) || !next.checkIn || !next.checkOut);
       setStep(s ?? 1);
-      setOpen(true);
+      if (gallery.open) pop("gallery");
+      if (!open) {
+        setOpen(true);
+        push("cart");
+      }
     },
-    closeCart: () => setOpen(false),
+    closeCart: () => pop("cart"),
     step,
     setStep,
+    cartCalendar,
+    setCartCalendar,
+    gallery,
+    openGallery: (index) => {
+      if (open) pop("cart");
+      setGallery({ open: true, photo: null, highlight: index ?? null });
+      push("gallery");
+    },
+    showPhoto: (index) => {
+      if (index === null) {
+        if (gallery.photo !== null) pop("photo");
+        return;
+      }
+      if (gallery.photo === null) push("photo");
+      setGallery((g) => ({ ...g, photo: index }));
+    },
+    closeGallery: () => pop("gallery"),
     money,
     stayPrice,
     minRate,
     promo,
     setPromo,
-    detailId,
-    showService: (id) => {
-      setDetailId(id);
-      setStep("service");
-    },
     guest,
     setGuest,
   };
   return (
     <BookingContext.Provider value={value}>
       {content}
-      <CartSheet />
+      <Cart />
+      <GalleryModal />
     </BookingContext.Provider>
   );
 }
 
 // ------------------------------------------------------------------------------------------- shared bits
 
-function Counter({
+export function Counter({
   label,
   value,
   min,
   max,
   onChange,
+  tone = "light",
 }: {
   label: string;
   value: number;
   min: number;
   max: number;
   onChange: (v: number) => void;
+  tone?: "light" | "accent";
 }) {
+  const btn =
+    tone === "accent"
+      ? "size-8 rounded-full border-0 bg-white/15 text-white hover:bg-white/25 hover:text-white"
+      : "size-8 rounded-full";
   return (
     <div className="flex items-center justify-between gap-3 py-1">
-      <span className="text-sm">{label}</span>
+      <span className={cn("text-sm", tone === "accent" && "text-white/90")}>{label}</span>
       <div className="flex items-center gap-2">
         <Button
           type="button"
           size="icon"
           variant="outline"
-          className="size-8 rounded-full"
+          className={btn}
           disabled={value <= min}
           onClick={() => onChange(value - 1)}
           aria-label={`${label} −`}
@@ -306,7 +380,7 @@ function Counter({
           type="button"
           size="icon"
           variant="outline"
-          className="size-8 rounded-full"
+          className={btn}
           disabled={value >= max}
           onClick={() => onChange(value + 1)}
           aria-label={`${label} +`}
@@ -318,11 +392,10 @@ function Counter({
   );
 }
 
-function errorsText(
-  t: ReturnType<typeof useTranslations>,
-  price: PricingResult | null,
-): string | null {
+export function errorsText(translate: unknown, price: PricingResult | null): string | null {
   if (!price || price.ok) return null;
+  // Keys are built from error codes; the typed translator cannot follow them.
+  const t = translate as (key: string, values?: Record<string, number>) => string;
   return price.errors
     .map((e) =>
       t(
@@ -333,25 +406,7 @@ function errorsText(
     .join(" ");
 }
 
-function Breakdown() {
-  const { lines, money, data } = useBooking();
-  const t = useTranslations("guest");
-  return (
-    <dl className="grid gap-2 text-sm">
-      {lines.map((l, i) => (
-        <div key={i} className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">
-            {l.labelKey === "touristTax" ? t("touristTax") : tr(l.name, data.locale)}
-            {l.kind === "accommodation" ? ` · ${l.quantity} × ${money(l.unitAmountCents)}` : ""}
-          </dt>
-          <dd className="tabular-nums">{money(l.amountCents)}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function serviceTotal(s: Service, nights: number, persons: number, items: number): number {
+export function serviceTotal(s: Service, nights: number, persons: number, items: number): number {
   const q =
     s.priceModel === "per_night"
       ? nights * items
@@ -363,11 +418,67 @@ function serviceTotal(s: Service, nights: number, persons: number, items: number
   return s.amountCents * q;
 }
 
+export function useDates() {
+  const { data } = useBooking();
+  const long = new Intl.DateTimeFormat(data.locale, {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  const short = new Intl.DateTimeFormat(data.locale, {
+    day: "numeric",
+    month: "numeric",
+    timeZone: "UTC",
+  });
+  return {
+    long: (x: IsoDate) => long.format(new Date(`${x}T00:00:00Z`)),
+    short: (x: IsoDate) => short.format(new Date(`${x}T00:00:00Z`)),
+  };
+}
+
+/** "X € per person and night · tax included" for the current selection, or null. */
+export function usePerPerson(): string | null {
+  const t = useTranslations("guest");
+  const { data, price, total, money, adults, children } = useBooking();
+  if (!price?.ok) return null;
+  const per = Math.round(total / Math.max(1, adults + children) / Math.max(1, price.nights));
+  return (
+    t("cart.perPersonNight", { price: money(per, 0) }) +
+    (data.catalog.touristTax.included ? ` · ${t("cart.taxIncluded")}` : "")
+  );
+}
+
+/**
+ * The one main price (rule 4: stacked left — small label · big number · small note): without dates the from-price
+ * by season, with dates the total and the price per person and night.
+ */
+export function usePriceBlock(): { label: string; value: string; note: string; ready: boolean } {
+  const t = useTranslations("guest");
+  const { data, price, total, money, minRate } = useBooking();
+  const perPerson = usePerPerson();
+  const perPersonModel = data.catalog.pricingModel === "per_person_night";
+  if (price?.ok) {
+    return {
+      label: t("v2.totalFor", { count: price.nights }),
+      value: money(total),
+      note: perPerson ?? "",
+      ready: true,
+    };
+  }
+  return {
+    label: t(perPersonModel ? "v2.pricePerson" : "v2.priceWhole"),
+    value: minRate !== null ? t("v2.from", { price: money(minRate) }) : "—",
+    note: t(perPersonModel ? "v2.perPersonNightBySeason" : "v2.perNightBySeason"),
+    ready: false,
+  };
+}
+
 // ------------------------------------------------------------------------------------------- page parts
 
-/** "Availability and prices" section: two months with bubbles (bubbles only while the cart is closed). */
+/** "Availability and prices" section: two months with bubbles (bubbles only while no window is open). */
 export function InlineAvailability() {
-  const { data, range, setRange, open, stayPrice, openCart } = useBooking();
+  const { data, range, setRange, open, gallery, stayPrice, openCart } = useBooking();
   return (
     <AvailabilityCalendar
       locale={data.locale}
@@ -384,85 +495,55 @@ export function InlineAvailability() {
       }}
       months={2}
       stayPrice={stayPrice}
-      bubbles={!open}
+      bubbles={!open && !gallery.open}
     />
   );
 }
 
-/** "X € per person and night · tax included" for the current selection, or null. */
-function usePerPerson(): string | null {
-  const t = useTranslations("guest");
-  const { data, price, total, money, adults, children } = useBooking();
-  if (!price?.ok) return null;
-  const per = Math.round(total / Math.max(1, adults + children) / Math.max(1, price.nights));
-  return (
-    t("cart.perPersonNight", { price: money(per, 0) }) +
-    (data.catalog.touristTax.included ? ` · ${t("cart.taxIncluded")}` : "")
-  );
-}
-
-/** Small panel next to the intro (visual v1): from-price, dates (jump to the calendar), total, View stay. */
+/** Green price panel next to the intro (v2): dates (→ cart with calendar), the main price, View stay. */
 export function SidePanel() {
   const t = useTranslations("guest");
-  const { data, range, price, total, openCart, money, minRate } = useBooking();
-  const perPerson = usePerPerson();
-  const fmt = new Intl.DateTimeFormat(data.locale, {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  const d = (x: IsoDate | null) => (x ? fmt.format(new Date(`${x}T00:00:00Z`)) : "—");
-  const ready = Boolean(price?.ok);
+  const { data, range, price, openCart } = useBooking();
+  const d = useDates();
+  const block = usePriceBlock();
   return (
-    <div className="bg-card border-line grid gap-5 rounded-3xl border p-6 shadow-[0_24px_60px_-40px_rgba(17,33,47,0.35)]">
-      {minRate !== null ? (
-        <p className="text-muted-foreground">
-          {t.rich(
-            data.catalog.pricingModel === "per_person_night"
-              ? "property.fromPersonNightRich"
-              : "property.fromNightRich",
-            {
-              price: money(minRate),
-              b: (chunks) => (
-                <span className="text-ink text-3xl font-extrabold tracking-tight">{chunks}</span>
-              ),
-            },
-          )}
-        </p>
-      ) : null}
-      <a href="#termin" className="border-line grid grid-cols-2 rounded-2xl border">
-        <span className="border-line grid gap-1 border-r px-3.5 py-3">
-          <span className="kicker text-muted-foreground text-[10px]">{t("property.arrival")}</span>
-          <span>{d(range.checkIn)}</span>
+    <div className="bg-surface-accent flex h-full flex-col gap-[18px] rounded-lg p-8 pb-7 text-white shadow-[0_30px_60px_-34px_rgba(17,33,47,0.45)]">
+      <span className="kicker text-[11px] text-white/95">{t("v2.yourDates")}</span>
+      <button
+        type="button"
+        onClick={() => openCart(1, { calendar: true })}
+        aria-label={t("v2.chooseDates")}
+        className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/30 bg-white/12 text-left focus-visible:outline-2 focus-visible:outline-white"
+      >
+        <span className="grid gap-1 border-r border-white/30 px-4 py-3.5">
+          <span className="kicker text-[10px] text-white/95">{t("property.arrival")}</span>
+          <span className="text-lg font-bold">{range.checkIn ? d.long(range.checkIn) : "—"}</span>
         </span>
-        <span className="grid gap-1 px-3.5 py-3">
-          <span className="kicker text-muted-foreground text-[10px]">
-            {t("property.departure")}
-          </span>
-          <span>{d(range.checkOut)}</span>
+        <span className="grid gap-1 px-4 py-3.5">
+          <span className="kicker text-[10px] text-white/95">{t("property.departure")}</span>
+          <span className="text-lg font-bold">{range.checkOut ? d.long(range.checkOut) : "—"}</span>
         </span>
-      </a>
-      <div className="grid gap-1">
-        <div className="flex items-baseline justify-between gap-3">
-          <span className="text-muted-foreground">{t("booking.total")}</span>
-          <span className="text-ink text-2xl font-extrabold tracking-tight tabular-nums">
-            {ready ? money(total) : "—"}
-          </span>
-        </div>
-        <span
-          className={cn("text-sm", price && !price.ok ? "text-[#b5532f]" : "text-muted-foreground")}
-        >
-          {perPerson ?? errorsText(t, price) ?? t("booking.chooseDates")}
+      </button>
+      <div className="grid gap-1.5 pt-1">
+        <span className="kicker text-[11px] text-white/95">{block.label}</span>
+        <span className="text-4xl leading-none font-extrabold tracking-tight tabular-nums">
+          {block.value}
+        </span>
+        <span className={cn("text-sm text-white/80", price && !price.ok && "text-[#ffd2c2]")}>
+          {price && !price.ok ? errorsText(t, price) : block.note}
         </span>
       </div>
-      <Button type="button" size="lg" className="h-12 rounded-full" onClick={() => openCart(1)}>
-        {t("property.viewStay")} <ChevronRight />
-      </Button>
+      <button
+        type="button"
+        onClick={() => openCart(1)}
+        className="btn-on-accent mt-auto inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-6"
+      >
+        {t("property.viewStay")} <ChevronRight className="size-4" />
+      </button>
       {data.settings.cancellationShort ? (
-        <p className="text-muted-foreground text-center text-sm">
-          {data.settings.cancellationShort}
-        </p>
+        <span className="inline-flex items-center justify-center gap-2 text-center text-sm text-white/80">
+          <Check className="size-4 shrink-0" /> {data.settings.cancellationShort}
+        </span>
       ) : null}
     </div>
   );
@@ -474,7 +555,7 @@ export function CalendarSummary() {
   const { price, total, money, openCart } = useBooking();
   const perPerson = usePerPerson();
   return (
-    <div className="flex flex-wrap items-center gap-4 sm:justify-end">
+    <div className="flex flex-wrap items-center gap-5 sm:justify-end">
       {price?.ok ? (
         <div className="grid text-right">
           <span className="text-ink text-2xl font-extrabold tracking-tight tabular-nums">
@@ -483,21 +564,174 @@ export function CalendarSummary() {
           <span className="text-muted-foreground text-sm">{perPerson}</span>
         </div>
       ) : null}
-      <Button type="button" size="lg" className="h-12 rounded-full" onClick={() => openCart(1)}>
+      <Button
+        type="button"
+        size="lg"
+        className="h-12 rounded-full px-6 font-bold"
+        onClick={() => openCart(1)}
+      >
         {t("property.viewStay")} <ChevronRight />
       </Button>
     </div>
   );
 }
 
+/** Button that opens the cart (optionally with the calendar or a given stay) — never scrolls the page (rule 6). */
+export function OpenCartButton({
+  calendar,
+  stay,
+  className,
+  children,
+}: {
+  calendar?: boolean;
+  stay?: { checkIn: IsoDate; checkOut: IsoDate };
+  className?: string;
+  children: ReactNode;
+}) {
+  const { openCart } = useBooking();
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={() =>
+        openCart(1, stay ? { range: stay, calendar: false } : { calendar: Boolean(calendar) })
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Button that opens the gallery window, optionally highlighting a photo. */
+export function GalleryButton({
+  index,
+  className,
+  label,
+  children,
+}: {
+  index?: number;
+  className?: string;
+  label?: string;
+  children: ReactNode;
+}) {
+  const { openGallery } = useBooking();
+  return (
+    <button
+      type="button"
+      className={className}
+      aria-label={label}
+      onClick={() => openGallery(index)}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** One testimonial at a time with manual arrows (no autoplay — calmer and accessible). */
+export function TestimonialCarousel({
+  tone = "light",
+  showAllLink,
+  className,
+}: {
+  tone?: "light" | "accent";
+  showAllLink?: boolean;
+  className?: string;
+}) {
+  const t = useTranslations("guest");
+  const { data, openGallery } = useBooking();
+  const list = useMemo(() => {
+    const featured = data.testimonials.filter((r) => r.featured);
+    return featured.length > 0 ? featured : data.testimonials;
+  }, [data.testimonials]);
+  const [i, setI] = useState(0);
+  if (list.length === 0) return null;
+  const r = list[i % list.length]!;
+  const accent = tone === "accent";
+  const arrow = cn(
+    "inline-flex size-8 items-center justify-center rounded-full border",
+    accent ? "border-white/22 bg-white/10 text-white" : "border-line text-ink bg-white",
+  );
+  return (
+    <figure
+      className={cn(
+        "flex flex-col gap-3.5 rounded-lg border p-5",
+        accent
+          ? "border-white/22 bg-white/10"
+          : "border-line bg-white shadow-[0_24px_60px_-44px_rgba(17,33,47,0.2)]",
+        className,
+      )}
+    >
+      {!accent ? (
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="kicker kicker-sans text-accent-2 text-xs">{t("v2.guestsSay")}</span>
+          <span className="text-muted-foreground font-mono text-[11px]">
+            {(i % list.length) + 1} / {list.length}
+          </span>
+        </div>
+      ) : null}
+      <blockquote
+        aria-live="polite"
+        className={cn("flex-1 leading-relaxed", accent ? "text-sm text-white" : "text-ink")}
+      >
+        „{r.text}“
+      </blockquote>
+      <figcaption className="flex items-center justify-between gap-2.5">
+        <span
+          className={cn(
+            "font-mono text-[11px] font-medium tracking-wider uppercase",
+            accent ? "text-[#ffe0c8]" : "text-accent-2",
+          )}
+        >
+          {r.author}
+        </span>
+        {list.length > 1 ? (
+          <span className="inline-flex items-center gap-1.5">
+            <button
+              type="button"
+              className={arrow}
+              aria-label={t("v2.prevReview")}
+              onClick={() => setI((i - 1 + list.length) % list.length)}
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            {accent ? (
+              <span className="font-mono text-[11px] text-white/95">
+                {(i % list.length) + 1} / {list.length}
+              </span>
+            ) : null}
+            <button
+              type="button"
+              className={arrow}
+              aria-label={t("v2.nextReview")}
+              onClick={() => setI((i + 1) % list.length)}
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </span>
+        ) : null}
+      </figcaption>
+      {showAllLink ? (
+        <button
+          type="button"
+          onClick={() => openGallery()}
+          className="border-line text-ink border-t pt-2.5 text-left text-sm font-medium"
+        >
+          {t("v2.allReviewsPhotos")} →
+        </button>
+      ) : null}
+    </figure>
+  );
+}
+
 /**
- * Dark bar that slides in from the top once the guest scrolls past the intro (visual v1): name, dates, total,
- * View stay. Hidden while the cart is open. Without dates it leads to the calendar.
+ * Accent bar sliding in from the top once the guest scrolls past the intro (v2): name, dates, total, View stay.
+ * Hidden while a window is open. Without dates it opens the cart with the calendar (never scrolls).
  */
 export function StickyBar() {
   const t = useTranslations("guest");
-  const { data, range, price, total, money, open, openCart } = useBooking();
+  const { data, range, price, total, money, open, gallery, openCart } = useBooking();
   const perPerson = usePerPerson();
+  const d = useDates();
   const [past, setPast] = useState(false);
   useEffect(() => {
     const intro = document.querySelector("[data-intro]");
@@ -513,52 +747,46 @@ export function StickyBar() {
     io.observe(intro);
     return () => io.disconnect();
   }, []);
-  if (!past || open) return null;
+  if (!past || open || gallery.open) return null;
   const ready = Boolean(price?.ok);
-  const fmt = new Intl.DateTimeFormat(data.locale, {
-    day: "numeric",
-    month: "numeric",
-    timeZone: "UTC",
-  });
-  const d = (x: IsoDate) => fmt.format(new Date(`${x}T00:00:00Z`));
-  const go = () => {
-    if (ready) openCart(1);
-    else document.getElementById("termin")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const go = () => openCart(1, { calendar: !ready });
   return (
-    <div className="bg-ink animate-in slide-in-from-top fade-in fixed inset-x-0 top-0 z-30 hidden shadow-[0_18px_40px_-24px_rgba(17,33,47,0.6)] duration-200 lg:block">
-      <div
-        role="button"
-        tabIndex={-1}
-        onClick={go}
-        className="mx-auto flex w-full max-w-6xl cursor-pointer flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-3"
-      >
-        <div className="flex min-w-0 items-center gap-4">
-          <span className="truncate text-lg font-extrabold tracking-tight text-white">
+    <div className="bg-surface-accent animate-in slide-in-from-top fade-in fixed inset-x-0 top-0 z-30 hidden shadow-[0_18px_40px_-24px_rgba(17,33,47,0.6)] duration-200 lg:block">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-3">
+        <button
+          type="button"
+          onClick={go}
+          className="flex min-w-0 flex-wrap items-center gap-x-[18px] gap-y-1.5 text-left"
+        >
+          <span className="truncate text-[15px] font-extrabold tracking-tight text-white">
             {data.propertyName}
           </span>
-          <span className="rounded-full border border-white/15 px-3.5 py-1.5 text-sm text-[#f3f5f7]">
-            {range.checkIn && range.checkOut
-              ? `${d(range.checkIn)} – ${d(range.checkOut)} · ${t("booking.nights", {
-                  count: diffDays(range.checkIn, range.checkOut),
-                })}`
-              : t("cart.selectDates")}
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-white/28 px-3.5 py-1.5">
+            <span className="text-sm font-medium text-[#f3f5f7]">
+              {range.checkIn && range.checkOut
+                ? `${d.short(range.checkIn)} – ${d.short(range.checkOut)}`
+                : t("cart.selectDates")}
+            </span>
+            {range.checkIn && range.checkOut ? (
+              <span className="text-[13px] text-white/95">
+                {t("booking.nights", { count: diffDays(range.checkIn, range.checkOut) })}
+              </span>
+            ) : null}
           </span>
-        </div>
-        <div className="flex items-center gap-5">
+        </button>
+        <div className="flex items-center gap-[18px]">
           {ready ? (
             <div className="grid text-right">
-              <span className="text-lg font-extrabold text-white tabular-nums">{money(total)}</span>
-              <span className="text-xs text-[#b6c1cc]">{perPerson}</span>
+              <span className="text-xl font-extrabold tracking-tight text-white tabular-nums">
+                {money(total)}
+              </span>
+              <span className="text-xs text-white/95">{perPerson}</span>
             </div>
           ) : null}
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              go();
-            }}
-            className="text-ink inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 font-bold"
+            onClick={go}
+            className="btn-on-accent inline-flex min-h-11 items-center gap-2.5 px-[22px] text-[15px]"
           >
             {t("property.viewStay")} <ChevronRight className="size-4" />
           </button>
@@ -568,803 +796,37 @@ export function StickyBar() {
   );
 }
 
-/** Bottom bar on phones: sum, short description, Book. */
+/** Fixed accent bar on phones (v2): dates and guests, sum (or from-price), View stay. */
 export function MobileBar() {
   const t = useTranslations("guest");
-  const { data, price, total, money, minRate, openCart, services, range } = useBooking();
-  const chosen = data.catalog.services
-    .filter((s) => (services[s.id] ?? 0) > 0)
-    .map((s) => tr(s.name, data.locale));
-  return (
-    <div className="bg-background/95 border-line fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t px-4 py-3 backdrop-blur lg:hidden">
-      <div className="grid min-w-0 flex-1">
-        {price?.ok ? (
-          <>
-            <span className="font-semibold tabular-nums">{money(total)}</span>
-            <span className="text-muted-foreground truncate text-xs">
-              {chosen.length > 0
-                ? t("cart.stayWithServices", {
-                    nights: diffDays(range.checkIn!, range.checkOut!),
-                    services: chosen.join(", "),
-                  })
-                : t("booking.nights", { count: price.nights })}
-            </span>
-          </>
-        ) : minRate !== null ? (
-          <span className="text-sm">
-            {t(
-              data.catalog.pricingModel === "per_person_night"
-                ? "property.fromPersonNight"
-                : "property.fromNight",
-              {
-                price: money(minRate),
-              },
-            )}
-          </span>
-        ) : null}
-      </div>
-      <Button type="button" size="lg" className="h-11 rounded-full" onClick={() => openCart(1)}>
-        {t("property.viewStay")}
-      </Button>
-    </div>
-  );
-}
-
-// ------------------------------------------------------------------------------------------- cart
-
-function CartSheet() {
-  const { open, closeCart, step } = useBooking();
-  const t = useTranslations("guest.cart");
-  return (
-    <Sheet open={open} onOpenChange={(o) => !o && closeCart()}>
-      <SheetContent side="right" className="w-full gap-0 p-0 sm:max-w-[480px] [&>button]:hidden">
-        <SheetTitle className="sr-only">{t("step1")}</SheetTitle>
-        {step === 1 ? (
-          <StepStay />
-        ) : step === 2 ? (
-          <StepDetails />
-        ) : step === 3 ? (
-          <StepPayment />
-        ) : (
-          <ServiceDetail />
-        )}
-      </SheetContent>
-    </Sheet>
-  );
-}
-
-function CartHeader({ kicker, onBack }: { kicker: string; onBack?: () => void }) {
-  const { closeCart } = useBooking();
-  const t = useTranslations("guest.cart");
-  return (
-    <div className="flex items-center gap-2 px-6 pt-5">
-      {onBack ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="-ml-2 rounded-full"
-          onClick={onBack}
-          aria-label={t("back")}
-        >
-          <ArrowLeft />
-        </Button>
-      ) : null}
-      <span className="kicker text-muted-foreground flex-1">{kicker}</span>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="-mr-2 rounded-full"
-        onClick={closeCart}
-        aria-label={t("close")}
-      >
-        <X />
-      </Button>
-    </div>
-  );
-}
-
-function CartFooter({ children }: { children: ReactNode }) {
-  return <div className="border-line bg-background grid gap-3 border-t px-6 py-4">{children}</div>;
-}
-
-function useHold() {
-  const { data, range } = useBooking();
-  const [holdId, setHoldId] = useState("");
-  const [failed, setFailed] = useState(false);
-  const requested = useRef("");
-  useEffect(() => {
-    if (!range.checkIn || !range.checkOut) return;
-    const key = `hold:${data.unitId}:${range.checkIn}:${range.checkOut}`;
-    if (requested.current === key) return;
-    requested.current = key;
-    setFailed(false);
-    let stored: string | null = null;
-    try {
-      stored = window.sessionStorage.getItem(key);
-    } catch {
-      // ignore
-    }
-    if (stored) {
-      setHoldId(stored);
-      return;
-    }
-    holdTerm(data.unitId, range.checkIn, range.checkOut).then((id) => {
-      if (id) {
-        setHoldId(id);
-        try {
-          window.sessionStorage.setItem(key, id);
-        } catch {
-          // ignore
-        }
-      } else setFailed(true);
-    });
-  }, [data.unitId, range.checkIn, range.checkOut]);
-  return { holdId, failed };
-}
-
-function StepStay() {
-  const t = useTranslations("guest");
-  const b = useBooking();
-  const { data, range, setRange, price, total, money, adults, children, infants, pets } = b;
-  const [calendarOpen, setCalendarOpen] = useState(!range.checkIn || !range.checkOut);
-  const [showLines, setShowLines] = useState(false);
-  const fmt = new Intl.DateTimeFormat(data.locale, {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  const d = (x: IsoDate) => fmt.format(new Date(`${x}T00:00:00Z`));
+  const { range, adults, children, price, total, money, open, gallery, openCart } = useBooking();
+  const d = useDates();
+  const block = usePriceBlock();
+  if (open || gallery.open) return null;
   const ready = Boolean(price?.ok);
-  const nights = price?.ok ? price.nights : 0;
-  const persons = adults + children;
-  const recommendation =
-    data.catalog.services.find((s) => !(b.services[s.id] > 0)) ?? data.catalog.services[0];
-  const contact = data.contact;
-  const wa =
-    contact?.whatsapp && range.checkIn && range.checkOut
-      ? `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(
-          t("cart.whatsappText", {
-            from: d(range.checkIn),
-            to: d(range.checkOut),
-            guests: persons,
-          }),
-        )}`
-      : contact?.whatsapp
-        ? `https://wa.me/${contact.whatsapp}`
-        : null;
-  const initials = (contact?.name ?? data.propertyName)
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto">
-        {data.photos.length > 0 ? (
-          <div className="grid h-44 grid-cols-3 grid-rows-2 gap-1 overflow-hidden">
-            {data.photos.slice(0, 3).map((p, i) => (
-              <div key={i} className={cn("relative min-h-0", i === 0 && "col-span-2 row-span-2")}>
-                <Image src={p.url} alt={p.alt} fill sizes="320px" className="object-cover" />
-              </div>
-            ))}
-          </div>
-        ) : null}
-        <CartHeader kicker={t("cart.step1")} />
-        <div className="grid gap-6 px-6 pt-2 pb-6">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight">
-            {data.propertyName}
-          </h2>
-
-          <div className="border-line grid gap-3 rounded-2xl border p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="grid gap-0.5">
-                <span className="font-medium">
-                  {range.checkIn && range.checkOut
-                    ? `${d(range.checkIn)} – ${d(range.checkOut)}`
-                    : t("cart.selectDates")}
-                </span>
-                {ready ? (
-                  <span className="text-muted-foreground text-sm">
-                    {t("cart.nightsGuests", { nights, guests: persons })}
-                  </span>
-                ) : null}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => setCalendarOpen(!calendarOpen)}
-              >
-                {t("cart.change")}
-              </Button>
-            </div>
-            {calendarOpen ? (
-              <AvailabilityCalendar
-                locale={data.locale}
-                currency={data.catalog.currency}
-                seasons={data.catalog.seasons}
-                rates={data.catalog.rates}
-                discounts={data.catalog.discounts}
-                busy={data.busy}
-                today={data.today}
-                value={range}
-                onChange={(r) => {
-                  setRange(r);
-                  if (r.checkIn && r.checkOut) setCalendarOpen(false);
-                }}
-                months={1}
-                stayPrice={b.stayPrice}
-              />
-            ) : null}
-            <div className="border-line grid border-t pt-2">
-              <Counter
-                label={t("booking.adults")}
-                value={adults}
-                min={1}
-                max={data.catalog.maxGuests - children}
-                onChange={b.setAdults}
-              />
-              <Counter
-                label={t("booking.children")}
-                value={children}
-                min={0}
-                max={data.catalog.maxGuests - adults}
-                onChange={b.setChildren}
-              />
-              <Counter
-                label={t("booking.infants")}
-                value={infants}
-                min={0}
-                max={4}
-                onChange={b.setInfants}
-              />
-              {data.catalog.petsAllowed ? (
-                <Counter
-                  label={t("booking.pets")}
-                  value={pets}
-                  min={0}
-                  max={3}
-                  onChange={b.setPets}
-                />
-              ) : null}
-            </div>
-          </div>
-
-          {ready ? (
-            <div className="grid gap-1">
-              <p className="kicker text-muted-foreground">{t("booking.total")}</p>
-              <p className="text-4xl font-semibold tracking-tight tabular-nums">{money(total)}</p>
-              <p className="text-muted-foreground text-sm">
-                {t("cart.perPersonNight", {
-                  price: money(
-                    Math.round(total / Math.max(1, persons) / Math.max(1, nights || 1)),
-                    0,
-                  ),
-                })}
-                {data.catalog.touristTax.included ? ` · ${t("cart.taxIncluded")}` : ""}
-              </p>
-              <button
-                type="button"
-                className="text-primary justify-self-start text-sm underline-offset-4 hover:underline"
-                onClick={() => setShowLines(!showLines)}
-              >
-                {showLines ? t("cart.hideBreakdown") : t("cart.breakdown")}
-              </button>
-              {showLines ? (
-                <div className="mt-2">
-                  <Breakdown />
-                </div>
-              ) : null}
-            </div>
-          ) : price && !price.ok ? (
-            <p className="text-sm text-[#b5532f]">{errorsText(t, price)}</p>
-          ) : null}
-
-          <ul className="grid gap-2 text-sm">
-            {data.trust.map((line) => (
-              <li key={line} className="flex gap-2">
-                <Check className="text-primary mt-0.5 size-4 shrink-0" /> <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="border-line flex items-center gap-3 rounded-2xl border p-4">
-            <span className="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-medium">
-              {initials}
-            </span>
-            <span className="flex-1 text-sm">
-              {contact?.name
-                ? t("cart.contactTitle", { name: contact.name })
-                : t("cart.contactFallback")}
-            </span>
-            {wa ? (
-              <Button asChild variant="outline" size="sm" className="rounded-full">
-                <a href={wa} target="_blank" rel="noreferrer">
-                  <MessageCircle /> {t("cart.whatsapp")}
-                </a>
-              </Button>
-            ) : null}
-            {contact?.phone ? (
-              <Button
-                asChild
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                aria-label={t("cart.call")}
-              >
-                <a href={`tel:${contact.phone.replace(/\s/g, "")}`}>
-                  <Phone />
-                </a>
-              </Button>
-            ) : null}
-          </div>
-
-          {recommendation && ready ? (
-            <div className="flex items-center gap-3">
-              {data.services[recommendation.id]?.image ? (
-                <Image
-                  src={data.services[recommendation.id]!.image!}
-                  alt=""
-                  width={56}
-                  height={56}
-                  className="size-14 rounded-xl object-cover"
-                />
-              ) : null}
-              <button
-                type="button"
-                className="grid flex-1 gap-0.5 text-left"
-                onClick={() => b.showService(recommendation.id)}
-              >
-                <span className="kicker text-muted-foreground">{t("cart.forYourDates")}</span>
-                <span className="text-sm font-medium">{tr(recommendation.name, data.locale)}</span>
-                <span className="text-muted-foreground text-xs">
-                  {t("cart.forGroup", {
-                    price: money(serviceTotal(recommendation, nights || 0, persons, 1)),
-                  })}
-                </span>
-              </button>
-              <Button
-                type="button"
-                size="sm"
-                variant={(b.services[recommendation.id] ?? 0) > 0 ? "secondary" : "outline"}
-                className="rounded-full"
-                onClick={() =>
-                  b.setService(recommendation.id, (b.services[recommendation.id] ?? 0) > 0 ? 0 : 1)
-                }
-              >
-                {(b.services[recommendation.id] ?? 0) > 0 ? t("cart.added") : t("cart.add")}
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      </div>
-      <CartFooter>
-        <Button
-          type="button"
-          size="lg"
-          className="rounded-full"
-          disabled={!ready}
-          onClick={() => b.setStep(2)}
-        >
-          {t("cart.continue")}
-        </Button>
-      </CartFooter>
+    <div className="bg-surface-accent fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 px-5 py-3 text-white lg:hidden">
+      <button
+        type="button"
+        className="grid min-w-0 flex-1 text-left"
+        onClick={() => openCart(1, { calendar: !ready })}
+      >
+        <span className="truncate font-mono text-[11px] tracking-wide text-white/95 uppercase">
+          {range.checkIn && range.checkOut
+            ? `${d.short(range.checkIn)} – ${d.short(range.checkOut)} · ${t("cart.guestsCount", { count: adults + children })}`
+            : t("cart.selectDates")}
+        </span>
+        <span className="text-lg font-extrabold tracking-tight tabular-nums">
+          {ready ? money(total) : block.value}
+        </span>
+      </button>
+      <button
+        type="button"
+        className="btn-on-accent inline-flex min-h-11 shrink-0 items-center gap-2 px-5"
+        onClick={() => openCart(1, { calendar: !ready })}
+      >
+        {t("property.viewStay")}
+      </button>
     </div>
-  );
-}
-
-function StepDetails() {
-  const t = useTranslations("guest");
-  const b = useBooking();
-  const { data, money, total, price } = b;
-  const f = b.guest;
-  const set = (k: keyof GuestFields, v: string) => b.setGuest({ ...f, [k]: v });
-  const nights = price?.ok ? price.nights : 0;
-  const persons = b.adults + b.children;
-  const valid = f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email);
-
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto">
-        <CartHeader kicker={t("cart.step2")} onBack={() => b.setStep(1)} />
-        <div className="grid gap-8 px-6 pt-3 pb-6">
-          <div className="grid gap-4">
-            <h2 className="font-heading text-2xl font-semibold tracking-tight">
-              {t("cart.whoTitle")} <span className="text-ink-soft">{t("cart.whoSub")}</span>
-            </h2>
-            <div className="grid gap-1.5">
-              <Label htmlFor="c-name">{t("booking.name")}</Label>
-              <Input
-                id="c-name"
-                value={f.name}
-                onChange={(e) => set("name", e.target.value)}
-                autoComplete="name"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="c-email">{t("booking.email")}</Label>
-              <Input
-                id="c-email"
-                type="email"
-                value={f.email}
-                onChange={(e) => set("email", e.target.value)}
-                autoComplete="email"
-              />
-            </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="c-phone">{t("booking.phone")}</Label>
-              <Input
-                id="c-phone"
-                type="tel"
-                value={f.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                autoComplete="tel"
-              />
-            </div>
-          </div>
-
-          {data.catalog.services.length > 0 ? (
-            <div className="grid gap-3">
-              <h3 className="font-heading text-xl font-semibold tracking-tight">
-                {t("cart.wishesTitle")}{" "}
-                <span className="text-ink-soft block text-base font-normal">
-                  {t("cart.wishesSub")}
-                </span>
-              </h3>
-              <ul className="divide-line grid divide-y">
-                {data.catalog.services.map((s) => {
-                  const q = b.services[s.id] ?? 0;
-                  return (
-                    <li key={s.id} className="flex items-center gap-3 py-3">
-                      <button
-                        type="button"
-                        aria-pressed={q > 0}
-                        aria-label={tr(s.name, data.locale)}
-                        onClick={() => b.setService(s.id, q > 0 ? 0 : 1)}
-                        className="text-primary"
-                      >
-                        {q > 0 ? (
-                          <CircleCheck className="size-6" />
-                        ) : (
-                          <Circle className="text-muted-foreground size-6" />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="grid flex-1 gap-0.5 text-left"
-                        onClick={() => b.showService(s.id)}
-                      >
-                        <span className="text-sm font-medium">{tr(s.name, data.locale)}</span>
-                        <span className="text-muted-foreground text-xs">
-                          {t("cart.forStay", {
-                            price: money(serviceTotal(s, nights, persons, Math.max(1, q))),
-                          })}
-                        </span>
-                      </button>
-                      <ChevronRight className="text-muted-foreground size-4" />
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : null}
-
-          <div className="grid gap-1.5">
-            <Label htmlFor="c-note">{t("booking.note")}</Label>
-            <Textarea
-              id="c-note"
-              rows={3}
-              value={f.note}
-              onChange={(e) => set("note", e.target.value)}
-              maxLength={2000}
-            />
-            <p className="text-muted-foreground text-xs">{t("booking.noteHint")}</p>
-          </div>
-        </div>
-      </div>
-      <CartFooter>
-        <div className="flex items-baseline justify-between">
-          <span className="font-medium">{t("booking.total")}</span>
-          <span className="text-xl font-semibold tabular-nums">{money(total)}</span>
-        </div>
-        <Button
-          type="button"
-          size="lg"
-          className="rounded-full"
-          disabled={!valid}
-          onClick={() => b.setStep(3)}
-        >
-          {t("cart.toPayment")}
-        </Button>
-      </CartFooter>
-    </div>
-  );
-}
-
-function ServiceDetail() {
-  const t = useTranslations("guest");
-  const tm = useTranslations("priceModels");
-  const b = useBooking();
-  const { data, money, price } = b;
-  const s = data.catalog.services.find((x) => x.id === b.detailId);
-  const [items, setItems] = useState(Math.max(1, b.services[s?.id ?? ""] ?? 1));
-  if (!s) return null;
-  const extra = data.services[s.id];
-  const chosen = (b.services[s.id] ?? 0) > 0;
-  const perItem = s.priceModel === "per_item";
-  const nights = price?.ok ? price.nights : 0;
-  const lines = (extra?.description ?? "")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  const back = () => b.setStep(2);
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto">
-        {extra?.image || data.photos[0] ? (
-          <div className="relative h-56 w-full">
-            <Image
-              src={extra?.image ?? data.photos[0]!.url}
-              alt=""
-              fill
-              sizes="480px"
-              className="object-cover"
-            />
-          </div>
-        ) : null}
-        <CartHeader kicker={tm(s.priceModel)} onBack={back} />
-        <div className="grid gap-4 px-6 pt-2 pb-6">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight">
-            {tr(s.name, data.locale)}
-          </h2>
-          <p className="text-lg">
-            {money(s.amountCents)}{" "}
-            <span className="text-muted-foreground text-sm">{tm(s.priceModel)}</span>
-          </p>
-          {lines.length > 0 ? (
-            <ul className="grid gap-2 text-sm">
-              {lines.map((l) => (
-                <li key={l} className="flex gap-2">
-                  <Check className="text-primary mt-0.5 size-4 shrink-0" />{" "}
-                  <span>{l.replace(/^[-•]\s*/, "")}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {perItem ? (
-            <Counter
-              label={t("cart.trips")}
-              value={items}
-              min={1}
-              max={s.maxQuantity ?? 10}
-              onChange={setItems}
-            />
-          ) : null}
-        </div>
-      </div>
-      <CartFooter>
-        <div className="flex items-baseline justify-between text-sm">
-          <span className="text-muted-foreground">
-            {t("cart.forStay", {
-              price: money(serviceTotal(s, nights, b.adults + b.children, perItem ? items : 1)),
-            })}
-          </span>
-        </div>
-        <Button
-          type="button"
-          size="lg"
-          variant={chosen ? "outline" : "default"}
-          className="rounded-full"
-          onClick={() => {
-            b.setService(
-              s.id,
-              chosen && !perItem
-                ? 0
-                : chosen && perItem && items === b.services[s.id]
-                  ? 0
-                  : perItem
-                    ? items
-                    : 1,
-            );
-            back();
-          }}
-        >
-          {chosen && (!perItem || items === b.services[s.id])
-            ? t("cart.removeFromStay")
-            : t("cart.addToStay")}
-        </Button>
-      </CartFooter>
-    </div>
-  );
-}
-
-const initialState: BookingState = { error: null };
-
-function StepPayment() {
-  const t = useTranslations("guest");
-  const b = useBooking();
-  const { data, money, total, range, promo, setPromo, lines } = b;
-  const [state, action, pending] = useActionState(createGuestReservation, initialState);
-  const { holdId, failed } = useHold();
-  const [code, setCode] = useState(promo?.code ?? "");
-  const [promoMissing, setPromoMissing] = useState(false);
-  const [formToken, setFormToken] = useState("");
-  useEffect(() => {
-    void startBookingForm().then(setFormToken);
-  }, []);
-  const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
-  const cancellation = data.settings.cancellationPolicy || t("booking.consentCancellation");
-
-  async function applyPromo() {
-    if (!range.checkIn || !range.checkOut) return;
-    const r = await previewPromo({
-      slug: data.slug,
-      unitId: data.unitId,
-      checkIn: range.checkIn,
-      checkOut: range.checkOut,
-      adults: b.adults,
-      children: b.children,
-      code,
-    });
-    setPromoMissing(!r);
-    setPromo(r ? { code: code.trim().toUpperCase(), ...r } : null);
-  }
-
-  return (
-    <form action={action} className="flex h-full flex-col">
-      {(
-        [
-          ["slug", data.slug],
-          ["unit_id", data.unitId],
-          ["check_in", range.checkIn ?? ""],
-          ["check_out", range.checkOut ?? ""],
-          ["adults", b.adults],
-          ["children", b.children],
-          ["infants", b.infants],
-          ["pets", b.pets],
-          ["hold_id", holdId],
-          ["form_token", formToken],
-          ["promo_code", promo?.code ?? ""],
-          ["guest_name", b.guest.name],
-          ["guest_email", b.guest.email],
-          ["guest_phone", b.guest.phone],
-          ["guest_country", b.guest.country],
-          ["guest_note", b.guest.note],
-          ["consent_terms_text", t("booking.consentTerms")],
-          ["consent_cancellation_text", cancellation],
-          ["privacy_text", t("booking.privacy")],
-          ["consent_marketing_text", t("booking.consentMarketing")],
-        ] as const
-      ).map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={String(value)} />
-      ))}
-      {Object.entries(b.services).map(([id, q]) =>
-        q > 0 ? <input key={id} type="hidden" name={`service_${id}`} value={q} /> : null,
-      )}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <CartHeader kicker={t("cart.step3")} onBack={() => b.setStep(2)} />
-        <div className="grid gap-6 px-6 pt-3 pb-6">
-          <h2 className="font-heading text-2xl font-semibold tracking-tight">
-            {t("cart.payTitle")}
-          </h2>
-          {failed ? <p className="text-sm text-[#b5532f]">{t("booking.takenNow")}</p> : null}
-          <Breakdown />
-          <div className="border-line flex items-baseline justify-between border-t pt-3">
-            <span className="font-medium">{t("booking.total")}</span>
-            <span className="text-2xl font-semibold tabular-nums">{money(total)}</span>
-          </div>
-          {deposit > 0 ? (
-            <p className="text-muted-foreground text-sm">
-              {t("booking.deposit")}: {money(deposit)}
-            </p>
-          ) : null}
-
-          <div className="grid gap-1.5">
-            <Label htmlFor="c-promo">{t("booking.promo")}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="c-promo"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value);
-                  setPromoMissing(false);
-                }}
-                className="uppercase"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className="rounded-full"
-                disabled={!code.trim()}
-                onClick={applyPromo}
-              >
-                {t("booking.promoApply")}
-              </Button>
-            </div>
-            {promoMissing ? (
-              <p className="text-muted-foreground text-xs">{t("booking.promoNotApplicable")}</p>
-            ) : null}
-          </div>
-
-          <div className="grid gap-3">
-            <Label className="items-start font-normal">
-              <Checkbox name="consent_terms" required className="mt-0.5" />
-              <span>
-                {data.settings.termsUrl ? (
-                  <a
-                    href={data.settings.termsUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline underline-offset-4"
-                  >
-                    {t("booking.consentTerms")}
-                  </a>
-                ) : (
-                  t("booking.consentTerms")
-                )}
-              </span>
-            </Label>
-            <Label className="items-start font-normal">
-              <Checkbox name="consent_cancellation" required className="mt-0.5" />
-              <span>
-                {t("booking.consentCancellation")}
-                {data.settings.cancellationPolicy ? (
-                  <span className="text-muted-foreground block text-xs">
-                    {data.settings.cancellationPolicy}
-                  </span>
-                ) : null}
-              </span>
-            </Label>
-            <Label className="items-start font-normal">
-              <Checkbox name="consent_marketing" className="mt-0.5" />
-              <span>{t("booking.consentMarketing")}</span>
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              {data.settings.privacyUrl ? (
-                <a
-                  href={data.settings.privacyUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-4"
-                >
-                  {t("booking.privacy")}
-                </a>
-              ) : (
-                t("booking.privacy")
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
-      <CartFooter>
-        {state.error ? (
-          <p role="alert" className="text-sm text-[#b5532f]">
-            {t(`booking.errors.${state.error}`)}
-          </p>
-        ) : null}
-        <Button
-          type="submit"
-          size="lg"
-          className="rounded-full"
-          disabled={pending || failed || !formToken}
-        >
-          {pending ? t("booking.submitting") : t("booking.submit")}
-        </Button>
-        <p className="text-muted-foreground text-xs">
-          {t("booking.payNote", { hours: data.settings.paymentDueHours })}
-          {holdId ? ` ${t("booking.held", { minutes: data.settings.holdMinutes })}` : ""}
-        </p>
-      </CartFooter>
-    </form>
   );
 }

@@ -62,17 +62,17 @@ export default async function GuestZonePage() {
       </div>
 
       <aside className="grid content-start gap-8">
-        <section className="border-line grid gap-4 rounded-3xl border p-6">
+        <section className="border-line grid gap-4 rounded-lg border p-6">
           <h2 className="text-ink font-bold">{t("contactTitle")}</h2>
           <p className="text-muted-foreground text-sm">{guest.email}</p>
           <ContactForm guest={guest} />
         </section>
-        <section className="border-line grid gap-3 rounded-3xl border p-6">
+        <section className="border-line grid gap-3 rounded-lg border p-6">
           <h2 className="text-ink font-bold">{t("marketingTitle")}</h2>
           <MarketingToggle granted={guest.marketing_consent} />
         </section>
         {contact?.whatsapp_phone || contact?.contact_phone ? (
-          <section className="border-line grid gap-3 rounded-3xl border p-6">
+          <section className="border-line grid gap-3 rounded-lg border p-6">
             <h2 className="text-ink font-bold">{t("questions")}</h2>
             <div className="flex flex-wrap gap-2">
               {contact.whatsapp_phone ? (

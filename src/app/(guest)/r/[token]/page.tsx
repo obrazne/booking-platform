@@ -96,7 +96,7 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
       </div>
 
       {pending && r.payment ? (
-        <section className="bg-card border-border grid gap-6 rounded-2xl border p-6 sm:grid-cols-[1fr_200px]">
+        <section className="bg-card border-border grid gap-6 rounded-lg border p-6 sm:grid-cols-[1fr_200px]">
           <div className="grid content-start gap-3">
             <h2 className="font-heading text-xl font-semibold">{t("reservation.payTitle")}</h2>
             {r.payment_due_at ? (
@@ -164,7 +164,7 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
       </section>
 
       {r.status !== "cancelled" ? (
-        <section className="bg-surface border-line grid gap-3 rounded-3xl border p-6">
+        <section className="bg-surface border-line grid gap-3 rounded-lg border p-6">
           <h2 className="font-heading text-ink text-xl font-bold">
             {t("account.saveDetailsTitle")}
           </h2>

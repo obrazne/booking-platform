@@ -22,6 +22,7 @@ const TEMPLATE_TYPES = [
   "rules",
   "contact",
   "cta",
+  "inside",
 ];
 
 describe("section registry", () => {

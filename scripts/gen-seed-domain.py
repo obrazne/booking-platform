@@ -82,6 +82,36 @@ def insert(table: str, conflict: str = "(id)", **row):
     out.append(f"insert into public.{table} ({cols}) values ({vals}) on conflict {conflict} do nothing;")
 
 
+def highlight(prop_id: str, items: list[tuple[str, str]]):
+    """Highlighted amenities for "What awaits you" (v2) with a one-line note, in order."""
+    for i, (key, note) in enumerate(items):
+        out.append(
+            "update public.property_terms pt set highlighted = true, "
+            f"highlight_note = {q(sk(note))}, highlight_sort = {i} from public.terms t "
+            f"where pt.property_id = {q(prop_id)} and pt.term_id = t.id and t.kind = 'amenity' and t.key = {q(key)};"
+        )
+
+
+def places(prop_id: str, tenant: str, items: list[tuple[str, str, str]]):
+    """Nearby places (v2) — orientačné, ukážkové údaje (overí majiteľ)."""
+    out.append(f"delete from public.property_places where property_id = {q(prop_id)};")
+    for i, (name, how, dist) in enumerate(items):
+        insert("property_places", id=uid("4", int(prop_id[-3:]) * 10 + i), tenant_id=tenant, property_id=prop_id,
+               name=sk(name), how=sk(how), distance=dist, sort=i)
+
+
+def photo_categories(prop_id: str, by_alt: dict[str, str]):
+    """Album of each photo in the gallery (v2), matched by its description (photos are uploaded separately)."""
+    for alt, cat in by_alt.items():
+        out.append(f"update public.photos set category = {q(cat)} where property_id = {q(prop_id)} and alt ->> 'sk' = {q(alt)};")
+
+
+def testimonial(n: int, tenant: str, prop_id: str | None, author: str, text: str, source: str = "other",
+                featured: bool = False):
+    insert("testimonials", id=uid("5", n), tenant_id=tenant, property_id=prop_id, body=sk(text), author_name=author,
+           source=source, featured=featured, sort=n)
+
+
 def sections(prop_id: str, template: str | None = None, content: dict | None = None):
     """Page sections (B7): template by key (or by property type) and content of individual sections."""
     out.append(f"select public.apply_section_template({q(prop_id)}, {q(template)}, true);")
@@ -160,6 +190,19 @@ for i, (key, name, desc, model, cents, maxq) in enumerate([
     insert("services", id=uid("2", 101 + i), tenant_id=STROMY, property_id=P, key=key, name=sk(name),
            description=sk(desc), price_model=model, amount_cents=cents, max_quantity=maxq, sort=i)
 
+highlight(P, [("sauna", "fínska, po lyžovačke aj po túre"), ("virivka", "vonkajšia, s výhľadom do doliny"),
+              ("lyziaren", "na lyže a obuv"), ("kuchyna", "dve kuchyne pre celú partiu"),
+              ("gril", "na terase"), ("parkovanie", "2 vyhradené miesta pri chalete")])
+# Orientačné, ukážkové údaje — majiteľka ich upraví v administrácii.
+places(P, STROMY, [("Jasná – lyžiarske stredisko", "skibus spod komplexu alebo autom", "≈ 10 min"),
+                   ("Demänovské jaskyne", "autom", "≈ 5 km"),
+                   ("Liptovský Mikuláš", "autom, obchody a reštaurácie", "≈ 7 km"),
+                   ("Aquapark Tatralandia", "autom", "≈ 15 km"),
+                   ("Liptovská Mara", "autom", "≈ 20 km")])
+photo_categories(P, {"Chalet STRÖMY večer": "exterior", "Exteriér a okolie": "exterior",
+                     "Obývačka, kuchyňa a jedáleň": "interior", "Spálňa": "bedrooms", "Kúpeľňa": "interior",
+                     "Sauna": "wellness", "Vonkajšia vírivka": "wellness", "Stolovanie na terase": "exterior",
+                     "Detail interiéru": "interior"})
 sections(P, "whole", {
     "intro": {"kicker": sk("Demänovská dolina · komplex Tri Vody")},
     "highlights": {
@@ -177,6 +220,13 @@ sections(P, "whole", {
     "prices": {"kicker": sk("Cenník")},
     "cta": {"title": sk("Chalet je pripravený."), "subtitle": sk("Vyberte si termín."), "contactLabel": sk("Napísať Jane")},
 })
+
+for i, t in enumerate([
+    ("Elizabeth Kohutova", "Toto miesto… nádherné! Skvelá lokalita a služby na vysokej úrovni. Strávili sme tu pár dní s rodinou a som veľmi nadšená! Určite sa vrátime."),
+    ("Patricia Vittek", "Neviem si predstaviť lepšie miesto na oddych a vypnutie hlavy. Atmosféra hôr je jednoducho TOP!"),
+    ("Eva Milistenferova", "S priateľmi sme si užili skvelé ubytovanie s kompletným vybavením. Určite sa sem radi vrátime."),
+]):
+    testimonial(100 + i, STROMY, P, t[0], t[1], featured=True)
 
 insert("tenant_settings", conflict="(tenant_id)", tenant_id=STROMY, iban="SK3112000000198742637541",
        account_holder="Chalet STRÖMY (ukážka)", payment_due_hours=24, hold_minutes=30,
@@ -261,6 +311,13 @@ for prop in SHOWROOM:
     term_links(pid, UKAZKA, [("property_type", prop["type"]), ("region", prop["region"])]
                + [("amenity", a) for a in prop["amen"]] + [("suitable_for", s) for s in prop["suit"]])
     sections(pid, None, SHOWROOM_SECTIONS.get(prop["slug"]))
+    highlight(pid, [(a, "") for a in prop["amen"][:6] if len(prop["amen"]) >= 3][: (len(prop["amen"]) // 3) * 3])
+    if prop["slug"] == "vila-slnecna":
+        out.append(f"update public.properties set location_mode = 'exact', street = 'Vinohradnícka 12' where id = {q(pid)};")
+    places(pid, UKAZKA, [(f"Centrum – {prop['city']}", "pešo", "≈ 1 km"), ("Najbližší obchod", "autom", "≈ 3 km"),
+                         ("Turistický chodník", "pešo od objektu", "≈ 300 m")])
+    testimonial(n * 10, UKAZKA, pid, "Mária K.", f"{prop['name']} nás príjemne prekvapil. Ukážková referencia showroomu.",
+                source="google", featured=n <= 2)
     unit_ids = []
     for j, (uname, cap) in enumerate(prop["units"]):
         unit_id = uid("c", n * 10 + j)

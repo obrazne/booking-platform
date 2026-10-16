@@ -31,6 +31,9 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
       hold_minutes: z.coerce.number().int().min(5).max(240),
       terms_url: z.union([z.url(), z.literal("")]).transform((v) => v || null),
       privacy_url: z.union([z.url(), z.literal("")]).transform((v) => v || null),
+      reviews_url: z
+        .union([z.url().startsWith("https://"), z.literal("")])
+        .transform((v) => v || null),
       owner_notification_email: z.union([z.email(), z.literal("")]).transform((v) => v || null),
       arrival_email_days_before: z.coerce.number().int().min(0).max(30),
       vat_payer: z.preprocess((v) => v === "on", z.boolean()),

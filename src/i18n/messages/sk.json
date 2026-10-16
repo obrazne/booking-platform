@@ -47,7 +47,8 @@
     "reservations": "Rezervácie",
     "calendar": "Kalendár",
     "blocks": "Blokácie",
-    "ical": "iCal"
+    "ical": "iCal",
+    "testimonials": "Referencie"
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
@@ -152,7 +153,8 @@
       "overlap": "Termín sa prekrýva s existujúcim záznamom.",
       "forbidden": "Na túto zmenu nemáte oprávnenie.",
       "invalid": "Skontrolujte vyplnené údaje.",
-      "upload": "Fotku sa nepodarilo nahrať."
+      "upload": "Fotku sa nepodarilo nahrať.",
+      "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5."
     }
   },
   "priceModels": {
@@ -192,7 +194,8 @@
       "extras": "Poplatky a zľavy",
       "units": "Jednotky",
       "documents": "Dokumenty",
-      "page": "Stránka"
+      "page": "Stránka",
+      "location": "Poloha a okolie"
     },
     "fields": {
       "name": "Názov",
@@ -230,7 +233,9 @@
       "alt": "Popis fotky",
       "moveUp": "Posunúť vyššie",
       "moveDown": "Posunúť nižšie",
-      "empty": "Zatiaľ žiadne fotky."
+      "empty": "Zatiaľ žiadne fotky.",
+      "category": "Album v galérii",
+      "noCategory": "Bez albumu"
     },
     "amenitiesGroups": {
       "property_type": "Typ",
@@ -328,7 +333,9 @@
     "notifications": "Upozornenia",
     "ownerEmail": "E-mail pre nové rezervácie",
     "arrivalDays": "Pokyny k príchodu poslať (dní vopred)",
-    "vatPayer": "Platca DPH"
+    "vatPayer": "Platca DPH",
+    "reviewsUrl": "Odkaz na všetky hodnotenia",
+    "reviewsUrlHint": "Napr. Google alebo stránka s hodnoteniami na vašom webe. Hosť ho uvidí až v zozname referencií."
   },
   "blocks": {
     "title": "Blokácie termínov",
@@ -547,7 +554,8 @@
       "trips": "Počet ciest",
       "payTitle": "Súhrn a platba",
       "stayWithServices": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {services}",
-      "selectDates": "Vyberte termín"
+      "selectDates": "Vyberte termín",
+      "guestsCount": "{count, plural, one {# hosť} few {# hostia} other {# hostí}}"
     },
     "sections": {
       "highlights": {
@@ -571,7 +579,10 @@
         "perPersonNightFrom": "za osobu a noc · {count, plural, one {od # noci} other {od # nocí}}",
         "included": "V cene pobytu",
         "taxIncluded": "daň za ubytovanie v cene",
-        "taxExtra": "daň za ubytovanie {price} za osobu a noc"
+        "taxExtra": "daň za ubytovanie {price} za osobu a noc",
+        "perNightShort": "/ noc",
+        "perPersonNightShort": "/ osoba a noc",
+        "minNights": "{count, plural, one {od # noci} other {od # nocí}}"
       },
       "included": {
         "kicker": "V cene",
@@ -590,8 +601,8 @@
       },
       "location": {
         "kicker": "Okolie",
-        "title": "Kde nás nájdete.",
-        "subtitle": "A čo je v okolí.",
+        "title": "Hory na dosah.",
+        "subtitle": "Aj to, čo je okolo.",
         "openMap": "Otvoriť mapu"
       },
       "testimonials": {
@@ -628,6 +639,11 @@
         "subtitle": "Vyberte si termín.",
         "choose": "Vybrať termín",
         "write": "Napísať správu"
+      },
+      "inside": {
+        "kicker": "Pohľad dovnútra",
+        "title": "Ako to vyzerá vnútri.",
+        "subtitle": "Pozrite si každý kút."
       }
     },
     "account": {
@@ -676,6 +692,75 @@
       "saveDetailsText": "Pošleme vám kód na e-mail. Potom tu nájdete všetky svoje pobyty, dokumenty a pokyny k príchodu.",
       "saveDetails": "Vytvoriť účet",
       "back": "Späť na moje pobyty"
+    },
+    "v2": {
+      "yourDates": "Váš termín",
+      "chooseDates": "Vybrať termín",
+      "totalFor": "Spolu za {count, plural, one {# noc} few {# noci} other {# nocí}}",
+      "priceWhole": "Cena za celý objekt",
+      "pricePerson": "Cena za osobu a noc",
+      "from": "od {price}",
+      "perNightBySeason": "za noc, podľa sezóny",
+      "perPersonNightBySeason": "za osobu a noc, podľa sezóny",
+      "guestsSay": "Hostia hovoria",
+      "prevReview": "Predchádzajúca referencia",
+      "nextReview": "Ďalšia referencia",
+      "allReviewsPhotos": "Všetky referencie a fotky",
+      "showOnMap": "Zobraziť na mape",
+      "mapOf": "Mapa: {place}",
+      "allPhotos": "Všetky fotky",
+      "allPhotosCount": "Všetky fotky · {count}",
+      "morePhotos": "+{count} fotiek",
+      "photoN": "Fotka {n}",
+      "addressAfter": "Presnú adresu a pokyny k príchodu pošleme po potvrdení rezervácie.",
+      "nextFree": "Najbližší voľný termín ({count, plural, one {# noc} few {# noci} other {# nocí}})",
+      "nextFreeSum": "{price} spolu",
+      "seeThisStay": "Pozrieť tento termín",
+      "step1": "Váš pobyt",
+      "step2": "Údaje a želania",
+      "step3": "Platba",
+      "stepOf": "Krok {step} z 3 · {label}",
+      "breakdownTerms": "Rozpis a podmienky",
+      "cartDatesTitle": "Váš termín.",
+      "cartDatesSub": "Cenu vidíte hneď.",
+      "changeDates": "Zmeniť termín",
+      "hideCalendar": "Hotovo, skryť kalendár",
+      "childrenPets": "Deti, bábätká, zvieratá",
+      "extrasTitle": "K pobytu môžete pridať.",
+      "extrasSub": "Nepovinné.",
+      "extrasHint": "Šípkou zobrazíte viac. Podrobnosti doladíte s {name} e-mailom.",
+      "extrasHintFallback": "Šípkou zobrazíte viac. Podrobnosti doladíme e-mailom.",
+      "showMore": "Zobraziť ďalšie ({count})",
+      "showMoreAbout": "Viac o: {name}",
+      "forGroups": "Pre skupiny",
+      "addToStayPrice": "Pridať k pobytu · +{price}",
+      "backToStay": "Späť na termín a doplnky",
+      "yourExtras": "Vaše doplnky",
+      "noExtras": "Bez doplnkov",
+      "editExtras": "Upraviť doplnky",
+      "galleryCount": "{photos, plural, one {# fotka} few {# fotky} other {# fotiek}} · {reviews, plural, =0 {bez referencií} one {# referencia} few {# referencie} other {# referencií}}",
+      "close": "Zavrieť",
+      "tabPhotos": "Fotky · {count}",
+      "tabReviews": "Referencie · {count}",
+      "prevPhoto": "Predchádzajúca fotka",
+      "nextPhoto": "Ďalšia fotka",
+      "albums": {
+        "all": "Všetky",
+        "exterior": "Exteriér",
+        "interior": "Interiér",
+        "bedrooms": "Spálne",
+        "wellness": "Wellness",
+        "surroundings": "Okolie"
+      },
+      "sources": {
+        "google": "Google",
+        "booking": "Booking.com",
+        "airbnb": "Airbnb",
+        "email": "e-mail",
+        "other": "priamo od hostí"
+      },
+      "reviewsOrigin": "Vybrané hodnotenia hostí, ktoré majiteľ zverejnil so súhlasom. Zdroj: {sources}.",
+      "moreReviews": "Ďalšie hodnotenia na webe ubytovania"
     }
   },
   "reservations": {
@@ -1016,5 +1101,56 @@
       "zima": "Zima",
       "zvierata": "Zvieratá"
     }
+  },
+  "testimonials": {
+    "title": "Referencie",
+    "lead": "Hodnotenia hostí na stránke a v košíku. Celé meno len so súhlasom hosťa, inak meno a iniciála.",
+    "new": "Nová referencia",
+    "empty": "Zatiaľ žiadne referencie.",
+    "text": "Text",
+    "author": "Zobrazené meno",
+    "stayMonth": "Mesiac pobytu",
+    "source": "Zdroj",
+    "sourceUrl": "Odkaz na zdroj (https)",
+    "property": "Objekt",
+    "allProperties": "Všetky objekty",
+    "featured": "Zvýraznená (v košíku a v úvode, najviac 5)",
+    "published": "Zverejnená",
+    "sort": "Poradie",
+    "sources": {
+      "google": "Google",
+      "booking": "Booking.com",
+      "airbnb": "Airbnb",
+      "email": "E-mail",
+      "other": "Iný"
+    },
+    "featuredBadge": "zvýraznená",
+    "hidden": "skrytá",
+    "tooManyFeatured": "Zvýraznených môže byť najviac 5.",
+    "reviewsLink": "Odkaz na všetky hodnotenia nastavíte v Nastaveniach."
+  },
+  "location": {
+    "tab": "Poloha a okolie",
+    "mode": "Zobrazenie polohy",
+    "exact": "Presné miesto a adresa",
+    "approximate": "Približná oblasť (adresu pošleme po potvrdení)",
+    "latitude": "Zemepisná šírka",
+    "longitude": "Zemepisná dĺžka",
+    "coordsHint": "Napr. z Google Máp: pravý klik na miesto → súradnice.",
+    "places": "Miesta v okolí",
+    "placeName": "Názov",
+    "placeHow": "Ako sa tam dostať",
+    "placeDistance": "Vzdialenosť / čas",
+    "addPlace": "Pridať miesto",
+    "noPlaces": "Zatiaľ žiadne miesta."
+  },
+  "highlightsAdmin": {
+    "title": "Čo vás čaká",
+    "lead": "Zvýraznené vybavenie na stránke (mriežka po troch). Popis je jeden krátky riadok.",
+    "highlight": "Zvýrazniť {name}",
+    "note": "Popis",
+    "countWarning": "Zvýraznených je {count} — mriežka vyzerá najlepšie pri 3, 6 alebo 9.",
+    "save": "Uložiť",
+    "noAmenities": "Objekt nemá vybavenie — pridajte ho v Údajoch."
   }
 }
