@@ -20,6 +20,7 @@ insert into public.memberships (tenant_id, user_id, role) values
   ('10000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-0000000000b1', 'owner');
 
 insert into public.properties (id, tenant_id, slug, name, status, max_guests, cleaning_gap_days) values
+  ('20000000-0000-0000-0000-0000000000b2', '10000000-0000-0000-0000-00000000000b', 'draft-b', 'Draft B', 'draft', 2, 0),
   ('20000000-0000-0000-0000-00000000000a', '10000000-0000-0000-0000-00000000000a', 'chalet-a', 'Chalet A', 'published', 8, 0),
   ('20000000-0000-0000-0000-0000000000a2', '10000000-0000-0000-0000-00000000000a', 'draft-a', 'Draft A', 'draft', 4, 1),
   ('20000000-0000-0000-0000-00000000000b', '10000000-0000-0000-0000-00000000000b', 'chalet-b', 'Chalet B', 'published', 6, 0);
@@ -91,7 +92,8 @@ select lives_ok($$ insert into public.occupancy (tenant_id, unit_id, nights, kin
 -- Owner of tenant A ---------------------------------------------------------------------------------
 set local role authenticated;
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
-select is((select count(*)::int from public.properties), 2, 'owner A sees own properties incl. drafts, not tenant B');
+select results_eq($$ select slug from public.properties where status = 'draft' or tenant_id = '10000000-0000-0000-0000-00000000000a' order by slug $$,
+  array['chalet-a', 'draft-a'], 'owner A sees own properties incl. drafts; of tenant B only what is published');
 select is((select count(*)::int from public.reservations), 4, 'owner A sees own reservations');
 select is((select count(*)::int from public.property_private), 1, 'owner A reads arrival instructions');
 select throws_ok($$ insert into public.occupancy (tenant_id, unit_id, nights, kind, label)
