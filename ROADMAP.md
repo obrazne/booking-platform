@@ -45,6 +45,9 @@ Podľa B7: katalóg s filtrami (showroom), detail objektu s kalendárom dostupno
 služby, údaje, poznámka, súhlasy vrátane nepovinného marketingového, súhrn s rozpisom). Server prepočíta cenu, vytvorí rezerváciu so stavom
 *čaká na platbu*, blokáciou do lehoty a zamrazenými riadkami. Potom stránka s platobnými údajmi a **QR PAY by square** (VS = číslo rezervácie)
 a **prístupový odkaz** na rezerváciu (stav, platobné údaje, žiadosť o storno). V téme klienta, mobil prvý, neindexovať. Ochrana proti robotom.
+**Vizuál:** Martin s Claude chatom práve schvaľuje návrh stránky hosťa (kalendár s cenami v dňoch, dva mesiace vedľa seba, živý rozpis ceny
+v bočnom paneli, na mobile spodný pás s cenou a výber termínu v spodnom okne). Ak schválený popis ešte nie je v `docs/vizual-stranka-hosta.md`,
+postav Z9 funkčne podľa A12 a priprav kalendár ako samostatný komponent — vzhľad sa doladí podľa návrhu.
 
 ### Z10 — Rezervácie v administrácii
 Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × jednotky; rezervácie, blokácie, iCal), prehľad na úvodnej stránke
