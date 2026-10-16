@@ -538,5 +538,108 @@
       "selectDates": "Vyberte termín",
       "book": "Rezervovať"
     }
+  },
+  "reservations": {
+    "title": "Rezervácie",
+    "new": "Ručná rezervácia",
+    "number": "Číslo",
+    "guest": "Hosť",
+    "stay": "Pobyt",
+    "property": "Objekt",
+    "status": "Stav",
+    "source": "Zdroj",
+    "total": "Suma",
+    "created": "Vytvorená",
+    "nights": "{count, plural, one {# noc} few {# noci} other {# nocí}}",
+    "statuses": {
+      "pending_payment": "Čaká na platbu",
+      "confirmed": "Potvrdená",
+      "in_progress": "Prebieha",
+      "completed": "Ukončená",
+      "cancelled": "Zrušená"
+    },
+    "sources": {
+      "direct": "Priama",
+      "manual": "Ručná",
+      "booking": "Booking",
+      "airbnb": "Airbnb",
+      "other": "Iná"
+    },
+    "filters": {
+      "from": "Príchod od",
+      "to": "Príchod do"
+    },
+    "panel": {
+      "guest": "Hosť",
+      "contact": "Kontakt",
+      "people": "Osoby",
+      "adults": "{count} dosp.",
+      "children": "{count} deti",
+      "infants": "{count} do 2 r.",
+      "pets": "{count} zviera",
+      "note": "Poznámka hosťa",
+      "promo": "Promo kód",
+      "lines": "Rozpis ceny",
+      "payment": "Platba",
+      "vs": "VS",
+      "due": "Splatnosť",
+      "paidAt": "Prijatá",
+      "confirmPayment": "Platba prijatá",
+      "confirmPaymentConfirm": "Potvrdiť prijatie platby {amount}?",
+      "cancel": "Zrušiť rezerváciu",
+      "cancelReason": "Dôvod zrušenia",
+      "cancelConfirm": "Naozaj zrušiť? Termín sa uvoľní.",
+      "checkIn": "Hosť prišiel",
+      "checkOut": "Pobyt ukončený",
+      "cancelRequest": "Hosť žiada o zrušenie",
+      "cancelRequestNote": "Dôvod hosťa: {note}",
+      "declineRequest": "Zamietnuť žiadosť",
+      "notes": "Interné poznámky",
+      "addNote": "Pridať poznámku",
+      "notePlaceholder": "Napíšte poznámku pre seba alebo recepciu…",
+      "history": "História",
+      "consents": "Súhlasy",
+      "granted": "áno",
+      "notGranted": "nie",
+      "guestLink": "Odkaz pre hosťa",
+      "system": "systém",
+      "expired": "lehota na platbu vypršala",
+      "declined": "žiadosť o zrušenie zamietnutá"
+    },
+    "manual": {
+      "title": "Ručná rezervácia",
+      "hint": "Napr. telefonická rezervácia. Počíta sa do obratu rovnako ako priama (rozhodnutie 16. 10.).",
+      "unit": "Objekt / jednotka",
+      "checkIn": "Príchod",
+      "checkOut": "Odchod",
+      "statusLabel": "Stav",
+      "paid": "Už zaplatené",
+      "create": "Vytvoriť rezerváciu",
+      "price": "Cena podľa cenníka",
+      "created": "Rezervácia vytvorená."
+    },
+    "dashboard": {
+      "arrivals": "Dnes prichádzajú",
+      "departures": "Dnes odchádzajú",
+      "pending": "Čakajú na platbu",
+      "requests": "Žiadosti o zrušenie",
+      "none": "Nikto.",
+      "dueIn": "splatné {date}"
+    }
+  },
+  "calendarAdmin": {
+    "title": "Kalendár obsadenosti",
+    "prev": "Predchádzajúci mesiac",
+    "next": "Nasledujúci mesiac",
+    "today": "Dnes",
+    "legend": {
+      "reservation": "Rezervácia",
+      "pending": "Čaká na platbu",
+      "block": "Blokácia",
+      "ical": "iCal",
+      "hold": "Rozpracovaná rezervácia",
+      "conflict": "Kolízia"
+    },
+    "empty": "Žiadne jednotky."
   }
 }

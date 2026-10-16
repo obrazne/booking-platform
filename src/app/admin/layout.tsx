@@ -1,7 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import {
+  BookOpenCheck,
   Building2,
   CalendarCheck,
+  CalendarRange,
   CalendarOff,
   LayoutDashboard,
   Settings,
@@ -27,6 +29,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   if (active) {
     items.push(
       { href: "/admin", label: t("nav.dashboard"), icon: <LayoutDashboard /> },
+      { href: "/admin/reservations", label: t("nav.reservations"), icon: <BookOpenCheck /> },
+      { href: "/admin/calendar", label: t("nav.calendar"), icon: <CalendarRange /> },
       { href: "/admin/properties", label: t("nav.properties"), icon: <Building2 /> },
       { href: "/admin/blocks", label: t("nav.blocks"), icon: <CalendarOff /> },
     );

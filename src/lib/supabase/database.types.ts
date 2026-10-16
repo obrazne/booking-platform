@@ -1894,6 +1894,10 @@ export type Database = {
           number: string
         }[]
       }
+      dismiss_cancellation_request: {
+        Args: { p_reservation_id: string }
+        Returns: undefined
+      }
       expire_pending_reservations: { Args: never; Returns: string[] }
       free_units: {
         Args: { p_check_in: string; p_check_out: string; p_tenant_id: string }
@@ -1950,6 +1954,10 @@ export type Database = {
         Returns: boolean
       }
       reservation_by_token: { Args: { p_token: string }; Returns: Json }
+      set_reservation_progress: {
+        Args: { p_reservation_id: string; p_status: string }
+        Returns: undefined
+      }
       stay_nights: {
         Args: { p_check_in: string; p_check_out: string; p_unit_id: string }
         Returns: unknown

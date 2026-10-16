@@ -6,6 +6,7 @@ import { Dialog as SheetPrimitive } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -66,7 +67,7 @@ function SheetContent({
           <SheetPrimitive.Close data-slot="sheet-close" asChild>
             <Button variant="ghost" className="absolute top-3 right-3" size="icon-sm">
               <XIcon />
-              <span className="sr-only">Close</span>
+              <CloseLabel />
             </Button>
           </SheetPrimitive.Close>
         )}
@@ -128,3 +129,9 @@ export {
   SheetTitle,
   SheetDescription,
 };
+
+/** Screen-reader label of the close button, translated. */
+function CloseLabel() {
+  const t = useTranslations("common");
+  return <span className="sr-only">{t("close")}</span>;
+}
