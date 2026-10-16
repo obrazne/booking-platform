@@ -6,11 +6,12 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** fronta Z1–Z15 hotová na stagingu https://booking-platform-obrazne.vercel.app — kostra platformy a MVP pre Chalet STRÖMY
-  + showroom (rezervácia, platba prevodom s QR, e-maily, iCal, administrácia, stránka podľa vizuálu v1). Chýba: doklady, nasadenie u Jany (3d, 3e).
-- **Ďalší krok pre Claude Code:** fronta Z16 → Z18 (kontrola pred ukážkou, zóna hosťa, sekcie v administrácii). Veci na web klienta zatiaľ nie.
-- **Ďalší krok pre Martina:** preklikať staging (stránka STRÖMY podľa vizuálu v1, košík, rezervácia, administrácia); odpovedať na otázky nižšie.
-- **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z15, ďalšia fronta (rozhranie sekcií, zóna hosťa, doklady).
+- **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
+  kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
+  captcha (čaká na účet Cloudflare).
+- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie od Claude chatu.
+- **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
+- **Claude chat:** kontrola výsledkov Z16–Z18, ďalšia fronta (košík v2 s referenciami, doklady), obchodný model, otázky pre Janu.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
