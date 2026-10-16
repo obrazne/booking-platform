@@ -45,9 +45,9 @@ Podľa B7: katalóg s filtrami (showroom), detail objektu s kalendárom dostupno
 služby, údaje, poznámka, súhlasy vrátane nepovinného marketingového, súhrn s rozpisom). Server prepočíta cenu, vytvorí rezerváciu so stavom
 *čaká na platbu*, blokáciou do lehoty a zamrazenými riadkami. Potom stránka s platobnými údajmi a **QR PAY by square** (VS = číslo rezervácie)
 a **prístupový odkaz** na rezerváciu (stav, platobné údaje, žiadosť o storno). V téme klienta, mobil prvý, neindexovať. Ochrana proti robotom.
-**Vizuál:** Martin s Claude chatom práve schvaľuje návrh stránky hosťa (kalendár s cenami v dňoch, dva mesiace vedľa seba, živý rozpis ceny
-v bočnom paneli, na mobile spodný pás s cenou a výber termínu v spodnom okne). Ak schválený popis ešte nie je v `docs/vizual-stranka-hosta.md`,
-postav Z9 funkčne podľa A12 a priprav kalendár ako samostatný komponent — vzhľad sa doladí podľa návrhu.
+**Vizuál: podľa `docs/vizual-stranka-hosta.md`** (schválené 16. 10.) — kalendár s cenami v dňoch a bublinou pri prechode myšou ako
+samostatný komponent, košík ako bočný panel v troch krokoch (Váš pobyt → Údaje a želania → Platba), detail služby posunom v paneli,
+kontakt na majiteľa (WhatsApp, telefón), na mobile spodný pás a výber termínu v spodnom okne. Bez akýchkoľvek nátlakových prvkov.
 
 ### Z10 — Rezervácie v administrácii
 Zoznam s filtrami a bočným panelom (B8), **kalendár obsadenosti** (mesiac × jednotky; rezervácie, blokácie, iCal), prehľad na úvodnej stránke
@@ -125,6 +125,7 @@ majiteľovi (e-mail) a v riadiacom centre (zdravie klienta), stav posledného be
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Schválený vizuál stránky hosťa → `docs/vizual-stranka-hosta.md`, odkaz v Z9. (Claude chat)
 - 2026-10-16 — Z8: administrácia objektov (zoznam, založenie s predvolenou jednotkou a sezónou; editor s kartami Údaje — údaje, texty
   viacjazyčne, vybavenie z číselníkov, neverejné pokyny k príchodu; Fotky — nahrávanie so zmenšením v prehliadači na 2 000 px, popis,
   poradie, mazanie; Sezóny a ceny — tabuľka cenníka, termíny aj cez Nový rok, dni príchodu, min./max. nocí, ceny po jednotkách,
