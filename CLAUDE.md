@@ -79,7 +79,7 @@ pred spustením prvého platiaceho klienta sa prechádza na platené. Prostredia
 |---|---|---|
 | Lokálne | `npm run dev` → http://ukazka.localhost:3000, http://stromy.localhost:3000 | Docker na Martinovom PC nie je → lokálna databáza nebeží, aplikácia sa pripája na staging |
 | Staging DB | Supabase `booking-platform-staging` (ref `uzsuwokyiprkzfirvrmb`, Frankfurt), organizácia Obrazne sro | bezplatný plán; limit 2 aktívne projekty → `credit-manager-dev` pozastavený (Martin 16. 10.) |
-| Staging app | Vercel — *doplní sa po prihlásení* | `main` → staging, vetvy → náhľady |
+| Staging app | Vercel projekt `booking-platform` (tím obrazne): https://booking-platform-obrazne.vercel.app — za prihlásením do Vercelu (Deployment Protection) | `main` → staging, vetvy → náhľady; premenné `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Hostname je priradený Ukážkovému klientovi. Vercel ani Supabase CLI sa z Martinovho PC neprihlásia (sieťová chyba) — Vercel sa napojil cez web, DB cez Supabase MCP |
 | Produkcia | zatiaľ nie | |
 
 **Spustenie lokálne:** `npm install` (pri chybe `EALLOWSCRIPTS` dočasne `NPM_CONFIG_USERCONFIG=<prázdny súbor>` — Martinov globálny npm

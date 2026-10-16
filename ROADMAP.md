@@ -6,12 +6,10 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10.):** kostra platformy stojí lokálne aj na staging databáze — Z3, Z4, Z5 hotové, Z6 hotové okrem nasadenia,
-  Z2 hotové okrem Vercelu. CI (typy, lint, formát, unit testy + 44 pgTAP testov oddelenia klientov) prechádza.
-- **Ďalší krok pre Claude Code:** po Martinovom prihlásení do Vercel CLI napojiť projekt, nasadiť staging a dokončiť Z2 a Z6;
-  Martina pridať ako správcu platformy a majiteľa ukážkových klientov.
-- **Ďalší krok pre Martina:** dokončiť prihlásenie Supabase + Vercel CLI (terminál v Claude Code), založiť si účet v Supabase
-  (Authentication → Add user, info@obrazne.sk, Auto Confirm) a dať vedieť.
+- **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová a nasadená na staging https://booking-platform-obrazne.vercel.app
+  (za prihlásením do Vercelu). Martin je správca platformy a majiteľ ukážkových klientov. Tabuľky objektov a rezervácií čakajú na časť B.
+- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na zadanie doménových tabuliek po revízii časti B.
+- **Ďalší krok pre Martina:** preklikať staging (prihlásenie, `/admin`, Tím s bočným panelom, `/platform`, založenie klienta, zapnutie modulu).
 - **Claude chat:** revízia časti B (dostupnosť, cenotvorba, služby, tok, …) → potom zadanie doménových tabuliek.
 
 ## Zadanie pre Claude Code
@@ -51,7 +49,7 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 
 **Výstup:** `docs/analyza-existujucich-appiek.md`. Potom Denník, `Aktuálne`, commit a push. Do kódu tých aplikácií nič necommituj.
 
-### Z2 — Projekt, prostredia a nasadenie
+### Z2 ✅ — Projekt, prostredia a nasadenie
 
 **Kontext pre celú frontu Z2–Z6:** staviame **kostru platformy** podľa `ARCHITEKTURA.md` časť A (A1–A9, A12, A13, A17, A18) a podľa
 `docs/analyza-existujucich-appiek.md` (čo preniesť z Rental Van a Credit Managera). **Nie** tabuľky objektov, jednotiek, cien a rezervácií
@@ -97,7 +95,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 4. Spoločné komponenty: zoznam s filtrami, triedením, stránkovaním na serveri a CSV exportom (vzor RV `InquiryList`).
 5. Ukážkový modul (napr. prázdny modul „Doplnkové služby“ s jednou položkou menu), aby bolo vidno, že zapínanie funguje.
 
-### Z6 — Riadiace centrum (kostra)
+### Z6 ✅ — Riadiace centrum (kostra)
 
 1. Prístup len pre správcu platformy. Zoznam klientov, založenie klienta (minimálne údaje + doména), detail klienta.
 2. **Vypínače modulov** so stavom a dátumom konca skúšky; každá zmena do `audit_log` (kto, kedy, čo).
@@ -131,7 +129,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [ ] Showroom: zoznam ukážkových objektov rôznych druhov + Chalet STRÖMY s reálnymi údajmi (časť C)
 
 ## Fáza 3 — MVP Chalet STRÖMY 🔧 + 🧠 *(cca 4 týždne po uzavretí Fázy 2)*
-- [ ] 3a0 Kostra platformy (Z2–Z6): projekt, prostredia, klienti a oddelenie dát, preklady, téma, moduly, administrácia, riadiace centrum
+- [x] 3a0 Kostra platformy (Z2–Z6): projekt, prostredia, klienti a oddelenie dát, preklady, téma, moduly, administrácia, riadiace centrum
 - [ ] 3a Doména: objekt, cenník, sezóny, blokované dni (po revízii časti B)
 - [ ] 3b Rezervácia pre hostí: dostupnosť, výpočet ceny, služby, údaje hosťa, súhlasy (aj marketingový), dočasná blokácia, iCal
 - [ ] 3c Platba prevodom s QR, stavy rezervácie, e-maily
@@ -150,8 +148,7 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
-- Prihlásenie do Supabase CLI a Vercel CLI (blokuje nasadenie na Vercel; migrácie zatiaľ idú cez Supabase MCP).
-- Tvoj účet na stagingu: Supabase → Authentication → Add user (info@obrazne.sk, vlastné heslo, Auto Confirm). Potom ťa Claude Code pridá ako správcu.
+- Supabase aj Vercel CLI sa z tvojho PC nevedia spojiť (Transport error / zaseknuté). Nevadí — Vercel je napojený cez web a databáza cez MCP; ak chceš CLI, treba pozrieť firewall/antivírus/proxy pre PowerShell.
 - Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
@@ -163,6 +160,8 @@ do *Denníka* (krátko čo a prečo); Martin ich neschvaľuje.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z2 a Z6 dokončené: Martin napojil Vercel cez web (CLI sa nepripojí), staging https://booking-platform-obrazne.vercel.app
+  priradený Ukážkovému klientovi; Martin (účet si založil sám) pridaný do `platform_admins` a ako `owner` oboch klientov (zapísané v audite). (Claude Code)
 - 2026-10-16 — Z6 (bez nasadenia): riadiace centrum `/platform` — klienti, založenie (funkcia `platform_create_tenant`: klient + doména + téma + audit
   v jednej transakcii), vypínače modulov so skúškou, stav klienta, náhľad témy, záznam zmien. Akcie sú DB funkcie s kontrolou správcu,
   bez service kľúča — aplikácia nepotrebuje `SUPABASE_SECRET_KEY` na nič. (Claude Code)
