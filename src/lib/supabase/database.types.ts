@@ -1,0 +1,259 @@
+// Generated from the staging database (npm run db:types). Do not edit by hand.
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+export type Database = {
+  __InternalSupabase: {
+    PostgrestVersion: "14.18";
+  };
+  public: {
+    Tables: {
+      audit_log: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          created_at: string;
+          data: Json;
+          entity: string;
+          entity_id: string | null;
+          id: number;
+          tenant_id: string | null;
+        };
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          created_at?: string;
+          data?: Json;
+          entity: string;
+          entity_id?: string | null;
+          id?: never;
+          tenant_id?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          created_at?: string;
+          data?: Json;
+          entity?: string;
+          entity_id?: string | null;
+          id?: never;
+          tenant_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "audit_log_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      memberships: {
+        Row: {
+          created_at: string;
+          id: string;
+          role: string;
+          tenant_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          role: string;
+          tenant_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          role?: string;
+          tenant_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "memberships_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "memberships_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      platform_admins: {
+        Row: {
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "platform_admins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          created_at: string;
+          email: string;
+          full_name: string | null;
+          id: string;
+          locale: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          full_name?: string | null;
+          id: string;
+          locale?: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          full_name?: string | null;
+          id?: string;
+          locale?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      tenant_domains: {
+        Row: {
+          created_at: string;
+          hostname: string;
+          id: string;
+          is_primary: boolean;
+          tenant_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          hostname: string;
+          id?: string;
+          is_primary?: boolean;
+          tenant_id: string;
+        };
+        Update: {
+          created_at?: string;
+          hostname?: string;
+          id?: string;
+          is_primary?: boolean;
+          tenant_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tenant_domains_tenant_id_fkey";
+            columns: ["tenant_id"];
+            isOneToOne: false;
+            referencedRelation: "tenants";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tenants: {
+        Row: {
+          country: string;
+          created_at: string;
+          currency: string;
+          default_locale: string;
+          id: string;
+          locales: string[];
+          name: string;
+          slug: string;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          country?: string;
+          created_at?: string;
+          currency?: string;
+          default_locale?: string;
+          id?: string;
+          locales?: string[];
+          name: string;
+          slug: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          country?: string;
+          created_at?: string;
+          currency?: string;
+          default_locale?: string;
+          id?: string;
+          locales?: string[];
+          name?: string;
+          slug?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      is_platform_admin: { Args: never; Returns: boolean };
+      is_tenant_member: {
+        Args: { p_roles?: string[]; p_tenant_id: string };
+        Returns: boolean;
+      };
+      my_tenant_ids: { Args: never; Returns: string[] };
+      tenant_by_host: {
+        Args: { p_host: string };
+        Returns: {
+          country: string;
+          currency: string;
+          default_locale: string;
+          id: string;
+          locales: string[];
+          name: string;
+          slug: string;
+        }[];
+      };
+      write_audit: {
+        Args: {
+          p_action: string;
+          p_data?: Json;
+          p_entity: string;
+          p_entity_id?: string;
+          p_tenant_id: string;
+        };
+        Returns: undefined;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+};

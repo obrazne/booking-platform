@@ -1,0 +1,21 @@
+{
+  "common": {
+    "appName": "Booking platforma",
+    "signOut": "Odhlásiť sa",
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "close": "Zavrieť"
+  },
+  "auth": {
+    "title": "Prihlásenie",
+    "subtitle": "Administrácia ubytovania",
+    "email": "E-mail",
+    "password": "Heslo",
+    "submit": "Prihlásiť sa",
+    "invalidCredentials": "Nesprávny e-mail alebo heslo.",
+    "missingFields": "Vyplňte e-mail aj heslo."
+  },
+  "admin": {
+    "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy."
+  }
+}
