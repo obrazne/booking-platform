@@ -98,3 +98,10 @@ lokálny počítač, takže odozva bude kratšia; ďalšie zrýchlenie: spojiť 
 pri ostrej prevádzke s väčšou návštevnosťou treba poskytovateľa dlaždíc (napr. MapTiler/Stadia, majú bezplatné limity) — otázka pre Martina.
 **Poloha:** pri „približnej“ polohe hosť nevidí ulicu ani presné súradnice ani cez API (stĺpce sú pre návštevníka skryté, poloha ide
 cez funkciu, ktorá ju zaokrúhli na ~1 km).
+
+## Doplnok — potvrdenie rezervácie v2.1 (Z20)
+
+Playwright lokálne proti stagingu, celá sada 12/12. `confirm.spec.ts`: stav „čaká na platbu“ (QR, Kopírovať, termín úhrady)
+aj „potvrdená“ (zelený pruh, krok 2 hotový), súbor .ics stiahnutý v prehliadači, na mobile 390 px údaje pred QR a tlačidlo Uložiť QR;
+axe (WCAG 2.1 AA) bez nálezov v oboch stavoch. Odkaz `/r/<kód>` otvorený na cudzej alebo technickej adrese presmeruje na doménu klienta.
+Súbor .ics neobsahuje ulicu, ak objekt zobrazuje len približnú polohu.

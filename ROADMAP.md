@@ -73,7 +73,7 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
    miestami v okolí (orientačné, označ ako ukážkové) a referenciami.
 
 
-### Z20 — Potvrdenie rezervácie podľa vizuálu v2.1
+### Z20 ✅ — Potvrdenie rezervácie podľa vizuálu v2.1
 Martin schválil návrh **potvrdenia** (`docs/vizual-stranka-hosta.md` → *Potvrdenie rezervácie (v2.1)*, dosky `Potvrdenie` a `MobilPotvrdenie`
 v `docs/navrhy/stranka-hosta/`). Prerob stránku `/r/<kód>` (`src/app/(guest)/r/[token]/page.tsx`) — logika rezervácie, platby a storna ostáva.
 1. **Najprv over, prečo sa stránka zobrazuje bez hlavičky a päty** (Martin ju videl „úplne čistú“): `(guest)/layout.tsx` vynechá hlavičku,
@@ -184,6 +184,13 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z20: **potvrdenie rezervácie v2.1** (`/r/<kód>`). Príčina „čistej“ stránky: otvorila sa na adrese, ktorú systém
+  nepriradil klientovi (technická adresa stagingu) → stránka teraz vždy presmeruje na verejnú doménu klienta, takže má jeho hlavičku,
+  pätu a tému. Úvod s krstným menom a stavom, karta platby (QR, Suma/IBAN/VS s **Kopírovať**, termín úhrady), zelený pruh po zaplatení,
+  **Čo bude ďalej** (4 kroky podľa stavu, dni pred príchodom z nastavení), zelený panel s fotkou, sumou, **Pridať do kalendára** (.ics —
+  adresa len pri presnej polohe, inak mesto) a kontaktom; rozpis, účet hosťa, zmena plánov (formulár storna až po kliknutí), „Rezervovať
+  znova“ po ukončení. Mobil: údaje pred QR + **Uložiť QR** (PNG). Playwright `confirm.spec.ts` (oba stavy, počítač aj 390 px, axe) —
+  celá sada 12/12. (Claude Code)
 - 2026-10-16 — Úlohy Z21 (ukážkové dáta na stagingu) a Z22 (prehliadka „Čo je nové“ pre majiteľa a správcu); A15, rozhodnutie. (Claude chat)
 - 2026-10-16 — Vizuál **v2.1: potvrdenie rezervácie** (počítač aj mobil, stav čaká/zaplatené, Kopírovať, Pridať do kalendára) → `docs/navrhy/stranka-hosta/`, `docs/vizual-stranka-hosta.md`; úloha Z20. (Claude chat)
 - 2026-10-16 — Z19: stránka hosťa, galéria a košík podľa **vizuálu v2**. Dáta (migrácia len pridáva): tabuľka **referencií**

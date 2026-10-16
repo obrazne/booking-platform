@@ -6,7 +6,7 @@ import QRCode from "qrcode";
  * PAY by square QR (Slovak banking standard) as an SVG string (A5, B5).
  * Amount converts from integer cents only here, at the boundary to the format.
  */
-export async function payBySquareSvg(input: {
+export type PayBySquareInput = {
   iban: string;
   bic?: string | null;
   beneficiary: string;
@@ -14,9 +14,11 @@ export async function payBySquareSvg(input: {
   currency: string;
   variableSymbol: string;
   note?: string;
-}): Promise<string | null> {
+};
+
+function payload(input: PayBySquareInput): string | null {
   if (input.currency !== "EUR" && input.currency !== "CZK") return null;
-  const data = encode({
+  return encode({
     payments: [
       {
         type: PaymentOptions.PaymentOrder,
@@ -31,5 +33,15 @@ export async function payBySquareSvg(input: {
       },
     ],
   });
-  return QRCode.toString(data, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+}
+
+export async function payBySquareSvg(input: PayBySquareInput): Promise<string | null> {
+  const data = payload(input);
+  return data ? QRCode.toString(data, { type: "svg", margin: 1, errorCorrectionLevel: "M" }) : null;
+}
+
+/** The same QR as a PNG data URL — the guest can save it and open it in the banking app on the same phone. */
+export async function payBySquarePng(input: PayBySquareInput): Promise<string | null> {
+  const data = payload(input);
+  return data ? QRCode.toDataURL(data, { margin: 2, width: 640, errorCorrectionLevel: "M" }) : null;
 }

@@ -43,7 +43,7 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await cart.locator("#c-name").fill(`E2E ${info.project.name}`);
   await cart.locator("#c-email").fill(`e2e-${Date.now()}@${TEST_DOMAIN}`);
   await cart.locator("#c-phone").fill("+421900000000");
-  await expect(cart.getByText("Raňajky v chalete").first()).toBeVisible();
+  await expect(cart.getByText("Raňajky v chalete").filter({ visible: true }).first()).toBeVisible();
   await cart.getByRole("button", { name: "K platbe" }).click();
 
   // Step 3: consents (marketing stays unchecked) and the binding button.
@@ -55,12 +55,12 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
 
   // Reservation page via the secret link: payment details with QR.
   await page.waitForURL(/\/r\/[A-Za-z0-9_-]+/);
-  await expect(page.getByText("Ďakujeme, rezervácia je prijatá.")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Termín vám držíme");
   await expect(page.getByText("Čaká na platbu").first()).toBeVisible();
   await expect(page.getByText("Variabilný symbol")).toBeVisible();
   await expect(page.getByText(/SK\d{2}/).first()).toBeVisible();
   await expect(page.getByRole("img", { name: /PAY by square/ }).locator("svg")).toBeVisible();
-  await expect(page.getByText("Raňajky v chalete").first()).toBeVisible();
+  await expect(page.getByText("Raňajky v chalete").filter({ visible: true }).first()).toBeVisible();
 
   // The link works again later (no session needed).
   const link = page.url();
@@ -69,7 +69,8 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await expect(page.getByText("Variabilný symbol")).toBeVisible();
 
   // Cancellation request.
-  await page.getByRole("button", { name: "Požiadať o zrušenie" }).click();
+  await page.getByRole("button", { name: "Požiadať o zrušenie" }).click(); // opens the form
+  await page.getByRole("button", { name: "Požiadať o zrušenie" }).click(); // sends it
   await expect(page.getByText("Žiadosť o zrušenie sme odoslali")).toBeVisible();
 });
 
