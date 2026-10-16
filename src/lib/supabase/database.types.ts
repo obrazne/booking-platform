@@ -2338,6 +2338,10 @@ export type Database = {
         Args: { p_tenant_id: string }
         Returns: string
       }
+      owner_reset_sections: {
+        Args: { p_property_id: string; p_template: string }
+        Returns: string
+      }
       ping_job_worker: { Args: never; Returns: undefined }
       platform_create_tenant: {
         Args: {

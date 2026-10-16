@@ -19,6 +19,8 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 *Hotové Z1–Z15 (analýza, kostra platformy, MVP Chalet STRÖMY: doména, administrácia, stránka hosťa, rezervácie,
 e-maily, iCal, dáta zóny hosťa, detail objektu zo sekcií, vizuál v1) — detail v Denníku a histórii Gitu.*
 
+*Fronta je prázdna — Z16–Z18 hotové (detail v Denníku).*
+
 **Kontext pre frontu Z16–Z18:** MVP je postavené. Teraz ho skontrolujeme pred ukážkou Jane a ladíme **len našu aplikáciu** (B7, B10).
 **Nič, čo sa vkladá na web klienta (vyhľadávací pás, widget, úprava Janinho webu), teraz nerob** — Martin 16. 10. Rovnaké pravidlá ako doteraz (`tenant_id` + RLS + testy, centy, preklady, téma, A18). Stále len staging.
 
@@ -45,7 +47,7 @@ Rozhranie nad dátami zo Z13, na doméne klienta:
 4. Vzhľad: jazyk košíka a stránky hosťa (`docs/vizual-stranka-hosta.md`), pokojný „dashboard“ — karta najbližšieho pobytu hore, ostatné
    ako zoznam. Martin ho môže neskôr doladiť na plátne, takže drž jednoduché komponenty. Testy RLS: hosť nevidí cudzie pobyty ani iného klienta.
 
-### Z18 — Sekcie stránky v administrácii (B7)
+### Z18 ✅ — Sekcie stránky v administrácii (B7)
 V editore objektu záložka **Stránka**: zoznam sekcií s vypínačom (kalendár sa vypnúť nedá), presúvanie (aj klávesnicou), formulár sekcie
 generovaný zo zod schémy typu (texty s prekladmi — zatiaľ slovenčina, výber fotiek z fotiek objektu), „Pridať sekciu“ z typov, ktoré tam
 ešte nie sú, „Obnoviť podľa predlohy“ s potvrdením, náhľad stránky. Bočný panel podľa A18. Údaje zo systému (ceny, storno…) sa vo formulári
@@ -119,6 +121,13 @@ neupravujú — len odkaz, kde sa menia.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z18: v editore objektu záložka **Stránka** — sekcie v poradí s vypínačom (kalendár je povinný, nedá sa vypnúť ani
+  odstrániť), presúvanie šípkami aj klávesnicou (Alt + šípka na riadku), úprava v bočnom paneli (A18) cez **formulár generovaný zo zod
+  schémy typu** (texty zatiaľ po slovensky, výber fotky z fotiek objektu, položky „Čo vás čaká“ z vybavenia objektu alebo vlastné,
+  opakované položky s pridaním/presunom/odstránením; server obsah znova overí schémou), pri sekcii odkaz, kde sa menia údaje zo systému,
+  „Pridať sekciu“ z chýbajúcich typov, odstránenie, „Obnoviť podľa predlohy“ s potvrdením (`owner_reset_sections`), náhľad stránky
+  v novom okne. 2 nové pgTAP testy (spolu 128), 2 unit, Playwright test (vypínač, poradie klávesnicou, formulár) — stránku STRÖMY
+  po sebe vráti do pôvodného stavu. Fronta Z16–Z18 hotová. (Claude Code)
 - 2026-10-16 — Martin súhlasí s Cloudflare Turnstile (zadarmo); čaká sa na jeho účet Cloudflare a kľúče — zapísané v Otázkach. (Claude Code)
 - 2026-10-16 — Z17: účet a zóna hosťa na doméne klienta (`/ucet`). **Prihlásenie kódom na e-mail** — kód vydá Supabase, ale e-mail
   posiela náš systém v téme klienta (nie spoločné e-maily Supabase); limit 5 kódov a 8 chybných pokusov za hodinu na e-mail,

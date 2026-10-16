@@ -16,6 +16,7 @@ export default async function PropertyLayout({
   const tabs = [
     { href: base, label: t("tabs.details") },
     { href: `${base}/photos`, label: t("tabs.photos") },
+    { href: `${base}/page`, label: t("tabs.page") },
     { href: `${base}/pricing`, label: t("tabs.pricing") },
     { href: `${base}/extras`, label: t("tabs.extras") },
     { href: `${base}/documents`, label: t("tabs.documents") },

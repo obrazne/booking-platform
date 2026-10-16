@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 
-select plan(11);
+select plan(13);
 
 insert into auth.users (id, email, aud, role, instance_id) values
   ('00000000-0000-0000-0000-0000000000a1', 'owner-a@test.local', 'authenticated', 'authenticated', '00000000-0000-0000-0000-000000000000'),
@@ -54,6 +54,12 @@ update public.property_sections set content = '{"title":{"sk":"Ahoj"}}'
   where property_id = '20000000-0000-0000-0000-00000000000a' and type = 'faq';
 select is((select content #>> '{title,sk}' from public.property_sections
            where property_id = '20000000-0000-0000-0000-00000000000a' and type = 'faq'), 'Ahoj', 'owner edits own sections');
+
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000b1","role":"authenticated"}';
+select throws_ok($$ select public.owner_reset_sections('20000000-0000-0000-0000-00000000000a', 'whole') $$, '42501', null,
+  'owner of another tenant cannot reset sections');
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
+select is(public.owner_reset_sections('20000000-0000-0000-0000-00000000000a', 'rooms'), 'rooms', 'owner resets own page to a template');
 
 select * from finish();
 rollback;
