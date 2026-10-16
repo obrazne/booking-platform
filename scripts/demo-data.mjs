@@ -1,0 +1,517 @@
+// Demo data on STAGING for Chalet STRÖMY (Z21) — so Martin can click through everything.
+//
+//   node scripts/demo-data.mjs          creates what is missing (safe to run again)
+//   node scripts/demo-data.mjs --reset  removes the demo records and creates them again
+//
+// Reservations go through the same database function as a real booking (create_reservation: atomic term, frozen
+// price lines, status history, consents), with the price from the same calculation the guest page uses.
+// Demo records are marked: guest e-mails on the reserved domain stromy-demo.invalid (never sent), "DEMO" in the
+// guest note and in labels. Only reservation (b) has a deliverable address so Martin can try the guest zone —
+// staging redirects every e-mail to EMAIL_REDIRECT_TO. E-mails queued by the demo are marked skipped, not sent.
+import { createClient } from "@supabase/supabase-js";
+import { createJiti } from "jiti";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+process.loadEnvFile(".env.local");
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.SUPABASE_SECRET_KEY;
+if (!url || !key)
+  throw new Error("NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SECRET_KEY missing in .env.local");
+if (/prod/i.test(url) || process.env.VERCEL_ENV === "production")
+  throw new Error("Demo data are for staging only");
+
+const db = createClient(url, key, { auth: { persistSession: false } });
+const src = fileURLToPath(new URL("../src", import.meta.url));
+const jiti = createJiti(import.meta.url, { alias: { "@": src } });
+const { calculatePrice } = await jiti.import("@/core/pricing/calculate");
+const { toDiscounts, toFees, toSeasons, toServices } = await jiti.import(
+  "@/core/booking/pricing-input",
+);
+const { priceContributorsFor } = await jiti.import("@/modules/price-contributors");
+const sk = JSON.parse(
+  readFileSync(new URL("../src/i18n/messages/sk.json", import.meta.url), "utf8"),
+);
+
+const TENANT = "a0000000-0000-4000-8000-000000000002";
+const PROPERTY = "b0000000-0000-4000-8000-000000000100";
+const UNIT = "c0000000-0000-4000-8000-000000000100";
+const DEMO_DOMAIN = "stromy-demo.invalid";
+/** Deliverable only through the staging redirect; the guest-zone login code ends up in Martin's inbox. */
+const GUEST_ZONE_EMAIL = "demo-host@obrazne.sk";
+const MARTIN = "info@obrazne.sk";
+const NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
+const reset = process.argv.includes("--reset");
+
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(`${what}: ${error.message}`);
+  return data;
+};
+const iso = (d) => d.toISOString().slice(0, 10);
+const addDays = (date, n) => {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return iso(d);
+};
+const today = iso(new Date());
+const year = Number(today.slice(0, 4));
+
+// ---------------------------------------------------------------- reset
+async function demoReservationIds() {
+  const rows = must(
+    await db.from("reservations").select("id").eq("tenant_id", TENANT).eq("guest_note", NOTE),
+    "demo reservations",
+  );
+  return rows.map((r) => r.id);
+}
+
+async function removeDemo() {
+  const ids = await demoReservationIds();
+  const docs = must(
+    await db
+      .from("documents")
+      .select("id, storage_path")
+      .eq("tenant_id", TENANT)
+      .like("storage_path", `${TENANT}/demo/%`),
+    "demo documents",
+  );
+  if (docs.length) {
+    await db.storage.from("guest-documents").remove(docs.map((d) => d.storage_path));
+    must(
+      await db
+        .from("documents")
+        .delete()
+        .in(
+          "id",
+          docs.map((d) => d.id),
+        ),
+      "delete documents",
+    );
+  }
+  if (ids.length) {
+    must(await db.from("email_outbox").delete().in("reservation_id", ids), "delete demo e-mails");
+    must(await db.from("reservations").delete().in("id", ids), "delete reservations");
+  }
+  must(
+    await db.from("occupancy").delete().eq("tenant_id", TENANT).like("label", "%(DEMO)"),
+    "delete blocks",
+  );
+  must(
+    await db.from("ical_channels").delete().eq("tenant_id", TENANT).like("name", "%(ukážka)"),
+    "delete channels",
+  );
+  must(
+    await db
+      .from("guests")
+      .delete()
+      .eq("tenant_id", TENANT)
+      .or(`email.like.%@${DEMO_DOMAIN},email.eq.${GUEST_ZONE_EMAIL}`),
+    "delete guests",
+  );
+  console.log(`Removed: ${ids.length} reservations, ${docs.length} documents, blocks, channels.`);
+}
+
+// ---------------------------------------------------------------- pricing (same as the guest page)
+async function catalog() {
+  const p = must(
+    await db
+      .from("properties")
+      .select(
+        "pricing_model, max_guests, pets_allowed, tourist_tax_included, tourist_tax_cents, accommodation_vat_bp, seasons(*, season_ranges(*)), fees(*), units(id, rates(*))",
+      )
+      .eq("id", PROPERTY)
+      .single(),
+    "property",
+  );
+  const services = must(
+    await db
+      .from("services")
+      .select("*")
+      .eq("tenant_id", TENANT)
+      .or(`property_id.eq.${PROPERTY},property_id.is.null`),
+    "services",
+  );
+  const discounts = must(
+    await db
+      .from("discounts")
+      .select("*")
+      .eq("tenant_id", TENANT)
+      .eq("kind", "length_of_stay")
+      .or(`property_id.eq.${PROPERTY},property_id.is.null`),
+    "discounts",
+  );
+  const unit = p.units.find((u) => u.id === UNIT);
+  return {
+    services,
+    catalog: {
+      currency: "EUR",
+      pricingModel: p.pricing_model,
+      maxGuests: p.max_guests,
+      petsAllowed: p.pets_allowed,
+      touristTax: { included: p.tourist_tax_included, amountCents: p.tourist_tax_cents },
+      accommodationVatBp: p.accommodation_vat_bp,
+      seasons: toSeasons(p.seasons),
+      fees: toFees(p.fees),
+      services: toServices(services),
+      discounts: toDiscounts(discounts),
+      rates: Object.fromEntries(unit.rates.map((r) => [r.season_id, r.amount_cents])),
+    },
+  };
+}
+
+function price(cat, stay) {
+  const r = calculatePrice(
+    {
+      currency: cat.currency,
+      pricingModel: cat.pricingModel,
+      checkIn: stay.checkIn,
+      checkOut: stay.checkOut,
+      adults: stay.adults,
+      children: stay.children ?? 0,
+      pets: 0,
+      maxGuests: cat.maxGuests,
+      petsAllowed: cat.petsAllowed,
+      seasons: cat.seasons,
+      rates: cat.rates,
+      fees: cat.fees,
+      selectedFees: {},
+      services: cat.services,
+      selectedServices: stay.services ?? {},
+      discounts: cat.discounts,
+      promoCode: null,
+      // Booked "today" — length-of-stay discounts and price rules as for a booking made now.
+      bookedOn: stay.checkIn < today ? addDays(stay.checkIn, -30) : today,
+      touristTax: cat.touristTax,
+      accommodationVatBp: cat.accommodationVatBp,
+    },
+    priceContributorsFor(["services"]),
+  );
+  if (!r.ok) throw new Error(`price ${stay.checkIn}: ${r.errors.map((e) => e.code).join(", ")}`);
+  return r;
+}
+
+const label = (l) =>
+  l.labelKey === "touristTax"
+    ? sk.guest.touristTax
+    : (l.name?.sk ?? Object.values(l.name ?? {})[0] ?? "");
+
+// ---------------------------------------------------------------- reservations
+async function book(cat, stay) {
+  // First free week from the wished date (never overwrites anything — the database refuses overlaps).
+  for (let shift = 0; shift < 10; shift++) {
+    const checkIn = addDays(stay.checkIn, shift * 7);
+    const checkOut = addDays(stay.checkOut, shift * 7);
+    const p = price(cat, { ...stay, checkIn, checkOut });
+    const { data, error } = await db
+      .rpc("create_reservation", {
+        p: {
+          tenant_id: TENANT,
+          property_id: PROPERTY,
+          unit_id: UNIT,
+          check_in: checkIn,
+          check_out: checkOut,
+          status: "pending_payment",
+          source: "direct",
+          guest_name: stay.name,
+          guest_email: stay.email,
+          guest_phone: stay.phone,
+          guest_country: "SK",
+          adults: stay.adults,
+          children: stay.children ?? 0,
+          infants: 0,
+          pets: 0,
+          locale: "sk",
+          currency: "EUR",
+          total_cents: p.totalCents,
+          guest_note: NOTE,
+          marketing_consent: false,
+          lines: p.lines.map((l) => ({
+            kind: l.kind,
+            ref_id: l.refId,
+            label: label(l),
+            quantity: l.quantity,
+            unit_amount_cents: l.unitAmountCents,
+            amount_cents: l.amountCents,
+            vat_bp: l.vatBp,
+            meta: l.meta,
+          })),
+          consents: [
+            {
+              kind: "terms",
+              version: "v1",
+              text: sk.guest.booking?.consentTerms ?? "Obchodné podmienky",
+              granted: true,
+            },
+            {
+              kind: "cancellation",
+              version: "v1",
+              text: "Storno podmienky objektu",
+              granted: true,
+            },
+            { kind: "privacy", version: "v1", text: "Ochrana osobných údajov", granted: true },
+            { kind: "marketing", version: "v1", text: "Novinky e-mailom", granted: false },
+          ],
+        },
+      })
+      .single();
+    if (error?.code === "23P01") continue; // term taken → next week
+    if (error) throw new Error(`create_reservation: ${error.message}`);
+    must(
+      await db.rpc("store_access_token", { p_reservation_id: data.id, p_token: data.access_token }),
+      "store token",
+    );
+    return { ...data, checkIn, checkOut, total: p.totalCents };
+  }
+  throw new Error(`No free term near ${stay.checkIn}`);
+}
+
+async function pay(r, actor, receivedAt) {
+  must(
+    await db
+      .from("payments")
+      .update({ status: "received", received_at: receivedAt, received_by: actor })
+      .eq("reservation_id", r.id)
+      .eq("status", "pending"),
+    "payment",
+  );
+  must(
+    await db.rpc("change_reservation_status", {
+      p_reservation_id: r.id,
+      p_to: "confirmed",
+      p_actor: actor,
+    }),
+    "confirm",
+  );
+}
+
+/** A one-page PDF with a title and a few lines (enough for the guest to open and read). */
+function pdf(title, lines) {
+  const esc = (s) =>
+    s
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[()\\]/g, "\\$&");
+  const text = [`BT /F1 20 Tf 60 770 Td (${esc(title)}) Tj ET`]
+    .concat(lines.map((l, i) => `BT /F1 12 Tf 60 ${730 - i * 20} Td (${esc(l)}) Tj ET`))
+    .join("\n");
+  const objs = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+    `<< /Length ${text.length} >>\nstream\n${text}\nendstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  let out = "%PDF-1.4\n";
+  const offsets = [];
+  objs.forEach((o, i) => {
+    offsets.push(out.length);
+    out += `${i + 1} 0 obj\n${o}\nendobj\n`;
+  });
+  const xref = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`;
+  out += offsets.map((o) => `${String(o).padStart(10, "0")} 00000 n \n`).join("");
+  out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(out, "latin1");
+}
+
+async function document(path, title, body, link) {
+  must(
+    await db.storage
+      .from("guest-documents")
+      .upload(path, pdf(title, body), { contentType: "application/pdf", upsert: true }),
+    `upload ${path}`,
+  );
+  must(
+    await db
+      .from("documents")
+      .insert({ tenant_id: TENANT, storage_path: path, title: { sk: title }, ...link }),
+    `document ${title}`,
+  );
+}
+
+// ---------------------------------------------------------------- main
+if (reset) await removeDemo();
+if (!reset && (await demoReservationIds()).length)
+  console.log("Demo data already exist (use --reset to create them again).");
+else await createDemo();
+
+async function createDemo() {
+  const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const martin = users.users.find((u) => u.email === MARTIN);
+  if (!martin) throw new Error(`${MARTIN} has no login on staging`);
+
+  // Martin sees the administration as the owner (besides being platform admin).
+  must(
+    await db
+      .from("memberships")
+      .upsert(
+        { tenant_id: TENANT, user_id: martin.id, role: "owner" },
+        { onConflict: "tenant_id,user_id" },
+      ),
+    "membership",
+  );
+
+  const { catalog: cat, services } = await catalog();
+  const chef = services.find((s) => /kuch|chef/i.test(JSON.stringify(s.name)) && s.active);
+  if (!chef) console.warn("No active chef service — reservation (a) is created without it.");
+
+  // (a) future, waiting for payment, with the chef
+  const a = await book(cat, {
+    name: "Katarína Horváthová",
+    email: `katarina.horvathova@${DEMO_DOMAIN}`,
+    phone: "+421 900 000 101",
+    adults: 4,
+    children: 2,
+    checkIn: `${year + 1}-02-12`,
+    checkOut: `${year + 1}-02-15`,
+    services: chef ? { [chef.id]: 1 } : {},
+  });
+
+  // (b) around Christmas, confirmed and paid, with a reservation document — guest zone for Martin
+  const b = await book(cat, {
+    name: "Tomáš Kováč",
+    email: GUEST_ZONE_EMAIL,
+    phone: "+421 900 000 102",
+    adults: 4,
+    checkIn: `${year}-12-24`,
+    checkOut: `${year}-12-28`,
+  });
+  await pay(b, martin.id, new Date().toISOString());
+  await document(
+    `${TENANT}/demo/vianoce-${b.number}.pdf`,
+    "Vianocny program a pokyny",
+    [
+      "Ukazkovy dokument k rezervacii (DEMO).",
+      "Stedry vecer: vecera o 18:00 v chalete, stromcek je pripraveny.",
+      "Sauna je kurena od 16:00, drevo je v pristresku.",
+    ],
+    { reservation_id: b.id, visible_when: "confirmed" },
+  );
+
+  // (c) in the past, paid and completed
+  const c = await book(cat, {
+    name: "Martina Šimková",
+    email: `martina.simkova@${DEMO_DOMAIN}`,
+    phone: "+421 900 000 103",
+    adults: 2,
+    checkIn: `${year}-08-07`,
+    checkOut: `${year}-08-10`,
+  });
+  await pay(c, martin.id, `${year}-07-20T10:00:00Z`);
+  must(
+    await db.rpc("change_reservation_status", {
+      p_reservation_id: c.id,
+      p_to: "completed",
+      p_actor: martin.id,
+    }),
+    "complete",
+  );
+
+  // Property document for all guests
+  await document(
+    `${TENANT}/demo/ubytovaci-poriadok.pdf`,
+    "Ubytovaci poriadok (ukazka)",
+    [
+      "Prichod od 15:00, odchod do 10:00.",
+      "Nocny kluk od 22:00 do 7:00. Fajcenie len na terase.",
+      "Domace zvierata po dohode s majitelkou.",
+    ],
+    { property_id: PROPERTY, visible_when: "always" },
+  );
+
+  // Occupancy: two events from other portals (inactive demo channels — nothing is downloaded) and one owner block.
+  const nights = (from, to) => `[${from},${to})`;
+  for (const [name, source, from, to, uid] of [
+    ["Booking.com (ukážka)", "booking", `${year + 1}-01-09`, `${year + 1}-01-12`, "demo-booking-1"],
+    ["Airbnb (ukážka)", "airbnb", `${year + 1}-03-05`, `${year + 1}-03-08`, "demo-airbnb-1"],
+  ]) {
+    const ch = must(
+      await db
+        .from("ical_channels")
+        .insert({
+          tenant_id: TENANT,
+          unit_id: UNIT,
+          name,
+          source,
+          import_url: `https://example.invalid/${source}.ics`,
+          active: false,
+          last_status: "ok",
+          last_sync_at: new Date().toISOString(),
+        })
+        .select("id")
+        .single(),
+      name,
+    );
+    const { error } = await db.from("occupancy").insert({
+      tenant_id: TENANT,
+      unit_id: UNIT,
+      kind: "ical",
+      ical_channel_id: ch.id,
+      ical_uid: uid,
+      label: `${source === "booking" ? "Booking.com" : "Airbnb"} (DEMO)`,
+      nights: nights(from, to),
+    });
+    if (error) console.warn(`${name}: term taken, event skipped (${error.message})`);
+  }
+  {
+    const { error } = await db.from("occupancy").insert({
+      tenant_id: TENANT,
+      unit_id: UNIT,
+      kind: "block",
+      label: "Údržba sauny (DEMO)",
+      nights: nights(`${year + 1}-04-13`, `${year + 1}-04-16`),
+      created_by: martin.id,
+    });
+    if (error) console.warn(`Owner block skipped (${error.message})`);
+  }
+
+  // Control centre: the services module in trial, with an audit record.
+  const trialEnds = addDays(today, 30);
+  must(
+    await db
+      .from("tenant_modules")
+      .upsert(
+        {
+          tenant_id: TENANT,
+          module_key: "services",
+          status: "trial",
+          trial_ends_at: trialEnds,
+          updated_by: martin.id,
+        },
+        { onConflict: "tenant_id,module_key" },
+      ),
+    "module",
+  );
+  must(
+    // write_audit() needs a signed-in user; the service key writes the same row with Martin as the actor.
+    await db.from("audit_log").insert({
+      tenant_id: TENANT,
+      actor_id: martin.id,
+      action: "module.changed",
+      entity: "module",
+      entity_id: "services",
+      data: { status: "trial", trial_ends_at: trialEnds, note: "DEMO" },
+    }),
+    "audit",
+  );
+
+  // E-mails the demo queued: not sent (Martin's inbox stays quiet; the guest-zone code is sent only on login).
+  const ids = [a.id, b.id, c.id];
+  must(
+    await db
+      .from("email_outbox")
+      .update({ status: "skipped", last_error: "DEMO — neodoslané" })
+      .in("reservation_id", ids)
+      .in("status", ["queued", "failed"]),
+    "skip e-mails",
+  );
+
+  const host = "https://chalet-stromy-demo.vercel.app";
+  console.log(`
+Demo data for Chalet STRÖMY are ready (staging).
+  (a) ${a.number}  ${a.checkIn} – ${a.checkOut}  waiting for payment, chef   ${host}/r/${a.access_token}
+  (b) ${b.number}  ${b.checkIn} – ${b.checkOut}  confirmed + paid, document   ${host}/r/${b.access_token}
+  (c) ${c.number}  ${c.checkIn} – ${c.checkOut}  completed
+Guest zone: ${host}/ucet → ${GUEST_ZONE_EMAIL} (the code arrives at ${MARTIN} through the staging redirect).
+`);
+}

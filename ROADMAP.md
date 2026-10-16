@@ -87,7 +87,7 @@ v `docs/navrhy/stranka-hosta/`). Prerob stránku `/r/<kód>` (`src/app/(guest)/r
 4. Texty cez preklady, farby z témy, pravidlá vzhľadu v2. Playwright: oba stavy (čaká na platbu, potvrdená) na počítači aj 390 px, prístupnosť.
 
 
-### Z21 — Ukážkové dáta na stagingu (Martin si chce všetko preklikať)
+### Z21 ✅ — Ukážkové dáta na stagingu (Martin si chce všetko preklikať)
 Len **staging**, nikdy produkcia. Skript `scripts/demo-data.mjs` (idempotentný, `--reset` zmaže a znova vytvorí len ukážkové záznamy;
 ukážkové sú jasne označené, napr. e-mailom hosťa na vyhradenej testovacej doméne a poznámkou „DEMO“). Pre **Chalet STRÖMY**:
 1. **3 rezervácie** cez tie isté funkcie ako skutočná rezervácia (ceny, riadky, história stavov, súhlasy): (a) budúca **čaká na platbu**
@@ -184,6 +184,12 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z21: **ukážkové dáta STRÖMY na stagingu** (`npm run demo-data`, `-- --reset`). Rezervácie cez tú istú databázovú funkciu
+  a výpočet ceny ako web: (a) 2026-0088 12.–15. 2. 2027, čaká na platbu, so šéfkuchárom; (b) 2026-0089 24.–28. 12. 2026, potvrdená
+  a zaplatená, s dokumentom k rezervácii; (c) 2026-0090 7.–10. 8. 2026, ukončená. Ubytovací poriadok (PDF) pri objekte, 2 udalosti
+  z iCal (Booking, Airbnb — kanály vypnuté, nič sa nesťahuje), blokácia „Údržba sauny“, modul Služby v skúške do 15. 11. + záznam v audite.
+  Martin (info@obrazne.sk) už mal na stagingu členstvo **majiteľa** v STRÖMY — ponechané. Zóna hosťa: demo-host@obrazne.sk (kód príde
+  cez presmerovanie stagingu na info@obrazne.sk). E-maily z ukážky sa neodoslali (označené „DEMO — neodoslané“). (Claude Code)
 - 2026-10-16 — Z20: **potvrdenie rezervácie v2.1** (`/r/<kód>`). Príčina „čistej“ stránky: otvorila sa na adrese, ktorú systém
   nepriradil klientovi (technická adresa stagingu) → stránka teraz vždy presmeruje na verejnú doménu klienta, takže má jeho hlavičku,
   pätu a tému. Úvod s krstným menom a stavom, karta platby (QR, Suma/IBAN/VS s **Kopírovať**, termín úhrady), zelený pruh po zaplatení,

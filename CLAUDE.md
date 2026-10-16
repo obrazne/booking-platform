@@ -96,6 +96,9 @@ Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supab
 
 **Testovanie administrácie v prehliadači bez hesla:** `node --env-file=.env.local scripts/qa-login-link.mjs http://localhost:3000` → otvoriť vypísaný odkaz
 (používateľ qa@booking-platform.test, majiteľ ukážkových klientov, len staging). Fotky z disku: `scripts/upload-photos.mjs <manifest>`.
+**Ukážkové dáta STRÖMY (staging):** `npm run demo-data` (chýbajúce vytvorí), `npm run demo-data -- --reset` (zmaže a vytvorí znova) —
+3 rezervácie cez `create_reservation` s cenou z rovnakého výpočtu ako web, dokumenty, iCal udalosti, blokácia, skúška modulu.
+Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `stromy-demo.invalid` (hosť b: demo-host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú.
 
 **Účty v aplikácii:** registrácia je vypnutá. Ľudia klienta a Martin sa zakladajú v Supabase (Authentication → Add user) alebo neskôr
 pozvánkou z riadiaceho centra; správca platformy = riadok v `platform_admins`.

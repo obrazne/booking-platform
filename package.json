@@ -15,7 +15,8 @@
     "db:test": "supabase test db --linked",
     "db:push": "supabase db push",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "demo-data": "node scripts/demo-data.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -53,6 +54,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "jiti": "^2.7.0",
     "jsdom": "^30.1.3",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
