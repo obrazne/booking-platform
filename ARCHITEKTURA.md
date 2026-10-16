@@ -150,6 +150,24 @@ PLATFORMA (Martin)
 - Preto: čo najčastejšia synchronizácia na našej strane, upozornenie Martinovi aj majiteľovi pri kolízii, spísaný postup pri dvojitej rezervácii.
 - Štatistika podielu priamych rezervácií v čase ukazuje klientovi pokrok pri odchode z OTA (predajný argument).
 
+## A17. Nasadenie u klienta (prepojenie s jeho webom)
+
+Platba (vrátane Stripe) a celý rezervačný tok bežia vždy v aplikácii. Klientov web ho len otvára. Tri úrovne:
+
+| Úroveň | Čo hosť vidí | Kedy |
+|---|---|---|
+| **1. Subdoména klienta** (predvolené) | tlačidlo „Rezervovať“ na webe klienta → `rezervacia.<domena-klienta>` v jeho vizuáli (logo, farby, písma, hlavička s odkazom späť) | vždy, základ |
+| **2. Widget + subdoména** (odporúčané) | na webe klienta vyhľadávací pás alebo kalendár (príchod, odchod, osoby) → pokračuje na subdoméne s **predvyplneným termínom** | klienti s vlastným webom |
+| **3. Celá rezervácia vložená** (iframe) | rezervácia v stránke webu klienta | len na želanie — krehkejšie (výška, mobil, meranie) |
+
+- Subdoména = jeden DNS záznam (CNAME) u správcu domény klienta; Vercel na nej spustí rezervačnú stránku klienta.
+  Vďaka doméne klienta funguje aj vloženie (úroveň 3) v Safari.
+- Widget = krátky kód (HTML/JS), vloží sa do akéhokoľvek webu (vo WordPresse/Elementore cez HTML widget). Pri štarte **vyhľadávací pás**,
+  neskôr **kalendár s cenami**.
+- Pri klientovi s vlastným prezentačným webom je rezervačná stránka **štíhly tok** (kalendár, cena, služby, pokladňa), nie druhý prezentačný web,
+  a **neindexuje sa** vo vyhľadávačoch (nekonkuruje webu klienta).
+- Showroom s viacerými objektmi a filtrovaním je pre ukážky a klientov bez vlastného webu.
+
 ---
 
 # ČASŤ B — DOMÉNOVÉ POŽIADAVKY (z v1, na revíziu)
@@ -170,6 +188,9 @@ Kapitoly sa revidujú v Claude chate po jednej a zapisujú sem ako B1, B2, … (
 - Doplnkové služby: šéfkuchár / raňajky, transfer z letiska (prvý modul).
 - Platba len prevodom s QR, 24 h držanie termínu (nastaviteľné), e-maily hosťovi a majiteľovi, iCal s Bookingom a Airbnb.
 - Dátový model celý, rozhranie len pre tento prípad. Podklady: `docs/podklady/chalet-stromy-podklady.md`.
+- **Nasadenie (A17, úroveň 2):** Janin web beží na WordPresse s Elementorom (bez WooCommerce). Rezervácia na `rezervacia.chaletstromy.sk`
+  v jej vizuáli; na jej webe vyhľadávací pás (príchod, odchod, osoby), ktorý presmeruje na subdoménu s predvyplneným termínom;
+  tlačidlá „Rezervovať“ smerujú tam. Kalendár s cenami na jej webe neskôr.
 
 ## Showroom (ukážkové dáta)
 

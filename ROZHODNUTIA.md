@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Nasadenie u klienta s vlastným webom
+
+- **Rezervácia beží na subdoméne klienta** (`rezervacia.<domena>`) v jeho vizuáli — hosť stále vidí doménu klienta a nepreľakne sa.
+  Celá objednávka vrátane platby prebehne tam.
+- **Odporúčaná úroveň: widget na webe klienta** (vyhľadávací pás, neskôr kalendár s cenami) → hosť pokračuje na subdoméne
+  s predvyplneným termínom. Pôsobí ako súčasť webu klienta, zložitý tok a platba ostávajú v aplikácii.
+- Celá rezervácia vložená cez iframe len na želanie (krehkejšie).
+- **Chalet STRÖMY:** web na WordPresse s Elementorom → `rezervacia.chaletstromy.sk` + vyhľadávací pás na jej webe (Martin: „to sa mi páči“).
+
 ## 2026-10-16 — Predajný web
 
 - **Predajný web (showcase) vo WordPresse s CrocoBuilderom**, nie v aplikácii. Dôvody: obsahový web, ktorý Martin mení sám bez nasadzovania kódu;
@@ -40,7 +49,7 @@
 - **Kód a databáza v angličtine, rozhranie po slovensky** cez preklady.
 - **Stack Next.js** (domény klientov, vyhľadávače). Ak Rental Van beží na inom, preberajú sa z neho administračné komponenty, nie kostra.
 - **Pevné poradie výpočtu ceny:** noci podľa sezóny → poplatky → služby → zľavy → daň za ubytovanie; každý krok samostatný riadok rezervácie.
-- **Rezervácia v MVP na stránke na subdoméne**, vkladací widget neskôr.
+- **Rezervácia v MVP na stránke na subdoméne**, vkladací widget neskôr *(spresnené vyššie: Nasadenie u klienta s vlastným webom)*.
 - **Účty na Obrazne s.r.o.**, všade dvojfaktorové overenie, heslá v správcovi hesiel. Platené plány (vrátane Vercelu) až pri spustení
   prvého platiaceho klienta; počas vývoja stačí bezplatný Vercel.
 - **E-maily hosťom cez transakčnú službu s API**, nie obyčajné SMTP (overovanie domén klientov cez API, doručiteľnosť).
