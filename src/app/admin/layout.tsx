@@ -4,6 +4,7 @@ import {
   Building2,
   CalendarCheck,
   CalendarRange,
+  RefreshCw,
   CalendarOff,
   LayoutDashboard,
   Settings,
@@ -33,6 +34,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       { href: "/admin/calendar", label: t("nav.calendar"), icon: <CalendarRange /> },
       { href: "/admin/properties", label: t("nav.properties"), icon: <Building2 /> },
       { href: "/admin/blocks", label: t("nav.blocks"), icon: <CalendarOff /> },
+      { href: "/admin/ical", label: t("nav.ical"), icon: <RefreshCw /> },
     );
     for (const m of await getEnabledModules(active.tenantId)) {
       for (const nav of m.navItems ?? []) {

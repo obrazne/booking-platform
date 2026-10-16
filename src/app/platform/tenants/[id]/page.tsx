@@ -38,6 +38,28 @@ export default async function TenantDetail({ params }: PageProps<"/platform/tena
 
   const theme = tenant.tenant_themes ? rowToTheme(tenant.tenant_themes) : DEFAULT_THEME;
 
+  // Client health (A4): last reservation, failing calendars, unsent e-mails.
+  const [{ data: lastReservation }, { data: badChannels }, { count: failedEmails }] =
+    await Promise.all([
+      supabase
+        .from("reservations")
+        .select("number, created_at")
+        .eq("tenant_id", id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("ical_channels")
+        .select("name, last_status, last_error, last_sync_at")
+        .eq("tenant_id", id)
+        .in("last_status", ["error", "conflict"]),
+      supabase
+        .from("email_outbox")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", id)
+        .eq("status", "failed"),
+    ]);
+
   return (
     <div className="grid gap-6">
       <div className="grid gap-1">
@@ -72,6 +94,36 @@ export default async function TenantDetail({ params }: PageProps<"/platform/tena
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("platform.health")}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-2 text-sm">
+          <p>
+            {t("platform.lastReservation")}:{" "}
+            {lastReservation
+              ? `${lastReservation.number} · ${formatDateTime(lastReservation.created_at, locale, tenant.timezone)}`
+              : "—"}
+          </p>
+          <p className={failedEmails ? "text-destructive" : undefined}>
+            {t("platform.failedEmails")}: {failedEmails ?? 0}
+          </p>
+          <div className="grid gap-1">
+            <p>{t("platform.icalErrors")}:</p>
+            {(badChannels ?? []).length === 0 ? (
+              <p className="text-muted-foreground">{t("platform.noIssues")}</p>
+            ) : (
+              (badChannels ?? []).map((c) => (
+                <p key={c.name} className="text-destructive">
+                  {c.name} · {c.last_status}
+                  {c.last_error ? ` · ${c.last_error}` : ""}
+                </p>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

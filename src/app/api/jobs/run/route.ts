@@ -1,11 +1,12 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { processEmailQueue } from "@/core/email/worker";
+import { syncDueChannels } from "@/core/ical/sync";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Background worker, pinged every minute by pg_cron (see migration email_outbox) with the CRON_SECRET.
- * Queues scheduled e-mails (reminders, arrival instructions) and sends the outbox. iCal sync joins in Z12.
+ * Syncs iCal channels (conflicts queue owner mails), queues scheduled e-mails and sends the outbox.
  */
 export async function POST(request: Request) {
   const secret = process.env.CRON_SECRET ?? "";
@@ -16,7 +17,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const admin = createAdminClient();
+  const ical = await syncDueChannels();
   const { data: queued } = await admin.rpc("enqueue_scheduled_emails");
   const emails = await processEmailQueue();
-  return NextResponse.json({ queued, emails });
+  return NextResponse.json({ ical, queued, emails });
 }

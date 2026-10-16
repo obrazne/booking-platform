@@ -298,3 +298,37 @@ export async function renderEmail(
     }
   }
 }
+
+/** Owner alert about an iCal collision (A16): nothing was overwritten, the owner decides. */
+export async function renderIcalConflict(
+  tenant: {
+    name: string;
+    ownerEmail: string | null;
+    accent: string;
+    locale: string;
+    adminUrl: string;
+  },
+  payload: { channel?: string; conflicts?: { start: string; end: string }[] },
+): Promise<OutgoingEmail | null> {
+  if (!tenant.ownerEmail) return null;
+  const locale = (tenant.locale in MESSAGES ? tenant.locale : "sk") as keyof typeof MESSAGES;
+  const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: "emails" });
+  const dates = (payload.conflicts ?? [])
+    .map((c) => `${formatDate(c.start, locale)} – ${formatDate(c.end, locale)}`)
+    .join(", ");
+  const vars = { property: tenant.name, channel: payload.channel ?? "iCal", dates };
+  return {
+    to: tenant.ownerEmail,
+    subject: t("owner_ical_conflict.subject", vars),
+    html: layout(
+      tenant.accent,
+      t("owner_ical_conflict.subject", vars),
+      [p(t("ownerGreeting")), p(t("owner_ical_conflict.intro", vars))],
+      {
+        href: tenant.adminUrl,
+        label: t("openAdmin"),
+      },
+    ),
+    text: [t("ownerGreeting"), t("owner_ical_conflict.intro", vars), tenant.adminUrl].join("\n\n"),
+  };
+}

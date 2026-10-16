@@ -46,7 +46,8 @@
     "settings": "Nastavenia",
     "reservations": "Rezervácie",
     "calendar": "Kalendár",
-    "blocks": "Blokácie"
+    "blocks": "Blokácie",
+    "ical": "iCal"
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
@@ -104,7 +105,12 @@
     "themePreview": "Náhľad témy",
     "audit": "Záznam zmien",
     "auditEmpty": "Zatiaľ žiadne zmeny.",
-    "forbidden": "Riadiace centrum je len pre správcu platformy."
+    "forbidden": "Riadiace centrum je len pre správcu platformy.",
+    "health": "Zdravie klienta",
+    "icalErrors": "Kalendáre s chybou alebo kolíziou",
+    "noIssues": "Bez problémov.",
+    "lastReservation": "Posledná rezervácia",
+    "failedEmails": "Neodoslané e-maily"
   },
   "modules": {
     "services": {
@@ -703,5 +709,37 @@
     },
     "ownerGreeting": "Dobrý deň,",
     "openAdmin": "Otvoriť v administrácii"
+  },
+  "ical": {
+    "title": "Synchronizácia kalendárov (iCal)",
+    "lead": "Prepojenie s Bookingom, Airbnb a ďalšími. Pri kolízii sa nič neprepíše — dostanete upozornenie.",
+    "export": "Export z platformy",
+    "exportHint": "Túto adresu vložte do Bookingu / Airbnb ako importovaný kalendár. Pre každý kanál je samostatná adresa bez jeho vlastných udalostí.",
+    "general": "Všeobecná adresa",
+    "channels": "Importované kalendáre",
+    "add": "Pridať kalendár",
+    "unit": "Objekt / jednotka",
+    "name": "Názov",
+    "source": "Zdroj",
+    "url": "Adresa kalendára (https)",
+    "urlHint": "Nájdete ju v Bookingu (Synchronizácia kalendára) alebo v Airbnb (Dostupnosť → Prepojenie kalendárov).",
+    "sources": {
+      "booking": "Booking.com",
+      "airbnb": "Airbnb",
+      "other": "Iný"
+    },
+    "lastSync": "Posledná synchronizácia",
+    "never": "zatiaľ nie",
+    "status": {
+      "ok": "V poriadku",
+      "error": "Chyba",
+      "conflict": "Kolízia"
+    },
+    "syncNow": "Synchronizovať teraz",
+    "synced": "Synchronizované.",
+    "empty": "Zatiaľ žiadny importovaný kalendár.",
+    "copy": "Kopírovať",
+    "copied": "Skopírované.",
+    "exportFor": "Export pre {name}"
   }
 }

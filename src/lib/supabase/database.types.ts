@@ -318,6 +318,7 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          export_excluded: boolean
           id: string
           import_url: string
           last_error: string | null
@@ -331,6 +332,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          export_excluded?: boolean
           id?: string
           import_url: string
           last_error?: string | null
@@ -344,6 +346,7 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          export_excluded?: boolean
           id?: string
           import_url?: string
           last_error?: string | null
@@ -2007,6 +2010,22 @@ export type Database = {
           property_id: string
           unit_id: string
         }[]
+      }
+      ical_apply: {
+        Args: { p_channel_id: string; p_events: Json }
+        Returns: Json
+      }
+      ical_export: {
+        Args: { p_exclude_channel?: string; p_token: string }
+        Returns: {
+          kind: string
+          nights: unknown
+          uid: string
+        }[]
+      }
+      ical_mark_error: {
+        Args: { p_channel_id: string; p_error: string }
+        Returns: undefined
       }
       is_active_tenant: { Args: { p_tenant_id: string }; Returns: boolean }
       is_module_enabled: {

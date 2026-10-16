@@ -2,7 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadEmailContext } from "./context";
 import { sendEmail } from "./send";
-import { renderEmail, type EmailKind } from "./templates";
+import { renderEmail, renderIcalConflict, type EmailKind } from "./templates";
 
 /**
  * Sends queued e-mails (outbox): claims a batch, renders, sends through Resend, records the result.
@@ -16,8 +16,32 @@ export async function processEmailQueue(
   const stats = { sent: 0, failed: 0, skipped: 0 };
   for (const job of jobs ?? []) {
     try {
-      if (!job.reservation_id || job.kind === "owner_ical_conflict") {
-        // iCal conflict mails are rendered by the iCal module (Z12); others need a reservation.
+      if (job.kind === "owner_ical_conflict") {
+        const mail = await icalConflictMail(
+          job.tenant_id,
+          (job.payload ?? {}) as Record<string, unknown>,
+        );
+        if (!mail) {
+          await admin
+            .from("email_outbox")
+            .update({ status: "skipped", last_error: "no recipient" })
+            .eq("id", job.id);
+          stats.skipped += 1;
+          continue;
+        }
+        const result = await sendEmail(mail);
+        await admin.rpc("finish_email_job", {
+          p_id: job.id,
+          p_ok: result.ok,
+          p_provider_id: result.ok ? result.id : "",
+          p_error: result.ok ? "" : result.error,
+          p_to: mail.to,
+        });
+        if (result.ok) stats.sent += 1;
+        else stats.failed += 1;
+        continue;
+      }
+      if (!job.reservation_id) {
         await admin.from("email_outbox").update({ status: "skipped" }).eq("id", job.id);
         stats.skipped += 1;
         continue;
@@ -60,4 +84,27 @@ export async function processEmailQueue(
     }
   }
   return stats;
+}
+
+async function icalConflictMail(tenantId: string, payload: Record<string, unknown>) {
+  const admin = createAdminClient();
+  const [{ data: tenant }, { data: settings }, { data: theme }] = await Promise.all([
+    admin.from("tenants").select("name, default_locale").eq("id", tenantId).single(),
+    admin
+      .from("tenant_settings")
+      .select("owner_notification_email")
+      .eq("tenant_id", tenantId)
+      .maybeSingle(),
+    admin.from("tenant_themes").select("primary_color").eq("tenant_id", tenantId).maybeSingle(),
+  ]);
+  return renderIcalConflict(
+    {
+      name: tenant?.name ?? "",
+      ownerEmail: settings?.owner_notification_email ?? null,
+      accent: theme?.primary_color ?? "#2f5d50",
+      locale: tenant?.default_locale ?? "sk",
+      adminUrl: `${process.env.APP_URL ?? ""}/admin/calendar`,
+    },
+    payload as { channel?: string; conflicts?: { start: string; end: string }[] },
+  );
 }
