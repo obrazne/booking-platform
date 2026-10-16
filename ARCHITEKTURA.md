@@ -163,6 +163,11 @@ PLATFORMA (Martin)
 - Rozlišovať dve roviny: **podpora pre majiteľov** (otázky k systému → Martin, chatbot nad návodmi) a **otázky hostí** k objektu
   (→ majiteľ; automatizovaný recepčný je samostatný Premium+ modul).
 - Chat na rezervačnej stránke hostí len so súhlasom s cookies.
+- **Prehliadka „Čo je nové“** (Martin 16. 10.) v administrácii majiteľa aj v riadiacom centre: okno so snímkami ako pri aktualizácii
+  systému v Apple — snímka obrazovky, nadpis, dve vety, „Ukázať mi to“ (otvorí danú stránku). Zobrazí sa raz pri prvom prihlásení
+  a po každej novej verzii (verzia prehliadky uložená pri používateľovi), dá sa kedykoľvek otvoriť z menu. Obsah = verzované dáta v kóde
+  (texty cez preklady), snímky vyrába skript z ukážkových dát, takže sa dajú po zmene rozhrania obnoviť. Slúži zároveň ako úvod pre nového
+  klienta (A11) a ako poznámky k vydaniu.
 
 ## A16. Odchod z OTA a paralelný chod
 

@@ -9,7 +9,7 @@
 - **Kde sme (16. 10.):** fronta Z1–Z18 hotová na stagingu https://booking-platform-obrazne.vercel.app — MVP pre Chalet STRÖMY + showroom,
   kontrola pred ukážkou (`docs/kontrola-mvp.md`), účet a zóna hosťa, sekcie stránky v administrácii. Chýba: doklady, nasadenie u Jany (3d, 3e),
   captcha (čaká na účet Cloudflare).
-- **Ďalší krok pre Claude Code:** Z20 — potvrdenie rezervácie podľa vizuálu v2.1. Veci na web klienta zatiaľ nie.
+- **Ďalší krok pre Claude Code:** fronta Z20 → Z22 (potvrdenie rezervácie, ukážkové dáta, prehliadka „Čo je nové“). Veci na web klienta zatiaľ nie.
 - **Ďalší krok pre Martina:** preklikať staging (zóna hosťa `/ucet`, záložka Stránka v editore objektu); odpovedať na otázky nižšie.
 - **Claude chat:** kontrola výsledkov Z16–Z19, doklady, obchodný model, otázky pre Janu.
 
@@ -86,6 +86,33 @@ v `docs/navrhy/stranka-hosta/`). Prerob stránku `/r/<kód>` (`src/app/(guest)/r
 3. **Mobil:** údaje s Kopírovať pred QR, **Uložiť QR** (obrázok), zvyšok pod sebou.
 4. Texty cez preklady, farby z témy, pravidlá vzhľadu v2. Playwright: oba stavy (čaká na platbu, potvrdená) na počítači aj 390 px, prístupnosť.
 
+
+### Z21 — Ukážkové dáta na stagingu (Martin si chce všetko preklikať)
+Len **staging**, nikdy produkcia. Skript `scripts/demo-data.mjs` (idempotentný, `--reset` zmaže a znova vytvorí len ukážkové záznamy;
+ukážkové sú jasne označené, napr. e-mailom hosťa na vyhradenej testovacej doméne a poznámkou „DEMO“). Pre **Chalet STRÖMY**:
+1. **3 rezervácie** cez tie isté funkcie ako skutočná rezervácia (ceny, riadky, história stavov, súhlasy): (a) budúca **čaká na platbu**
+   so šéfkuchárom, (b) **potvrdená a zaplatená** (Platba prijatá) okolo Vianoc, s nahraným dokumentom k rezervácii a pokynmi k príchodu,
+   (c) **ukončená** v minulosti, zaplatená. Vymyslené mená hostí, žiadne skutočné osobné údaje.
+2. **Obsadenosť:** 2 udalosti z iCal (Booking, Airbnb) a 1 blokácia majiteľom; pri objekte **dokument pre hostí** (napr. ubytovací poriadok PDF).
+3. **Účet hosťa** pre rezerváciu (b), aby si Martin vyskúšal zónu hosťa — e-mail s kódom musí prísť Martinovi (staging presmerúva na
+   info@obrazne.sk; doménu `@booking-platform.test` nepoužívaj, tam sa neposiela nič).
+4. **Prístup Martina:** na stagingu pridaj účtu info@obrazne.sk členstvo **majiteľa** v STRÖMY (popri správcovi platformy), aby videl
+   administráciu ako Jana. Zapíš do Denníka. V riadiacom centre nech má STRÖMY čo ukázať: moduly (skúška s dátumom konca), zdravie,
+   obrat za mesiac, audit.
+5. E-maily, ktoré pri tom vzniknú, nech nezahltia schránku (najviac pár; inak ich vlož ako už odoslané).
+6. Na konci Martinovi **krátky návod v termináli**: kde sa prihlásiť, čo kde nájde (adresy stagingu), ako dáta obnoviť.
+
+### Z22 — Prehliadka „Čo je nové“ (A15)
+Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
+1. Komponent prehliadky: okno (zaoblenie 10, stmavené pozadie, téma platformy), snímka obrazovky hore, nadpis + dve vety, bodky postupu,
+   Späť / Ďalej / „Ukázať mi to“ (otvorí stránku), Esc zatvorí. Na mobile cez celú obrazovku, posun prstom.
+2. **Dve prehliadky:** majiteľ (prehľad, rezervácie a bočný panel, Platba prijatá, kalendár obsadenosti, ručná rezervácia, objekt a stránka
+   zo sekcií, ceny a sezóny, služby, dokumenty pre hostí, iCal, nastavenia) a **správca** (riadiace centrum: klienti, založenie klienta,
+   moduly a skúšky, zdravie, téma, audit). Každá 8–12 snímok, texty cez preklady, zrozumiteľne pre neodborníka.
+3. Zobrazí sa raz po prihlásení pri novej verzii (verzia uložená pri používateľovi), znova z menu **„Čo je nové“**.
+4. **Snímky** robí skript `npm run tour:screens` (Playwright, ukážkové dáta zo Z21, počítač 1440 px, prípadne aj mobil) → uložené
+   v repozitári; po zmene rozhrania stačí skript spustiť znova. Bez osobných údajov na snímkach.
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -157,6 +184,7 @@ v `docs/navrhy/stranka-hosta/`). Prerob stránku `/r/<kód>` (`src/app/(guest)/r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Úlohy Z21 (ukážkové dáta na stagingu) a Z22 (prehliadka „Čo je nové“ pre majiteľa a správcu); A15, rozhodnutie. (Claude chat)
 - 2026-10-16 — Vizuál **v2.1: potvrdenie rezervácie** (počítač aj mobil, stav čaká/zaplatené, Kopírovať, Pridať do kalendára) → `docs/navrhy/stranka-hosta/`, `docs/vizual-stranka-hosta.md`; úloha Z20. (Claude chat)
 - 2026-10-16 — Z19: stránka hosťa, galéria a košík podľa **vizuálu v2**. Dáta (migrácia len pridáva): tabuľka **referencií**
   (skopírované z objektov, zvýraznené max. 5, zdroj, mesiac pobytu, zverejnená) + `reviews_url`, **kategória fotky** (albumy),

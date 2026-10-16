@@ -2,6 +2,13 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Ukážkové dáta a prehliadka „Čo je nové“
+
+- Martin si chce celý systém preklikať ako majiteľ aj ako správca → **ukážkové dáta pre STRÖMY na stagingu** (pár rezervácií v rôznych
+  stavoch, blokácie z iCal, dokumenty, účet hosťa). Dáta sú označené a dajú sa jedným skriptom obnoviť alebo zmazať; na produkciu nikdy.
+- Prehliadku robíme **priamo v aplikácii**, nie ako samostatný dokument: rovnaká vec poslúži Martinovi teraz, novým klientom pri štarte (A11)
+  a neskôr ako „čo je nové“ po každej verzii. Snímky robí skript (Playwright) z ukážkových dát → po zmene rozhrania sa dajú obnoviť jedným príkazom. (Claude)
+
 ## 2026-10-16 — Stránka hosťa v2 (inšpirácia Bookingom, prémiový pokoj)
 
 - Martin schválil **vizuál v2** (`docs/vizual-stranka-hosta.md`, `docs/navrhy/stranka-hosta/`). Hlavné dôvody zmien:
