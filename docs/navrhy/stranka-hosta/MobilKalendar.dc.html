@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Chalet STRÖMY — mobil, výber termínu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#11212f}a:hover{color:#5a6672}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: rgba(17,33,47,0.45); font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="position: absolute; left: 0; right: 0; top: 44px; bottom: 0; background: #ffffff; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; overflow: hidden;">
+<div style="display: flex; justify-content: center; padding-top: 10px;"><span style="width: 40px; height: 4px; border-radius: 9999px; background: #e9e5db;"></span></div>
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 8px;">
+<div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #5a6672;">Termín</span><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">21. 12. – 24. 12.</span></div>
+<button type="button" aria-label="Zavrieť" style="width: 44px; height: 44px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 8px 16px; border-bottom: 1px solid #e9e5db;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">Po</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">Ut</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">St</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">Št</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">Pi</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">So</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">Ne</span>
+</div>
+<div style="flex-grow: 1; overflow: hidden; padding: 14px 16px 0; display: flex; flex-direction: column; gap: 22px;">
+<sc-for list="{{months}}" as="mon" hint-placeholder-count="2">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<div style="font-size: 16px; font-weight: 700; color: #11212f; padding-left: 4px;">{{mon.title}}</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px;">
+<sc-for list="{{mon.cells}}" as="c" hint-placeholder-count="35">
+<sc-if value="{{c.blank}}" hint-placeholder-val="{{false}}"><span style="height: 50px;"></span></sc-if>
+<sc-if value="{{c.day}}" hint-placeholder-val="{{true}}"><span style="{{c.style}}"><span style="{{c.numStyle}}">{{c.label}}</span><span style="{{c.priceStyle}}">{{c.price}}</span></span></sc-if>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding: 14px 20px 26px; border-top: 1px solid #e9e5db; background: #ffffff; display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;"><span style="font-size: 13px; color: #5a6672;">3 noci · minimálny pobyt v zime 3 noci</span><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">2 900 €</span></div>
+<a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none;">Potvrdiť termín</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var accent = this.props.accent ?? '#2f5d50';
+    var h = accent.replace('#', '');
+    var soft = 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' + parseInt(h.slice(4, 6), 16) + ',0.13)';
+    var booked = { '2026-12-04': 1, '2026-12-05': 1, '2026-12-06': 1, '2026-12-12': 1, '2026-12-13': 1, '2026-12-27': 1, '2026-12-28': 1, '2026-12-29': 1, '2026-12-30': 1, '2026-12-31': 1, '2027-01-01': 1, '2027-01-16': 1, '2027-01-17': 1, '2027-01-18': 1, '2027-01-19': 1, '2027-01-20': 1, '2027-01-21': 1, '2027-01-22': 1 };
+    var start = '2026-12-21', end = '2026-12-24';
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    var season = function (m, d) {
+      var md = (m + 1) * 100 + d;
+      if ((md >= 1223 && md <= 1226) || md === 1231 || md === 101) return 'x';
+      if ((md >= 1219 && md <= 1222) || (md >= 1227 && md <= 1230) || (md >= 102 && md <= 229)) return 'w';
+      return 'b';
+    };
+    var price = { b: '700', w: '850', x: '1200' };
+    var tint = { b: '#ffffff', w: '#eaf0f8', x: '#f8eadf' };
+    var build = function (y, m, title) {
+      var lead = (new Date(Date.UTC(y, m, 1)).getUTCDay() + 6) % 7;
+      var dim = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+      var cells = [];
+      for (var i = 0; i < lead; i++) cells.push({ blank: true, day: false });
+      for (var d = 1; d <= dim; d++) {
+        var k = y + '-' + pad(m + 1) + '-' + pad(d);
+        var s = season(m, d); var b = !!booked[k];
+        var edge = k === start || k === end; var inR = k > start && k < end;
+        var bg = edge ? accent : (inR ? soft : (b ? '#ffffff' : tint[s]));
+        cells.push({
+          blank: false, day: true, label: String(d), price: b ? '—' : price[s],
+          style: 'height: 50px; border-radius: 12px; background: ' + bg + '; border: 1px solid ' + (s === 'b' && !edge && !inR && !b ? '#f1eee6' : 'transparent') + '; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; color: ' + (edge ? '#ffffff' : (b ? '#b9bec5' : '#11212f')) + ';',
+          numStyle: 'font-size: 14px; font-weight: ' + (edge ? '700' : '500') + '; text-decoration: ' + (b ? 'line-through' : 'none') + ';',
+          priceStyle: 'font-family: JetBrains Mono, ui-monospace, monospace; font-size: 9px; color: ' + (edge ? 'rgba(255,255,255,0.85)' : (b ? '#d3d6da' : '#8b929b')) + ';'
+        });
+      }
+      while (cells.length % 7 !== 0) cells.push({ blank: true, day: false });
+      return { title: title, cells: cells };
+    };
+    return { accent: accent, months: [build(2026, 11, 'December 2026'), build(2027, 0, 'Január 2027')] };
+  }
+}
+</script>
+</body>
+</html>

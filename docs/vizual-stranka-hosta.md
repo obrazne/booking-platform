@@ -1,8 +1,19 @@
-# Vizuál stránky hosťa — schválený návrh (16. 10. 2026)
+# Vizuál stránky hosťa — v1 (schválené 16. 10. 2026)
 
-*Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design, súkromné — Martin ho vie ukázať).
-Martin ho schválil ako základ („Perfektné“). Tento dokument je jeho popis pre stavbu Z9. Je to **zámer, nie pixelová predloha** —
-všetky farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov.*
+*Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design). **Verzia v1 schválená 16. 10. 2026**;
+zdroj plátna je v `docs/navrhy/stranka-hosta/` (pozri `docs/navrhy/README.md`). Je to **zámer, nie pixelová predloha** —
+všetky farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov a z dát objektu (sekcie podľa B7).*
+
+## Zmeny oproti prvému popisu (pred v1, podľa neho sa staval Z9)
+
+- **Detail objektu prestavaný na vizuálne sekcie** (menej textu, viac fotiek): galéria → úvod s údajmi a malým panelom → „Čo vás čaká“
+  (ikony) → fotka cez celú šírku → kalendár na svetlom páse → tmavý cenník → referencie → časté otázky (rozbaľovacie) → záverečná výzva.
+  **Služby na stránke nie sú** — objednávajú sa v košíku (krok 2).
+- **Pravý panel zjednodušený:** „od X € / noc“, Príchod/Odchod (odkaz na kalendár), Spolu + cena na osobu a noc, tlačidlo, riadok o storne.
+  Tlačidlo „Rozbaliť“ zrušené — hlavné tlačidlo robí to isté.
+- **Prilepený pruh hore** pri rolovaní.
+- **Texty tlačidiel:** na stránke všade „Pozrieť pobyt“, nie „Rezervovať“ (hosť si pobyt len pozerá, nič neobjednáva).
+- **Rovné rohy** pri prvkoch prichytených k okraju obrazovky (bočný panel, prilepený pruh, spodný pás na mobile).
 
 ## Vizuálny jazyk (predvolená téma platformy)
 
@@ -18,17 +29,37 @@ Inšpirované webom obrazne.sk, ale s vlastným akcentom:
 
 ## Detail objektu (počítač)
 
-Hlavička s názvom objektu a odkazom „Späť na web“ → galéria (1 veľká + 4 malé, „Všetkých N fotiek“) → dva stĺpce:
+Stránka je zložená zo sekcií (B7, úloha Z14) — poradie nižšie je predloha „celý objekt“ (STRÖMY). Nadpisy sekcií v dvoch vetách
+(prvá tmavá, druhá svetlosivá), nad nimi kicker.
 
-**Ľavý stĺpec:** kicker s lokalitou, H1 z dvoch viet, perex, riadok údajov (kapacita, spálne, kúpeľne, príchod, odchod) medzi linkami,
-tri riadky dôvery s ikonou → **Dostupnosť a ceny** (hlavný motív) → cenník sezón (riadky: názov, termíny mono, cena za noc, min. pobyt)
-→ v cene pobytu → referencie hostí → storno podmienky.
+1. **Hlavička** s názvom objektu a odkazom „Späť na web“.
+2. **Galéria:** 1 veľká + 4 malé fotky, na poslednej „Všetkých N fotiek“.
+3. **Úvod (dva stĺpce):** vľavo kicker s lokalitou, H1 „Chalet STRÖMY. Celý len pre vás.“, jedna veta perexu, riadok údajov medzi linkami
+   (kapacita, spálne, kúpeľne, príchod, odchod — z dát objektu). Vpravo **malý panel** (karta, zaoblenie 24): „od 700 € / noc“, polia
+   Príchod | Odchod (klik → posun na kalendár), Spolu veľkou sumou + „X € na osobu a noc · daň v cene“, tlačidlo **Pozrieť pobyt**
+   (otvorí košík), pod ním „Storno zdarma do 30 dní pred príchodom“ (z nastavení storna).
+4. **Čo vás čaká:** 6 položiek v mriežke — tenká ikona v akcente, názov, jeden riadok (sauna, vírivka, skibus, lyžiareň, terasy, parkovanie).
+   Položky z vybavenia objektu (zvýraznené).
+5. **Fotka cez celú šírku** (~560 px), bez textu.
+6. **Dostupnosť a ceny** (kotva `#termin`) na svetlom páse: „Vyberte si termín. Cenu uvidíte hneď.“, šípky mesiacov, karta s **kalendárom
+   (dva mesiace)**, pod ním nápoveda, legenda sezón, vpravo Spolu + cena na osobu a **Pozrieť pobyt**.
+7. **Cenník na tmavom páse** (`#11212f`, jemný farebný opar): „Cena za celý chalet. Nie za osobu.“ (veta podľa spôsobu účtovania —
+   z dát, nie písaná). Tri stĺpce sezón: veľká cena, názov, termíny (mono), „za noc · od N nocí“. Pod tým mono riadok „V cene pobytu ·
+   od 6 nocí zľava 10 % · daň za ubytovanie v cene“ a „pilulky“ s fajkou (čo je v cene).
+8. **Referencie:** centrovaný nadpis „Vracajú sa. A hovoria prečo.“, tri karty s citátom a menom (mono).
+9. **Dobré vedieť:** rozbaľovacie riadky (storno podmienky, príchod a odchod, domáci poriadok) — obsah z nastavení, riadky „hodnota vľavo,
+   údaj vpravo“.
+10. **Záverečná výzva:** „Chalet je pripravený. Vyberte si termín.“, tlačidlá **Vybrať termín** (posun na kalendár) a **Napísať Jane** (obrys).
 
-**Pravý stĺpec (prilepený):** „od X € / noc“, tlačidlo **Rozbaliť** (otvorí košík), polia Príchod/Odchod, hostia, rozpis, Spolu, tlačidlo
-„Pokračovať k údajom“, poznámka o platbe prevodom a 24 h.
+**Prilepený pruh:** keď hosť zroluje pod úvodnú časť, zhora sa vysunie tmavý pruh (`#11212f`, cez celú šírku, rovné rohy): názov objektu,
+pilulka s termínom a počtom nocí, vpravo Spolu + cena na osobu a biele tlačidlo **Pozrieť pobyt**. Klik kdekoľvek na pruh otvorí košík.
+Keď je košík otvorený, pruh sa skryje. Bez termínu ukáže „Vyberte termín“ a tlačidlo posunie na kalendár.
 
-*Otvorené (návrh Claude, Martin zatiaľ nerozhodol):* služby na stránke zmenšiť na jednu vetu bez tlačidiel a objednávať ich v košíku;
-pravý panel zjednodušiť na termín, cenu a tlačidlo do košíka.
+**Texty tlačidiel podľa záväznosti:** stránka „Pozrieť pobyt“ → krok 1 „Pokračovať“ → krok 2 „K platbe“ → krok 3 záväzné tlačidlo, ktoré
+jednoznačne hovorí o objednávke s povinnosťou platby (presné znenie spolu s právnymi textami).
+
+**Tvary:** zaoblené sú prvky, ktoré na stránke plávajú (karty, tlačidlá — pilulky, bubliny, fotky v galérii). Prvky prichytené k okraju
+obrazovky (bočný panel, prilepený pruh, spodný pás na mobile) majú **rovné rohy**; bočný panel má tenkú linku na ľavom okraji.
 
 ## Kalendár (samostatný komponent, používa sa na stránke aj v košíku)
 
@@ -46,9 +77,9 @@ pravý panel zjednodušiť na termín, cenu a tlačidlo do košíka.
 - Pod kalendárom nápoveda: „Vyberte deň príchodu.“ / „Príchod 21. 12. — vyberte odchod. Minimálny pobyt 3 noci (zimná sezóna).“ /
   pri krátkom pobyte upozornenie v tehlovej farbe.
 
-## Košík (bočný panel sprava, 480 px, na mobile celá obrazovka)
+## Košík (bočný panel sprava, 480 px, rovné rohy, na mobile celá obrazovka)
 
-Otvára sa tlačidlom Rozbaliť; stmavené pozadie, zatvára krížik alebo klik mimo. **Tri kroky:** Váš pobyt → Údaje a želania → Platba.
+Otvára sa tlačidlom **Pozrieť pobyt** (panel, kalendár, prilepený pruh); stmavené pozadie, zatvára krížik alebo klik mimo. **Tri kroky:** Váš pobyt → Údaje a želania → Platba.
 Spodok panela je pevný (suma + hlavné tlačidlo), obsah sa posúva.
 
 **Krok 1 · Váš pobyt** (len to, čo treba na rozhodnutie, v tomto poradí):
@@ -76,7 +107,8 @@ Pevný spodok: Spolu + **K platbe**. *(Doplnky zámerne nie sú samostatný krok
 ## Mobil
 
 - Detail: fotka cez celú šírku s tlačidlom späť a počítadlom fotiek, potom rovnaký obsah pod sebou.
-- **Spodný pás stále na očiach:** suma, krátky popis („3 noci · so šéfkuchárom“), tlačidlo Rezervovať.
+- **Spodný pás stále na očiach** (rovné rohy): suma, krátky popis („3 noci · so šéfkuchárom“), tlačidlo **Pozrieť pobyt** (otvorí košík na celú obrazovku).
+- Doska mobilu na plátne je staršia (ešte so službami na stránke) — obsah a poradie sekcií sa riadia počítačom, služby len v košíku.
 - Výber termínu ako **spodné okno** cez celú obrazovku: mesiace pod sebou, dole suma, nápoveda k minimu a „Potvrdiť termín“.
 
 ## Neskôr (zapísané nápady)

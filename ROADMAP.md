@@ -8,7 +8,7 @@
 ## Aktuálne
 - **Kde sme (16. 10.):** kostra platformy Z2–Z6 hotová na stagingu https://booking-platform-obrazne.vercel.app. Časť B (doména) a rozsah MVP
   sú v `ARCHITEKTURA.md` (B1–B9, časť C). **Stavia sa MVP pre Chalet STRÖMY + showroom** (Z7–Z12).
-- **Ďalší krok pre Claude Code:** fronta Z10 → Z14, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
+- **Ďalší krok pre Claude Code:** fronta Z10 → Z15, za sebou bez prerušenia (`CLAUDE.md` → *Režim práce*).
 - **Ďalší krok pre Martina:** preklikať staging; odpovedať na otázky nižšie, keď bude čas (neblokujú prácu).
 - **Claude chat:** obchodný model, otázky pre Janu, kontrola výsledkov Z7–Z12.
 
@@ -80,10 +80,18 @@ Podľa `ARCHITEKTURA.md` → B7 *Detail objektu sa skladá zo sekcií* a `ROZHOD
    Prázdna sekcia sa skryje. Údaje zo systému (za objekt / za osobu, min. noci, storno, príchod/odchod, vybavenie, ceny) sa dosadzujú
    z dát, nepíšu sa do obsahu sekcie.
 4. Seed: sekcie pre Chalet STRÖMY (predloha „celý objekt“) a pre objekty showroomu (rôzne predlohy, nech je vidieť rozdiel).
-5. Rozhranie v administrácii **nestavaj** (príde po MVP). Vzhľad sekcií nemeň nad rámec `docs/vizual-stranka-hosta.md` —
-   nová verzia vizuálu príde samostatnou úlohou.
+5. Rozhranie v administrácii **nestavaj** (príde po MVP). Typy sekcií a ich vzhľad stavaj rovno podľa **vizuálu v1**
+   (`docs/vizual-stranka-hosta.md` → *Detail objektu*) — zvyšok vizuálu v1 dorobí Z15.
 6. Pravidlo vzhľadu: prvky prichytené k okraju obrazovky (bočný panel na stránke aj v administrácii, prilepený pruh, spodný pás na mobile)
    majú **rovné rohy**; zaoblené sú len prvky, ktoré na stránke plávajú (karty, tlačidlá, bubliny). Uprav, kde to dnes nesedí.
+
+### Z15 — Stránka hosťa podľa vizuálu v1
+Martin schválil vizuál **v1 (16. 10.)**: popis `docs/vizual-stranka-hosta.md` (začni sekciou *Zmeny oproti prvému popisu*), zdroj plátna
+`docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Košík v troch krokoch, kalendár a mobilný pás už sú zo Z9 —
+**dorob len rozdiel:** detail objektu ako vizuálne sekcie v poradí podľa popisu (ak to nespravila Z14), **služby na stránke vôbec nie**
+(len v košíku), malý pravý panel bez „Rozbaliť“, **prilepený pruh** pri rolovaní (skrytý pri otvorenom košíku), **texty tlačidiel**
+(„Pozrieť pobyt“ na stránke aj v pruhu a na mobile, záväzné tlačidlo až v kroku 3), rovné rohy pri okrajoch obrazovky.
+Texty cez preklady, farby z témy. Logiku rezervácie a výpočtu ceny nemeň.
 
 ---
 
@@ -147,6 +155,7 @@ Podľa `ARCHITEKTURA.md` → B7 *Detail objektu sa skladá zo sekcií* a `ROZHOD
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Vizuál stránky hosťa **v1 schválený** → `docs/navrhy/stranka-hosta/` + `docs/vizual-stranka-hosta.md`; úloha Z15. (Claude chat)
 - 2026-10-16 — Z9 prerobená podľa schváleného vizuálu (`docs/vizual-stranka-hosta.md`): Roboto + JetBrains Mono, kicker, nadpis
   z dvoch viet (`properties.tagline`), linky `#e9e5db`, karty 24, jeden akcent (STRÖMY smrekovo zelená). Kalendár: sezóny podfarbené
   (`seasons.color`) s legendou, cena v dni, náhľad rozsahu, tmavá bublina (deň, sezóna a cena, min. noci a zľava; pri odchode cena pobytu,
