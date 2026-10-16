@@ -119,9 +119,9 @@ rozhodnutia 16. 10. (*Referencie…*, *Stránka hosťa v2*).
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
-- **Captcha (Cloudflare Turnstile):** Martin súhlasí (16. 10.), ale účet Cloudflare ešte nemá. **Treba dorobiť:** Martin založí
-  účet Cloudflare a pošle kľúče Turnstile (site key + secret) → Claude Code ich zapojí do formulára hosťa, promo kódu a prihlásenia
-  do zóny hosťa + jednoduchý limit požiadaviek podľa IP. Dovtedy formulár chráni len skryté pole a podpísaný čas.
+- **Captcha (Cloudflare Turnstile):** widget `booking-platform` vytvorený v Martinovom účte Cloudflare (16. 10., cez `cf`), kľúče sú
+  v `.env.local` a vo Verceli (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`). **Ostáva zapojiť** do formulára hosťa, promo kódu
+  a prihlásenia do zóny + limit podľa IP (Claude Code, po Z19). Pre vlastné domény klientov treba doménu pridať do widgetu.
 - Ochrana stagingu: adresy *.vercel.app sú za prihlásením do Vercelu (aj chalet-stromy-demo.vercel.app). Ak chceš ukázať stránku Jane,
   treba buď vypnúť Vercel Deployment Protection pre produkčné nasadenie (stránka je neindexovaná, dáta ukážkové), alebo napojiť
   vlastnú doménu. Ktoré?
