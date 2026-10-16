@@ -122,6 +122,12 @@ PLATFORMA (Martin)
 - Rezervačná stránka a e-maily stavané na **premenných dizajnového systému**: farby, písma, logo, svetlý a tmavý režim.
   Nastavuje sa bez zásahu do kódu (súčasť balíkov).
 - **Zmena rozloženia** (layoutu) je platená práca navyše, nie nastavenie.
+- **Ako to funguje:** komponenty (tlačidlá, polia, kalendár, karty) sú pre všetkých rovnaké a používajú len premenné. Každý klient má v databáze
+  **tému**: logo, hlavná a doplnková farba, pozadie, písmo nadpisov a textu (z vybranej ponuky), zaoblenie rohov, svetlý/tmavý režim.
+  Aplikácia podľa domény pozná klienta a dosadí jeho premenné. Rovnaká téma platí pre rezervačnú stránku, widget aj e-maily.
+- **Poistky:** obmedzená sada nastavení (klient si nevie rozbiť vzhľad), automatická kontrola kontrastu (farba textu na tlačidle sa dopočíta),
+  náhľad pri zakladaní klienta.
+- Pri klientovi s vlastným webom sa téma nastaví podľa jeho webu (napr. globálne farby a písma z Elementor Kitu).
 
 ## A13. Notifikácie a mobil
 
