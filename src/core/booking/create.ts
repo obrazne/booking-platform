@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { calculatePrice } from "@/core/pricing/calculate";
-import { todayIso } from "@/core/pricing/dates";
+import { addDays, diffDays, todayIso } from "@/core/pricing/dates";
 import type { PriceLine } from "@/core/pricing/types";
 import { tr } from "@/core/i18n/localized";
 import { enabledModuleKeysPublic } from "@/core/modules/registry";
@@ -14,6 +14,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import { getPublicProperty } from "./catalog";
 import { toDiscounts, toPricingInput } from "./pricing-input";
+import { issueFormToken, verifyFormToken } from "./form-token";
 import { notifyReservationCreated } from "./notify";
 
 export type BookingState = {
@@ -22,6 +23,25 @@ export type BookingState = {
 };
 
 const MIN_FILL_MS = 3000;
+/** Longest stay a guest can hold or book online (longer stays by agreement with the owner). */
+const MAX_GUEST_NIGHTS = 30;
+
+/** Stay a guest may hold or book: not in the past (one day of time-zone slack), not absurdly long or far. */
+function guestStayAllowed(checkIn: string, checkOut: string): boolean {
+  const today = todayIso();
+  const nights = diffDays(checkIn, checkOut);
+  return (
+    checkIn >= addDays(today, -1) &&
+    checkIn <= addDays(today, 3 * 365) &&
+    nights >= 1 &&
+    nights <= MAX_GUEST_NIGHTS
+  );
+}
+
+/** Signed time stamp for the payment step (bot protection that the browser cannot fake). */
+export async function startBookingForm(): Promise<string> {
+  return issueFormToken();
+}
 
 const schema = z.object({
   slug: z.string().min(1),
@@ -48,7 +68,7 @@ const schema = z.object({
     .union([z.uuid(), z.literal("")])
     .optional()
     .default(""),
-  started_at: z.coerce.number().int(),
+  form_token: z.string().max(200),
   // Honeypot: real people never see this field.
   website: z.string().max(0).optional().default(""),
 });
@@ -71,7 +91,8 @@ export async function createGuestReservation(
   if (!parsed.success)
     return { error: "invalid", details: parsed.error.issues.map((i) => i.path.join(".")) };
   const v = parsed.data;
-  if (Date.now() - v.started_at < MIN_FILL_MS) return { error: "invalid" };
+  if (!verifyFormToken(v.form_token, MIN_FILL_MS)) return { error: "invalid" };
+  if (!guestStayAllowed(v.check_in, v.check_out)) return { error: "price" };
   if (form.get("consent_terms") !== "on" || form.get("consent_cancellation") !== "on") {
     return { error: "consent" };
   }
@@ -213,12 +234,17 @@ export async function holdTerm(
   const ok = z
     .object({ unitId: z.uuid(), checkIn: z.iso.date(), checkOut: z.iso.date() })
     .safeParse({ unitId, checkIn, checkOut });
-  if (!ok.success || checkOut <= checkIn) return null;
+  if (!ok.success || !guestStayAllowed(checkIn, checkOut)) return null;
   const tenant = await getTenantFromHost();
   if (!tenant) return null;
   const admin = createAdminClient();
-  const { data: unit } = await admin.from("units").select("tenant_id").eq("id", unitId).single();
-  if (unit?.tenant_id !== tenant.id) return null;
+  const { data: unit } = await admin
+    .from("units")
+    .select("tenant_id, active, property:properties(status)")
+    .eq("id", unitId)
+    .single();
+  if (unit?.tenant_id !== tenant.id || !unit.active || unit.property?.status !== "published")
+    return null;
   const { data, error } = await admin.rpc("create_hold", {
     p_unit_id: unitId,
     p_check_in: checkIn,

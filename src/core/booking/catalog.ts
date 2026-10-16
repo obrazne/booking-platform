@@ -50,7 +50,7 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   const { data: p } = await supabase
     .from("properties")
     .select(
-      "*, units(*, rates(*)), photos(*), property_terms(term_id), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content)",
+      "*, units(id, tenant_id, property_id, name, description, max_guests, bedrooms, is_default, active, sort, created_at, rates(*)), photos(*), property_terms(term_id), seasons(*, season_ranges(*)), fees(*), property_sections(id, type, sort, enabled, content)",
     )
     .eq("tenant_id", tenant.id)
     .eq("slug", slug)

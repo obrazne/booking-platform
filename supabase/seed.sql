@@ -15,7 +15,7 @@ on conflict (hostname) do nothing;
 
 -- Martin is the platform admin once his auth user exists (created via invite, see CLAUDE.md).
 insert into public.platform_admins (user_id)
-select p.id from public.profiles p where p.email = 'info@obrazne.sk'
+select u.id from auth.users u where u.email = 'info@obrazne.sk'
 on conflict (user_id) do nothing;
 
 insert into public.tenant_themes (tenant_id, primary_color, heading_font, body_font)

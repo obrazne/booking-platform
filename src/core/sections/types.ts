@@ -22,7 +22,7 @@ export const headingFields = {
 export type SectionData = {
   locale: string;
   property: Tables<"properties">;
-  units: Tables<"units">[];
+  units: Omit<Tables<"units">, "ical_export_token">[];
   unitId: string;
   photos: { url: string; alt: string }[];
   seasons: Season[];

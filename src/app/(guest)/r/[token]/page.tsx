@@ -119,6 +119,8 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           {qr ? (
             <div className="grid content-start justify-items-center gap-2">
               <div
+                role="img"
+                aria-label={t("reservation.qrHint")}
                 className="w-full max-w-[200px] rounded-xl bg-white p-2"
                 dangerouslySetInnerHTML={{ __html: qr }}
               />

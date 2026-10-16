@@ -10,6 +10,15 @@ export type OutgoingEmail = {
   attachments?: { filename: string; content: string; contentId?: string }[];
 };
 
+/** Reserved domains (RFC 2606/6761) never receive mail — used by automated tests, so nothing is sent for them. */
+export function isReservedRecipient(email: string): boolean {
+  const domain = email.split("@").pop()?.toLowerCase() ?? "";
+  return (
+    /\.(test|invalid|example|localhost)$/.test(domain) ||
+    /^(.+\.)?example\.(com|net|org)$/.test(domain)
+  );
+}
+
 /**
  * Sends through Resend (A7). Staging: EMAIL_REDIRECT_TO sends everything to one inbox (the original recipient is
  * named in the subject). The sender domain is the service's test domain until the client's own domain is verified.
@@ -17,6 +26,7 @@ export type OutgoingEmail = {
 export async function sendEmail(
   mail: OutgoingEmail,
 ): Promise<{ ok: true; id: string; to: string } | { ok: false; error: string }> {
+  if (isReservedRecipient(mail.to)) return { ok: true, id: "skipped:reserved-domain", to: mail.to };
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, error: "RESEND_API_KEY missing" };
   const redirect = process.env.EMAIL_REDIRECT_TO;

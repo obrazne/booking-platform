@@ -26,6 +26,7 @@ export function Gallery({
             key={p.url}
             type="button"
             onClick={() => setOpen(true)}
+            aria-label={p.alt || title}
             className={cn(
               "overflow-hidden",
               i === 0

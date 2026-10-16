@@ -7,7 +7,14 @@ export type LoginState = { error: "invalidCredentials" | "missingFields" | null 
 
 function safeNext(value: FormDataEntryValue | null): string {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/admin";
+  // Only paths on this site: "//evil", "/\evil" and anything with a scheme or host is refused.
+  if (!/^\/(?![/\\])/.test(next)) return "/admin";
+  try {
+    const url = new URL(next, "https://same.invalid");
+    return url.origin === "https://same.invalid" ? url.pathname + url.search + url.hash : "/admin";
+  } catch {
+    return "/admin";
+  }
 }
 
 export async function signIn(_prev: LoginState, formData: FormData): Promise<LoginState> {

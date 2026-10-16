@@ -34,6 +34,7 @@ import {
   createGuestReservation,
   holdTerm,
   previewPromo,
+  startBookingForm,
   type BookingState,
 } from "@/core/booking/create";
 import { toPricingInput, type PricingCatalog } from "@/core/booking/pricing-input";
@@ -1190,7 +1191,10 @@ function StepPayment() {
   const { holdId, failed } = useHold();
   const [code, setCode] = useState(promo?.code ?? "");
   const [promoMissing, setPromoMissing] = useState(false);
-  const [startedAt] = useState(() => Date.now());
+  const [formToken, setFormToken] = useState("");
+  useEffect(() => {
+    void startBookingForm().then(setFormToken);
+  }, []);
   const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
   const cancellation = data.settings.cancellationPolicy || t("booking.consentCancellation");
 
@@ -1222,7 +1226,7 @@ function StepPayment() {
           ["infants", b.infants],
           ["pets", b.pets],
           ["hold_id", holdId],
-          ["started_at", startedAt],
+          ["form_token", formToken],
           ["promo_code", promo?.code ?? ""],
           ["guest_name", b.guest.name],
           ["guest_email", b.guest.email],
@@ -1345,7 +1349,12 @@ function StepPayment() {
             {t(`booking.errors.${state.error}`)}
           </p>
         ) : null}
-        <Button type="submit" size="lg" className="rounded-full" disabled={pending || failed}>
+        <Button
+          type="submit"
+          size="lg"
+          className="rounded-full"
+          disabled={pending || failed || !formToken}
+        >
           {pending ? t("booking.submitting") : t("booking.submit")}
         </Button>
         <p className="text-muted-foreground text-xs">

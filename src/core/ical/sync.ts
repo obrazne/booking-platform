@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parseIcal } from "./ical";
+import { fetchCalendar } from "./safe-fetch";
 
 const MAX_BYTES = 2_000_000;
 const INTERVAL_MINUTES = 5;
@@ -25,14 +26,7 @@ export async function syncDueChannels(
   const stats = { synced: 0, errors: 0, conflicts: 0 };
   for (const ch of channels ?? []) {
     try {
-      const res = await fetch(ch.import_url, {
-        headers: { "user-agent": "booking-platform-ical/1.0" },
-        signal: AbortSignal.timeout(15_000),
-        redirect: "follow",
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      if (text.length > MAX_BYTES) throw new Error("Calendar too large");
+      const text = await fetchCalendar(ch.import_url, MAX_BYTES);
       if (!text.includes("BEGIN:VCALENDAR")) throw new Error("Not an iCalendar file");
       const events = parseIcal(text);
       const { data, error } = await admin.rpc("ical_apply", {

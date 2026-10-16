@@ -277,6 +277,17 @@ export function AvailabilityCalendar({
                       onFocus={() => setHover(date)}
                       onBlur={() => setHover(null)}
                       aria-pressed={edge}
+                      data-date={date}
+                      aria-label={[
+                        fmtDay.format(asDate(date)),
+                        d.busy
+                          ? t("busy")
+                          : !d.past && d.rate !== undefined
+                            ? t("perNight", { price: money(d.rate) })
+                            : null,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
                       style={
                         !edge && !inPreview && !d.busy && !d.past
                           ? { backgroundColor: tint(d.season?.color, "14") }
