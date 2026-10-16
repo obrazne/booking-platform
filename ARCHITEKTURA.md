@@ -109,6 +109,13 @@ PLATFORMA (Martin)
 - **Otvorené:** čo presne je „obrat“ pre mikro-províziu (s daňou za ubytovanie a službami? len zaplatené rezervácie? čo storná?),
   ako sa z podkladu stane faktúra (Martinov fakturačný nástroj), DPH pri nákupe zahraničných služieb (účtovník).
   Model sa navrhne tak, aby bol výhodný pre klientov aj pre Martina.
+- **Pracovné princípy z debaty 16. 10. (nie konečné rozhodnutie):**
+  - Cieľový segment: **luxusné chalety a väčší ubytovatelia** (obrat rádovo 10–15 tis. € mesačne), nie malí s pár stovkami eur.
+  - **Cena podľa hodnoty, nie podľa nákladov:** argumentom je úspora oproti províziám OTA a pohodlie (notifikácie, faktúry, prehľady, SMS…),
+    nie porovnanie s cenou Bookingu. Fix aj percentá primerane vyššie, nie „lacný“ produkt.
+  - Model **fix + percentá z priamych zaplatených rezervácií**; bez stropu. Väčším klientom **individuálne úľavy** po osobnej dohode.
+  - V cene musia byť okrem nástrojov aj **marketing a zisk** — Martin nesmie byť v mínuse.
+  - Modelové varianty z debaty: 99 € + 2 %, 149 € + 1,5 %, 79 € + 3 %; balík „bez starostí“ so všetkými modulmi.
 
 ## A11. Zakladanie klienta (sprievodca)
 
