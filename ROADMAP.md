@@ -8,15 +8,16 @@
 ## Aktuálne
 - **Kde sme (16. 10.):** rozhodnutý prechod z WordPressu na vlastnú aplikáciu. Technické základy sú dohodnuté
   (`ARCHITEKTURA.md` časť A, `ROZHODNUTIA.md`). **Kód sa zatiaľ nepíše** — najprv analýza existujúcich aplikácií a architektúra v2.
-- **Ďalší krok pre Claude Code:** Z1 — analýza Rental Van a Credit Managera (len čítanie).
-- **Ďalší krok pre Martina:** naklonovať tento repozitár na počítač (mimo `~/Antigravity`), spustiť v ňom Claude Code a dať `/dalej`.
+- **Ďalší krok pre Claude Code:** fronta je prázdna. Z1 hotová (`docs/analyza-existujucich-appiek.md`): odporúčanie začať čistým Next.js
+  projektom a preniesť vybrané časti, nie kópiou Rental Van.
+- **Ďalší krok pre Martina:** prečítať analýzu Z1 a odpovedať na otázku o bočnom paneli (*Otázky pre Martina*).
 - **Claude chat:** pokračuje s Martinom v architektúre v2 (časť B po kapitolách).
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
 po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom `/dalej`. Keď sú všetky ✅, sekciu vyprázdni.*
 
-### Z1 — Analýza Rental Van a Credit Managera (LEN ČÍTANIE)
+### Z1 ✅ — Analýza Rental Van a Credit Managera (LEN ČÍTANIE)
 
 **Cieľ:** zistiť, čo z dvoch existujúcich Martinových aplikácií prevezmeme do platformy, aby sa architektúra v2
 písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie, nič v tých aplikáciách nemeň.**
@@ -56,7 +57,7 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Martin: lokálny priečinok (mimo `~/Antigravity`) a Claude Code v ňom 🧠
 
 ## Fáza 1 — Analýza existujúcich aplikácií 🔧
-- [ ] Z1 — Rental Van a Credit Manager → `docs/analyza-existujucich-appiek.md`
+- [x] Z1 — Rental Van a Credit Manager → `docs/analyza-existujucich-appiek.md`
 
 ## Fáza 2 — Architektúra v2 🧠
 - [ ] Revízia doménových kapitol z v1 (časť B): dostupnosť a iCal, cenotvorba, doplnkové služby, rezervačný tok a stavy,
@@ -94,6 +95,8 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- Bočný panel: Credit Manager má len navigačný panel a záložky detailu, nie panel so záznamom vysunutý sprava (A1 „vzor bočného panelu“).
+  Myslel si taký panel? Potom ho navrhneme nanovo (stav v URL, Späť ho zavrie, na mobile cez celú obrazovku) — `docs/analyza-existujucich-appiek.md`.
 - V akom fakturačnom nástroji fakturuje Jana? (prvý adaptér na doklady)
 - Ponúka tvoj hosting úložisko (S3 alebo SFTP) na nezávislú zálohu? A so zmluvou o spracúvaní údajov?
 - Supabase platený plán: pri objednávke pozrieť limity a nastaviť strop výdavkov.
@@ -104,6 +107,8 @@ písala s reálnou znalosťou kódu. **Nič nestav, nezakladaj kostru aplikácie
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-16 — Z1: analýza `obrazne/van-rental` a `obrazne/credit-manager` (len čítanie, klony v dočasnom priečinku) → `docs/analyza-existujucich-appiek.md`.
+  Odporúčanie: čistý Next.js, prevziať kostru adminu, vzory rezervácie (RV) a bezpečnostné SQL vzory (CM). (Claude Code)
 - 2026-10-16 — Nasadenie u klienta (A17): subdoména klienta + widget s predvyplneným termínom; pre Janu úloha 3e. (Claude chat)
 - 2026-10-16 — Predajný web: WordPress + CrocoBuilder po MVP a značke (Fáza 5, ROZHODNUTIA). (Claude chat)
 - 2026-10-16 — Veľký obraz: do architektúry doplnené A10–A16 (obchodný model, sprievodca klienta, vzhľad, notifikácie, meranie,
