@@ -42,7 +42,7 @@ select ok((select street is null and approximate from public.property_public_loc
   'approximate location hides the street');
 select is((select street from public.property_public_location('20000000-0000-0000-0000-0000000000a2')), 'Verejná 2',
   'exact location shows the street');
-select is((select count(*)::int from public.property_places), 1, 'guest sees nearby places of a published property');
+select is((select count(*)::int from public.property_places where property_id = '20000000-0000-0000-0000-00000000000a'), 1, 'guest sees nearby places of a published property');
 reset role;
 
 set local role authenticated;
