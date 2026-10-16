@@ -2,6 +2,14 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Ručné rezervácie a provízia
+
+- **Ručná rezervácia zapísaná v systéme sa ráta do provízie** rovnako ako priama rezervácia (Martin). Majiteľ dostane všetky výhody
+  (faktúry, e-maily, štatistiky, kalendár); kto si rezerváciu vybaví mimo systému, robí všetko dvakrát.
+- Do provízie sa **nerátajú** rezervácie importované cez iCal z Bookingu a Airbnb (už platí) ani **blokácie** termínu (osobné použitie, údržba).
+  Blokácia preto nesmie mať údaje hosťa ani cenu — inak by sa dala použiť ako obchádzka.
+- Ceny služieb a storno pásma STRÖMY zatiaľ orientačne.
+
 ## 2026-10-16 — Doména (časť B) a rozsah MVP
 
 - Doménové požiadavky prevzaté z v1 (schválené v auguste) a z rozhodnutí WordPress fázy, prispôsobené aplikácii — `ARCHITEKTURA.md` B1–B9.

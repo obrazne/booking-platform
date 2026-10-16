@@ -115,7 +115,7 @@ PLATFORMA (Martin)
   - Cieľový segment: **luxusné chalety a väčší ubytovatelia** (obrat rádovo 10–15 tis. € mesačne), nie malí s pár stovkami eur.
   - **Cena podľa hodnoty, nie podľa nákladov:** argumentom je úspora oproti províziám OTA a pohodlie (notifikácie, faktúry, prehľady, SMS…),
     nie porovnanie s cenou Bookingu. Fix aj percentá primerane vyššie, nie „lacný“ produkt.
-  - Model **fix + percentá z priamych zaplatených rezervácií**; bez stropu. Väčším klientom **individuálne úľavy** po osobnej dohode.
+  - Model **fix + percentá z priamych zaplatených rezervácií** (vrátane ručných rezervácií zapísaných majiteľom; bez iCal importov a blokácií); bez stropu. Väčším klientom **individuálne úľavy** po osobnej dohode.
   - V cene musia byť okrem nástrojov aj **marketing a zisk** — Martin nesmie byť v mínuse.
   - Modelové varianty z debaty: 99 € + 2 %, 149 € + 1,5 %, 79 € + 3 %; balík „bez starostí“ so všetkými modulmi.
 
@@ -236,6 +236,7 @@ OBSADENOSŤ (occupancy) ── jedna tabuľka všetkého, čo blokuje jednotku: 
 - **Dvojitej rezervácii bráni databáza:** obmedzenie nad tabuľkou obsadenosti (jednotka + rozsah nocí `[)`) pre blokujúce záznamy.
   Pri kolízii pri importe z iCal sa nič neprepíše — vznikne upozornenie majiteľovi aj Martinovi (A16).
 - **Upratovací deň medzi pobytmi** voliteľne na objekte (rozsah obsadenosti sa predĺži).
+- **Blokácia** (osobné použitie, údržba) nemá údaje hosťa ani cenu a nepočíta sa do provízie; ručná rezervácia áno.
 - **Min. počet nocí a povolené dni príchodu podľa sezóny dňa príchodu**; cena sa počíta **po nociach podľa sezóny každej noci**
   (napr. 21.–24. 12. = 2 × zimná + 1 × Vianoce). Prekryv sezón rieši priorita.
 - **Dočasná blokácia** počas vypĺňania (cca 30 min) a pri prevode do termínu platby (predvolene 24 h, nastaviteľné).
