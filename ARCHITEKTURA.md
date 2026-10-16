@@ -21,7 +21,9 @@ Jedna aplikácia pre všetkých klientov (ubytovateľov). Každý klient má zap
 Weby okolo rezervácie (prezentácia objektu, blog) nie sú súčasťou aplikácie — môžu byť vo WordPresse alebo kdekoľvek inde.
 
 **Stack:** Next.js · Supabase (Postgres, prihlasovanie, úložisko) · Vercel · GitHub `obrazne/booking-platform`.
-Základ administrácie z aplikácie Rental Van, vzor bočného panelu z Credit Managera (podľa analýzy v `docs/`).
+**Čistý projekt** (aktuálny Next.js, App Router, strict TypeScript, shadcn/ui + Tailwind vygenerované nanovo, `@supabase/ssr`, migrácie cez
+Supabase CLI). Z Rental Van a Credit Managera sa prenášajú vybrané časti podľa `docs/analyza-existujucich-appiek.md`
+(kostra administrácie, zoznam s filtrami, kalendár obsadenosti, práca s fotkami, vzory rezervácie, bezpečnostné SQL vzory, postup migrácií).
 
 ## A2. Klienti a používatelia
 

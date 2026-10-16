@@ -2,6 +2,19 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-16 — Čistý projekt namiesto kópie Rental Van (po analýze Z1)
+
+- **Platforma sa začne čistým Next.js projektom** a z existujúcich aplikácií sa prenášajú vybrané časti. Nahrádza „základ: Rental Van“.
+  Dôvody z analýzy (`docs/analyza-existujucich-appiek.md`): Rental Van stojí na vlastnom PHP API nad MariaDB a vlastnom prihlasovaní —
+  presne vrstva, ktorá sa mení; Credit Manager je Vite SPA; ani jedna nemá klientov, RLS podľa klienta, preklady, centy ani moduly.
+  Z kópie by ostali len vizuálne komponenty, ktoré sa dajú preniesť po jednom (s prekladmi). Na čas to vplyv takmer nemá.
+- **Prenáša sa:** kostra administrácie (RV `AdminShell`/`AdminSidebar`, CM pás ikon), zoznam s filtrami a CSV (RV), kalendár obsadenosti (RV,
+  prerobiť na noci a jednotky), zmenšenie fotiek a úložisko s podpísanými URL, vzory rezervácie (snímka cien, história úprav, stavový automat
+  s e-mailmi, prepočet ceny na serveri), bezpečnostné SQL vzory a postup migrácií (CM).
+- **Potvrdené analýzou:** Rental Van dvojitej rezervácii nebráni nič → obmedzenie v databáze (A16) je nutnosť.
+- Technické voľby (rozhoduje Claude): aktuálny Next.js, strict TypeScript, shadcn/ui čerstvo, `@supabase/ssr`, Supabase CLI, testy RLS s asserciami (pgTAP),
+  e-mailové šablóny s prekladmi a fronta s opakovaním.
+
 ## 2026-10-16 — Nasadenie u klienta s vlastným webom
 
 - **Rezervácia beží na subdoméne klienta** (`rezervacia.<domena>`) v jeho vizuáli — hosť stále vidí doménu klienta a nepreľakne sa.
