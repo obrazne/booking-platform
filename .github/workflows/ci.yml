@@ -27,4 +27,6 @@ jobs:
         with:
           version: latest
       - run: supabase db start
+      - name: Migrations and seed load on a clean database
+        run: supabase db reset
       - run: supabase test db

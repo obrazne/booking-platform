@@ -60,6 +60,7 @@ create table public.properties (
   description jsonb not null default '{}'::jsonb,
   house_rules jsonb not null default '{}'::jsonb,
   included jsonb not null default '{}'::jsonb,
+  testimonials jsonb not null default '[]'::jsonb,
   status text not null default 'draft' check (status in ('draft', 'published', 'archived')),
   booking_mode text not null default 'whole' check (booking_mode in ('whole', 'units')),
   pricing_model text not null default 'per_night' check (pricing_model in ('per_night', 'per_person_night')),
