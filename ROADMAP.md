@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** ~~Z38 (recenzie pre hostí)~~ ✅ — linka A má frontu prázdnu; **B:** ~~Z37~~ ✅ → ~~Z39~~ ✅ → **Z42** (kolízia termínov — panel a odkazy).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** ~~Z38 (recenzie pre hostí)~~ ✅ — linka A má frontu prázdnu; **B:** ~~Z37~~ ✅ → ~~Z39~~ ✅ → ~~Z42~~ ✅ — linka B má frontu prázdnu.
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -173,7 +173,7 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z42 [B] 🔄 — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
+### Z42 [B] ✅ — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
 Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku
 Prepojenia (zoznam kalendárov) — tam nič o kolízii nie je. Majiteľ potrebuje vidieť **čo s čím koliduje a čo s tým spraviť**.
 1. **Panel kolízie** (vzor A18, `?panel=collision:<occupancy id>`): termín, odkiaľ udalosť prišla („Zavreté na Bookingu · Ostrý kalendár…“),
@@ -325,6 +325,29 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z42 [linka B]: **kolízia termínov — panel, zoznam, odkazy** (pripomienka 29). (Claude Code)
+  - **Rezervácie › Kolízie** (`/admin/collisions`) — samostatná stránka namiesto filtra v kalendári: kolízie sú zriedkavé a rozhádzané
+    po mesiacoch, kalendár ukazuje dva mesiace jednej jednotky. Otvorené a vyriešené, v menu položka (keď klient mal aspoň jednu
+    kolíziu) s odznakom otvorených; odznak aj pri skupine Rezervácie.
+  - **Panel kolízie** (`?panel=collision:<id>`, A18): termín, odkiaľ prišiel („Zavreté na Booking.com · kanál · jednotka“), počet nocí,
+    koľko sa prekrýva, kedy sa zistila; **s čím sa prekrýva** (rezervácia s číslom, menom, stavom a odkazom na jej panel / blokácia /
+    iný kalendár) a **rada podľa situácie** (zavreté na portáli + rezervácia, pobyt z portálu + rezervácia = dvojitá rezervácia, blokácia,
+    iný kalendár, už sa neprekrýva). Akcie Otvoriť rezerváciu, Zobraziť v kalendári (mesiac a jednotka, kolízia zvýraznená),
+    Označiť ako vyriešené / Znovu otvoriť.
+  - **Odkazy:** riadok synchronizácie na Prehľade a v Kalendári pri kolízii → zoznam (pri jednej rovno jej panel); upozornenie v zvončeku
+    (aj push) → panel (aj staršie upozornenia v DB prepísané); e-mail o kolízii → panel (pri viacerých zoznam); v kalendári klik na
+    kolízny pruh → panel. Kolízny pruh je v kalendári v druhom, tenšom riadku dňa (predtým ležal cez rezerváciu a texty sa prekrývali).
+    Pri chybe synchronizácie ostáva odkaz na Prepojenia a navrchu je veta, ktorý kalendár zlyhal a prečo.
+  - **Dáta** (migrácia `20261017250000_collisions.sql`): `occupancy.conflict_detected_at / conflict_resolved_at / conflict_resolved_by`,
+    trigger: vyriešenie sa zruší len pri zmene termínu udalosti (nezmenená udalosť pri synchronizácii ho nechá), vtedy znova zvonček;
+    `resolve_conflict` (len tím klienta, audit `conflict.resolved/reopened`, zmaže upozornenie zo zvončeka, prepočíta stav kanála);
+    `ical_apply` (rovnaká logika) počíta stav kanála len z nevyriešených kolízií (`ical_channel_status`) a v e-maile posiela id kolízie.
+    Migrácia má čas `…250000` (po `…240000` linky A, ktorá bola na stagingu skôr než v gite).
+  - Testy: pgTAP `collisions.test.sql` (iný klient nevyrieši, audit, zvonček, stav kanála, synchronizácia nechá vyriešené, zmena termínu
+    znova otvorí a zazvoní), Playwright `e2e/collisions.spec.ts` na **Ukážkovom klientovi** (vlastný neaktívny testový kanál na Glamping
+    Lúka, e-mail o kolízii hneď označený ako neodoslaný, test sa preskočí, ak by mal Ukážkový klient push na kolízie): zoznam → panel
+    (rada, rezervácia, 3 spoločné noci) → Otvoriť rezerváciu → späť → Označiť ako vyriešené, axe. Ostatné e2e (Prehľad, Kalendár)
+    som nespúšťal — podľa pravidiel liniek ich púšťa linka A na konci.
 - 2026-10-17 — Ukážkové dáta: hosť pre zónu hosťa `info+host@obrazne.sk` namiesto neexistujúceho `demo-host@obrazne.sk`
   (`scripts/demo-data.mjs`, CLAUDE.md); prejaví sa pri ďalšom `npm run demo-data -- --reset` na Ukážkovom klientovi.
 - 2026-10-17 — Z38: **recenzie pre hostí a na stránke** (B11, návrh v2.3 `UcetPobyt`, `Recenzie`). Modul Recenzie je v katalógu **hotový**.

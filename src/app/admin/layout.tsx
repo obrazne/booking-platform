@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
+import { openCollisions } from "@/core/admin/collisions";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
 import { getEnabledModules } from "@/core/modules/registry";
@@ -85,16 +86,21 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       }
     }
     const single = properties?.length === 1 ? `/admin/properties/${properties[0]!.id}` : null;
+    // Z42: "Kolízie" once the client had a collision of calendars; the badge counts the open ones.
+    const collisions = await openCollisions(active.tenantId);
     items.push(
       { href: "/admin", label: t("nav.dashboard"), icon: <LayoutDashboard /> },
       {
         label: t("nav.reservations"),
         icon: <BookOpenCheck />,
-        badge: waiting ?? 0,
+        badge: (waiting ?? 0) + collisions.open,
         children: [
           { href: "/admin/reservations", label: t("nav.list"), badge: waiting ?? 0 },
           { href: "/admin/calendar", label: t("nav.calendar") },
           { href: "/admin/blocks", label: t("nav.blocks") },
+          ...(collisions.any
+            ? [{ href: "/admin/collisions", label: t("nav.collisions"), badge: collisions.open }]
+            : []),
           ...extra.reservations,
         ],
       },

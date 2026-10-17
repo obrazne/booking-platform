@@ -131,6 +131,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/admin/c
             locale={locale}
             timezone={tenant.timezone}
             sync={<SyncLine sync={sync} />}
+            highlightId={typeof sp.highlight === "string" ? sp.highlight : undefined}
           />
         ) : (
           <p className="text-muted-foreground p-6">{t("empty")}</p>

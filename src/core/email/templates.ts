@@ -510,9 +510,16 @@ export async function renderIcalConflict(
     locale: string;
     adminUrl: string;
   },
-  payload: { channel?: string; conflicts?: { start: string; end: string }[] },
+  payload: { channel?: string; conflicts?: { id?: string; start: string; end: string }[] },
 ): Promise<OutgoingEmail | null> {
   if (!tenant.ownerEmail) return null;
+  // Z42: one collision → its panel; more → the list of collisions (adminUrl is the administration).
+  const ids = (payload.conflicts ?? []).map((c) => c.id).filter(Boolean);
+  const base = tenant.adminUrl.replace(/\/admin(\/.*)?$/, "");
+  const link =
+    ids.length === 1
+      ? `${base}/admin/collisions?panel=collision:${ids[0]}`
+      : `${base}/admin/collisions`;
   const locale = (tenant.locale in MESSAGES ? tenant.locale : "sk") as keyof typeof MESSAGES;
   const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: "emails" });
   const dates = (payload.conflicts ?? [])
@@ -527,11 +534,11 @@ export async function renderIcalConflict(
       t("owner_ical_conflict.subject", vars),
       [p(t("ownerGreeting")), p(t("owner_ical_conflict.intro", vars))],
       {
-        href: tenant.adminUrl,
-        label: t("openAdmin"),
+        href: link,
+        label: t("owner_ical_conflict.button"),
       },
     ),
-    text: [t("ownerGreeting"), t("owner_ical_conflict.intro", vars), tenant.adminUrl].join("\n\n"),
+    text: [t("ownerGreeting"), t("owner_ical_conflict.intro", vars), link].join("\n\n"),
   };
 }
 

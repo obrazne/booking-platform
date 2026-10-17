@@ -812,6 +812,9 @@ export type Database = {
       occupancy: {
         Row: {
           conflict: boolean
+          conflict_detected_at: string | null
+          conflict_resolved_at: string | null
+          conflict_resolved_by: string | null
           created_at: string
           created_by: string | null
           expires_at: string | null
@@ -828,6 +831,9 @@ export type Database = {
         }
         Insert: {
           conflict?: boolean
+          conflict_detected_at?: string | null
+          conflict_resolved_at?: string | null
+          conflict_resolved_by?: string | null
           created_at?: string
           created_by?: string | null
           expires_at?: string | null
@@ -844,6 +850,9 @@ export type Database = {
         }
         Update: {
           conflict?: boolean
+          conflict_detected_at?: string | null
+          conflict_resolved_at?: string | null
+          conflict_resolved_by?: string | null
           created_at?: string
           created_by?: string | null
           expires_at?: string | null
@@ -859,6 +868,13 @@ export type Database = {
           unit_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "occupancy_conflict_resolved_by_fkey"
+            columns: ["conflict_resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "occupancy_created_by_fkey"
             columns: ["created_by"]
@@ -3179,6 +3195,7 @@ export type Database = {
         Args: { p_channel_id: string; p_events: Json }
         Returns: Json
       }
+      ical_channel_status: { Args: { p_channel_id: string }; Returns: string }
       ical_export: {
         Args: { p_exclude_channel?: string; p_token: string }
         Returns: {
@@ -3385,6 +3402,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      resolve_conflict: {
+        Args: { p_occupancy_id: string; p_resolved?: boolean }
+        Returns: undefined
       }
       reveal_checkin_guest: {
         Args: { p_guest_id: string; p_purpose?: string }

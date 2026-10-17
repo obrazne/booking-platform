@@ -52,6 +52,23 @@ export default async function IcalPage() {
         <SyncButton action={syncNow} />
       </div>
 
+      {/* Z42: from "chyba synchronizácie · Pozrieť" the owner lands here — say right away which calendar failed. */}
+      {(channels ?? [])
+        .filter((c) => c.active && c.last_status === "error")
+        .map((c) => (
+          <p
+            key={c.id}
+            role="status"
+            className="card-warm rounded-[10px] px-4 py-3 text-sm font-normal text-[#5b3a1f]"
+          >
+            {t("syncFailed", {
+              name: c.name,
+              date: c.last_sync_at ? formatDateTime(c.last_sync_at, locale, tenant.timezone) : "—",
+            })}
+            {c.last_error ? ` ${t("syncFailedReason", { error: c.last_error })}` : ""}
+          </p>
+        ))}
+
       <Card>
         <CardHeader>
           <CardTitle>{t("export")}</CardTitle>

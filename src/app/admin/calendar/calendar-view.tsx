@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition, type KeyboardEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -61,6 +62,7 @@ export function CalendarView({
   locale,
   timezone,
   sync,
+  highlightId,
 }: {
   unitId: string;
   today: string;
@@ -74,12 +76,15 @@ export function CalendarView({
   locale: string;
   timezone: string;
   sync: ReactNode;
+  /** Event to point out (Z42 — "Zobraziť v kalendári" from the panel of a collision). */
+  highlightId?: string;
 }) {
   const t = useTranslations("adminV1.calendar");
   const tv = useTranslations("adminV1.reservations");
   const tr = useTranslations("reservations");
   const [selection, setSelection] = useState<Selection | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
+  const router = useRouter();
   const [quote, setQuote] = useState<StayQuote | null>(null);
   const [quoting, startQuote] = useTransition();
   const grid = useRef<HTMLDivElement>(null);
@@ -296,6 +301,11 @@ export function CalendarView({
                             title={label}
                             aria-label={`${label}, ${longDate(e.checkIn)} – ${longDate(e.checkOut)}`}
                             onClick={() => {
+                              // A collision has its own panel: what it overlaps and what to do (Z42).
+                              if (e.conflict) {
+                                router.push(`/admin/collisions?panel=collision:${e.id}`);
+                                return;
+                              }
                               setSelection(null);
                               setQuote(null);
                               setEventId(e.id);
@@ -309,7 +319,11 @@ export function CalendarView({
                               OCCUPANCY_CLASS[e.kind],
                               left,
                               right,
-                              e.conflict && "ring-2 ring-[#c07a3e]",
+                              // A collision lies over a stay (same dates): a thinner bar in a second row (Z42).
+                              e.conflict &&
+                                "top-[52px] h-5 text-[10px] ring-2 ring-[#c07a3e] md:top-[64px] md:h-5 md:text-[11px]",
+                              highlightId === e.id &&
+                                "z-10 animate-pulse ring-4 ring-[#c07a3e] motion-reduce:animate-none",
                               eventId === e.id && "ring-ink ring-2",
                             )}
                           >

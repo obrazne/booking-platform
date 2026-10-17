@@ -1,6 +1,7 @@
 import "server-only";
 import { addDays, diffDays } from "@/core/pricing/dates";
 import { createClient } from "@/lib/supabase/server";
+import { openCollisions } from "./collisions";
 import { occupancyOfReservation, type OccupancyKind } from "./status";
 
 /** One stay, portal booking or block in the calendar, as nights [checkIn, checkOut). */
@@ -121,6 +122,8 @@ export type SyncState = {
   /** Minutes since the last synchronisation (null = never). */
   minutesAgo: number | null;
   problem: "conflict" | "error" | null;
+  /** Where "Pozrieť" leads (Z42): the panel of the only open collision, the list of collisions, the calendars. */
+  href: string;
 };
 
 export async function loadSyncState(tenantId: string): Promise<SyncState> {
@@ -136,13 +139,21 @@ export async function loadSyncState(tenantId: string): Promise<SyncState> {
     .filter((v): v is string => Boolean(v))
     .sort()
     .at(-1);
-  const problem = rows.some((r) => r.last_status === "conflict")
-    ? "conflict"
-    : rows.some((r) => r.last_status === "error")
-      ? "error"
-      : null;
+  const collisions = await openCollisions(tenantId);
+  const problem =
+    collisions.open > 0 || rows.some((r) => r.last_status === "conflict")
+      ? "conflict"
+      : rows.some((r) => r.last_status === "error")
+        ? "error"
+        : null;
+  const href =
+    problem === "conflict"
+      ? collisions.onlyId
+        ? `/admin/collisions?panel=collision:${collisions.onlyId}`
+        : "/admin/collisions"
+      : "/admin/ical";
   const minutesAgo = last
     ? Math.max(0, Math.round((Date.now() - new Date(last).getTime()) / 60_000))
     : null;
-  return { channels: rows.length, minutesAgo, problem };
+  return { channels: rows.length, minutesAgo, problem, href };
 }

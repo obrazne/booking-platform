@@ -54,7 +54,7 @@ export async function SyncLine({ sync }: { sync: SyncState }) {
       <p className="card-warm flex flex-wrap items-center gap-2.5 rounded-[10px] px-3.5 py-2.5 text-[13px] font-normal text-[#5b3a1f]">
         <span className="size-2 rounded-full bg-[#c07a3e]" />
         {t(sync.problem)} · {ago}
-        <Link href="/admin/ical" className="font-medium underline underline-offset-4">
+        <Link href={sync.href} className="font-medium underline underline-offset-4">
           {t("check")}
         </Link>
       </p>
