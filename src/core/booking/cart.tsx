@@ -12,7 +12,6 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
-  CalendarDays,
   Check,
   ChevronDown,
   ChevronRight,
@@ -105,8 +104,9 @@ function useHold(enabled: boolean) {
 const initialState: BookingState = { error: null };
 
 /**
- * Cart v2 (side panel up to 1040 px): steps on the left, the green summary on the right with the button always at
- * the bottom. Phones: full screen, green bar at the bottom with the breakdown sliding up.
+ * Cart v2.2 (side panel up to 1040 px, tuned for a 13″ notebook): steps on the left, the green summary (320 px) on
+ * the right fits without scrolling — what I buy and for how much, with the button and one line of reassurance at the
+ * bottom. Phones: full screen, green bar at the bottom with the breakdown sliding up.
  */
 export function Cart() {
   const t = useTranslations("guest");
@@ -129,11 +129,17 @@ export function Cart() {
   }, [b.open, b.step, formToken]);
 
   const ready = Boolean(b.price?.ok);
+  const calendarOpen = b.cartCalendar || !(b.range.checkIn && b.range.checkOut);
   const f = b.guest;
   const contactValid = f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email);
   const cta =
     b.step === 1
-      ? { label: t("cart.continue"), disabled: !ready, onClick: () => b.setStep(2) }
+      ? {
+          label: t("cart.continue"),
+          // Muted while the calendar is open: "Hotovo" closes it with a valid stay first.
+          disabled: !ready || calendarOpen,
+          onClick: () => b.setStep(2),
+        }
       : b.step === 2
         ? {
             label: t("cart.toPayment"),
@@ -151,9 +157,9 @@ export function Cart() {
       form={cta.submit ? FORM_ID : undefined}
       disabled={cta.disabled}
       onClick={cta.submit ? undefined : cta.onClick}
-      className="btn-on-accent inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-6"
+      className="btn-on-accent inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-5 text-center"
     >
-      {cta.label} <ChevronRight className="size-4" />
+      {cta.label} {cta.submit ? null : <ChevronRight className="size-4 shrink-0" />}
     </button>
   );
 
@@ -166,9 +172,9 @@ export function Cart() {
         <SheetTitle className="sr-only">{t("cart.step1")}</SheetTitle>
         <CartHeader />
         <div className="flex min-h-0 flex-1">
-          <div className="min-w-0 flex-1 overflow-y-auto px-5 pt-6 pb-32 sm:px-10 sm:pt-8 lg:pb-12">
+          <div className="min-w-0 flex-1 overflow-y-auto px-5 pt-6 pb-32 sm:px-10 sm:pt-7 lg:pb-10">
             {b.step === 1 ? (
-              <StepStay wide={wide} />
+              <StepStay wide={wide} calendarOpen={calendarOpen} />
             ) : b.step === 2 ? (
               <StepDetails />
             ) : (
@@ -185,12 +191,26 @@ export function Cart() {
               />
             )}
           </div>
-          <aside className="bg-surface-accent hidden w-[340px] shrink-0 flex-col text-white lg:flex">
-            <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-[26px] py-6">
+          <aside className="bg-surface-accent hidden w-[320px] shrink-0 flex-col text-white lg:flex">
+            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 pt-5 pb-4">
               <Summary />
             </div>
-            <div className="shrink-0 border-t border-white/18 px-[26px] pt-4 pb-[22px]">
+            <div className="grid shrink-0 gap-2.5 border-t border-white/18 px-6 pt-3.5 pb-4">
+              {b.step > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => b.setStep(b.step === 3 ? 2 : 1)}
+                  className="text-on-accent-soft justify-self-start text-[13px] font-medium hover:text-white"
+                >
+                  ← {b.step === 2 ? t("v2.backToStayShort") : t("v2.backToDetails")}
+                </button>
+              ) : null}
               {ctaButton}
+              {b.data.trust[0] ? (
+                <p className="text-on-accent-soft inline-flex items-start gap-1.5 text-xs">
+                  <Check className="mt-px size-3.5 shrink-0" aria-hidden /> {b.data.trust[0]}
+                </p>
+              ) : null}
             </div>
           </aside>
         </div>
@@ -225,26 +245,23 @@ export function Cart() {
   );
 }
 
+/** Step bar (v2.2, 52 px): numbers 22 px joined by short lines; a finished step has a tick and leads back. */
 function CartHeader() {
   const t = useTranslations("guest");
   const b = useBooking();
   const steps = [t("v2.step1"), t("v2.step2"), t("v2.step3")];
   return (
-    <div className="border-line flex shrink-0 items-center justify-between gap-4 border-b px-5 py-3 sm:px-8 sm:py-4">
-      <ol className="hidden flex-wrap items-center gap-x-[22px] gap-y-2 lg:flex">
+    <div className="border-line flex min-h-[52px] shrink-0 items-center justify-between gap-4 border-b px-5 py-2 sm:px-8">
+      <ol className="hidden items-center gap-3 lg:flex">
         {steps.map((label, i) => {
           const n = i + 1;
           const active = b.step === n;
           const done = b.step > n;
-          return (
-            <li
-              key={label}
-              className="inline-flex items-center gap-2.5"
-              aria-current={active ? "step" : undefined}
-            >
+          const inner = (
+            <>
               <span
                 className={cn(
-                  "inline-flex size-7 items-center justify-center rounded-full text-[13px] font-bold",
+                  "inline-flex size-[22px] items-center justify-center rounded-full text-[12px] font-bold",
                   active
                     ? "bg-primary text-primary-foreground"
                     : done
@@ -252,13 +269,39 @@ function CartHeader() {
                       : "bg-muted text-muted-foreground",
                 )}
               >
-                {done ? <Check className="size-3.5" /> : n}
+                {done ? <Check className="size-3" strokeWidth={3} /> : n}
               </span>
               <span
-                className={cn("text-sm", active ? "text-ink font-bold" : "text-muted-foreground")}
+                className={cn(
+                  "text-[13px]",
+                  active ? "text-ink font-bold" : done ? "text-ink" : "text-muted-foreground",
+                )}
               >
                 {label}
               </span>
+            </>
+          );
+          return (
+            <li
+              key={label}
+              className="inline-flex items-center gap-3"
+              aria-current={active ? "step" : undefined}
+            >
+              {i > 0 ? <span aria-hidden className="bg-line h-px w-6" /> : null}
+              {done ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    b.setStep(n as 1 | 2 | 3);
+                    b.setCartCalendar(false);
+                  }}
+                  className="inline-flex min-h-9 items-center gap-2 rounded-full hover:underline"
+                >
+                  {inner}
+                </button>
+              ) : (
+                <span className="inline-flex items-center gap-2">{inner}</span>
+              )}
             </li>
           );
         })}
@@ -280,7 +323,7 @@ function CartHeader() {
         type="button"
         variant="outline"
         size="icon"
-        className="border-line size-10 rounded-full"
+        className="border-line size-[34px] rounded-full"
         onClick={b.closeCart}
         aria-label={t("cart.close")}
       >
@@ -325,99 +368,64 @@ function BackPill({ onClick, children }: { onClick: () => void; children: ReactN
 
 // ------------------------------------------------------------------------------------------- step 1
 
-function StepStay({ wide }: { wide: boolean }) {
+function StepStay({ wide, calendarOpen }: { wide: boolean; calendarOpen: boolean }) {
   const t = useTranslations("guest");
   const b = useBooking();
   const { data, range } = b;
-  const d = useDates();
   const hasDates = Boolean(range.checkIn && range.checkOut);
-  const nights = b.price?.ok ? b.price.nights : 0;
-  return (
-    <div className="grid gap-10">
-      {data.photos.length > 0 ? (
-        <div className="grid h-[150px] grid-cols-[2fr_1fr_1fr] gap-2 sm:h-[190px]">
-          {data.photos.slice(0, 3).map((p, i) => (
-            <div key={p.url} className="relative overflow-hidden rounded-lg">
-              <Image
-                src={p.url}
-                alt={p.alt}
-                fill
-                sizes={i === 0 ? "400px" : "200px"}
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      ) : null}
+  const guests = (
+    <div className="border-line rounded-lg border px-4 py-2 lg:hidden">
+      <Guests />
+    </div>
+  );
 
+  // No dates yet, or "Zmeniť": the calendar on the left, extras wait until it is closed with a valid stay.
+  if (calendarOpen) {
+    return (
       <section className="grid gap-[18px]">
         <SectionTitle title={t("v2.cartDatesTitle")} sub={t("v2.cartDatesSub")} />
-        {!b.cartCalendar && hasDates ? (
-          <div className="border-line flex flex-wrap items-center justify-between gap-x-5 gap-y-3 rounded-lg border px-5 py-4">
-            <div className="flex items-center gap-3.5">
-              <CalendarDays className="text-primary size-6" />
-              <div className="grid gap-0.5">
-                <span className="text-ink text-lg font-bold">
-                  {d.long(range.checkIn!)} – {d.long(range.checkOut!)}
-                </span>
-                <span className="text-muted-foreground text-sm">
-                  {t("cart.nightsGuests", { nights, guests: b.adults + b.children })}
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              aria-expanded={false}
-              onClick={() => b.setCartCalendar(true)}
-              className="text-ink min-h-10 rounded-full bg-[#f7f4ed] px-4 text-sm font-medium"
-            >
-              {t("v2.changeDates")}
-            </button>
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            {hasDates ? (
-              <button
-                type="button"
-                aria-expanded
-                onClick={() => b.setCartCalendar(false)}
-                className="text-ink min-h-9 justify-self-start rounded-full bg-[#f7f4ed] px-3.5 text-[13px] font-medium"
-              >
-                {t("v2.hideCalendar")}
-              </button>
-            ) : null}
-            <div className="border-line rounded-lg border px-4 py-5 sm:px-6">
-              <AvailabilityCalendar
-                locale={data.locale}
-                currency={data.catalog.currency}
-                seasons={data.catalog.seasons}
-                rates={data.catalog.rates}
-                discounts={data.catalog.discounts}
-                busy={data.busy}
-                today={data.today}
-                value={range}
-                // The calendar stays open after choosing: the guest sees arrival, departure and the nights
-                // between; hiding it is their choice ("Hotovo, skryť kalendár").
-                onChange={b.setRange}
-                months={wide ? 2 : 1}
-                stayPrice={b.stayPrice}
-              />
-            </div>
-          </div>
-        )}
+        <div className="border-line rounded-lg border px-4 py-5 sm:px-6">
+          <AvailabilityCalendar
+            locale={data.locale}
+            currency={data.catalog.currency}
+            seasons={data.catalog.seasons}
+            rates={data.catalog.rates}
+            discounts={data.catalog.discounts}
+            busy={data.busy}
+            today={data.today}
+            value={range}
+            // The calendar stays open after choosing (arrival, departure and the nights between stay visible);
+            // the guest closes it with "Hotovo".
+            onChange={b.setRange}
+            months={wide ? 2 : 1}
+            stayPrice={b.stayPrice}
+          />
+        </div>
         {b.price && !b.price.ok ? (
           <p className="text-sm text-[#b5532f]">{errorsText(t, b.price)}</p>
         ) : null}
-        <div className="border-line rounded-lg border px-4 py-2 lg:hidden">
-          <Guests />
-        </div>
+        <Button
+          type="button"
+          className="justify-self-start rounded-full px-6 font-bold"
+          disabled={!hasDates || !b.price?.ok}
+          onClick={() => b.setCartCalendar(false)}
+        >
+          {t("v2.done")}
+        </Button>
+        {guests}
       </section>
+    );
+  }
 
+  return (
+    <div className="grid gap-8">
+      {guests}
       <Extras />
-
-      <div className="lg:hidden">
-        <TestimonialCarousel />
-      </div>
+      {data.testimonials.length > 0 ? (
+        <div className="rounded-lg bg-[#f4f3ef] px-5 py-4">
+          <TestimonialCarousel />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -482,7 +490,7 @@ function Guests({ tone = "light" }: { tone?: "light" | "accent" }) {
   );
 }
 
-/** Extras as rows (v2): circle to add, small photo, name and price model, sum for the stay; the arrow opens the row. */
+/** Extras as one-line rows (v2.2, ~54 px): circle to add, name, price model, sum for the stay; a click opens one row in place. */
 function Extras() {
   const t = useTranslations("guest");
   const b = useBooking();
@@ -493,9 +501,9 @@ function Extras() {
   if (list.length === 0) return null;
   const visible = list.length > 6 && !showAll ? list.slice(0, 5) : list;
   return (
-    <section className="grid gap-[18px]">
+    <section className="grid gap-4">
       <div className="grid gap-1.5">
-        <SectionTitle size="md" title={t("v2.extrasTitle")} sub={t("v2.extrasSub")} />
+        <SectionTitle title={t("v2.extrasTitle")} sub={t("v2.extrasSub")} />
         <span className="text-muted-foreground text-sm">
           {data.contact?.name
             ? t("v2.extrasHint", { name: data.contact.name })
@@ -545,16 +553,17 @@ function ExtraRow({ s, open, onToggle }: { s: Service; open: boolean; onToggle: 
   const forGroups = s.priceModel === "per_person" || s.priceModel === "per_person_night";
   const sum = serviceTotal(s, nights || 1, persons, perItem ? items : 1);
   const name = tr(s.name, data.locale);
+  const panelId = `extra-${s.id}`;
   return (
-    <li className="border-line border-b">
-      <div className="flex items-center gap-3.5 py-3">
+    <li className={cn("border-line border-b", open && "bg-[#f7f6f2]")}>
+      <div className="flex min-h-[54px] items-center gap-3 py-2 pr-1">
         <button
           type="button"
           aria-pressed={on}
           aria-label={name}
           onClick={() => b.setService(s.id, on ? 0 : perItem ? items : 1)}
           className={cn(
-            "inline-flex size-6 shrink-0 items-center justify-center rounded-full border-2",
+            "ml-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full border-2",
             on ? "border-primary bg-primary text-primary-foreground" : "border-[#c9cdc8]",
           )}
         >
@@ -564,42 +573,39 @@ function ExtraRow({ s, open, onToggle }: { s: Service; open: boolean; onToggle: 
           type="button"
           onClick={onToggle}
           aria-expanded={open}
-          className="flex min-w-0 flex-1 items-center gap-3.5 text-left"
+          aria-controls={panelId}
+          className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left sm:flex-row sm:items-baseline sm:gap-2.5"
         >
-          <span className="relative size-[52px] shrink-0 overflow-hidden rounded-md bg-[#f1eee6]">
-            {image ? <Image src={image} alt="" fill sizes="52px" className="object-cover" /> : null}
-          </span>
-          <span className="grid min-w-0 gap-0.5">
-            {forGroups ? (
-              <span className="text-accent-2 font-mono text-[10px] font-medium tracking-widest uppercase">
-                {t("v2.forGroups")}
-              </span>
-            ) : null}
-            <span className="text-ink text-[15px] font-medium">{name}</span>
-            <span className="text-muted-foreground text-[13px]">{tm(s.priceModel)}</span>
-          </span>
+          <span className="text-ink truncate text-[15px] font-medium">{name}</span>
+          <span className="text-muted-foreground truncate text-[13px]">{tm(s.priceModel)}</span>
         </button>
-        <span className="text-ink hidden text-sm font-medium whitespace-nowrap tabular-nums sm:inline">
-          {nights ? t("cart.forStay", { price: money(sum) }) : money(s.amountCents)}
+        <span className="text-ink text-sm font-medium whitespace-nowrap tabular-nums">
+          {nights ? `${on ? "" : "+ "}${money(sum)}` : money(s.amountCents)}
         </span>
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={open}
+          aria-controls={panelId}
           aria-label={t("v2.showMoreAbout", { name })}
-          className="border-line text-muted-foreground inline-flex size-9 shrink-0 items-center justify-center rounded-full border"
+          className="text-muted-foreground inline-flex size-8 shrink-0 items-center justify-center rounded-full"
         >
           <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} />
         </button>
       </div>
       {open ? (
-        <div className="flex flex-wrap gap-5 pb-5 sm:pl-10">
+        <div id={panelId} className="flex flex-wrap gap-5 px-1 pb-5 sm:pl-10">
           {image ? (
-            <div className="relative h-[150px] w-full overflow-hidden rounded-lg sm:w-[220px]">
-              <Image src={image} alt="" fill sizes="220px" className="object-cover" />
+            <div className="relative h-[100px] w-[150px] shrink-0 overflow-hidden rounded-lg">
+              <Image src={image} alt="" fill sizes="150px" className="object-cover" />
             </div>
           ) : null}
           <div className="grid min-w-0 flex-[1_1_260px] content-start gap-3">
+            {forGroups ? (
+              <span className="text-accent-2 font-mono text-[10px] font-medium tracking-widest uppercase">
+                {t("v2.forGroups")}
+              </span>
+            ) : null}
             {first ? <p className="text-muted-foreground leading-relaxed">{first}</p> : null}
             {rest.length > 0 ? (
               <ul className="grid gap-1.5">
@@ -650,7 +656,9 @@ function StepDetails() {
   const field = "border-line min-h-12 rounded-lg px-3.5 text-[15px]";
   return (
     <div className="grid max-w-[620px] gap-7">
-      <BackPill onClick={() => b.setStep(1)}>{t("v2.backToStay")}</BackPill>
+      <div className="lg:hidden">
+        <BackPill onClick={() => b.setStep(1)}>{t("v2.backToStay")}</BackPill>
+      </div>
       <SectionTitle title={t("cart.whoTitle")} sub={t("cart.whoSub")} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-1.5 sm:col-span-2">
@@ -698,8 +706,9 @@ function StepDetails() {
           />
         </div>
       </div>
+      <AskOwner />
       {b.data.catalog.services.length > 0 ? (
-        <div className="border-line grid gap-2.5 border-t pt-[18px]">
+        <div className="border-line grid gap-2.5 border-t pt-[18px] lg:hidden">
           <span className="kicker text-muted-foreground text-[11px]">{t("v2.yourExtras")}</span>
           <span className="text-ink text-[15px]">
             {chosen.length > 0
@@ -806,10 +815,13 @@ function StepPayment({
         <input type="text" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <BackPill onClick={() => b.setStep(2)}>{t("cart.back")}</BackPill>
-      <SectionTitle title={t("cart.payTitle")} />
+      <div className="lg:hidden">
+        <BackPill onClick={() => b.setStep(2)}>{t("cart.back")}</BackPill>
+      </div>
+      <SectionTitle title={t("cart.payTitle")} sub={t("cart.paySub")} />
       {failed ? <p className="text-sm text-[#b5532f]">{t("booking.takenNow")}</p> : null}
-      <dl className="grid gap-2 text-sm">
+      {/* The summary on the right has the breakdown; phones see it here. */}
+      <dl className="grid gap-2 text-sm lg:hidden">
         {lines.map((l, i) => (
           <div key={i} className="flex justify-between gap-3">
             <dt className="text-muted-foreground">
@@ -860,6 +872,16 @@ function StepPayment({
           </p>
         ) : null}
       </div>
+
+      {data.trust.length > 0 ? (
+        <ul className="grid gap-2.5 rounded-lg bg-[#f4f3ef] px-5 py-4 text-sm">
+          {data.trust.map((line) => (
+            <li key={line} className="text-ink inline-flex items-start gap-2.5">
+              <Check className="text-primary mt-0.5 size-4 shrink-0" aria-hidden /> {line}
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <div className="grid gap-3">
         <Label className="items-start font-normal">
@@ -995,19 +1017,19 @@ function Summary({ compact }: { compact?: boolean }) {
                   : t("cart.selectDates")}
               </span>
               {nights ? (
-                <span className="text-on-accent-muted text-[13px]">
+                <span className="text-on-accent-soft text-[13px]">
                   {t("cart.nightsGuests", { nights, guests: b.adults + b.children })}
                 </span>
               ) : null}
             </div>
-            {b.step > 1 ? (
+            {range.checkIn && range.checkOut ? (
               <button
                 type="button"
                 onClick={() => {
                   b.setStep(1);
                   b.setCartCalendar(true);
                 }}
-                className="min-h-[34px] rounded-full bg-white/15 px-3 text-[13px] font-medium text-white hover:bg-white/25"
+                className="text-ink min-h-[34px] rounded-full bg-white px-3 text-[13px] font-bold hover:bg-white/90"
               >
                 {t("cart.change")}
               </button>
@@ -1063,48 +1085,105 @@ function Summary({ compact }: { compact?: boolean }) {
         </div>
       ) : null}
 
-      {/* 5 · Reassurance, set apart in a deeper tone: facts, one testimonial, the person who answers */}
-      <div className="bg-accent-deep -mx-[26px] mt-auto -mb-6 grid gap-4 px-[26px] pt-5 pb-6 max-lg:mx-0 max-lg:mb-0 max-lg:rounded-lg max-lg:px-4">
-        <ul className="text-on-accent-soft grid gap-2 text-[13px]">
-          {data.trust.map((line) => (
-            <li key={line} className="inline-flex items-start gap-2">
-              <Check className="text-on-accent-muted mt-0.5 size-4 shrink-0" /> {line}
-            </li>
-          ))}
-        </ul>
-        {!compact ? <TestimonialCarousel tone="accent" /> : null}
-        <div className="flex items-center gap-3 border-t border-white/15 pt-4">
-          <span className="text-primary inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-bold">
-            {initials}
-          </span>
-          <span className="grid min-w-0 flex-1 leading-tight">
-            <span className="text-on-accent-muted text-xs">{t("v2.questions")}</span>
-            <span className="text-[15px] font-bold text-white">
-              {contact?.name ?? t("v2.ownerFallback")}
+      {/* 5 · Phones only (v2.2): on a computer the reassurances are in step 3, the testimonial in step 1, the owner in step 2. */}
+      {compact ? (
+        <div className="bg-accent-deep grid gap-4 rounded-lg px-4 pt-5 pb-6">
+          <ul className="text-on-accent-soft grid gap-2 text-[13px]">
+            {data.trust.map((line) => (
+              <li key={line} className="inline-flex items-start gap-2">
+                <Check className="text-on-accent-muted mt-0.5 size-4 shrink-0" /> {line}
+              </li>
+            ))}
+          </ul>
+          {!compact ? <TestimonialCarousel tone="accent" /> : null}
+          <div className="flex items-center gap-3 border-t border-white/15 pt-4">
+            <span className="text-primary inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-bold">
+              {initials}
             </span>
-          </span>
-          {wa ? (
-            <a
-              href={wa}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={t("cart.whatsapp")}
-              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
-            >
-              <MessageCircle className="size-4" />
-            </a>
-          ) : null}
-          {contact?.phone ? (
-            <a
-              href={`tel:${contact.phone.replace(/\s/g, "")}`}
-              aria-label={t("cart.call")}
-              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
-            >
-              <Phone className="size-4" />
-            </a>
-          ) : null}
+            <span className="grid min-w-0 flex-1 leading-tight">
+              <span className="text-on-accent-muted text-xs">{t("v2.questions")}</span>
+              <span className="text-[15px] font-bold text-white">
+                {contact?.name ?? t("v2.ownerFallback")}
+              </span>
+            </span>
+            {wa ? (
+              <a
+                href={wa}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t("cart.whatsapp")}
+                className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
+              >
+                <MessageCircle className="size-4" />
+              </a>
+            ) : null}
+            {contact?.phone ? (
+              <a
+                href={`tel:${contact.phone.replace(/\s/g, "")}`}
+                aria-label={t("cart.call")}
+                className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"
+              >
+                <Phone className="size-4" />
+              </a>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
+  );
+}
+
+/** Step 2 (v2.2): "Otázky pred rezerváciou? Odpovedá Jana." with WhatsApp and a call — only with the owner's details. */
+function AskOwner() {
+  const t = useTranslations("guest");
+  const b = useBooking();
+  const d = useDates();
+  const contact = b.data.contact;
+  if (!contact?.whatsapp && !contact?.phone) return null;
+  const { range } = b;
+  const wa = contact.whatsapp
+    ? `https://wa.me/${contact.whatsapp.replace(/\D/g, "")}${
+        range.checkIn && range.checkOut
+          ? `?text=${encodeURIComponent(
+              t("cart.whatsappText", {
+                from: d.long(range.checkIn),
+                to: d.long(range.checkOut),
+                guests: b.adults + b.children,
+              }),
+            )}`
+          : ""
+      }`
+    : null;
+  const initials = (contact.name ?? b.data.propertyName)
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <div className="flex flex-wrap items-center gap-4 rounded-lg bg-[#f4f3ef] px-5 py-4">
+      <span className="bg-primary text-primary-foreground inline-flex size-10 shrink-0 items-center justify-center rounded-full text-[13px] font-bold">
+        {initials}
+      </span>
+      <span className="text-ink min-w-0 flex-1 text-[15px] font-medium">
+        {t("v2.askTitle", { name: contact.name ?? t("v2.ownerFallback") })}
+      </span>
+      <span className="flex gap-2">
+        {wa ? (
+          <Button asChild variant="outline" className="rounded-full">
+            <a href={wa} target="_blank" rel="noreferrer">
+              <MessageCircle /> {t("cart.whatsapp")}
+            </a>
+          </Button>
+        ) : null}
+        {contact.phone ? (
+          <Button asChild variant="outline" className="rounded-full">
+            <a href={`tel:${contact.phone.replace(/\s/g, "")}`}>
+              <Phone /> {t("cart.call")}
+            </a>
+          </Button>
+        ) : null}
+      </span>
+    </div>
   );
 }

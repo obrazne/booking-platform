@@ -594,7 +594,7 @@
       "added": "Pridané",
       "forGroup": "{price} pre skupinu",
       "continue": "Pokračovať",
-      "toPayment": "K platbe",
+      "toPayment": "Skontrolovať a zaplatiť",
       "whoTitle": "Kto prichádza?",
       "whoSub": "Stačí kontakt na vás.",
       "wishesTitle": "Želáte si niečo pripraviť?",
@@ -603,10 +603,11 @@
       "addToStay": "Pridať k pobytu",
       "removeFromStay": "Odobrať z pobytu",
       "trips": "Počet ciest",
-      "payTitle": "Súhrn a platba",
+      "payTitle": "Skontrolujte a potvrďte.",
       "stayWithServices": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {services}",
       "selectDates": "Vyberte termín",
-      "guestsCount": "{count, plural, one {# hosť} few {# hostia} other {# hostí}}"
+      "guestsCount": "{count, plural, one {# hosť} few {# hostia} other {# hostí}}",
+      "paySub": "Platíte až potom."
     },
     "sections": {
       "highlights": {
@@ -782,7 +783,7 @@
       "nextFreeSum": "{price} spolu",
       "seeThisStay": "Pozrieť tento termín",
       "step1": "Váš pobyt",
-      "step2": "Údaje a želania",
+      "step2": "Údaje",
       "step3": "Platba",
       "stepOf": "Krok {step} z 3 · {label}",
       "breakdownTerms": "Rozpis a podmienky",
@@ -793,8 +794,8 @@
       "childrenPets": "Deti, bábätká, zvieratá",
       "extrasTitle": "K pobytu môžete pridať.",
       "extrasSub": "Nepovinné.",
-      "extrasHint": "Šípkou zobrazíte viac. Podrobnosti doladíte s {name} e-mailom.",
-      "extrasHintFallback": "Šípkou zobrazíte viac. Podrobnosti doladíme e-mailom.",
+      "extrasHint": "Klik na riadok ukáže podrobnosti. Doladíte ich e-mailom — odpovedá {name}.",
+      "extrasHintFallback": "Klik na riadok ukáže podrobnosti. Doladíme ich e-mailom.",
       "showMore": "Zobraziť ďalšie ({count})",
       "showMoreAbout": "Viac o: {name}",
       "forGroups": "Pre skupiny",
@@ -829,7 +830,11 @@
       "questions": "Otázky k pobytu? Odpovedá",
       "ownerFallback": "majiteľ",
       "zoomIn": "Priblížiť",
-      "zoomOut": "Oddialiť"
+      "zoomOut": "Oddialiť",
+      "done": "Hotovo",
+      "askTitle": "Otázky pred rezerváciou? Odpovedá {name}.",
+      "backToStayShort": "Späť na pobyt",
+      "backToDetails": "Späť na údaje"
     },
     "confirm": {
       "number": "Rezervácia {number}",

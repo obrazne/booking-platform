@@ -44,7 +44,10 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await cart.locator("#c-email").fill(`e2e-${Date.now()}@${TEST_DOMAIN}`);
   await cart.locator("#c-phone").fill("+421900000000");
   await expect(cart.getByText("Raňajky v chalete").filter({ visible: true }).first()).toBeVisible();
-  await cart.getByRole("button", { name: "K platbe" }).click();
+  await cart
+    .getByRole("button", { name: "Skontrolovať a zaplatiť" })
+    .filter({ visible: true })
+    .click();
 
   // Step 3: consents (marketing stays unchecked) and the binding button.
   await expect(cart.getByRole("checkbox", { name: /novinky/ })).not.toBeChecked();
@@ -115,20 +118,23 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   // After choosing both days the calendar stays open (the guest sees the range); hiding it is the guest's choice.
   const stay = await freeStay(3);
   await pickStay(cart, stay.checkIn, stay.checkOut);
-  await expect(cart.getByRole("button", { name: "Hotovo, skryť kalendár" })).toBeVisible();
+  await expect(cart.getByRole("button", { name: "Hotovo", exact: true })).toBeVisible();
   await expect(cart.locator(`button[data-date="${stay.checkIn}"]`).first()).toHaveAttribute(
     "aria-pressed",
     "true",
   );
-  await cart.getByRole("button", { name: "Hotovo, skryť kalendár" }).click();
-  await expect(cart.getByRole("button", { name: "Zmeniť termín" })).toBeVisible();
+  // Extras wait until the calendar is closed with a valid stay; then "Zmeniť" in the summary opens it again.
+  await expect(cart.getByRole("button", { name: "Pokračovať" })).toBeDisabled();
+  await cart.getByRole("button", { name: "Hotovo", exact: true }).click();
+  await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
+  await expect(cart.getByRole("button", { name: "Zmeniť", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
   // Nearest free stay (computed on the server) opens the cart with those dates.
   await page.getByRole("button", { name: /Najbližší voľný termín/ }).click();
   await expect(
-    page.getByRole("dialog").getByRole("button", { name: "Zmeniť termín" }),
+    page.getByRole("dialog").getByRole("button", { name: "Zmeniť", exact: true }),
   ).toBeVisible();
 });
 

@@ -491,7 +491,8 @@ export function InlineAvailability() {
       value={range}
       onChange={(r) => {
         setRange(r);
-        if (r.checkIn && r.checkOut) openCart(1);
+        // The chosen stay goes along, so the cart starts with extras, not with the calendar again.
+        if (r.checkIn && r.checkOut) openCart(1, { range: r });
       }}
       months={2}
       stayPrice={stayPrice}

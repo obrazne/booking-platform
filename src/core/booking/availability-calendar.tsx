@@ -308,7 +308,8 @@ export function AvailabilityCalendar({
                         <span
                           className={cn(
                             "mt-0.5 font-mono text-[9px] leading-none sm:text-[10px]",
-                            !edge && "text-muted-foreground",
+                            // Small price: a shade darker than muted text, readable on every season tint (≥ 4.5:1).
+                            !edge && "text-[#62666c]",
                           )}
                         >
                           {dayPrice(d.rate)}

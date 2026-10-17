@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z29** (košík pre 13″ notebook — prednostne), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -207,7 +207,7 @@ dosky `docs/navrhy/administracia/Sidebar.dc.html` a `Statistiky.dc.html` (klikat
 Doska je **zámer, nie doslovná predloha**; platia pravidlá v1.1 (jeden stĺpec v paneli, pilulky, sivé karty, rozbaľovacie riadky, žiadne
 technické texty). Stále len staging, rovnaké pravidlá (`tenant_id` + RLS + pgTAP, centy, preklady, téma, A18). Režim: za sebou bez prerušenia.
 
-### Z29 — Košík v2.2 pre 13″ notebook (pripomienka 25, 17. 10.) — **robiť prednostne, pred Z27**
+### Z29 ✅ — Košík v2.2 pre 13″ notebook (pripomienka 25, 17. 10.) — **robiť prednostne, pred Z27**
 Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-stranka-hosta.md` → **Košík v2.2**, doska
 `docs/navrhy/stranka-hosta/KosikNotebook.dc.html` (1440 × 800, klikacia: riadky služieb, Zmeniť, kroky). Zámer, nie pixelová predloha.
 1. **Súhrn vpravo (320 px)** sa na 1440 × 800 vojde celý bez posúvania: názov, termín + „Zmeniť“ (všetky kroky), dospelí + deti/zvieratá,
@@ -360,6 +360,15 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z29: **košík v2.2 pre 13″ notebook.** Zelený súhrn 320 px sa na 1440 × 800 vojde celý (názov, termín + „Zmeniť“
+  vo všetkých krokoch, dospelí, cena + rozpis, Vaše doplnky; dole „← Späť na …“, tlačidlo a jeden riadok storna z podmienok objektu);
+  istoty, referencia a Jana zo súhrnu presunuté do krokov. Krok 1 bez fotiek: s termínom začína doplnkami (jednoriadkové riadky ~54 px,
+  rozbalenie na mieste, jeden naraz), referencia na sivej karte; bez termínu / po „Zmeniť“ kalendár + „Hotovo“ (Pokračovať stlmené).
+  Krok 2: karta „Otázky pred rezerváciou? Odpovedá Jana.“ (WhatsApp, Zavolať — len s údajmi majiteľa). Krok 3: tri istoty nad súhlasmi.
+  Lišta krokov 52 px, hotové kroky klikateľné späť. Znenie záväzného tlačidla nemenené (právny text). Termín z kalendára na stránke sa
+  odovzdá košíku (otvorí sa rovno doplnkami). Prístupnosť: ceny v kalendári tmavšie (kontrast 4,37 → ≥ 4,5), „Zmeniť“ biele.
+  Teardown e2e maže podržania termínu (limit 3 na jednotku blokoval opakované behy). Playwright `cart.spec.ts` (1440 × 800 bez posúvania
+  súhrnu aj s 2–3 doplnkami, rozbalenie, Zmeniť → Hotovo, kroky 1–3; mobil 390 px; axe). (Claude Code)
 - 2026-10-17 — Z27: **administrácia v1.2.**
   - **Menu so skupinami:** Rezervácie › Zoznam, Kalendár, Blokácie · Objekt › Údaje, Fotky, Ceny a sezóny, Stránka, Dokumenty
     (pri viacerých objektoch len „Objekty“ → zoznam) · Ponuka › Doplnkové služby, Referencie · Štatistiky · Prepojenia › Booking a Airbnb ·
