@@ -771,6 +771,7 @@ export type Database = {
           currency: string
           id: string
           provider: string
+          purpose: string
           received_at: string | null
           received_by: string | null
           reservation_id: string
@@ -784,6 +785,7 @@ export type Database = {
           currency: string
           id?: string
           provider?: string
+          purpose?: string
           received_at?: string | null
           received_by?: string | null
           reservation_id: string
@@ -797,6 +799,7 @@ export type Database = {
           currency?: string
           id?: string
           provider?: string
+          purpose?: string
           received_at?: string | null
           received_by?: string | null
           reservation_id?: string
@@ -1731,6 +1734,125 @@ export type Database = {
           },
         ]
       }
+      reservation_orders: {
+        Row: {
+          amount_cents: number
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          cutoff_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          id: string
+          items: number
+          label: string
+          note: string | null
+          ordered_by: string | null
+          ordered_via: string
+          paid_at: string | null
+          payment_id: string | null
+          payment_method: string
+          price_model: string
+          quantity: number
+          reservation_id: string
+          service_date: string | null
+          service_id: string | null
+          status: string
+          tenant_id: string
+          unit_amount_cents: number
+          updated_at: string
+          vat_bp: number
+        }
+        Insert: {
+          amount_cents: number
+          cancelled_at?: string | null
+          created_at?: string
+          currency: string
+          cutoff_at: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          items?: number
+          label: string
+          note?: string | null
+          ordered_by?: string | null
+          ordered_via: string
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_method: string
+          price_model: string
+          quantity: number
+          reservation_id: string
+          service_date?: string | null
+          service_id?: string | null
+          status?: string
+          tenant_id: string
+          unit_amount_cents: number
+          updated_at?: string
+          vat_bp?: number
+        }
+        Update: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          created_at?: string
+          currency?: string
+          cutoff_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decline_reason?: string | null
+          id?: string
+          items?: number
+          label?: string
+          note?: string | null
+          ordered_by?: string | null
+          ordered_via?: string
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_method?: string
+          price_model?: string
+          quantity?: number
+          reservation_id?: string
+          service_date?: string | null
+          service_id?: string | null
+          status?: string
+          tenant_id?: string
+          unit_amount_cents?: number
+          updated_at?: string
+          vat_bp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_orders_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_orders_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservation_orders_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reservation_status_history: {
         Row: {
           changed_at: string
@@ -2164,6 +2286,10 @@ export type Database = {
           property_id: string | null
           sort: number
           tenant_id: string
+          upsell_cutoff_hours: number
+          upsell_enabled: boolean
+          upsell_requires_confirmation: boolean
+          upsell_stay_account: boolean
           vat_bp: number
         }
         Insert: {
@@ -2179,6 +2305,10 @@ export type Database = {
           property_id?: string | null
           sort?: number
           tenant_id: string
+          upsell_cutoff_hours?: number
+          upsell_enabled?: boolean
+          upsell_requires_confirmation?: boolean
+          upsell_stay_account?: boolean
           vat_bp?: number
         }
         Update: {
@@ -2194,6 +2324,10 @@ export type Database = {
           property_id?: string | null
           sort?: number
           tenant_id?: string
+          upsell_cutoff_hours?: number
+          upsell_enabled?: boolean
+          upsell_requires_confirmation?: boolean
+          upsell_stay_account?: boolean
           vat_bp?: number
         }
         Relationships: [
@@ -2309,6 +2443,7 @@ export type Database = {
           portal_commission_bp: number
           privacy_url: string | null
           reviews_url: string | null
+          stay_account_limit_cents: number
           tenant_id: string
           terms_url: string | null
           updated_at: string
@@ -2330,6 +2465,7 @@ export type Database = {
           portal_commission_bp?: number
           privacy_url?: string | null
           reviews_url?: string | null
+          stay_account_limit_cents?: number
           tenant_id: string
           terms_url?: string | null
           updated_at?: string
@@ -2351,6 +2487,7 @@ export type Database = {
           portal_commission_bp?: number
           privacy_url?: string | null
           reviews_url?: string | null
+          stay_account_limit_cents?: number
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string
@@ -2680,6 +2817,10 @@ export type Database = {
         Returns: boolean
       }
       audit_sign_in: { Args: { p_method: string }; Returns: undefined }
+      cancel_order: {
+        Args: { p_order_id: string; p_token?: string }
+        Returns: undefined
+      }
       cancel_reservation: {
         Args: { p_reason?: string; p_reservation_id: string }
         Returns: undefined
@@ -2736,6 +2877,10 @@ export type Database = {
         }[]
       }
       current_guest_id: { Args: { p_tenant_id: string }; Returns: string }
+      decide_order: {
+        Args: { p_confirm: boolean; p_order_id: string; p_reason?: string }
+        Returns: undefined
+      }
       dismiss_cancellation_request: {
         Args: { p_reservation_id: string }
         Returns: undefined
@@ -2869,6 +3014,18 @@ export type Database = {
       }
       ping_job_worker: { Args: never; Returns: undefined }
       ping_push_worker: { Args: never; Returns: undefined }
+      place_order: {
+        Args: {
+          p_items?: number
+          p_note?: string
+          p_payment_method?: string
+          p_reservation_id: string
+          p_service_date?: string
+          p_service_id: string
+          p_token?: string
+        }
+        Returns: string
+      }
       platform_create_tenant: {
         Args: {
           p_country?: string
@@ -2932,12 +3089,54 @@ export type Database = {
         Args: { p_note?: string; p_token: string }
         Returns: boolean
       }
+      reservation_access: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: string
+      }
       reservation_access_token: {
         Args: { p_reservation_id: string }
         Returns: string
       }
       reservation_by_token: { Args: { p_token: string }; Returns: Json }
       reservation_notice: { Args: { p_reservation_id: string }; Returns: Json }
+      reservation_orders_for: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: {
+          amount_cents: number
+          cancelled_at: string | null
+          created_at: string
+          currency: string
+          cutoff_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decline_reason: string | null
+          id: string
+          items: number
+          label: string
+          note: string | null
+          ordered_by: string | null
+          ordered_via: string
+          paid_at: string | null
+          payment_id: string | null
+          payment_method: string
+          price_model: string
+          quantity: number
+          reservation_id: string
+          service_date: string | null
+          service_id: string | null
+          status: string
+          tenant_id: string
+          unit_amount_cents: number
+          updated_at: string
+          vat_bp: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "reservation_orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       review_display_name: { Args: { p_name: string }; Returns: string }
       review_eligibility: {
         Args: { p_reservation_id: string }
@@ -2960,6 +3159,22 @@ export type Database = {
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }
         Returns: undefined
+      }
+      settle_stay_account: {
+        Args: { p_provider?: string; p_reservation_id: string }
+        Returns: string
+      }
+      stay_account: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: {
+          currency: string
+          limit_cents: number
+          open_cents: number
+          open_on_account_cents: number
+          orders: number
+          paid_cents: number
+          total_cents: number
+        }[]
       }
       stay_nights: {
         Args: { p_check_in: string; p_check_out: string; p_unit_id: string }

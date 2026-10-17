@@ -43,13 +43,23 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         .min(0)
         .max(50)
         .transform((v) => Math.round(v * 100)),
+      // Module upsell: whole units in the form, cents in the database; absent when the module is off.
+      stay_account_limit: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(100000)
+        .optional()
+        .transform((v) => (v === undefined ? undefined : v * 100)),
     })
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
+  const { stay_account_limit, ...settings } = parsed.data;
   const supabase = await createClient();
   const { error } = await supabase.from("tenant_settings").upsert({
     tenant_id: tenant.id,
-    ...parsed.data,
+    ...settings,
+    ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
   });
   if (error) return fail(dbErrorKey(error));

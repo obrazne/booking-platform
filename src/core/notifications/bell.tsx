@@ -9,6 +9,7 @@ import {
   Bell,
   CalendarX,
   CheckCircle2,
+  ConciergeBell,
   Clock,
   Plus,
   RefreshCw,
@@ -38,6 +39,8 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   client_new: { icon: Plus, tone: "accent" },
   review_new: { icon: Star, tone: "accent" },
   review_publishing: { icon: Clock, tone: "neutral" },
+  order_new: { icon: ConciergeBell, tone: "accent" },
+  order_awaiting: { icon: ConciergeBell, tone: "warn" },
 };
 
 const TONE = {

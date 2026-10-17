@@ -300,6 +300,26 @@ const label = (l) =>
     : (l.name?.sk ?? Object.values(l.name ?? {})[0] ?? "");
 
 // ---------------------------------------------------------------- reservations
+const scriptStart = new Date().toISOString();
+
+/**
+ * E-mails the demo queues are skipped right away — the minute worker would otherwise send the ones to real
+ * addresses (guest b, the owner) before the end of the script.
+ */
+async function quiet(reservationId) {
+  must(
+    await db
+      .from("email_outbox")
+      .update({ status: "skipped", last_error: "DEMO — neodoslané" })
+      .eq("tenant_id", TENANT)
+      .eq("status", "queued")
+      .or(
+        `reservation_id.eq.${reservationId},and(kind.eq.owner_ical_conflict,created_at.gte.${scriptStart})`,
+      ),
+    "quiet e-mails",
+  );
+}
+
 async function book(cat, stay) {
   // First free term from the wished date (never overwrites anything — the database refuses overlaps).
   const step = stay.step ?? 7;
@@ -367,6 +387,7 @@ async function book(cat, stay) {
       .single();
     if (error?.code === "23P01") continue; // term taken → next week
     if (error) throw new Error(`create_reservation: ${error.message}`);
+    await quiet(data.id);
     must(
       await db.rpc("store_access_token", { p_reservation_id: data.id, p_token: data.access_token }),
       "store token",
@@ -394,6 +415,7 @@ async function pay(r, actor, receivedAt) {
     }),
     "confirm",
   );
+  await quiet(r.id);
 }
 
 /** A one-page PDF with a title and a few lines (enough for the guest to open and read). */
@@ -612,6 +634,8 @@ async function createDemo() {
   await createHistory(cat, martin, channels);
   // Reviews of past stays in every state (Z34).
   await demoReviews(martin);
+  // Orders after the reservation on (b) (Z35).
+  await demoOrders(martin, b);
 
   // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
   must(
@@ -708,6 +732,94 @@ async function demoReviews(martin) {
     made++;
   }
   console.log(`Reviews: ${made} (module reviews on).`);
+}
+
+// ---------------------------------------------------------------- upsell (Z35)
+async function demoOrders(martin, b) {
+  // Services are already on (trial, above); upsell needs them.
+  must(
+    await db
+      .from("tenant_modules")
+      .upsert(
+        { tenant_id: TENANT, module_key: "upsell", status: "active", updated_by: martin.id },
+        { onConflict: "tenant_id,module_key" },
+      ),
+    "upsell module",
+  );
+  const services = must(
+    await db
+      .from("services")
+      .select("id, name, price_model, amount_cents, vat_bp")
+      .eq("tenant_id", TENANT),
+    "services",
+  );
+  const find = (word) => services.find((s) => (s.name?.sk ?? "").includes(word));
+  const breakfast = find("Raňajky");
+  const chef = find("šéfkuchár");
+  const transfer = find("Transfer");
+  // Showroom settings: breakfast and transfer straight away, the chef needs the owner's confirmation.
+  for (const [s, confirm] of [
+    [breakfast, false],
+    [chef, true],
+    [transfer, false],
+  ]) {
+    if (s)
+      must(
+        await db
+          .from("services")
+          .update({
+            upsell_enabled: true,
+            upsell_requires_confirmation: confirm,
+            upsell_cutoff_hours: 48,
+          })
+          .eq("id", s.id),
+        "service upsell",
+      );
+  }
+  const res = must(
+    await db.from("reservations").select("adults, children, currency").eq("id", b.id).single(),
+    "reservation b",
+  );
+  const nights = Math.round((Date.parse(b.checkOut) - Date.parse(b.checkIn)) / 86_400_000);
+  const persons = res.adults + res.children;
+  const cutoff = new Date(Date.parse(`${b.checkIn}T00:00:00Z`) - 48 * 3_600_000).toISOString();
+  const order = (s, quantity, extra) => ({
+    tenant_id: TENANT,
+    reservation_id: b.id,
+    service_id: s.id,
+    label: s.name.sk,
+    price_model: s.price_model,
+    items: 1,
+    quantity,
+    unit_amount_cents: s.amount_cents,
+    amount_cents: s.amount_cents * quantity,
+    currency: res.currency,
+    vat_bp: s.vat_bp,
+    cutoff_at: cutoff,
+    ordered_via: "link",
+    ...extra,
+  });
+  const rows = [
+    breakfast &&
+      order(breakfast, persons * nights, { payment_method: "stay_account", status: "confirmed" }),
+    chef &&
+      order(chef, persons, {
+        payment_method: "stay_account",
+        status: "awaiting_confirmation",
+        service_date: addDays(b.checkIn, 1),
+      }),
+    transfer &&
+      order(transfer, 1, {
+        payment_method: "transfer",
+        status: "declined",
+        decline_reason: "V tento deň už transfer nejazdí — pošleme vám kontakt na taxi.",
+        decided_at: new Date().toISOString(),
+        decided_by: martin.id,
+      }),
+  ].filter(Boolean);
+  must(await db.from("reservation_orders").insert(rows), "orders");
+  await quiet(b.id);
+  console.log(`Orders: ${rows.length} on ${b.number} (module upsell on).`);
 }
 
 // ---------------------------------------------------------------- history (Z27)

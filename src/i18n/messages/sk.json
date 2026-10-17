@@ -338,6 +338,54 @@
     "reviews": {
       "nav": "Recenzie",
       "title": "Recenzie"
+    },
+    "upsell": {
+      "nav": "Upsell",
+      "title": "Objednávky po rezervácii",
+      "service": {
+        "title": "Objednávka po rezervácii",
+        "hint": "Hosť si službu objedná v účte alebo cez odkaz k rezervácii — od potvrdenia do odchodu, záväzne.",
+        "enabled": "Ponúkať po rezervácii",
+        "cutoff": "Uzávierka (hodiny pred dňom služby, inak pred príchodom)",
+        "confirm": "Vyžaduje moje potvrdenie (napr. obmedzená kapacita)",
+        "stayAccount": "Povoliť platbu na účet pobytu"
+      },
+      "limit": "Limit účtu pobytu ({currency})",
+      "limitHint": "Najviac, čo môže mať hosť otvorené na účte pobytu (vyúčtuje sa pri odchode). Nad limit len platba vopred.",
+      "account": {
+        "title": "Účet pobytu",
+        "empty": "Hosť si zatiaľ nič neobjednal.",
+        "total": "Spolu {amount}",
+        "paid": "Zaplatené {amount}",
+        "open": "Otvorené {amount}",
+        "settle": "Vyúčtovať",
+        "settleTitle": "Vyúčtovať účet pobytu",
+        "settleText": "Zaznamená platbu {amount} za potvrdené objednávky a označí ich ako zaplatené.",
+        "onSite": "Na mieste",
+        "transfer": "Prevodom",
+        "confirm": "Potvrdiť",
+        "decline": "Zamietnuť",
+        "declineTitle": "Zamietnuť objednávku",
+        "declineText": "Hosť dostane e-mail s dôvodom.",
+        "reason": "Dôvod",
+        "cancel": "Zrušiť",
+        "serviceDate": "na {date}",
+        "paidMark": "zaplatené",
+        "statuses": {
+          "ordered": "Objednaná",
+          "awaiting_confirmation": "Čaká na potvrdenie",
+          "confirmed": "Potvrdená",
+          "declined": "Zamietnutá",
+          "cancelled": "Zrušená hosťom"
+        },
+        "methods": {
+          "stay_account": "na účet pobytu",
+          "transfer": "prevodom vopred",
+          "card": "kartou"
+        },
+        "saved": "Uložené.",
+        "error": "Nepodarilo sa uložiť. Skúste to znova."
+      }
     }
   },
   "forms": {
@@ -1268,6 +1316,27 @@
       "personal_data": "Osobné údaje",
       "unrelated": "Nesúvisí s pobytom",
       "spam": "Spam alebo reklama"
+    },
+    "guest_order_received": {
+      "subject": "Objednávka {service} — {property}",
+      "confirmed": "ďakujeme, objednávka je záväzná a potvrdená.",
+      "awaiting": "ďakujeme za objednávku. Potvrdíme vám ju čo najskôr.",
+      "line": "{service}{date}: {amount} ({method})",
+      "cancelUntil": "Zrušiť ju môžete do {date}."
+    },
+    "guest_order_confirmed": {
+      "subject": "Objednávka potvrdená — {service}",
+      "intro": "vašu objednávku sme potvrdili. Tešíme sa na vás."
+    },
+    "guest_order_declined": {
+      "subject": "Objednávku sme nemohli prijať — {service}",
+      "intro": "objednávku sme, žiaľ, nemohli prijať.",
+      "reason": "Dôvod: {reason}"
+    },
+    "orderMethods": {
+      "stay_account": "na účet pobytu, vyúčtuje sa pri odchode",
+      "transfer": "prevodom vopred",
+      "card": "kartou"
     }
   },
   "ical": {
@@ -1922,6 +1991,14 @@
       "review_publishing": {
         "title": "Recenzia sa zverejní o 24 h",
         "text": "{guest} · ★ {rating} · {property}"
+      },
+      "order_new": {
+        "title": "Nová objednávka — {service}",
+        "text": "{guest} · {number} · {amount}"
+      },
+      "order_awaiting": {
+        "title": "Objednávka čaká na potvrdenie — {service}",
+        "text": "{guest} · {number} · {amount}"
       }
     },
     "settings": {
@@ -1945,7 +2022,9 @@
         "sync_failed": "Zlyhaná synchronizácia kalendára",
         "trial_ending": "Koniec skúšobnej doby modulu (7 dní a 1 deň vopred)",
         "review_new": "Nová recenzia hosťa",
-        "review_publishing": "Recenzia sa o 24 h zverejní"
+        "review_publishing": "Recenzia sa o 24 h zverejní",
+        "order_new": "Nová objednávka služby po rezervácii",
+        "order_awaiting": "Objednávka čaká na moje potvrdenie"
       },
       "onlyExpired": "len pri neuhradení"
     }

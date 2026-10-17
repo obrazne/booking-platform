@@ -74,6 +74,7 @@ export async function reservationExtras(r: ReservationSummary) {
         .from("payments")
         .select("status, received_at, amount_cents")
         .eq("reservation_id", r.id)
+        .eq("purpose", "reservation")
         .maybeSingle(),
       admin
         .from("tenant_settings")

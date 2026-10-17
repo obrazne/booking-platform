@@ -7,6 +7,7 @@ import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
 import { diffDays } from "@/core/pricing/dates";
 import messagesSk from "@/i18n/messages/sk.json";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { EmailContext } from "./context";
 import type { OutgoingEmail } from "./send";
 
@@ -22,7 +23,10 @@ export type EmailKind =
   | "owner_cancel_request"
   | "guest_review_invite"
   | "guest_review_reminder"
-  | "guest_review_rejected";
+  | "guest_review_rejected"
+  | "guest_order_received"
+  | "guest_order_confirmed"
+  | "guest_order_declined";
 
 function esc(s: string): string {
   return s.replace(
@@ -329,6 +333,60 @@ export async function renderEmail(
           signature,
         ]),
         text: [t("greeting", { name: r.guest_name }), ...lines].join("\n\n"),
+      };
+    }
+    case "guest_order_received":
+    case "guest_order_confirmed":
+    case "guest_order_declined": {
+      const orderId = typeof payload.order_id === "string" ? payload.order_id : "";
+      const { data: order } = await createAdminClient()
+        .from("reservation_orders")
+        .select(
+          "label, amount_cents, currency, service_date, payment_method, status, decline_reason, cutoff_at",
+        )
+        .eq("id", orderId)
+        .maybeSingle();
+      if (!order) return null;
+      const ov = { ...vars, service: order.label };
+      const methodKey = `orderMethods.${order.payment_method}`;
+      const line = t("guest_order_received.line", {
+        service: order.label,
+        date: order.service_date ? ` (${formatDate(order.service_date, locale)})` : "",
+        amount: formatMoney(money(order.amount_cents, order.currency), locale),
+        method: t.has(methodKey as never) ? t(methodKey as never) : order.payment_method,
+      });
+      const lines =
+        kind === "guest_order_received"
+          ? [
+              order.status === "awaiting_confirmation"
+                ? t("guest_order_received.awaiting")
+                : t("guest_order_received.confirmed"),
+              line,
+              t("guest_order_received.cancelUntil", {
+                date: formatDateTime(order.cutoff_at, locale, tz),
+              }),
+            ]
+          : kind === "guest_order_confirmed"
+            ? [t("guest_order_confirmed.intro"), line]
+            : [
+                t("guest_order_declined.intro"),
+                line,
+                order.decline_reason
+                  ? t("guest_order_declined.reason", { reason: order.decline_reason })
+                  : "",
+              ].filter(Boolean);
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t(`${kind}.subject`, ov),
+        html: layout(
+          accent,
+          t(`${kind}.subject`, ov),
+          [p(t("greeting", { name: r.guest_name })), ...lines.map(p), signature],
+          guestButton,
+        ),
+        text: [t("greeting", { name: r.guest_name }), ...lines, ctx.guestLink ?? ""].join("\n\n"),
       };
     }
     case "owner_new":

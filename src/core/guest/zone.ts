@@ -40,7 +40,8 @@ export const listStays = cache(async () => {
       "id, number, status, adults, children, infants, pets, currency, total_cents, payment_due_at, cancellation_requested_at, property_id, items:reservation_items(check_in, check_out, unit_id), lines:reservation_lines(kind, ref_id, label, quantity, unit_amount_cents, amount_cents, meta, sort), payments(status, variable_symbol, amount_cents)",
     )
     .eq("tenant_id", tenant.id)
-    .eq("guest_id", guest.id);
+    .eq("guest_id", guest.id)
+    .eq("payments.purpose", "reservation");
   const rows = data ?? [];
   // Property names and photos (also of properties no longer published) through the server.
   const ids = [...new Set(rows.map((r) => r.property_id))];

@@ -15,6 +15,8 @@ export const NOTIFICATION_KINDS = [
   "client_new",
   "review_new",
   "review_publishing",
+  "order_new",
+  "order_awaiting",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {
@@ -55,7 +57,7 @@ export function notificationText(
     number: String(d.number ?? ""),
     guest: String(d.guest ?? ""),
     stay: d.check_in ? `${date(d.check_in)} – ${date(d.check_out)}` : "",
-    amount: money(d.total_cents, d.currency),
+    amount: money(d.order_cents ?? d.total_cents, d.currency),
     due: date(d.due_at),
     channel: String(d.channel ?? ""),
     tenant: String(d.tenant ?? ""),
@@ -64,6 +66,7 @@ export function notificationText(
     days: Number(d.days ?? 0),
     rating: String(d.rating ?? ""),
     property: String(d.property ?? ""),
+    service: String(d.service ?? ""),
   };
   const key = (NOTIFICATION_KINDS as readonly string[]).includes(n.kind) ? n.kind : "other";
   return { title: t(`kinds.${key}.title`, args), body: t(`kinds.${key}.text`, args) };

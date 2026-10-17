@@ -73,6 +73,8 @@ export async function getReservationDetail(tenantId: string, id: string) {
     )
     .eq("tenant_id", tenantId)
     .eq("id", id)
+    // Settlements of the stay account (upsell) are shown in their own section.
+    .eq("payments.purpose", "reservation")
     .maybeSingle();
   return data;
 }

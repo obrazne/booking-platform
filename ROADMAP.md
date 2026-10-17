@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z35** (upsell — základ), **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -78,7 +78,7 @@ svoju (vytvoriť len ak je oprávnený — kontrola v DB), majiteľ svojho klien
    „z iných zdrojov“. Na stránke hosťa zatiaľ nič nemeň.
 6. Ukážkové dáta: 6–8 recenzií STRÖMY v rôznych stavoch (`npm run demo-data`). Testy pgTAP (oprávnenosť, RLS, auto-zverejnenie), unit, Playwright admin.
 
-### Z35 — Modul Upsell: základ (bez obrazoviek pre hostí)
+### Z35 ✅ — Modul Upsell: základ (bez obrazoviek pre hostí)
 Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
 1. Nastavenia služby (modul `services` rozšíriť): ponúkať po rezervácii, uzávierka (hodiny pred dňom služby / príchodom), vyžaduje potvrdenie,
    povoliť na účet pobytu. Nastavenie klienta: limit účtu pobytu (predvolene 300 €).
@@ -253,6 +253,23 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z35: **modul Upsell — základ** (B11), bez obrazoviek pre hostí.
+  - **Nastavenia služby:** ponúkať po rezervácii, uzávierka v hodinách (pred dňom služby, inak pred príchodom), vyžaduje potvrdenie,
+    povoliť na účet pobytu (Ponuka › Doplnkové služby, len so zapnutým upsellom). Klient: **limit účtu pobytu** (Nastavenia, predvolene 300 €).
+  - **`reservation_orders`** so zmrazenou cenou (rovnaké pravidlo ako košík — `modelQuantity`; v DB `place_order`), dátum služby,
+    uzávierka, spôsob platby (účet pobytu / prevod; karta až so Stripe), stavy ordered/awaiting_confirmation/confirmed/declined/cancelled.
+    **Riadky rezervácie sa nemenia.** RLS: tím klienta a hosť v účte; cez prístupový odkaz funkcie s overením tokenu
+    (`reservation_access`, `reservation_orders_for`, `stay_account`). Funkcie `place_order` (okno od potvrdenia do odchodu, uzávierka,
+    aktívna služba, limit), `cancel_order` (do uzávierky), `decide_order`, `settle_stay_account` → platba s `payments.purpose = 'stay_account'`
+    (existujúce dotazy na platbu rezervácie filtrujú `purpose = 'reservation'`). Má `record_history`.
+  - Upozornenia `order_new`, `order_awaiting`; e-maily hosťovi `guest_order_received/confirmed/declined`.
+  - **Administrácia:** panel rezervácie → „Účet pobytu“ (cez slot modulu `booking.detail.tabs`): objednávky, Potvrdiť / Zamietnuť s dôvodom,
+    súčty a Vyúčtovať (na mieste / prevodom). Modul `ready: false` → v katalógu „v príprave“.
+  - Ukážkové dáta: 3 objednávky na rezervácii (b) (potvrdená, čaká na potvrdenie, zamietnutá). **Oprava `demo-data`:** e-maily
+    ukážkových rezervácií sa preskakujú hneď po vytvorení (predtým ich minútový worker stihol poslať — pri dnešných dvoch behoch
+    odišli na staging presmerovanie e-maily k rezervácii (b) a jedna kolízia kalendára).
+  - Testy: pgTAP `upsell.test.sql` (25), vitest `modules/upsell/rules.test.ts`, Playwright `upsell.spec.ts` (+ axe); celá sada 52 ok,
+    `guest.spec` „v2 windows“ raz zlyhal v plnom behu, samostatne prejde (nestabilný pri záťaži).
 - 2026-10-17 — Z34: **modul Recenzie — základ** (B11), bez obrazoviek pre hostí.
   - **`reviews`** (objekt, rezervácia unique, hosť, hodnotenie 1–5 + čiastkové, text, zobrazené meno, mesiac pobytu, jazyk, stav
     submitted/published/rejected, dôvod z pevného zoznamu, odpoveď majiteľa, navrchu). RLS: tím klienta a hosť svoju; zápis hosťa len

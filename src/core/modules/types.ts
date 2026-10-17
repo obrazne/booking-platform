@@ -15,7 +15,12 @@ export type ModuleEvent = { name: BookingEventName; tenantId: string; bookingId:
 /** Named places in the UI where modules can render (A3, hook point 3). */
 export type SlotName = "admin.dashboard.cards" | "booking.form.sections" | "booking.detail.tabs";
 
-export type SlotProps = { tenantId: string; locale: string };
+export type SlotProps = {
+  tenantId: string;
+  locale: string;
+  /** Set in the places of one reservation (booking.detail.tabs — the reservation panel). */
+  reservationId?: string;
+};
 
 /** Groups of the side menu (v1.2) a module item can join; an empty group is not shown. */
 export type NavGroupKey = "reservations" | "property" | "offer" | "connections" | "settings";

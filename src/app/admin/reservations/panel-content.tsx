@@ -12,6 +12,7 @@ import {
   type PanelContent,
 } from "@/core/admin/record-panel";
 import { StatusPill } from "@/core/admin/status";
+import { ModuleSlot } from "@/core/modules/module-slot";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
@@ -249,6 +250,14 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             </p>
           ) : null}
         </PanelSection>
+
+        {/* Modules for one reservation, e.g. the stay account of upsell (Z35). */}
+        <ModuleSlot
+          name="booking.detail.tabs"
+          tenantId={active.tenantId}
+          locale={locale}
+          reservationId={detail.id}
+        />
 
         <PanelSection label={tv("guestNote")}>
           <p className="surface px-3.5 py-3 leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line">

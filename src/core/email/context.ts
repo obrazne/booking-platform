@@ -17,6 +17,7 @@ export async function loadEmailContext(reservationId: string) {
        tenant:tenants(name, timezone, default_locale, domains:tenant_domains(hostname, is_primary))`,
     )
     .eq("id", reservationId)
+    .eq("payments.purpose", "reservation")
     .single();
   if (!r) return null;
   const [{ data: settings }, { data: theme }, { data: token }] = await Promise.all([

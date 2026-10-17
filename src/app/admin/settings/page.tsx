@@ -7,15 +7,18 @@ import { requireTenant } from "@/core/admin/action";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { asLocalized } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
+import { isModuleEnabled } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { saveSettings } from "./actions";
 
 export default async function SettingsPage() {
   const active = await requireTenant();
-  const [t, tf, tenant] = await Promise.all([
+  const [t, tf, tu, tenant, upsell] = await Promise.all([
     getTranslations("settings"),
     getTranslations("forms"),
+    getTranslations("modules.upsell"),
     getTenantInfo(active.tenantId),
+    isModuleEnabled(active.tenantId, "upsell"),
   ]);
   const supabase = await createClient();
   const { data: s } = await supabase
@@ -67,6 +70,22 @@ export default async function SettingsPage() {
                 defaultValue={s?.hold_minutes ?? 30}
               />
             </Field>
+            {upsell ? (
+              <Field
+                label={tu("limit", { currency: tenant.currency })}
+                htmlFor="stay_account_limit"
+                hint={tu("limitHint")}
+              >
+                <Input
+                  id="stay_account_limit"
+                  name="stay_account_limit"
+                  type="number"
+                  min={0}
+                  max={100000}
+                  defaultValue={Math.round((s?.stay_account_limit_cents ?? 30000) / 100)}
+                />
+              </Field>
+            ) : null}
             <Field
               label={t("portalCommission")}
               htmlFor="portal_commission_bp"

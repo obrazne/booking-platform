@@ -11,7 +11,6 @@ const PLANNED: CatalogEntry[] = [
   { key: "messages", ready: false, dependsOn: [] },
   { key: "sms", ready: false, dependsOn: [] },
   { key: "checkin", ready: false, dependsOn: [] },
-  { key: "upsell", ready: false, dependsOn: ["services"] },
 ];
 
 export function moduleCatalog(): CatalogEntry[] {

@@ -32,8 +32,26 @@ export async function saveService(_: ActionResult, form: FormData): Promise<Acti
   const { id, amount, ...v } = parsed.data;
   const cents = parseMinorUnits(amount, tenant.currency);
   if (cents === null || cents < 0) return fail("invalid");
+  // Settings for ordering after the reservation (module upsell) — only when the form had them.
+  const upsell =
+    form.get("upsell") === "1" && (await isModuleEnabled(active.tenantId, "upsell"))
+      ? z
+          .object({
+            upsell_cutoff_hours: z.coerce.number().int().min(0).max(720),
+          })
+          .safeParse(Object.fromEntries(form))
+      : null;
+  if (upsell && !upsell.success) return fail("invalid");
   const row = {
     ...v,
+    ...(upsell?.success
+      ? {
+          upsell_enabled: form.get("upsell_enabled") === "on",
+          upsell_cutoff_hours: upsell.data.upsell_cutoff_hours,
+          upsell_requires_confirmation: form.get("upsell_requires_confirmation") === "on",
+          upsell_stay_account: form.get("upsell_stay_account") === "on",
+        }
+      : {}),
     name,
     description: localizedFromForm(form, "description", tenant.locales),
     amount_cents: cents,

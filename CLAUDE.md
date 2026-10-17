@@ -115,6 +115,9 @@ ho job worker po 30 dňoch (`purgeTrashFiles`). Obnova a vrátenie: `owner_resto
 **Recenzie (Z34, modul `reviews`):** pravidlá v DB (`review_eligibility`, `submit_review`, `reviews_tick` cez pg_cron), verejne len
 `public_reviews`/`review_summary`; administrácia `src/app/admin/reviews`, model `src/modules/reviews/model.ts`. Modul s `ready: false`
 v manifeste je v katalógu „v príprave“ a riadiace centrum ho nezapne — po doplnení obrazoviek pre hostí prepnúť na hotový.
+**Upsell (Z35, modul `upsell`):** objednávky po rezervácii v `reservation_orders` (zmrazená cena, riadky rezervácie sa nemenia), pravidlá
+v DB (`place_order`, `cancel_order`, `decide_order`, `settle_stay_account`); vyúčtovanie je platba s `payments.purpose = 'stay_account'` —
+dotazy na platbu rezervácie musia filtrovať `purpose = 'reservation'`. Panel rezervácie dostáva sekcie modulov cez slot `booking.detail.tabs`.
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
 zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens`
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).

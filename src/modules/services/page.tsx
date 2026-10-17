@@ -10,6 +10,7 @@ import { money } from "@/core/money/money";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { asLocalized, tr } from "@/core/i18n/localized";
 import type { TenantInfo } from "@/core/tenant/info";
+import { isModuleEnabled } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { deleteService, saveService } from "./actions";
 
@@ -27,11 +28,13 @@ function decimal(cents: number | undefined) {
 }
 
 export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
-  const [t, tf, tp, locale] = await Promise.all([
+  const [t, tf, tp, tu, locale, upsell] = await Promise.all([
     getTranslations("modules.services"),
     getTranslations("forms"),
     getTranslations("priceModels"),
+    getTranslations("modules.upsell.service"),
     getLocale(),
+    isModuleEnabled(tenant.id, "upsell"),
   ]);
   const supabase = await createClient();
   const [{ data: services }, { data: properties }] = await Promise.all([
@@ -112,6 +115,43 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
         <Label className="font-normal">
           <Checkbox name="active" defaultChecked={s?.active ?? true} /> {t("active")}
         </Label>
+        {upsell ? (
+          // Module upsell (Z35): ordering the service after the reservation.
+          <fieldset className="border-line grid gap-3 rounded-[10px] border p-4">
+            <legend className="label-mono px-1">{tu("title")}</legend>
+            <input type="hidden" name="upsell" value="1" />
+            <p className="text-muted-foreground text-[13px]">{tu("hint")}</p>
+            <Label className="font-normal">
+              <Checkbox name="upsell_enabled" defaultChecked={s?.upsell_enabled ?? false} />{" "}
+              {tu("enabled")}
+            </Label>
+            <Field label={tu("cutoff")} htmlFor={`cutoff-${k}`}>
+              <Input
+                id={`cutoff-${k}`}
+                name="upsell_cutoff_hours"
+                type="number"
+                min={0}
+                max={720}
+                className="max-w-32"
+                defaultValue={s?.upsell_cutoff_hours ?? 24}
+              />
+            </Field>
+            <Label className="font-normal">
+              <Checkbox
+                name="upsell_requires_confirmation"
+                defaultChecked={s?.upsell_requires_confirmation ?? false}
+              />{" "}
+              {tu("confirm")}
+            </Label>
+            <Label className="font-normal">
+              <Checkbox
+                name="upsell_stay_account"
+                defaultChecked={s?.upsell_stay_account ?? true}
+              />{" "}
+              {tu("stayAccount")}
+            </Label>
+          </fieldset>
+        ) : null}
         <div className="flex gap-2">
           <SubmitButton>{s ? tf("save") : tf("add")}</SubmitButton>
           {s ? <DeleteButton action={deleteService.bind(null, s.id)} /> : null}
