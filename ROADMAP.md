@@ -171,7 +171,7 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z42 [B] — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
+### Z42 [B] 🔄 — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
 Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku
 Prepojenia (zoznam kalendárov) — tam nič o kolízii nie je. Majiteľ potrebuje vidieť **čo s čím koliduje a čo s tým spraviť**.
 1. **Panel kolízie** (vzor A18, `?panel=collision:<occupancy id>`): termín, odkiaľ udalosť prišla („Zavreté na Bookingu · Ostrý kalendár…“),
