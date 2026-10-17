@@ -3142,6 +3142,10 @@ export type Database = {
         Args: { p_reservation_id: string }
         Returns: Json
       }
+      guest_checkin_view: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: Json
+      }
       guest_request_cancellation: {
         Args: { p_note?: string; p_reservation_id: string }
         Returns: boolean

@@ -17,7 +17,11 @@ export type SlotName =
   | "admin.dashboard.cards"
   | "booking.form.sections"
   | "booking.detail.tabs"
-  /** Guest's stay (account `/ucet/pobyt/<id>` and access link `/r/<code>`): main column and the right column. */
+  /**
+   * Guest's stay (account `/ucet/pobyt/<id>` and access link `/r/<code>`): top of the content (before the arrival
+   * instructions), main column and the right column.
+   */
+  | "guest.stay.top"
   | "guest.stay.main"
   | "guest.stay.aside";
 

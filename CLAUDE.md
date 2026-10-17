@@ -118,6 +118,11 @@ v manifeste je v katalógu „v príprave“ a riadiace centrum ho nezapne — p
 **Upsell (Z35, modul `upsell`):** objednávky po rezervácii v `reservation_orders` (zmrazená cena, riadky rezervácie sa nemenia), pravidlá
 v DB (`place_order`, `cancel_order`, `decide_order`, `settle_stay_account`); vyúčtovanie je platba s `payments.purpose = 'stay_account'` —
 dotazy na platbu rezervácie musia filtrovať `purpose = 'reservation'`. Panel rezervácie dostáva sekcie modulov cez slot `booking.detail.tabs`.
+**Pobyt hosťa a moduly (Z37, Z39):** detail pobytu v účte (`/ucet/pobyt/<id>`) aj prístupový odkaz (`/r/<kód>`) majú sloty
+`guest.stay.top` (nad pokynmi), `guest.stay.main` a `guest.stay.aside` (props `reservationId`, pri odkaze aj `accessToken`; prístup overujú
+DB funkcie s `p_token`). Upsell pre hosťa: `src/modules/upsell/guest/`, viac dní naraz `place_orders`, ponuky e-mailom `upsell_tick`
+(dni v `tenant_settings.upsell_offer_days`). Check-in pre hosťa: `src/modules/checkin/guest/`, stránky `…/checkin`, citlivé polia len
+maskované cez `guest_checkin_view`.
 **Online check-in (Z36, modul `checkin`):** pravidlá krajiny v `checkin_rules` (DB) a `src/modules/checkin/rules.ts` — meniť spolu.
 Osoby (`checkin_guests`) tím nečíta priamo: `checkin_people` (maskované), `reveal_checkin_guest` (len majiteľ, audit). PDF: `src/core/pdf/form-pdf.ts`
 (font Geist, OFL). Do `record_history` osoby nepatria (citlivé polia sa po lehote mažú).

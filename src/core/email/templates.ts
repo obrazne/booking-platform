@@ -455,6 +455,8 @@ export async function renderEmail(
     }
     case "guest_checkin_reminder": {
       const intro = t("guest_checkin_reminder.intro", { days: Number(payload.days ?? 0) });
+      // Through the access link the guest needs no sign-in (Z39); the account works too.
+      const checkinLink = ctx.guestLink ? `${ctx.guestLink}/checkin` : ctx.checkinLink;
       return {
         to: r.guest_email,
         replyTo: ownerTo,
@@ -464,9 +466,9 @@ export async function renderEmail(
           accent,
           t("guest_checkin_reminder.subject", vars),
           [p(t("greeting", { name: r.guest_name })), p(intro), signature],
-          { href: ctx.checkinLink, label: t("guest_checkin_reminder.button") },
+          { href: checkinLink, label: t("guest_checkin_reminder.button") },
         ),
-        text: [t("greeting", { name: r.guest_name }), intro, ctx.checkinLink].join("\n\n"),
+        text: [t("greeting", { name: r.guest_name }), intro, checkinLink].join("\n\n"),
       };
     }
     case "owner_new":

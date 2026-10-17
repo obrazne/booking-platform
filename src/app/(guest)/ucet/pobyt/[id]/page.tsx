@@ -161,6 +161,13 @@ export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">
             </section>
           ) : null}
 
+          <ModuleSlot
+            name="guest.stay.top"
+            tenantId={tenant.id}
+            locale={locale}
+            reservationId={stay.id}
+          />
+
           {active ? (
             <section className="bg-surface border-line grid gap-3 rounded-lg border p-6">
               <h2 className="font-heading inline-flex items-center gap-2 text-xl font-bold">

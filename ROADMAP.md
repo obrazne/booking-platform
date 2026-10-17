@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** ~~Z37 (upsell pre hostí)~~ ✅ → Z39 (check-in pre hostí).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** ~~Z37 (upsell pre hostí)~~ ✅ → ~~Z39 (check-in pre hostí)~~ ✅ — linka B má frontu prázdnu.
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -185,7 +185,7 @@ sekcia podľa `Recenzie` (priemer, pruhy, overenie, filtre, odpovede, vybrané, 
 overená recenzia. **Štruktúrované dáta (schema.org AggregateRating) len z overených recenzií.** Modul → hotový. Playwright: odoslanie, zobrazenie
 po zverejnení, filter kritických.
 
-### Z39 [B] 🔄 — Online check-in pre hostí (po Z36)
+### Z39 [B] ✅ — Online check-in pre hostí (po Z36)
 Karta check-inu a zamknuté pokyny v detaile pobytu, stránka check-inu podľa `Checkin` (karty hostí, polia podľa pravidiel krajiny, čas príchodu,
 súhlas, hotovo), aj cez prístupový odkaz; pripomienky e-mailom (Z36). Citlivé polia sa po uložení hosťovi zobrazujú maskované.
 Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknutie pokynov podľa nastavenia, validácie.
@@ -258,6 +258,11 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Online check-in pre hostí (Z39):** (1) Hosť **môže údaje upraviť aj po dokončení, až do dňa príchodu** (tak to hovorí návrh);
+  úprava check-in znova otvorí a hosť ho dokončí znova — majiteľka sa pri tom znova neupozorní (rovnaký kľúč upozornenia). Ak už
+  cudzinca nahlásila, záznam o nahlásení ostáva. Stačí tak? (2) Veta z návrhu „Dieťa bez dokladu: stačí meno, dátum narodenia a adresa“
+  nie je zapnutá — pravidlá SK zo Z36 chcú doklad od všetkých osôb (otázka k Z36 vyššie). (3) Odkaz „ubytovací poriadok“ vedie na
+  odkaz VOP z Nastavení (iný nie je); Ukážkový klient ho nemá, takže je to len text.
 - **Upsell pre hostí (Z37):** (1) Veta z návrhu „Termín potvrdí Jana **do 24 hodín**“ je sľub hosťovi — systém lehotu nestráži
   (žiadna pripomienka majiteľke ani automatické zamietnutie). Nechať vetu, zmeniť ju, alebo pridať pripomienku po 20 h? (2) Služby
   „za noc / za osobu a noc“ (raňajky) si hosť vyberá **po nociach pobytu** (dátum noci) — pri raňajkách by prirodzenejšie boli rána
@@ -300,6 +305,25 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z39 [linka B]: **online check-in pre hostí** (návrh v2.3 `Checkin`, karta v `UcetPobyt`). (Claude Code)
+  - **Karta v detaile pobytu** (nový slot `guest.stay.top` nad pokynmi k príchodu, v účte aj na `/r/<kód>`): „Vybavte to teraz.
+    Na mieste už len kľúče.“ + „Začať / Pokračovať v check-ine →“ (pred otvorením „Check-in sa otvorí …“), hotový = svetlozelená
+    karta „Check-in hotový · 2 hostia · príchod okolo 16:00“ s „Upraviť“. Riadok so zámkom z návrhu je zlúčený s vetou na karte
+    („Po check-ine sa vám odomknú pokyny…“, len keď to objekt vyžaduje) — sekcia pokynov v jadre ostáva.
+  - **Stránka check-inu** `/ucet/pobyt/<id>/checkin` a `/r/<kód>/checkin` (`src/modules/checkin/guest/`): karta na každú osobu
+    (počet z rezervácie, prvá predvyplnená menom objednávateľa, hotová s fajkou, inak „chýba N údajov“), štátna príslušnosť
+    SR / iná krajina (krajina zo zoznamu ISO s názvami cez `Intl.DisplayNames`, dátum narodenia), doklad a číslo, adresa; polia podľa
+    `rulesFor` (Z36), chýbajúce sa po pokuse zvýraznia. Čas príchodu pilulkami od času príchodu objektu, súhlas s ubytovacím
+    poriadkom, „Dokončiť check-in“ (bez súhlasu neaktívne s dôvodom vedľa). Vpravo „Prečo to od vás chceme“ a „Po dokončení“.
+    Hotovo: „Hotovo. Na mieste už len kľúče.“ + dátum odomknutia pokynov, Späť na pobyt / Upraviť údaje.
+  - **Citlivé polia maskované:** migrácia `20261017232000_checkin_guest.sql` — `guest_checkin_view` (účet aj odkaz) vracia číslo
+    dokladu len ako `••••89` a dátum narodenia len ako „uložený“; v prehliadači sa nikdy neobjavia. `save_checkin` pri osobe s `id`
+    ponechá uložené číslo dokladu, dátum narodenia a záznam o nahlásení cudzinca, keď ich hosť nemení; úprava po dokončení do dňa
+    príchodu (návrh) check-in znova otvorí, akcia ho hneď dokončí. Pripomienka e-mailom (Z36) vedie cez prístupový odkaz (bez prihlásenia).
+  - Modul Online check-in v katalógu → **hotový**. Testy: pgTAP `checkin_guest.test.sql` (maskovanie, nič citlivé nevyjde z DB,
+    zachovanie pri úprave, znovu-otvorenie), Playwright `e2e/checkin-guest.spec.ts` na **Ukážkovom klientovi** (PC aj mobil 390 px):
+    2 hostia (jeden z UK), validácie, odomknutie pokynov podľa nastavenia objektu (dočasne zapnuté a vrátené), úprava bez prepisovania
+    dokladu, axe. Test dočasne pridá Glamping Lúka neverejné pokyny, ak žiadne nemá, a po sebe ich zmaže.
 - 2026-10-17 — Z37 [linka B]: **upsell pre hostí** (návrh v2.3 `UcetPobyt`, `MobilPobyt`). (Claude Code)
   - **Detail pobytu v účte hosťa prestavaný podľa návrhu:** úvod s prechodom (číslo, stav, „Tešíme sa na vás.“ + objekt, termín,
     „Príchod o N dní“), dva stĺpce (obsah + 360 px vpravo, prilepený), vpravo kontakt na hostiteľa. Pre moduly **nové sloty**

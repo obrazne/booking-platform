@@ -501,6 +501,13 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           ) : null}
 
           <ModuleSlot
+            name="guest.stay.top"
+            tenantId={r.tenant_id}
+            locale={locale}
+            reservationId={r.id}
+            accessToken={token}
+          />
+          <ModuleSlot
             name="guest.stay.main"
             tenantId={r.tenant_id}
             locale={locale}
