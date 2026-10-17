@@ -6,6 +6,9 @@
 //   node scripts/demo-data.mjs --reset         removes the demo records and creates them again
 //   node scripts/demo-data.mjs --remove        only removes the demo records
 //   ... --tenant stromy --force                the same for STRÖMY (refused with a real calendar connected)
+//   ... --tenant stromy --force --with-real-calendar
+//                                              STRÖMY next to its real calendar (Martin 17. 10.): no demo iCal channels
+//                                              or portal events, reservation (b) on the demo domain — no e-mail at all
 //
 // Reservations go through the same database function as a real booking (create_reservation: atomic term, frozen
 // price lines, status history, consents), with the price from the same calculation the guest page uses.
@@ -64,6 +67,9 @@ if (targetKey !== "ukazka" && !process.argv.includes("--force"))
 const TENANT = target.tenant;
 const PROPERTY = target.property;
 const DEMO_DOMAIN = target.domain;
+/** Next to a real calendar: no demo channels and portal events, so nothing looks like real occupancy. */
+const withRealCalendar = targetKey !== "ukazka" && process.argv.includes("--with-real-calendar");
+const withChannels = !withRealCalendar;
 
 // A client with a real calendar (an active iCal channel outside example.invalid) never gets demo data (Z41).
 async function assertNoRealCalendar() {
@@ -74,7 +80,11 @@ async function assertNoRealCalendar() {
     .eq("active", true)
     .not("import_url", "like", "%example.invalid%");
   if (error) throw new Error(`ical channels: ${error.message}`);
-  if (real?.length) {
+  if (real?.length && withRealCalendar) {
+    console.log(
+      `${targetKey}: real calendar (${real.map((c) => c.name).join(", ")}) stays untouched; no demo channels.`,
+    );
+  } else if (real?.length) {
     console.error(
       `STOP: ${targetKey} has a real calendar connected (${real.map((c) => c.name).join(", ")}).` +
         " Demo data would mix with real occupancy — nothing was changed. Use the demo client (default).",
@@ -100,7 +110,8 @@ const { data: propertyRow } = await db
   .single();
 const PROPERTY_NAME = propertyRow?.name ?? "";
 /** Deliverable only through the staging redirect; the guest-zone login code ends up in Martin's inbox. */
-const GUEST_ZONE_EMAIL = "demo-host@obrazne.sk";
+// Next to a real calendar (b) gets a demo-domain address too — not a single e-mail leaves (Martin 17. 10.).
+const GUEST_ZONE_EMAIL = withRealCalendar ? `zona-hosta@${DEMO_DOMAIN}` : "demo-host@obrazne.sk";
 const MARTIN = "info@obrazne.sk";
 const NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
 const reset = process.argv.includes("--reset");
@@ -641,10 +652,18 @@ async function createDemo() {
   // Occupancy: two events from other portals (inactive demo channels — nothing is downloaded) and one owner block.
   const nights = (from, to) => `[${from},${to})`;
   const channels = {};
-  for (const [name, source, from, to, uid] of [
-    ["Booking.com (ukážka)", "booking", `${year + 1}-01-09`, `${year + 1}-01-12`, "demo-booking-1"],
-    ["Airbnb (ukážka)", "airbnb", `${year + 1}-03-05`, `${year + 1}-03-08`, "demo-airbnb-1"],
-  ]) {
+  for (const [name, source, from, to, uid] of withChannels
+    ? [
+        [
+          "Booking.com (ukážka)",
+          "booking",
+          `${year + 1}-01-09`,
+          `${year + 1}-01-12`,
+          "demo-booking-1",
+        ],
+        ["Airbnb (ukážka)", "airbnb", `${year + 1}-03-05`, `${year + 1}-03-08`, "demo-airbnb-1"],
+      ]
+    : []) {
     const ch = must(
       await db
         .from("ical_channels")
@@ -1092,7 +1111,7 @@ async function createHistory(cat, martin, channels) {
       );
     }
     // A stay from a portal in most months (occupancy only — portals send no amounts).
-    if (m % 3 !== 1) {
+    if (m % 3 !== 1 && withChannels) {
       const source = m % 2 ? "airbnb" : "booking";
       const from = addDays(first, 20);
       const { error } = await db.from("occupancy").insert({
@@ -1166,17 +1185,21 @@ async function curatedNotifications(martin, { a, b }, trialEnds) {
       target: `/admin/reservations?panel=reservation:${a.id}`,
       at: ago(2),
     },
-    {
-      kind: "portal_booking",
-      data: {
-        channel: "Booking.com (ukážka)",
-        check_in: `${year + 1}-01-09`,
-        check_out: `${year + 1}-01-12`,
-        demo: true,
-      },
-      target: `/admin/calendar?month=${year + 1}-01`,
-      at: ago(20),
-    },
+    ...(withChannels
+      ? [
+          {
+            kind: "portal_booking",
+            data: {
+              channel: "Booking.com (ukážka)",
+              check_in: `${year + 1}-01-09`,
+              check_out: `${year + 1}-01-12`,
+              demo: true,
+            },
+            target: `/admin/calendar?month=${year + 1}-01`,
+            at: ago(20),
+          },
+        ]
+      : []),
     {
       kind: "payment_received",
       data: data(fb),

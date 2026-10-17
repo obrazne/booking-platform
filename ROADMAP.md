@@ -305,6 +305,11 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z41: **ukážka na STRÖMY vytvorená znova** (Martin): `demo-data --tenant stromy --force --with-real-calendar` — bez ukážkových
+  iCal kanálov a portálových udalostí, rezervácia (b) na `zona-hosta@stromy-demo.invalid`, takže **neodišiel žiadny e-mail** (overené).
+  48 ukážkových rezervácií (a 2026-0647, b 2026-0648, c 2026-0649), recenzie, objednávky, check-iny, dokumenty, blokácia. Ostré kalendáre
+  „…na Bookingu“ a nový „Ostrý kalendár Stromy AirBnb“ nedotknuté (17 udalostí). **Pozor:** ukážkové (a) a (b) majú pevné termíny a kryjú sa
+  so skutočnými pobytmi z Airbnb (26.–30. 12. 2026, 13.–20. 2. 2027) → 2 kolízie v kalendári (e-mail o kolízii sa neposlal) — čaká na Martina.
 - 2026-10-17 — Z41 oprava rozsahu (Martin): upratanie STRÖMY malo byť **len ukážkové iCal kanály** „Booking.com (ukážka)“ a
   „Airbnb (ukážka)“ s udalosťami. Pokyn prišiel až po vykonaní plného upratania (podľa predchádzajúceho súhlasu). **Vrátené:** moduly
   recenzie, upsell a check-in na STRÖMY znova zapnuté (`active`), upsell Janiných služieb ako predtým (Raňajky, Šéfkuchár s potvrdením,
