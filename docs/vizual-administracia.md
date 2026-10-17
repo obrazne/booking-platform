@@ -161,7 +161,16 @@ Na mobile fotka len ako pruh hore.
   (svetlejší odtieň akcentu); **text a ikony vždy biele/svetlé** — žiadny svetlý podklad s bielym textom (dnes nečitateľné).
 - **Hierarchia:** **Klienti** › Všetci klienti, Založiť klienta, a keď si v detaile klienta, pod tým **<názov klienta>** › Prehľad,
   Moduly, Vzhľad, Domény, Ľudia, Záznam zmien · **Moduly** › Katalóg, Skúšobné doby · Stav systému · Audit.
-- **Drobčeková navigácia** hore na podstránkach: `Klienti › Chalet STRÖMY › Vzhľad`.
+- **Drobčeková navigácia** hore na podstránkach: `Klienti › Chalet STRÖMY › Vzhľad` (pravidlo nižšie).
+
+### Drobčeková navigácia — spoločné pravidlo (administrácia aj riadiace centrum, Martin 17. 10.)
+- **V hlavičke stránky, malým písmom nad nadpisom** (namiesto malého štítku nad nadpisom) — žiadny samostatný pás ani stavový riadok dole.
+- **Len od druhej úrovne:** na stránkach prvej úrovne (Prehľad, Rezervácie › Zoznam, Štatistiky…) nič — menu s aktívnou položkou
+  a nadpis stačia. Príklady: `Objekt › Chalet STRÖMY › Ceny a sezóny`, `Nastavenia › E-maily a upozornenia`, `Klienti › Chalet STRÖMY › Domény`.
+- Všetky články okrem posledného sú odkazy; posledný = aktuálna stránka (`aria-current="page"`), celé v `<nav aria-label>`.
+- **V bočných paneloch nie** — panel je vrstva nad zoznamom, nie ďalšia stránka.
+- **Mobil:** len „‹ Späť na <rodič>“ (o úroveň vyššie), celá cesta sa nezobrazuje.
+- Jeden spoločný komponent (`PageHeader` dostane `breadcrumbs`), cestu skladá stránka, nie ručne písané texty (preklady).
 
 ### Štatistiky majiteľa (doska `Statistiky`)
 - **Stránka Štatistiky:** výber obdobia (rok, posledných 12 mesiacov), prepínač **Porovnať s predchádzajúcim rokom** (druhá sivá čiara).

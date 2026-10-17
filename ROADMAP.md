@@ -265,6 +265,9 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
    (dnes biely text na bielom podklade). Kontrast skontroluj axe.
 2. **Hierarchia menu:** Klienti › Všetci klienti, Založiť klienta, a v detaile klienta pod tým jeho názov › Prehľad, Moduly, Vzhľad,
    Domény, Ľudia, Záznam zmien · Moduly › Katalóg, Skúšobné doby · Stav systému · Audit. Drobčeky hore na podstránkach.
+   **Drobčeky podľa spoločného pravidla** (`docs/vizual-administracia.md` → Drobčeková navigácia): komponent v `PageHeader`, malým písmom
+   nad nadpisom, len od druhej úrovne, nie v bočných paneloch, na mobile len „‹ Späť na …“. **Použi ho aj v administrácii majiteľa**
+   (Z27 už je hotová) — napr. `Objekt › <názov> › Ceny a sezóny`, `Nastavenia › Tím`; stránky prvej úrovne bez drobčekov.
 3. **Detail klienta ako stránka so záložkami** (`/platform/tenants/[id]/<záložka>`) — obsah dnešného „Všetky nastavenia“ rozdelený
    do záložiek; cesty: menu, riadok v zozname, drobčeky.
 4. **Zoznam klientov = rozbaľovacie riadky** namiesto bočného panela (obsah v kapitole v1.2: tržby tento/minulý mesiac, rezervácie 30 dní
