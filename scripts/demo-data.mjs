@@ -111,7 +111,7 @@ const { data: propertyRow } = await db
 const PROPERTY_NAME = propertyRow?.name ?? "";
 /** Deliverable only through the staging redirect; the guest-zone login code ends up in Martin's inbox. */
 // Next to a real calendar (b) gets a demo-domain address too — not a single e-mail leaves (Martin 17. 10.).
-const GUEST_ZONE_EMAIL = withRealCalendar ? `zona-hosta@${DEMO_DOMAIN}` : "demo-host@obrazne.sk";
+const GUEST_ZONE_EMAIL = withRealCalendar ? `zona-hosta@${DEMO_DOMAIN}` : "info+host@obrazne.sk";
 const MARTIN = "info@obrazne.sk";
 const NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
 const reset = process.argv.includes("--reset");

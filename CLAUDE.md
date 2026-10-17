@@ -103,7 +103,7 @@ Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supab
 **Ukážkové dáta (staging, Z41):** `npm run demo-data` (chýbajúce vytvorí), `-- --reset` (zmaže a vytvorí znova), `-- --remove` (len zmaže) —
 cieľ je **Ukážkový klient** (objekt Chalet Pod Smrekom, ilustračné fotky): ~45 rezervácií za 22 mesiacov cez `create_reservation`, dokumenty,
 ukážkové iCal kanály, blokácia, recenzie, objednávky, check-iny. Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `ukazka-demo.invalid`
-(hosť b: demo-host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú (preskočia sa hneď po vytvorení).
+(hosť b: info+host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú (preskočia sa hneď po vytvorení).
 **Chalet STRÖMY má od 17. 10. skutočný kalendár Jany z Bookingu** — ukážkové dáta tam nikdy (skript ich odmietne, kým má STRÖMY
 aktívny skutočný iCal kanál; inak len `--tenant stromy --force`). **Testy prehliadačom (e2e) bežia na Ukážkovom klientovi**
 (`e2e/helpers.ts`: `TENANT`, `TENANT_PROPERTY`, `PROPERTY_SLUG`, hosť `http://ukazka.localhost:3100`) a v STRÖMY nič nevytvárajú.

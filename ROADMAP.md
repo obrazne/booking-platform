@@ -325,6 +325,8 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Ukážkové dáta: hosť pre zónu hosťa `info+host@obrazne.sk` namiesto neexistujúceho `demo-host@obrazne.sk`
+  (`scripts/demo-data.mjs`, CLAUDE.md); prejaví sa pri ďalšom `npm run demo-data -- --reset` na Ukážkovom klientovi.
 - 2026-10-17 — Z38: **recenzie pre hostí a na stránke** (B11, návrh v2.3 `UcetPobyt`, `Recenzie`). Modul Recenzie je v katalógu **hotový**.
   - **Účet hosťa → ukončený pobyt:** „Ako sa vám u nás páčilo? Úprimne.“ — hviezdičky s popisom (Sklamanie…Výborné), podrobnosti bodkami
     (nepovinné), text, „Zobraziť ako“ (krstné + iniciála), pravidlá zverejnenia; odoslanie cez `submit_review` (oprávnenosť rozhoduje DB).
