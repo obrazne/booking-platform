@@ -672,7 +672,7 @@
       },
       "priceErrors": {
         "invalidDates": "Neplatný termín.",
-        "minNights": "Minimálny pobyt je {min} nocí.",
+        "minNights": "V tomto termíne je minimum {min, plural, one {# noc} few {# noci} other {# nocí}}.",
         "maxNights": "Maximálny pobyt je {max} nocí.",
         "arrivalDay": "V tento deň sa nedá prísť.",
         "tooManyGuests": "Maximálny počet hostí je {max}.",
@@ -983,7 +983,10 @@
       "done": "Hotovo",
       "askTitle": "Otázky pred rezerváciou? Odpovedá {name}.",
       "backToStayShort": "Späť na pobyt",
-      "backToDetails": "Späť na údaje"
+      "backToDetails": "Späť na údaje",
+      "confirmDates": "Potvrdiť termín",
+      "pickArrival": "Vyberte deň príchodu",
+      "pickDeparture": "Vyberte deň odchodu"
     },
     "confirm": {
       "number": "Rezervácia {number}",

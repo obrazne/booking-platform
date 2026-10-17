@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z30** (košík: Pokračovať hneď po výbere termínu — malá), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** **Z28** — dokončiť doplnené časti (drobčeky podľa spoločného pravidla aj u majiteľa, klik na skupinu v menu) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -260,7 +260,7 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
    klik na mesiac), zvonček (odznak, prečítanie, prechod na cieľ); axe. Obnov snímky prehliadky „Čo je nové“ a zvýš `version`
    (nové: menu so skupinami, Štatistiky, zvonček).
 
-### Z30 — Košík: Pokračovať hneď po výbere termínu (pripomienka 28, 17. 10.) — **malá, robiť pred Z28**
+### Z30 ✅ — Košík: Pokračovať hneď po výbere termínu (pripomienka 28, 17. 10.) — **malá, robiť pred Z28**
 Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.). Martin nevidel „Hotovo“ a nevedel, prečo nejde pokračovať.
 1. Platný termín vybraný → **„Pokračovať“ aktívne**, klik = potvrdenie termínu (kalendár sa zbalí, ukážu sa doplnky, krok 1 ostáva).
    „Hotovo“ premenovať na „Potvrdiť termín“ (robí to isté).
@@ -378,6 +378,12 @@ Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.)
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z30: **košík — Pokračovať hneď po výbere termínu.** Platný termín → Pokračovať aktívne (pri otvorenom kalendári
+  ho zbalí a ukáže doplnky, krok 1 ostáva); „Hotovo“ → „Potvrdiť termín“. Bez platného termínu je Pokračovať stlmené cez `aria-disabled`
+  a nad ním je vždy veta prečo („Vyberte deň príchodu“ → „Vyberte deň odchodu“ → pravidlo ceny, napr. „V tomto termíne je minimum 3 noci.“;
+  `aria-describedby`), klik vetu zvýrazní a posunie kalendár do pohľadu; na mobile veta nad zeleným pásom. „Zmeniť“ v súhrne skryté, kým je
+  kalendár otvorený; termín v súhrne krátko (`24. – 26. 11. 2026`, `29. 11. – 2. 12. 2026`). Riadok istoty sa zalamuje, neoreže sa.
+  Playwright `cart.spec.ts` (veta, aria-disabled, aktívne po výbere, krátky dátum, istota v okne 1440 × 900; axe). Celá sada 44/44. (Claude Code)
 - 2026-10-17 — Z28 (1. časť): **riadiace centrum v1.2.** Zostáva z doplneného zadania: drobčeky podľa spoločného pravidla aj v administrácii
   majiteľa (+ mobil „‹ Späť na …“, `PageHeader` s `breadcrumbs`) a klik na skupinu v menu → prvá podstránka.
   - **Menu:** tmavé, položky cez celú šírku (hover biela 6 %, aktívna 10 % + 3 px čiara, text vždy svetlý — rovnaké premenné ako v Z27).

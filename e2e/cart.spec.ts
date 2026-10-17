@@ -11,6 +11,15 @@ async function noSeriousA11y(page: Page) {
   expect(serious.map((v) => `${v.id}: ${v.nodes[0]?.target.join(" ")}`)).toEqual([]);
 }
 
+/** Clicks one day in a calendar, paging months forward as needed. */
+async function pickDay(scope: Locator, date: string) {
+  for (let i = 0; i < 24; i++) {
+    const day = scope.locator(`button[data-date="${date}"]`).filter({ visible: true });
+    if ((await day.count()) > 0) return day.first().click();
+    await scope.getByRole("button", { name: "Nasledujúci mesiac" }).first().click();
+  }
+}
+
 /** The summary column does not scroll, and its button and reassurance line are inside the window. */
 async function summaryFits(page: Page, cart: Locator, button: string) {
   const aside = cart.locator("aside");
@@ -44,7 +53,7 @@ test("cart v2.2 on a 13″ notebook: summary without scrolling, one-line extras,
 
   // Step 1 starts with extras (the stay is not repeated on the left), no photo strip.
   await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
-  await expect(cart.getByRole("button", { name: "Hotovo", exact: true })).toHaveCount(0);
+  await expect(cart.getByRole("button", { name: "Potvrdiť termín" })).toHaveCount(0);
   for (const name of ["Raňajky v chalete", "Privátny šéfkuchár — večera o 4 chodoch"]) {
     await cart.getByRole("button", { name, exact: true }).click();
   }
@@ -57,12 +66,14 @@ test("cart v2.2 on a 13″ notebook: summary without scrolling, one-line extras,
   await expect(chef).toHaveAttribute("aria-expanded", "true");
   await expect(cart.getByRole("button", { name: "Odobrať z pobytu" })).toBeVisible();
 
-  // Zmeniť → calendar on the left, extras hidden, Pokračovať muted → Hotovo.
+  // Zmeniť → calendar on the left, extras hidden, Zmeniť itself hidden → Potvrdiť termín.
   await cart.locator("aside").getByRole("button", { name: "Zmeniť", exact: true }).click();
-  await expect(cart.getByRole("button", { name: "Hotovo", exact: true })).toBeVisible();
+  await expect(cart.getByRole("button", { name: "Potvrdiť termín" })).toBeVisible();
   await expect(cart.getByText("K pobytu môžete pridať.")).toHaveCount(0);
-  await expect(cart.locator("aside").getByRole("button", { name: "Pokračovať" })).toBeDisabled();
-  await cart.getByRole("button", { name: "Hotovo", exact: true }).click();
+  await expect(
+    cart.locator("aside").getByRole("button", { name: "Zmeniť", exact: true }),
+  ).toHaveCount(0);
+  await cart.getByRole("button", { name: "Potvrdiť termín" }).click();
   await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
 
   // Step 2: the owner's card; the finished step 1 leads back from the step bar.
@@ -112,5 +123,41 @@ test("cart v2.2 on a phone: no photos, one-line extras, no sideways scrolling", 
   await expect(row).toHaveAttribute("aria-pressed", "true");
   const overflow = await cart.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
   expect(overflow).toBe(false);
+  await noSeriousA11y(page);
+});
+
+test("cart Z30: the reason above Pokračovať, active right after a valid stay", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name === "mobile", "notebook layout");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.getByRole("button", { name: "Pozrieť pobyt" }).first().click();
+  const cart = page.getByRole("dialog");
+  const aside = cart.locator("aside");
+  const next = aside.getByRole("button", { name: "Pokračovať" });
+  await expect(aside.getByText("Vyberte deň príchodu")).toBeVisible();
+  await expect(next).toHaveAttribute("aria-disabled", "true");
+  await expect(next).toHaveAttribute("aria-describedby", "cart-reason");
+  await next.click({ force: true }); // muted (aria-disabled), but points to the reason; nothing else happens
+  await expect(cart.getByRole("button", { name: "Potvrdiť termín" })).toBeVisible();
+
+  // Arrival chosen → the sentence moves on to the departure. (The calendar itself does not offer a departure that
+  // breaks the minimum stay, so the price-rule sentence is a fallback.)
+  const stay = await freeStay(3);
+  await pickDay(cart, stay.checkIn);
+  await expect(aside.getByText("Vyberte deň odchodu")).toBeVisible();
+  await pickDay(cart, stay.checkOut);
+  await expect(next).not.toHaveAttribute("aria-disabled", "true");
+  await expect(aside.locator("#cart-reason")).toHaveCount(0);
+  // Short dates in the summary (no wrapping); the reassurance line is not cut off.
+  await expect(
+    aside.getByText(/\d+\.\s*(\d+\.\s*)?–\s*\d+\.\s*\d+\.\s*\d{4}/).first(),
+  ).toBeVisible();
+  const trust = aside.getByText(/Storno/).last();
+  const box = (await trust.boundingBox())!;
+  expect(box.y + box.height).toBeLessThanOrEqual(900);
+  await next.click();
+  await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
   await noSeriousA11y(page);
 });

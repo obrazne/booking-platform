@@ -51,6 +51,19 @@ import {
 
 const FORM_ID = "booking-form";
 
+/** Stay in the summary without wrapping (Z30): "24. – 26. 11. 2026", "29. 11. – 2. 12. 2026", full dates across years. */
+function shortRange(checkIn: string, checkOut: string, locale: string): string {
+  const [y1, m1, d1] = checkIn.split("-").map(Number) as [number, number, number];
+  const [y2, m2, d2] = checkOut.split("-").map(Number) as [number, number, number];
+  if (!locale.startsWith("sk") && !locale.startsWith("cs")) {
+    const fmt = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeZone: "UTC" });
+    return fmt.formatRange(new Date(`${checkIn}T00:00:00Z`), new Date(`${checkOut}T00:00:00Z`));
+  }
+  if (y1 !== y2) return `${d1}. ${m1}. ${y1} – ${d2}. ${m2}. ${y2}`;
+  if (m1 !== m2) return `${d1}. ${m1}. – ${d2}. ${m2}. ${y2}`;
+  return `${d1}. – ${d2}. ${m2}. ${y2}`;
+}
+
 function subscribeWide(cb: () => void) {
   const mq = window.matchMedia("(min-width: 1024px)");
   mq.addEventListener("change", cb);
@@ -129,16 +142,37 @@ export function Cart() {
   }, [b.open, b.step, formToken]);
 
   const ready = Boolean(b.price?.ok);
-  const calendarOpen = b.cartCalendar || !(b.range.checkIn && b.range.checkOut);
+  const hasDates = Boolean(b.range.checkIn && b.range.checkOut);
+  const calendarOpen = b.cartCalendar || !hasDates;
   const f = b.guest;
   const contactValid = f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email);
+  // Z30: without a valid stay the reason is always written above the button (arrival → departure → price rules).
+  const reason =
+    b.step === 1 && !ready
+      ? !b.range.checkIn
+        ? t("v2.pickArrival")
+        : !b.range.checkOut
+          ? t("v2.pickDeparture")
+          : (errorsText(t, b.price) ?? t("v2.pickDeparture"))
+      : null;
+  const [flash, setFlash] = useState(0);
   const cta =
     b.step === 1
       ? {
           label: t("cart.continue"),
-          // Muted while the calendar is open: "Hotovo" closes it with a valid stay first.
-          disabled: !ready || calendarOpen,
-          onClick: () => b.setStep(2),
+          // A valid stay is enough: with the calendar open, Pokračovať confirms the dates and shows the extras.
+          blocked: !ready,
+          onClick: () => {
+            if (!ready) {
+              setFlash((n) => n + 1);
+              document
+                .getElementById("cart-calendar")
+                ?.scrollIntoView({ block: "center", behavior: "smooth" });
+              return;
+            }
+            if (calendarOpen) b.setCartCalendar(false);
+            else b.setStep(2);
+          },
         }
       : b.step === 2
         ? {
@@ -151,17 +185,38 @@ export function Cart() {
             disabled: pending || failed || !formToken || !ready || (captchaEnabled && !captcha),
             submit: true,
           };
-  const ctaButton = (
+  const ctaButton = (reasonId?: string) => (
     <button
       type={cta.submit ? "submit" : "button"}
       form={cta.submit ? FORM_ID : undefined}
-      disabled={cta.disabled}
+      disabled={"disabled" in cta ? cta.disabled : undefined}
+      // Muted but clickable (aria-disabled): the click points to the reason and the calendar.
+      aria-disabled={"blocked" in cta && cta.blocked ? true : undefined}
+      aria-describedby={reason && reasonId ? reasonId : undefined}
       onClick={cta.submit ? undefined : cta.onClick}
-      className="btn-on-accent inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-5 text-center"
+      className={cn(
+        "btn-on-accent inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-5 text-center",
+        "blocked" in cta && cta.blocked && "cursor-not-allowed opacity-55",
+      )}
     >
       {cta.label} {cta.submit ? null : <ChevronRight className="size-4 shrink-0" />}
     </button>
   );
+  const reasonLine = (id: string, className?: string) =>
+    reason ? (
+      <p
+        id={id}
+        key={`${id}-${flash}`}
+        role="status"
+        className={cn(
+          "text-[13px] text-white",
+          flash > 0 && "font-bold motion-safe:animate-[pulse_0.6s_ease-in-out_2]",
+          className,
+        )}
+      >
+        {reason}
+      </p>
+    ) : null;
 
   return (
     <Sheet open={b.open} onOpenChange={(o) => !o && b.closeCart()}>
@@ -205,9 +260,10 @@ export function Cart() {
                   ← {b.step === 2 ? t("v2.backToStayShort") : t("v2.backToDetails")}
                 </button>
               ) : null}
-              {ctaButton}
+              {reasonLine("cart-reason")}
+              {ctaButton("cart-reason")}
               {b.data.trust[0] ? (
-                <p className="text-on-accent-soft inline-flex items-start gap-1.5 text-xs">
+                <p className="text-on-accent-soft inline-flex items-start gap-1.5 text-xs break-words">
                   <Check className="mt-px size-3.5 shrink-0" aria-hidden /> {b.data.trust[0]}
                 </p>
               ) : null}
@@ -220,6 +276,11 @@ export function Cart() {
           {sheet ? (
             <div className="bg-surface-accent absolute inset-x-0 bottom-[76px] z-10 grid max-h-[70svh] gap-5 overflow-y-auto rounded-t-lg px-5 pt-5 pb-6 text-white shadow-[0_-24px_60px_-30px_rgba(17,33,47,0.5)]">
               <Summary compact />
+            </div>
+          ) : null}
+          {reason ? (
+            <div className="bg-accent-deep absolute inset-x-0 bottom-[72px] z-20 px-5 py-2">
+              {reasonLine("cart-reason-mobile")}
             </div>
           ) : null}
           <div className="bg-surface-accent absolute inset-x-0 bottom-0 z-20 flex items-center gap-3 px-5 py-3 text-white">
@@ -237,7 +298,7 @@ export function Cart() {
                 {sheet ? <ChevronDown className="size-3.5" /> : <ChevronUp className="size-3.5" />}
               </span>
             </button>
-            <div className="w-[52%] shrink-0">{ctaButton}</div>
+            <div className="w-[52%] shrink-0">{ctaButton("cart-reason-mobile")}</div>
           </div>
         </div>
       </SheetContent>
@@ -384,7 +445,7 @@ function StepStay({ wide, calendarOpen }: { wide: boolean; calendarOpen: boolean
     return (
       <section className="grid gap-[18px]">
         <SectionTitle title={t("v2.cartDatesTitle")} sub={t("v2.cartDatesSub")} />
-        <div className="border-line rounded-lg border px-4 py-5 sm:px-6">
+        <div id="cart-calendar" className="border-line rounded-lg border px-4 py-5 sm:px-6">
           <AvailabilityCalendar
             locale={data.locale}
             currency={data.catalog.currency}
@@ -410,7 +471,7 @@ function StepStay({ wide, calendarOpen }: { wide: boolean; calendarOpen: boolean
           disabled={!hasDates || !b.price?.ok}
           onClick={() => b.setCartCalendar(false)}
         >
-          {t("v2.done")}
+          {t("v2.confirmDates")}
         </Button>
         {guests}
       </section>
@@ -1013,7 +1074,7 @@ function Summary({ compact }: { compact?: boolean }) {
             <div className="grid gap-0.5">
               <span className="text-[15px] font-bold text-white">
                 {range.checkIn && range.checkOut
-                  ? `${d.long(range.checkIn)} – ${d.long(range.checkOut)}`
+                  ? shortRange(range.checkIn, range.checkOut, data.locale)
                   : t("cart.selectDates")}
               </span>
               {nights ? (
@@ -1022,7 +1083,7 @@ function Summary({ compact }: { compact?: boolean }) {
                 </span>
               ) : null}
             </div>
-            {range.checkIn && range.checkOut ? (
+            {range.checkIn && range.checkOut && !(b.step === 1 && b.cartCalendar) ? (
               <button
                 type="button"
                 onClick={() => {

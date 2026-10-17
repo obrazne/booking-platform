@@ -122,14 +122,17 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   // After choosing both days the calendar stays open (the guest sees the range); hiding it is the guest's choice.
   const stay = await freeStay(3);
   await pickStay(cart, stay.checkIn, stay.checkOut);
-  await expect(cart.getByRole("button", { name: "Hotovo", exact: true })).toBeVisible();
+  await expect(cart.getByRole("button", { name: "Potvrdiť termín" })).toBeVisible();
   await expect(cart.locator(`button[data-date="${stay.checkIn}"]`).first()).toHaveAttribute(
     "aria-pressed",
     "true",
   );
-  // Extras wait until the calendar is closed with a valid stay; then "Zmeniť" in the summary opens it again.
-  await expect(cart.getByRole("button", { name: "Pokračovať" })).toBeDisabled();
-  await cart.getByRole("button", { name: "Hotovo", exact: true }).click();
+  // Z30: a valid stay makes Pokračovať active at once — it confirms the dates and shows the extras.
+  await expect(cart.getByRole("button", { name: "Pokračovať" })).not.toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  await cart.getByRole("button", { name: "Pokračovať" }).click();
   await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
   await expect(cart.getByRole("button", { name: "Zmeniť", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
