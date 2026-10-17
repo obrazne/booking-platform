@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** ~~Z37 (upsell pre hostí)~~ ✅ → ~~Z39 (check-in pre hostí)~~ ✅ — linka B má frontu prázdnu.
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z38 (recenzie pre hostí); **B:** ~~Z37 (upsell pre hostí)~~ ✅ → ~~Z39 (check-in pre hostí)~~ ✅ — linka B má frontu prázdnu.
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -137,7 +137,7 @@ v komponentoch**; pred ostrým nasadením ich overíme.
 dosky `docs/navrhy/stranka-hosta/UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` (klikacie). Zámer, nie pixelová predloha; téma klienta,
 preklady, PC aj mobil 390 px, axe. Každá úloha nadväzuje na svoj základ (Z34–Z36) — ak základ chýba, sprav najprv ho.
 
-### Z41 [A] — Ukážkové dáta preč zo STRÖMY, skutočný kalendár Jany (17. 10.) — **prednostne**
+### Z41 ✅ [A] — Ukážkové dáta preč zo STRÖMY, skutočný kalendár Jany (17. 10.) — **prednostne**
 STRÖMY na stagingu odteraz slúži na skúšku so **skutočným kalendárom z Bookingu**; ukážkové dáta ho miešali (ukážkový „Booking.com
 (ukážka)“ 21.–24. 12. vyzeral ako skutočná obsadenosť, kolízie, zmazané veci sa po `demo-data` vrátili).
 1. `scripts/demo-data.mjs`: cieľový klient je parameter; **predvolene Ukážkový klient**, STRÖMY len s výslovným `--tenant stromy --force`
@@ -317,11 +317,11 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
   - **Téma:** akcentová plocha s bielym textom má teraz kontrast aspoň 7 : 1 (svetlejšie odtiene textu na nej ostanú v AA) — modrá
     Ukážkového klienta neprešla axe; ukážkovému klientovi tmavšia modrá `#1d5c96` (aj v `seed.sql`).
   - Opravy: v `tour-screens.mjs` bol v regexe neviditeľný znak backspace namiesto `` (rozmazanie e-mailov mohlo minúť) — opravené.
-  - **Čaká na Martina:** upratanie STRÖMY (mazanie zablokovala ochrana pred hromadným mazaním). Pripravené, nič nezmazané — počty:
-    52 rezervácií (48 „DEMO“ + testovacie 2026-0001/0002/0003/0040), 2 ukážkové kanály „(ukážka)“ s udalosťami, 1 blokácia „(DEMO)“,
-    2 ukážkové dokumenty, 50 ukážkových/testovacích hostí, 5 ukážkových upozornení; moduly recenzie/upsell/check-in na STRÖMY vypnúť
-    a nastavenia upsellu Janiných služieb vrátiť (zapla ich ukážka). Ostane: objekt, ceny, sezóny, fotky, služby, sekcie, dokumenty,
-    tím a **„Ostrý kalendár chaletu na Bookingu“** (5 udalostí „CLOSED - Not available“, 2. 1. 2027 – 17. 4. 2028).
+  - **Upratanie STRÖMY (po Martinovom súhlase, 17. 10.):** zmazaných 52 rezervácií (48 „DEMO“ + testovacie 2026-0001/0002/0003/0040)
+    s naviazanými dátami, 2 ukážkové kanály „(ukážka)“ s udalosťami, blokácia „(DEMO)“, 2 ukážkové dokumenty, 50 ukážkových/testovacích
+    hostí, 5 ukážkových upozornení; moduly recenzie/upsell/check-in vypnuté, upsell Janiných služieb vrátený; záznamy mazania vynechané
+    z koša a histórie. **Ostalo:** objekt, 26 fotiek, 3 sezóny, 3 služby, sekcie, tím, 2 hostia (napr. Martinov testovací z 2026-0040)
+    a **„Ostrý kalendár chaletu na Bookingu“** — z neho 5 udalostí „CLOSED - Not available“ (2. 1. 2027 – 17. 4. 2028); žiadna rezervácia.
   - Testy: celá sada 54 ok + nový test kalendára; „calendar works with the keyboard“ raz zlyhal v plnom behu, samostatne 3× ok.
 - 2026-10-17 — Z39 [linka B]: **online check-in pre hostí** (návrh v2.3 `Checkin`, karta v `UcetPobyt`). (Claude Code)
   - **Karta v detaile pobytu** (nový slot `guest.stay.top` nad pokynmi k príchodu, v účte aj na `/r/<kód>`): „Vybavte to teraz.
