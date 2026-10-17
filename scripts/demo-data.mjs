@@ -1,11 +1,15 @@
-// Demo data on STAGING for Chalet STRÖMY (Z21) — so Martin can click through everything.
+// Demo data on STAGING (Z21, Z41) — so Martin can click through everything. Target: the demo client (Ukážkový klient,
+// property Chalet pod Smrekom). Chalet STRÖMY runs with Jana's real Booking calendar since 17. 10. and gets demo data
+// only with an explicit `--tenant stromy --force`, and never while it has an active real iCal channel.
 //
-//   node scripts/demo-data.mjs          creates what is missing (safe to run again)
-//   node scripts/demo-data.mjs --reset  removes the demo records and creates them again
+//   node scripts/demo-data.mjs                 creates what is missing on the demo client (safe to run again)
+//   node scripts/demo-data.mjs --reset         removes the demo records and creates them again
+//   node scripts/demo-data.mjs --remove        only removes the demo records
+//   ... --tenant stromy --force                the same for STRÖMY (refused with a real calendar connected)
 //
 // Reservations go through the same database function as a real booking (create_reservation: atomic term, frozen
 // price lines, status history, consents), with the price from the same calculation the guest page uses.
-// Demo records are marked: guest e-mails on the reserved domain stromy-demo.invalid (never sent), "DEMO" in the
+// Demo records are marked: guest e-mails on a reserved *.invalid domain (never sent), "DEMO" in the
 // guest note and in labels. Only reservation (b) has a deliverable address so Martin can try the guest zone —
 // staging redirects every e-mail to EMAIL_REDIRECT_TO. E-mails queued by the demo are marked skipped, not sent.
 import { createClient } from "@supabase/supabase-js";
@@ -22,6 +26,7 @@ if (/prod/i.test(url) || process.env.VERCEL_ENV === "production")
   throw new Error("Demo data are for staging only");
 
 const db = createClient(url, key, { auth: { persistSession: false } });
+
 const src = fileURLToPath(new URL("../src", import.meta.url));
 const jiti = createJiti(import.meta.url, { alias: { "@": src } });
 const { calculatePrice } = await jiti.import("@/core/pricing/calculate");
@@ -33,10 +38,67 @@ const sk = JSON.parse(
   readFileSync(new URL("../src/i18n/messages/sk.json", import.meta.url), "utf8"),
 );
 
-const TENANT = "a0000000-0000-4000-8000-000000000002";
-const PROPERTY = "b0000000-0000-4000-8000-000000000100";
-const UNIT = "c0000000-0000-4000-8000-000000000100";
-const DEMO_DOMAIN = "stromy-demo.invalid";
+const TARGETS = {
+  ukazka: {
+    tenant: "a0000000-0000-4000-8000-000000000001",
+    property: "b0000000-0000-4000-8000-000000000001",
+    domain: "ukazka-demo.invalid",
+    host: "https://booking-platform-obrazne.vercel.app",
+  },
+  stromy: {
+    tenant: "a0000000-0000-4000-8000-000000000002",
+    property: "b0000000-0000-4000-8000-000000000100",
+    domain: "stromy-demo.invalid",
+    host: "https://chalet-stromy-demo.vercel.app",
+  },
+};
+const argValue = (name) => {
+  const i = process.argv.indexOf(name);
+  return i >= 0 ? process.argv[i + 1] : undefined;
+};
+const targetKey = argValue("--tenant") ?? "ukazka";
+const target = TARGETS[targetKey];
+if (!target) throw new Error(`Unknown --tenant ${targetKey} (ukazka | stromy)`);
+if (targetKey !== "ukazka" && !process.argv.includes("--force"))
+  throw new Error(`Demo data for ${targetKey} only with --force (the demo client is the default).`);
+const TENANT = target.tenant;
+const PROPERTY = target.property;
+const DEMO_DOMAIN = target.domain;
+
+// A client with a real calendar (an active iCal channel outside example.invalid) never gets demo data (Z41).
+async function assertNoRealCalendar() {
+  const { data: real, error } = await db
+    .from("ical_channels")
+    .select("name, import_url")
+    .eq("tenant_id", TENANT)
+    .eq("active", true)
+    .not("import_url", "like", "%example.invalid%");
+  if (error) throw new Error(`ical channels: ${error.message}`);
+  if (real?.length) {
+    console.error(
+      `STOP: ${targetKey} has a real calendar connected (${real.map((c) => c.name).join(", ")}).` +
+        " Demo data would mix with real occupancy — nothing was changed. Use the demo client (default).",
+    );
+    process.exit(1);
+  }
+}
+
+const { data: unitRow, error: unitError } = await db
+  .from("units")
+  .select("id")
+  .eq("property_id", PROPERTY)
+  .order("is_default", { ascending: false })
+  .order("sort")
+  .limit(1)
+  .single();
+if (unitError) throw new Error(`unit: ${unitError.message}`);
+const UNIT = unitRow.id;
+const { data: propertyRow } = await db
+  .from("properties")
+  .select("name")
+  .eq("id", PROPERTY)
+  .single();
+const PROPERTY_NAME = propertyRow?.name ?? "";
 /** Deliverable only through the staging redirect; the guest-zone login code ends up in Martin's inbox. */
 const GUEST_ZONE_EMAIL = "demo-host@obrazne.sk";
 const MARTIN = "info@obrazne.sk";
@@ -464,6 +526,11 @@ async function document(path, title, body, link) {
 }
 
 // ---------------------------------------------------------------- main
+if (process.argv.includes("--remove")) {
+  await removeDemo();
+  process.exit(0);
+}
+await assertNoRealCalendar();
 if (reset) await removeDemo();
 if (!reset && (await demoReservationIds()).length)
   console.log("Demo data already exist (use --reset to create them again).");
@@ -471,6 +538,23 @@ else await createDemo();
 
 async function createDemo() {
   const runStart = new Date().toISOString();
+  if (targetKey === "ukazka") {
+    // The demo client's contact for the cart and the confirmation ("Otázky pred rezerváciou? Odpovedá …") — fictional.
+    const { data: s } = await db
+      .from("tenant_settings")
+      .select("contact_name")
+      .eq("tenant_id", TENANT)
+      .maybeSingle();
+    if (!s?.contact_name)
+      must(
+        await db.from("tenant_settings").upsert({
+          tenant_id: TENANT,
+          contact_name: "Martina (ukážka)",
+          contact_phone: "+421 900 000 000",
+        }),
+        "demo contact",
+      );
+  }
   const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
   const martin = users.users.find((u) => u.email === MARTIN);
   if (!martin) throw new Error(`${MARTIN} has no login on staging`);
@@ -585,7 +669,8 @@ async function createDemo() {
       kind: "ical",
       ical_channel_id: ch.id,
       ical_uid: uid,
-      label: `${source === "booking" ? "Booking.com" : "Airbnb"} (DEMO)`,
+      // Booking exports every taken date as "CLOSED - Not available" (Z41) — the calendar shows "Zavreté na Bookingu".
+      label: source === "booking" ? "CLOSED - Not available" : "Airbnb (DEMO)",
       nights: nights(from, to),
     });
     if (error) console.warn(`${name}: term taken, event skipped (${error.message})`);
@@ -657,9 +742,9 @@ async function createDemo() {
     "skip e-mails",
   );
 
-  const host = "https://chalet-stromy-demo.vercel.app";
+  const host = target.host;
   console.log(`
-Demo data for Chalet STRÖMY are ready (staging).
+Demo data for ${PROPERTY_NAME} (${targetKey}) are ready (staging).
   (a) ${a.number}  ${a.checkIn} – ${a.checkOut}  waiting for payment, chef   ${host}/r/${a.access_token}
   (b) ${b.number}  ${b.checkIn} – ${b.checkOut}  confirmed + paid, document   ${host}/r/${b.access_token}
   (c) ${c.number}  ${c.checkIn} – ${c.checkOut}  completed
@@ -757,7 +842,7 @@ async function demoOrders(martin, b) {
   );
   const find = (word) => services.find((s) => (s.name?.sk ?? "").includes(word));
   const breakfast = find("Raňajky");
-  const chef = find("šéfkuchár");
+  const chef = find("šéfkuchár") ?? find("bicykl");
   const transfer = find("Transfer");
   // Showroom settings: breakfast and transfer straight away, the chef needs the owner's confirmation.
   for (const [s, confirm] of [
@@ -1066,7 +1151,7 @@ async function curatedNotifications(martin, { a, b }, trialEnds) {
             data: {
               guest: review.display_name,
               rating: review.rating,
-              property: "Chalet STRÖMY",
+              property: PROPERTY_NAME,
               number: review.reservation?.number,
               demo: true,
             },

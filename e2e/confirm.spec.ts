@@ -1,7 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { GUEST_URL } from "../playwright.config";
-import { freeStay, service, STROMY, STROMY_UNIT, TEST_DOMAIN } from "./helpers";
+import {
+  TENANT,
+  TENANT_NAME,
+  TENANT_PROPERTY,
+  TENANT_UNIT,
+  TEST_DOMAIN,
+  freeStay,
+  service,
+} from "./helpers";
 
 async function noSeriousA11y(page: Page) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
@@ -17,9 +25,9 @@ test("confirmation page v2.1: waiting for payment, then confirmed; calendar file
   const stay = await freeStay(3);
   const { data, error } = await db.rpc("create_reservation", {
     p: {
-      tenant_id: STROMY,
-      property_id: "b0000000-0000-4000-8000-000000000100",
-      unit_id: STROMY_UNIT,
+      tenant_id: TENANT,
+      property_id: TENANT_PROPERTY,
+      unit_id: TENANT_UNIT,
       guest_name: "Peter Testovací",
       guest_email: `e2e-confirm-${info.project.name}-${Date.now()}@${TEST_DOMAIN}`,
       adults: 4,
@@ -46,7 +54,7 @@ test("confirmation page v2.1: waiting for payment, then confirmed; calendar file
   await page.goto(url);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Ďakujeme, Peter.");
   await expect(page.getByRole("link", { name: /Môj účet/ })).toBeVisible();
-  await expect(page.locator("footer")).toContainText("Chalet STRÖMY");
+  await expect(page.locator("footer")).toContainText(TENANT_NAME);
   await expect(page.getByRole("img", { name: /PAY by square/ })).toBeVisible();
   await expect(page.locator("ol li[aria-current='step']")).toContainText("Zaplatíte");
   if (info.project.name === "desktop") {

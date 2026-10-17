@@ -100,9 +100,13 @@ Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supab
 
 **Testovanie administrácie v prehliadači bez hesla:** `node --env-file=.env.local scripts/qa-login-link.mjs http://localhost:3000` → otvoriť vypísaný odkaz
 (používateľ qa@booking-platform.test, majiteľ ukážkových klientov, len staging). Fotky z disku: `scripts/upload-photos.mjs <manifest>`.
-**Ukážkové dáta STRÖMY (staging):** `npm run demo-data` (chýbajúce vytvorí), `npm run demo-data -- --reset` (zmaže a vytvorí znova) —
-3 rezervácie cez `create_reservation` s cenou z rovnakého výpočtu ako web, dokumenty, iCal udalosti, blokácia, skúška modulu.
-Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `stromy-demo.invalid` (hosť b: demo-host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú.
+**Ukážkové dáta (staging, Z41):** `npm run demo-data` (chýbajúce vytvorí), `-- --reset` (zmaže a vytvorí znova), `-- --remove` (len zmaže) —
+cieľ je **Ukážkový klient** (objekt Chalet Pod Smrekom, ilustračné fotky): ~45 rezervácií za 22 mesiacov cez `create_reservation`, dokumenty,
+ukážkové iCal kanály, blokácia, recenzie, objednávky, check-iny. Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `ukazka-demo.invalid`
+(hosť b: demo-host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú (preskočia sa hneď po vytvorení).
+**Chalet STRÖMY má od 17. 10. skutočný kalendár Jany z Bookingu** — ukážkové dáta tam nikdy (skript ich odmietne, kým má STRÖMY
+aktívny skutočný iCal kanál; inak len `--tenant stromy --force`). **Testy prehliadačom (e2e) bežia na Ukážkovom klientovi**
+(`e2e/helpers.ts`: `TENANT`, `TENANT_PROPERTY`, `PROPERTY_SLUG`, hosť `http://ukazka.localhost:3100`) a v STRÖMY nič nevytvárajú.
 **Štatistiky (Z27):** jedna funkcia `tenant_monthly_stats` (DB, RLS) pre Štatistiky, Prehľad aj riadiace centrum; pomocné výpočty
 v `src/core/stats/compute.ts`. **Upozornenia:** vznikajú len v databáze (`notify()` z triggerov a `notify_scheduled` cez pg_cron),
 deduplikované cez `dedupe_key`; zvonček `src/core/notifications/`. Nový druh = pridať do kontroly `kind`, trigger, text `notifications.kinds.*`.
@@ -127,7 +131,7 @@ maskované cez `guest_checkin_view`.
 Osoby (`checkin_guests`) tím nečíta priamo: `checkin_people` (maskované), `reveal_checkin_guest` (len majiteľ, audit). PDF: `src/core/pdf/form-pdf.ts`
 (font Geist, OFL). Do `record_history` osoby nepatria (citlivé polia sa po lehote mažú).
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
-zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens`
+zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens` (Ukážkový klient)
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).
 
 **Účty v aplikácii:** registrácia je vypnutá. Ľudia klienta a Martin sa zakladajú v Supabase (Authentication → Add user) alebo neskôr

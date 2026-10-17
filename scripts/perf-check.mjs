@@ -2,7 +2,7 @@
 // 4× slower CPU — like Lighthouse mobile. Usage: node scripts/perf-check.mjs [url]
 import { chromium, devices } from "@playwright/test";
 
-const url = process.argv[2] ?? "http://stromy.localhost:3100/p/chalet-stromy";
+const url = process.argv[2] ?? "http://ukazka.localhost:3100/p/chalet-pod-smrekom";
 const browser = await chromium.launch();
 const context = await browser.newContext({ ...devices["Pixel 7"] });
 const page = await context.newPage();

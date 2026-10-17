@@ -2,15 +2,17 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL, GUEST_URL } from "../playwright.config";
 import {
+  TENANT,
+  TENANT_NAME,
+  TENANT_PROPERTY,
+  TENANT_UNIT,
+  TEST_DOMAIN,
   freeStay,
   loginAs,
   loginOwner,
   loginPlatformAdmin,
   markToursSeen,
   service,
-  STROMY,
-  STROMY_UNIT,
-  TEST_DOMAIN,
 } from "./helpers";
 
 // Administration and logins by the approved visual v1 (Z23): computer and 390 px, accessibility (axe).
@@ -133,10 +135,10 @@ test("05 control center: own menu, clients, client panel without guest data", as
   }
   // v1.2: the client opens as an expandable row (no side panel).
   await page
-    .getByRole("button", { name: /Chalet STRÖMY/ })
+    .getByRole("button", { name: new RegExp(TENANT_NAME) })
     .first()
     .click();
-  const panel = page.getByRole("region", { name: "Chalet STRÖMY" });
+  const panel = page.getByRole("region", { name: TENANT_NAME });
   await expect(panel).toContainText("Tržby priamo tento mesiac");
   await expect(panel).toContainText("Moduly");
   await expect(page.getByText("Riadiace centrum nevidí mená ani kontakty hostí")).toBeVisible();
@@ -159,9 +161,9 @@ test("v1.1 panel: one column, long name, e-mail and note never overlap", async (
   const { data: created, error } = await db
     .rpc("create_reservation", {
       p: {
-        tenant_id: STROMY,
-        property_id: "b0000000-0000-4000-8000-000000000100",
-        unit_id: STROMY_UNIT,
+        tenant_id: TENANT,
+        property_id: TENANT_PROPERTY,
+        unit_id: TENANT_UNIT,
         guest_name: long,
         guest_email: email,
         guest_note:
@@ -267,10 +269,10 @@ test("Z25 admin entry: control center opens the client in a new tab, bar and aud
   await expect(page.locator("aside")).not.toContainText("Do administrácie");
   await page.goto(`${ADMIN_URL}/platform`);
   await page
-    .getByRole("button", { name: /Chalet STRÖMY/ })
+    .getByRole("button", { name: new RegExp(TENANT_NAME) })
     .first()
     .click();
-  const panel = page.getByRole("region", { name: "Chalet STRÖMY" });
+  const panel = page.getByRole("region", { name: TENANT_NAME });
   await expect(panel.getByRole("link", { name: /Otvoriť administráciu/ })).toBeVisible();
   await expect(panel).not.toContainText("booking-platform.test");
   await expect(panel).not.toContainText(".localhost");
@@ -279,12 +281,12 @@ test("Z25 admin entry: control center opens the client in a new tab, bar and aud
     panel.getByRole("link", { name: /Otvoriť administráciu/ }).click(),
   ]);
   await tab.waitForURL(/\/admin$/);
-  await expect(tab.getByRole("status")).toContainText("Prezeráš ako správca: Chalet STRÖMY");
+  await expect(tab.getByRole("status")).toContainText(`Prezeráš ako správca: ${TENANT_NAME}`);
   await expect(tab.getByRole("heading", { level: 1 })).toBeVisible();
   const { data: entries } = await db
     .from("audit_log")
     .select("id")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("action", "admin.entered")
     .gte("created_at", since);
   expect(entries?.length ?? 0).toBeGreaterThan(0);

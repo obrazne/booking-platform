@@ -45,12 +45,15 @@ export function meetsAA(foreground: string, background: string, large = false): 
   return contrastRatio(foreground, background) >= (large ? 3 : 4.5);
 }
 
-/** Darkens a colour step by step until white text on it meets AA (for coloured surfaces with white text, A12 v2). */
+/**
+ * Darkens a colour step by step until white text on it reaches 7 : 1 (coloured surfaces with white text, A12 v2) —
+ * so the lighter tints of secondary text on it (text-on-accent-*) still meet AA (Z41: the demo client's blue failed).
+ */
 export function surfaceForWhiteText(hex: string): string {
   let { r, g, b } = parseHex(hex);
   const toHex = () =>
     `#${[r, g, b].map((c) => Math.round(c).toString(16).padStart(2, "0")).join("")}`;
-  for (let i = 0; i < 40 && contrastRatio(toHex(), LIGHT_TEXT) < 4.5; i++) {
+  for (let i = 0; i < 40 && contrastRatio(toHex(), LIGHT_TEXT) < 7; i++) {
     r *= 0.92;
     g *= 0.92;
     b *= 0.92;

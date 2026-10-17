@@ -305,6 +305,24 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z41 (časť — bez upratania STRÖMY): **ukážkové dáta a testy preč zo STRÖMY.**
+  - `demo-data`: cieľ **Ukážkový klient** (Chalet Pod Smrekom), STRÖMY len `--tenant stromy --force` a **nikdy s aktívnym skutočným
+    iCal kanálom** (overené: skript skončí „STOP … nothing was changed“); `--remove` len zmaže. Ukážkový klient má celú ukážku
+    (49 rezervácií za 22 mesiacov, recenzie, objednávky, check-iny, dokumenty, blokácia, kanály), 8 ilustračných fotiek (kreslené,
+    `ilustrácia (demo)`), fiktívny kontakt „Martina (ukážka)“; e-maily ukážky sa preskakujú hneď (pri behu neodišiel žiadny).
+  - **e2e testy na Ukážkovom klientovi** (`e2e/helpers.ts`: `TENANT`, `TENANT_PROPERTY`, `PROPERTY_SLUG`, hosť `ukazka.localhost:3100`) —
+    v STRÖMY nič nevytvárajú; CLAUDE.md doplnené. Snímky prehliadky „Čo je nové“ z Ukážkového klienta (verzia prehliadky nezvýšená).
+  - **Kalendár:** udalosť z iCalu „CLOSED - Not available“ = **„Zavreté na Bookingu“** s vetou o extranete v paneli (Booking nerozlišuje
+    rezerváciu od ručne zavretého termínu a neposiela termíny prevzaté z iných kalendárov); e2e test.
+  - **Téma:** akcentová plocha s bielym textom má teraz kontrast aspoň 7 : 1 (svetlejšie odtiene textu na nej ostanú v AA) — modrá
+    Ukážkového klienta neprešla axe; ukážkovému klientovi tmavšia modrá `#1d5c96` (aj v `seed.sql`).
+  - Opravy: v `tour-screens.mjs` bol v regexe neviditeľný znak backspace namiesto `` (rozmazanie e-mailov mohlo minúť) — opravené.
+  - **Čaká na Martina:** upratanie STRÖMY (mazanie zablokovala ochrana pred hromadným mazaním). Pripravené, nič nezmazané — počty:
+    52 rezervácií (48 „DEMO“ + testovacie 2026-0001/0002/0003/0040), 2 ukážkové kanály „(ukážka)“ s udalosťami, 1 blokácia „(DEMO)“,
+    2 ukážkové dokumenty, 50 ukážkových/testovacích hostí, 5 ukážkových upozornení; moduly recenzie/upsell/check-in na STRÖMY vypnúť
+    a nastavenia upsellu Janiných služieb vrátiť (zapla ich ukážka). Ostane: objekt, ceny, sezóny, fotky, služby, sekcie, dokumenty,
+    tím a **„Ostrý kalendár chaletu na Bookingu“** (5 udalostí „CLOSED - Not available“, 2. 1. 2027 – 17. 4. 2028).
+  - Testy: celá sada 54 ok + nový test kalendára; „calendar works with the keyboard“ raz zlyhal v plnom behu, samostatne 3× ok.
 - 2026-10-17 — Z39 [linka B]: **online check-in pre hostí** (návrh v2.3 `Checkin`, karta v `UcetPobyt`). (Claude Code)
   - **Karta v detaile pobytu** (nový slot `guest.stay.top` nad pokynmi k príchodu, v účte aj na `/r/<kód>`): „Vybavte to teraz.
     Na mieste už len kľúče.“ + „Začať / Pokračovať v check-ine →“ (pred otvorením „Check-in sa otvorí …“), hotový = svetlozelená

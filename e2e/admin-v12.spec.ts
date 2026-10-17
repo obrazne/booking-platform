@@ -1,7 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, markToursSeen, service, STROMY } from "./helpers";
+import {
+  PROPERTY_NAME,
+  TENANT,
+  TENANT_PROPERTY,
+  loginOwner,
+  markToursSeen,
+  service,
+} from "./helpers";
 
 // Administration v1.2 (Z27): menu with groups, Statistics, notifications.
 
@@ -47,7 +54,7 @@ test("menu with groups: a group opens its first page, only the active group is o
     "aria-expanded",
     "true",
   );
-  await expect(menu.getByRole("link", { name: /^Objekt/ })).toHaveAttribute(
+  await expect(menu.getByRole("link", { name: /^Ponuka/ })).toHaveAttribute(
     "aria-expanded",
     "false",
   );
@@ -75,10 +82,10 @@ test("breadcrumbs: only from the second level, the parent on a phone", async ({ 
       "/admin/settings",
     );
     await expect(crumbs.getByText("E-maily a upozornenia")).toHaveAttribute("aria-current", "page");
-    await page.goto(`${ADMIN_URL}/admin/properties/b0000000-0000-4000-8000-000000000100/pricing`);
+    await page.goto(`${ADMIN_URL}/admin/properties/${TENANT_PROPERTY}/pricing`);
     const property = page.getByRole("navigation", { name: "Drobčeková navigácia" });
     await expect(property.getByRole("link", { name: "Objekt" })).toBeVisible();
-    await expect(property.getByRole("link", { name: "Chalet STRÖMY" })).toBeVisible();
+    await expect(property.getByRole("link", { name: PROPERTY_NAME })).toBeVisible();
     await expect(property.locator('[aria-current="page"]').filter({ visible: true })).toContainText(
       /ceny/i,
     );
@@ -112,7 +119,7 @@ test("bell: badge, read on click and open the target, mark all as read", async (
   const db = service();
   const key = `e2e:${Date.now()}`;
   await db.from("notifications").insert({
-    tenant_id: STROMY,
+    tenant_id: TENANT,
     audience: "tenant",
     kind: "portal_booking",
     data: { channel: "E2E kanál", check_in: "2027-05-01", check_out: "2027-05-04" },
@@ -144,4 +151,24 @@ test("bell: badge, read on click and open the target, mark all as read", async (
   await page.goto(`${ADMIN_URL}/admin/settings/notifications`);
   await expect(page.getByRole("row", { name: /Nová rezervácia/ })).toContainText("áno");
   await db.from("notifications").delete().eq("dedupe_key", key);
+});
+
+test("calendar: a date closed on Booking is not shown as a stay (Z41)", async ({ page }, info) => {
+  test.skip(info.project.name === "mobile", "covered on desktop");
+  const db = service();
+  const { data: closed } = await db
+    .from("occupancy")
+    .select("nights, unit_id")
+    .eq("tenant_id", TENANT)
+    .eq("kind", "ical")
+    .like("label", "CLOSED%")
+    .limit(1)
+    .maybeSingle();
+  test.skip(!closed, "no closed date — run npm run demo-data");
+  const month = String(closed!.nights).slice(1, 8);
+  await page.goto(`${ADMIN_URL}/admin/calendar?month=${month}&unit=${closed!.unit_id}`);
+  const bar = page.getByRole("button", { name: /^Zavreté na Bookingu/ }).first();
+  await expect(bar).toBeVisible();
+  await bar.click();
+  await expect(page.getByText(/podrobnosti sú v extranete Bookingu/)).toBeVisible();
 });

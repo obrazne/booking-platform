@@ -1,8 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, service } from "./helpers";
-
-const STROMY_PROPERTY = "b0000000-0000-4000-8000-000000000100";
+import { TENANT_PROPERTY, loginOwner, service } from "./helpers";
 
 test("owner edits page sections: switch, order by keyboard, form from the schema", async ({
   page,
@@ -12,11 +10,11 @@ test("owner edits page sections: switch, order by keyboard, form from the schema
   const { data: before } = await db
     .from("property_sections")
     .select("id, type, sort, enabled, content")
-    .eq("property_id", STROMY_PROPERTY);
+    .eq("property_id", TENANT_PROPERTY);
   try {
     page.on("dialog", (d) => d.accept());
     await loginOwner(page, ADMIN_URL);
-    await page.goto(`${ADMIN_URL}/admin/properties/${STROMY_PROPERTY}/page`);
+    await page.goto(`${ADMIN_URL}/admin/properties/${TENANT_PROPERTY}/page`);
     await expect(page.getByRole("heading", { name: "Sekcie stránky objektu" })).toBeVisible();
 
     // The calendar cannot be switched off; FAQ can.
@@ -51,14 +49,14 @@ test("owner edits page sections: switch, order by keyboard, form from the schema
         const { data } = await db
           .from("property_sections")
           .select("content")
-          .eq("property_id", STROMY_PROPERTY)
+          .eq("property_id", TENANT_PROPERTY)
           .eq("type", "faq")
           .single();
         return JSON.stringify(data?.content);
       })
       .toContain("E2E otázka?");
   } finally {
-    // Put the real page of STRÖMY back exactly as it was.
+    // Put the page of the demo property back exactly as it was.
     for (const s of before ?? []) {
       await db
         .from("property_sections")

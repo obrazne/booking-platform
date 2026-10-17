@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { GUEST_URL } from "../playwright.config";
+import { PROPERTY_SLUG } from "./helpers";
 
 // Accessibility (WCAG 2.1 AA) of the guest page: serious and critical problems fail the test, the rest is listed.
 async function audit(page: import("@playwright/test").Page, label: string) {
@@ -18,7 +19,7 @@ async function audit(page: import("@playwright/test").Page, label: string) {
 }
 
 test("guest page and cart have no serious accessibility problems", async ({ page }) => {
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   expect(await audit(page, "detail")).toEqual([]);
   await page.getByRole("button", { name: "Pozrieť pobyt" }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();

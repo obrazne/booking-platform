@@ -1,10 +1,10 @@
 // Screenshots for the "What's new" tours (Z22) → public/tours/<tour>/<slide>.jpg
 //
 //   npm run build && npm start -- -p 3100      (local server against STAGING)
-//   npm run demo-data                          (demo data of Chalet STRÖMY, Z21)
+//   npm run demo-data                          (demo data of the demo client, Z21/Z41)
 //   npm run tour:screens                       (desktop 1440 px)
 //
-// Signs in two test accounts through one-time links (staging only): qa@booking-platform.test (owner of STRÖMY) and
+// Signs in two test accounts through one-time links (staging only): qa@booking-platform.test (owner of the demo client) and
 // qa-admin@booking-platform.test (platform admin). Guests that are not demo records are blurred — no personal data
 // ends up in the repository.
 import { createClient } from "@supabase/supabase-js";
@@ -21,8 +21,9 @@ if (!url || !key)
 if (/prod/i.test(url)) throw new Error("Screenshots are made on staging only");
 
 const BASE = process.env.TOUR_BASE_URL ?? "http://localhost:3100";
-const TENANT = "a0000000-0000-4000-8000-000000000002";
-const PROPERTY = "b0000000-0000-4000-8000-000000000100";
+// The demo client (Z41) — Chalet STRÖMY has a real Booking calendar and no demo data.
+const TENANT = "a0000000-0000-4000-8000-000000000001";
+const PROPERTY = "b0000000-0000-4000-8000-000000000001";
 const DEMO_NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
 const OUT = fileURLToPath(new URL("../public/tours/", import.meta.url));
 
@@ -98,7 +99,8 @@ const privateTexts = reservations
 async function blurPrivate(page) {
   await page.evaluate((texts) => {
     // Any real-looking e-mail (staff in the audit log, guests) — only the demo and test domains stay readable.
-    const email = /[\w.+-]+@(?!stromy-demo\.invalid|booking-platform\.test)[\w-]+\.[\w.-]+/;
+    const email =
+      /[\w.+-]+@(?!(?:stromy|ukazka)-demo\.invalid\b|booking-platform\.test\b)[\w-]+\.[\w.-]+/;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n = walker.nextNode(); n; n = walker.nextNode()) {
       const text = n.textContent ?? "";

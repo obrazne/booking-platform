@@ -1,4 +1,4 @@
-import { service, STROMY, TEST_DOMAIN } from "./helpers";
+import { TENANT, TEST_DOMAIN, service } from "./helpers";
 
 /** Removes everything the browser tests created on staging. */
 export default async function teardown() {
@@ -6,23 +6,23 @@ export default async function teardown() {
   const { data: res } = await db
     .from("reservations")
     .select("id")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .like("guest_email", `%@${TEST_DOMAIN}`);
   const ids = (res ?? []).map((r) => r.id);
   if (ids.length > 0) await db.from("reservations").delete().in("id", ids);
-  await db.from("guests").delete().eq("tenant_id", STROMY).like("email", `%@${TEST_DOMAIN}`);
+  await db.from("guests").delete().eq("tenant_id", TENANT).like("email", `%@${TEST_DOMAIN}`);
   await db
     .from("occupancy")
     .delete()
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("kind", "block")
     .like("label", "E2E%");
-  await db.from("ical_channels").delete().eq("tenant_id", STROMY).like("name", "E2E%");
+  await db.from("ical_channels").delete().eq("tenant_id", TENANT).like("name", "E2E%");
   await db.from("push_subscriptions").delete().like("endpoint", `https://push.${TEST_DOMAIN}/%`);
   const { data: docs } = await db
     .from("documents")
     .select("id, storage_path")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("title->>sk", "E2E poriadok");
   if (docs?.length) {
     await db.storage.from("guest-documents").remove(docs.map((d) => d.storage_path));
@@ -43,12 +43,12 @@ export default async function teardown() {
   await db
     .from("guest_auth_attempts")
     .delete()
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .like("email", `%@${TEST_DOMAIN}`);
   await db.from("notifications").delete().like("dedupe_key", "e2e:%");
   // Clients created by the control center tests.
   await db.from("tenants").delete().like("slug", "e2e-%");
   // Holds from carts that reached step 3 without booking (at most 3 per unit — tests would block each other).
-  await db.from("occupancy").delete().eq("tenant_id", STROMY).eq("kind", "hold");
+  await db.from("occupancy").delete().eq("tenant_id", TENANT).eq("kind", "hold");
   console.log(`[e2e] cleanup: ${ids.length} reservations, ${testUsers.length} guest logins`);
 }

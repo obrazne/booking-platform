@@ -24,6 +24,14 @@ type Selection = { start: string; end: string | null };
 
 const PORTAL_NAMES: Record<string, string> = { booking: "Booking.com", airbnb: "Airbnb" };
 
+/**
+ * Booking's iCal export does not tell a reservation from a date closed by hand ("CLOSED - Not available") and leaves
+ * out dates taken from other calendars (Z41) — such an event is shown as closed on Booking, not as a stay.
+ */
+function closedOnPortal(e: { kind: string; label?: string | null }): boolean {
+  return e.kind === "portal" && /^closed\b/i.test(e.label ?? "");
+}
+
 function monthGrid(first: string): string[][] {
   const [y, m] = first.split("-").map(Number);
   const next = new Date(Date.UTC(y!, m!, 1)).toISOString().slice(0, 10);
@@ -273,9 +281,11 @@ export function CalendarView({
                       {bars.map(({ e, s0, e0, s1, e1 }) => {
                         const label = e.reservation
                           ? `${e.reservation.guestName} · ${e.reservation.adults + e.reservation.children}`
-                          : e.kind === "portal"
-                            ? (PORTAL_NAMES[e.portal ?? ""] ?? e.label ?? t("portal"))
-                            : (e.label ?? t("blockKind"));
+                          : closedOnPortal(e)
+                            ? t("closedOnBooking")
+                            : e.kind === "portal"
+                              ? (PORTAL_NAMES[e.portal ?? ""] ?? e.label ?? t("portal"))
+                              : (e.label ?? t("blockKind"));
                         const left = s1 === s0 ? "rounded-l-lg" : "";
                         const right = e1 === e0 ? "rounded-r-lg" : "";
                         return (
@@ -376,19 +386,23 @@ export function CalendarView({
                 event
                   ? event.reservation
                     ? event.reservation.guestName
-                    : event.kind === "portal"
-                      ? (PORTAL_NAMES[event.portal ?? ""] ?? event.label ?? t("portal"))
-                      : (event.label ?? t("blockKind"))
+                    : closedOnPortal(event)
+                      ? t("closedOnBooking")
+                      : event.kind === "portal"
+                        ? (PORTAL_NAMES[event.portal ?? ""] ?? event.label ?? t("portal"))
+                        : (event.label ?? t("blockKind"))
                   : t("newStay")
               }
               subtitle={
                 event?.reservation
                   ? t("directSub")
-                  : event?.kind === "portal"
-                    ? t("portalSub")
-                    : event
-                      ? t("blockSub")
-                      : t("newStaySub")
+                  : event && closedOnPortal(event)
+                    ? t("closedSub")
+                    : event?.kind === "portal"
+                      ? t("portalSub")
+                      : event
+                        ? t("blockSub")
+                        : t("newStaySub")
               }
               facts={[
                 { label: tv("checkIn"), value: longDate(event?.checkIn ?? selection!.start) },

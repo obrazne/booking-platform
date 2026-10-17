@@ -1,6 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { freeStay, loginOwner, service, STROMY, STROMY_UNIT, TEST_DOMAIN } from "./helpers";
+import {
+  TENANT,
+  TENANT_PROPERTY,
+  TENANT_UNIT,
+  TEST_DOMAIN,
+  freeStay,
+  loginOwner,
+  service,
+} from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -11,7 +19,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   // Manual reservation waiting for payment.
   const stay = await freeStay(3);
   await page.goto(`${ADMIN_URL}/admin/reservations/new`);
-  await page.locator("#unit_id").selectOption(STROMY_UNIT);
+  await page.locator("#unit_id").selectOption(TENANT_UNIT);
   await page.locator("#check_in").fill(stay.checkIn);
   await page.locator("#check_out").fill(stay.checkOut);
   await page.locator("#guest_name").fill("E2E Ručná");
@@ -32,7 +40,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   const block = await freeStay(2, [stay.checkIn, stay.checkOut]);
   await page.goto(`${ADMIN_URL}/admin/blocks`);
   await page.getByRole("button", { name: "Pridať blokáciu" }).click();
-  await page.locator("#unit_id").selectOption(STROMY_UNIT);
+  await page.locator("#unit_id").selectOption(TENANT_UNIT);
   await page.locator("#label").fill("E2E blokácia");
   await page.locator("#from").fill(block.checkIn);
   await page.locator("#to").fill(block.checkOut);
@@ -44,8 +52,8 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   const { data: channel, error } = await db
     .from("ical_channels")
     .insert({
-      tenant_id: STROMY,
-      unit_id: STROMY_UNIT,
+      tenant_id: TENANT,
+      unit_id: TENANT_UNIT,
       name: "E2E kanál",
       source: "other",
       import_url: "https://example.com/e2e.ics",
@@ -70,7 +78,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   await expect(page.getByText("Kolízia").first()).toBeVisible();
 
   // Document for guests at the property (private storage, shown in the guest zone).
-  await page.goto(`${ADMIN_URL}/admin/properties/b0000000-0000-4000-8000-000000000100/documents`);
+  await page.goto(`${ADMIN_URL}/admin/properties/${TENANT_PROPERTY}/documents`);
   await page.getByLabel("Názov").fill("E2E poriadok");
   await page.getByLabel("Kedy ich hosť uvidí").selectOption("always");
   await page.getByLabel("Súbor").setInputFiles({

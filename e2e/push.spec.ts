@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, loginPlatformAdmin, service, STROMY } from "./helpers";
+import { TENANT, loginOwner, loginPlatformAdmin, service } from "./helpers";
 
 // Push notifications (Z33): switch on with the browser's permission, the device is saved, kinds, test notification
 // (the endpoint is a *.test host, so the server records it as sent without contacting a push service), removal.
@@ -51,12 +51,12 @@ test("owner switches push on for the device, picks kinds and sends a test", asyn
   const { data: before } = await db
     .from("tenant_modules")
     .select("status, trial_ends_at")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("module_key", "push")
     .maybeSingle();
   await db
     .from("tenant_modules")
-    .upsert({ tenant_id: STROMY, module_key: "push", status: "active", trial_ends_at: null });
+    .upsert({ tenant_id: TENANT, module_key: "push", status: "active", trial_ends_at: null });
   try {
     await fakePushService(page, endpoint);
     await loginOwner(page, ADMIN_URL);
@@ -74,7 +74,7 @@ test("owner switches push on for the device, picks kinds and sends a test", asyn
           .eq("endpoint", endpoint)
           .maybeSingle()
       ).data;
-    expect((await row())?.tenant_id).toBe(STROMY);
+    expect((await row())?.tenant_id).toBe(TENANT);
     expect([...((await row())?.kinds ?? [])].sort()).toEqual(
       ["calendar_conflict", "cancel_request", "reservation_new", "sync_failed"].sort(),
     );
@@ -101,10 +101,10 @@ test("owner switches push on for the device, picks kinds and sends a test", asyn
       await db
         .from("tenant_modules")
         .update({ status: before.status, trial_ends_at: before.trial_ends_at })
-        .eq("tenant_id", STROMY)
+        .eq("tenant_id", TENANT)
         .eq("module_key", "push");
     } else {
-      await db.from("tenant_modules").delete().eq("tenant_id", STROMY).eq("module_key", "push");
+      await db.from("tenant_modules").delete().eq("tenant_id", TENANT).eq("module_key", "push");
     }
   }
 });
@@ -115,10 +115,10 @@ test("owner without the module sees only a sentence about it", async ({ page }, 
   const { data: on } = await db
     .from("tenant_modules")
     .select("status")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("module_key", "push")
     .maybeSingle();
-  test.skip(Boolean(on && on.status !== "off"), "push is on for STRÖMY on staging");
+  test.skip(Boolean(on && on.status !== "off"), "push is on for the demo client on staging");
   await loginOwner(page, ADMIN_URL);
   await page.goto(`${ADMIN_URL}/admin/settings/notifications`);
   await expect(page.getByText(/súčasťou modulu Push notifikácie/)).toBeVisible();

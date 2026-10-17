@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, service, STROMY } from "./helpers";
+import { TENANT, loginOwner, service } from "./helpers";
 
 // Reviews (Z34): the owner's list and panel — publish now, reply, feature, reject with a reason.
 
@@ -14,7 +14,7 @@ test("owner publishes, replies, features and rejects a review", async ({ page },
   const { data: stays } = await db
     .from("reservations")
     .select("id, property_id, reviews(id)")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("status", "completed")
     .limit(100);
   const stay = (stays ?? []).find((s) => !s.reviews?.length);
@@ -22,17 +22,17 @@ test("owner publishes, replies, features and rejects a review", async ({ page },
   const { data: module } = await db
     .from("tenant_modules")
     .select("status")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("module_key", "reviews")
     .maybeSingle();
   await db
     .from("tenant_modules")
-    .upsert({ tenant_id: STROMY, module_key: "reviews", status: "active", trial_ends_at: null });
+    .upsert({ tenant_id: TENANT, module_key: "reviews", status: "active", trial_ends_at: null });
   const name = `E2E ${stamp.slice(-4).toUpperCase()}.`;
   const { data: review } = await db
     .from("reviews")
     .insert({
-      tenant_id: STROMY,
+      tenant_id: TENANT,
       property_id: stay!.property_id,
       reservation_id: stay!.id,
       rating: 3,
@@ -102,12 +102,12 @@ test("owner publishes, replies, features and rejects a review", async ({ page },
       .eq("table_name", "reviews")
       .eq("record_id", review!.id);
     if (!module)
-      await db.from("tenant_modules").delete().eq("tenant_id", STROMY).eq("module_key", "reviews");
+      await db.from("tenant_modules").delete().eq("tenant_id", TENANT).eq("module_key", "reviews");
     else
       await db
         .from("tenant_modules")
         .update({ status: module.status })
-        .eq("tenant_id", STROMY)
+        .eq("tenant_id", TENANT)
         .eq("module_key", "reviews");
   }
 });

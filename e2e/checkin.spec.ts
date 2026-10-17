@@ -1,7 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { freeStay, loginOwner, service, STROMY, STROMY_UNIT, TEST_DOMAIN } from "./helpers";
+import {
+  TENANT,
+  TENANT_PROPERTY,
+  TENANT_UNIT,
+  TEST_DOMAIN,
+  freeStay,
+  loginOwner,
+  service,
+} from "./helpers";
 
 // Online check-in (Z36): the panel shows persons masked, the owner reveals (audited), prints the form of a foreigner
 // and marks the report; Príchody with the tax for accommodation.
@@ -21,21 +29,21 @@ async function moduleOn() {
   const { data } = await db
     .from("tenant_modules")
     .select("status, trial_ends_at")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .eq("module_key", "checkin")
     .maybeSingle();
   await db
     .from("tenant_modules")
-    .upsert({ tenant_id: STROMY, module_key: "checkin", status: "active", trial_ends_at: null });
+    .upsert({ tenant_id: TENANT, module_key: "checkin", status: "active", trial_ends_at: null });
   return async () => {
     if (data)
       await db
         .from("tenant_modules")
         .update(data)
-        .eq("tenant_id", STROMY)
+        .eq("tenant_id", TENANT)
         .eq("module_key", "checkin");
     else
-      await db.from("tenant_modules").delete().eq("tenant_id", STROMY).eq("module_key", "checkin");
+      await db.from("tenant_modules").delete().eq("tenant_id", TENANT).eq("module_key", "checkin");
   };
 }
 
@@ -47,9 +55,9 @@ test("owner reveals a document, prints the form and marks the report", async ({ 
   const { data: created, error } = await db
     .rpc("create_reservation", {
       p: {
-        tenant_id: STROMY,
-        property_id: "b0000000-0000-4000-8000-000000000100",
-        unit_id: STROMY_UNIT,
+        tenant_id: TENANT,
+        property_id: TENANT_PROPERTY,
+        unit_id: TENANT_UNIT,
         guest_name: "E2E Check-in",
         guest_email: `e2e-checkin-${stamp}@${TEST_DOMAIN}`,
         adults: 2,
@@ -74,7 +82,7 @@ test("owner reveals a document, prints the form and marks the report", async ({ 
   const res = created as { id: string };
   try {
     await db.from("checkins").insert({
-      tenant_id: STROMY,
+      tenant_id: TENANT,
       reservation_id: res.id,
       status: "completed",
       arrival_time: "17:00",
@@ -86,7 +94,7 @@ test("owner reveals a document, prints the form and marks the report", async ({ 
       .from("checkin_guests")
       .insert([
         {
-          tenant_id: STROMY,
+          tenant_id: TENANT,
           reservation_id: res.id,
           sort: 0,
           first_name: "Eva",
@@ -99,7 +107,7 @@ test("owner reveals a document, prints the form and marks the report", async ({ 
           address: "Testovacia 1, Poprad",
         },
         {
-          tenant_id: STROMY,
+          tenant_id: TENANT,
           reservation_id: res.id,
           sort: 1,
           first_name: "John",

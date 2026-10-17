@@ -2067,7 +2067,9 @@
       "blockThis": "Zablokovať tento termín",
       "directSub": "Priama rezervácia",
       "portalSub": "Termín prevzatý zo synchronizácie kalendára",
-      "newStaySub": "Cena podľa cenníka, kontrola minima nocí a kolízií"
+      "newStaySub": "Cena podľa cenníka, kontrola minima nocí a kolízií",
+      "closedOnBooking": "Zavreté na Bookingu",
+      "closedSub": "Booking v kalendári nerozlišuje rezerváciu od ručne zavretého termínu a neposiela termíny prevzaté z iných kalendárov — podrobnosti sú v extranete Bookingu."
     },
     "platform": {
       "numbers": "Čísla naprieč klientmi",

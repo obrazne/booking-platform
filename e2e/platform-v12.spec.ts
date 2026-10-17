@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginPlatformAdmin, service, STROMY } from "./helpers";
+import { TENANT, TENANT_NAME, loginPlatformAdmin, service } from "./helpers";
 
 // Control center v1.2 (Z28): menu, client detail with tabs, expandable client rows, module catalog, audit filters.
 
@@ -19,8 +19,8 @@ test("menu: readable on hover, hierarchy, the client's group and breadcrumbs", a
   page,
 }, info) => {
   const mobile = info.project.name === "mobile";
-  await page.goto(`${ADMIN_URL}/platform/tenants/${STROMY}/theme`);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Chalet STRÖMY");
+  await page.goto(`${ADMIN_URL}/platform/tenants/${TENANT}/theme`);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(TENANT_NAME);
   const crumbs = page.getByRole("navigation", { name: "Drobčeková navigácia" });
   await expect(crumbs).toContainText("Klienti");
   await expect(crumbs.getByText("Vzhľad")).toHaveAttribute("aria-current", "page");
@@ -32,7 +32,7 @@ test("menu: readable on hover, hierarchy, the client's group and breadcrumbs", a
   await expect(menu.locator('a[aria-expanded][href="/platform"]')).toContainText("Klienti");
   await expect(menu.locator('a[aria-expanded][href="/platform/modules"]')).toContainText("Moduly");
   // The client's own group is open on its pages, with the current tab marked.
-  const group = menu.getByRole("link", { name: /^Chalet STRÖMY/ });
+  const group = menu.getByRole("link", { name: new RegExp(`^${TENANT_NAME}`) });
   await expect(group).toHaveAttribute("aria-expanded", "true");
   const current = menu.getByRole("link", { name: "Vzhľad" });
   await expect(current).toHaveAttribute("aria-current", "page");
@@ -59,18 +59,18 @@ test("client list: the row expands with the client at a glance, Otvoriť detail"
   page,
 }) => {
   await page.goto(`${ADMIN_URL}/platform`);
-  const row = page.getByRole("button", { name: /Chalet STRÖMY/ }).first();
+  const row = page.getByRole("button", { name: new RegExp(TENANT_NAME) }).first();
   await expect(row).toHaveAttribute("aria-expanded", "false");
   await row.click();
   await expect(row).toHaveAttribute("aria-expanded", "true");
-  const region = page.getByRole("region", { name: "Chalet STRÖMY" });
+  const region = page.getByRole("region", { name: TENANT_NAME });
   await expect(region).toContainText("Tržby priamo tento mesiac");
   await expect(region).toContainText("Obsadenosť 90 dní");
   await expect(region).not.toContainText("booking-platform.test");
   await expect(region).not.toContainText(".localhost");
   await noSeriousA11y(page);
   await region.getByRole("link", { name: "Otvoriť detail" }).click();
-  await page.waitForURL(new RegExp(`/platform/tenants/${STROMY}$`));
+  await page.waitForURL(new RegExp(`/platform/tenants/${TENANT}$`));
   // Domény: development address marked, never offered as the client's address.
   await page.getByRole("link", { name: "Domény" }).first().click();
   await expect(page.getByText("len vývoj").first()).toBeVisible();
@@ -132,9 +132,9 @@ test("audit: sign-ins recorded, filters, CSV", async ({ page }, info) => {
   await expect(page.getByText(/Prihlásenie \(odkazom z e-mailu\)/).first()).toBeVisible();
 
   await page.getByLabel("Kategória", { exact: true }).selectOption("modules");
-  await page.getByLabel("Klient", { exact: true }).selectOption(STROMY);
+  await page.getByLabel("Klient", { exact: true }).selectOption(TENANT);
   await page.getByRole("button", { name: "Filtrovať" }).click();
-  await page.waitForURL(new RegExp(`tenant=${STROMY}`));
+  await page.waitForURL(new RegExp(`tenant=${TENANT}`));
   await expect(page.locator("main li").first()).toContainText("Modul");
   await noSeriousA11y(page);
 
@@ -143,5 +143,5 @@ test("audit: sign-ins recorded, filters, CSV", async ({ page }, info) => {
   expect(href).toContain("category=modules");
   const body = await page.evaluate(async (u) => (await fetch(u)).text(), href!);
   expect(body.replace(/^﻿/, "").split("\r\n")[0]).toBe("Čas;Klient;Osoba;Udalosť");
-  expect(body).toContain("Chalet STRÖMY");
+  expect(body).toContain(TENANT_NAME);
 });

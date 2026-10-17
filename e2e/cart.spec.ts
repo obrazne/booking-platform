@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { GUEST_URL } from "../playwright.config";
-import { freeStay, pickStay, service } from "./helpers";
+import { PROPERTY_SLUG, freeStay, pickStay, service } from "./helpers";
 
 // Cart v2.2 (Z29): on a 13″ notebook (1440 × 800) the green summary fits without scrolling.
 
@@ -45,7 +45,7 @@ test("cart v2.2 on a 13″ notebook: summary without scrolling, one-line extras,
   test.skip(info.project.name === "mobile", "notebook layout");
   await page.setViewportSize({ width: 1440, height: 800 });
   const stay = await freeStay(3);
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   const calendar = page.locator("#termin");
   await calendar.scrollIntoViewIfNeeded();
   await pickStay(calendar, stay.checkIn, stay.checkOut);
@@ -54,16 +54,16 @@ test("cart v2.2 on a 13″ notebook: summary without scrolling, one-line extras,
   // Step 1 starts with extras (the stay is not repeated on the left), no photo strip.
   await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
   await expect(cart.getByRole("button", { name: "Potvrdiť termín" })).toHaveCount(0);
-  for (const name of ["Raňajky v chalete", "Privátny šéfkuchár — večera o 4 chodoch"]) {
+  for (const name of ["Raňajky", "Požičanie bicyklov"]) {
     await cart.getByRole("button", { name, exact: true }).click();
   }
   await expect(cart.locator("aside").getByText("Vaše doplnky")).toBeVisible();
   await summaryFits(page, cart, "Pokračovať");
 
   // A row opens in place (one at a time).
-  const chef = cart.getByRole("button", { name: /^Privátny šéfkuchár/ }).nth(1);
-  await chef.click();
-  await expect(chef).toHaveAttribute("aria-expanded", "true");
+  const bikes = cart.getByRole("button", { name: /^Požičanie bicyklov/ }).nth(1);
+  await bikes.click();
+  await expect(bikes).toHaveAttribute("aria-expanded", "true");
   await expect(cart.getByRole("button", { name: "Odobrať z pobytu" })).toBeVisible();
 
   // Zmeniť → calendar on the left, extras hidden, Zmeniť itself hidden → Potvrdiť termín.
@@ -111,14 +111,14 @@ test("cart v2.2 on a phone: no photos, one-line extras, no sideways scrolling", 
 }, info) => {
   test.skip(info.project.name !== "mobile", "phone layout");
   const stay = await freeStay(3);
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   const calendar = page.locator("#termin");
   await calendar.scrollIntoViewIfNeeded();
   await pickStay(calendar, stay.checkIn, stay.checkOut);
   const cart = page.getByRole("dialog");
   await expect(cart.getByText("K pobytu môžete pridať.")).toBeVisible();
   await expect(cart.locator("img")).toHaveCount(0);
-  const row = cart.getByRole("button", { name: "Raňajky v chalete", exact: true });
+  const row = cart.getByRole("button", { name: "Raňajky", exact: true });
   await row.click();
   await expect(row).toHaveAttribute("aria-pressed", "true");
   const overflow = await cart.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
@@ -131,7 +131,7 @@ test("cart Z30: the reason above Pokračovať, active right after a valid stay",
 }, info) => {
   test.skip(info.project.name === "mobile", "notebook layout");
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   await page.getByRole("button", { name: "Pozrieť pobyt" }).first().click();
   const cart = page.getByRole("dialog");
   const aside = cart.locator("aside");

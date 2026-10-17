@@ -1,7 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { freeStay, loginOwner, service, STROMY, STROMY_UNIT, TEST_DOMAIN } from "./helpers";
+import {
+  TENANT,
+  TENANT_PROPERTY,
+  TENANT_UNIT,
+  TEST_DOMAIN,
+  freeStay,
+  loginOwner,
+  service,
+} from "./helpers";
 
 // Upsell (Z35): orders after the reservation in the reservation panel — confirm, decline with a reason, settle.
 
@@ -13,17 +21,17 @@ test("owner confirms, declines and settles orders on the stay account", async ({
   const { data: before } = await db
     .from("tenant_modules")
     .select("module_key, status, trial_ends_at")
-    .eq("tenant_id", STROMY)
+    .eq("tenant_id", TENANT)
     .in("module_key", ["services", "upsell"]);
   for (const key of ["services", "upsell"])
     await db
       .from("tenant_modules")
-      .upsert({ tenant_id: STROMY, module_key: key, status: "active", trial_ends_at: null });
+      .upsert({ tenant_id: TENANT, module_key: key, status: "active", trial_ends_at: null });
   const { data: services } = await db
     .from("services")
     .insert([
       {
-        tenant_id: STROMY,
+        tenant_id: TENANT,
         name: { sk: `E2E raňajky ${stamp}` },
         price_model: "per_stay",
         amount_cents: 2000,
@@ -31,7 +39,7 @@ test("owner confirms, declines and settles orders on the stay account", async ({
         upsell_requires_confirmation: false,
       },
       {
-        tenant_id: STROMY,
+        tenant_id: TENANT,
         name: { sk: `E2E kuchár ${stamp}` },
         price_model: "per_item",
         amount_cents: 5000,
@@ -45,9 +53,9 @@ test("owner confirms, declines and settles orders on the stay account", async ({
   const { data: created, error } = await db
     .rpc("create_reservation", {
       p: {
-        tenant_id: STROMY,
-        property_id: "b0000000-0000-4000-8000-000000000100",
-        unit_id: STROMY_UNIT,
+        tenant_id: TENANT,
+        property_id: TENANT_PROPERTY,
+        unit_id: TENANT_UNIT,
         guest_name: "E2E Upsell",
         guest_email: `e2e-upsell-${stamp}@${TEST_DOMAIN}`,
         adults: 2,
@@ -138,7 +146,7 @@ test("owner confirms, declines and settles orders on the stay account", async ({
     await db
       .from("record_history")
       .delete()
-      .eq("tenant_id", STROMY)
+      .eq("tenant_id", TENANT)
       .in("table_name", ["reservation_orders", "services"])
       .in(
         "record_id",
@@ -150,9 +158,9 @@ test("owner confirms, declines and settles orders on the stay account", async ({
         await db
           .from("tenant_modules")
           .update({ status: row.status, trial_ends_at: row.trial_ends_at })
-          .eq("tenant_id", STROMY)
+          .eq("tenant_id", TENANT)
           .eq("module_key", key);
-      else await db.from("tenant_modules").delete().eq("tenant_id", STROMY).eq("module_key", key);
+      else await db.from("tenant_modules").delete().eq("tenant_id", TENANT).eq("module_key", key);
     }
   }
 });

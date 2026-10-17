@@ -7,7 +7,7 @@ try {
   process.loadEnvFile(".env.local");
 } catch {}
 
-export const GUEST_URL = process.env.E2E_GUEST_URL ?? "http://stromy.localhost:3100";
+export const GUEST_URL = process.env.E2E_GUEST_URL ?? "http://ukazka.localhost:3100";
 export const ADMIN_URL = process.env.E2E_ADMIN_URL ?? "http://localhost:3100";
 
 export default defineConfig({

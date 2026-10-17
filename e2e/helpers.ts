@@ -5,8 +5,16 @@ try {
   process.loadEnvFile(".env.local");
 } catch {}
 
-export const STROMY = "a0000000-0000-4000-8000-000000000002";
-export const STROMY_UNIT = "c0000000-0000-4000-8000-000000000100";
+/**
+ * Browser tests run against the demo client (Ukážkový klient, Chalet Pod Smrekom) — never against Chalet STRÖMY,
+ * which has Jana's real Booking calendar since 17. 10. (Z41).
+ */
+export const TENANT = "a0000000-0000-4000-8000-000000000001";
+export const TENANT_NAME = "Ukážkový klient";
+export const TENANT_PROPERTY = "b0000000-0000-4000-8000-000000000001";
+export const TENANT_UNIT = "c0000000-0000-4000-8000-000000000010";
+export const PROPERTY_SLUG = "chalet-pod-smrekom";
+export const PROPERTY_NAME = "Chalet Pod Smrekom";
 export const TEST_DOMAIN = "booking-platform.test";
 
 /** Service client for test setup and cleanup (staging only). */
@@ -31,7 +39,7 @@ export async function freeStay(
   const from = `${year}-05-01`;
   const to = `${year}-09-30`;
   const { data } = await db.rpc("unit_busy_nights", {
-    p_unit_id: STROMY_UNIT,
+    p_unit_id: TENANT_UNIT,
     p_from: from,
     p_to: to,
   });
@@ -91,12 +99,12 @@ export async function loginOwner(page: Page, base: string) {
   await db
     .from("memberships")
     .upsert(
-      { tenant_id: STROMY, user_id: user.id, role: "owner" },
+      { tenant_id: TENANT, user_id: user.id, role: "owner" },
       { onConflict: "tenant_id,user_id" },
     );
   const { data: link, error } = await db.auth.admin.generateLink({ type: "magiclink", email });
   if (error) throw error;
-  await page.context().addCookies([{ name: "active_tenant", value: STROMY, url: base }]);
+  await page.context().addCookies([{ name: "active_tenant", value: TENANT, url: base }]);
   await page.goto(
     `${base}/auth/confirm?token_hash=${link.properties.hashed_token}&type=magiclink&next=/admin`,
   );
@@ -144,7 +152,7 @@ export async function openWhatsNew(page: Page, mobile: boolean) {
   await page.getByRole("button", { name: "Čo je nové" }).filter({ visible: true }).click();
 }
 
-/** Signs in an existing test account through a one-time link (no e-mail is sent) — e.g. the STRÖMY test owner. */
+/** Signs in an existing test account through a one-time link (no e-mail is sent) — e.g. the test owner of the demo client. */
 export async function loginAs(page: Page, base: string, email: string, next = "/admin") {
   const db = service();
   await markToursSeen(email);

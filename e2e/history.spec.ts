@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, loginPlatformAdmin, service, STROMY } from "./helpers";
+import { TENANT, TENANT_NAME, loginOwner, loginPlatformAdmin, service } from "./helpers";
 
 // History of changes and the trash (Z31).
 
@@ -14,7 +14,7 @@ test("owner deletes a service and restores it from Nedávno zmazané", async ({ 
   const name = `E2E služba ${stamp}`;
   const { data: created } = await db
     .from("services")
-    .insert({ tenant_id: STROMY, name: { sk: name }, amount_cents: 4200, price_model: "per_stay" })
+    .insert({ tenant_id: TENANT, name: { sk: name }, amount_cents: 4200, price_model: "per_stay" })
     .select("id")
     .single();
   try {
@@ -62,14 +62,14 @@ test("platform admin reverts a price change in Záznam zmien", async ({ page }, 
   const name = `E2E cena ${stamp}`;
   const { data: created } = await db
     .from("services")
-    .insert({ tenant_id: STROMY, name: { sk: name }, amount_cents: 1000, price_model: "per_stay" })
+    .insert({ tenant_id: TENANT, name: { sk: name }, amount_cents: 1000, price_model: "per_stay" })
     .select("id")
     .single();
   await db.from("services").update({ amount_cents: 1500 }).eq("id", created!.id);
   try {
     await loginPlatformAdmin(page, ADMIN_URL);
-    await page.goto(`${ADMIN_URL}/platform/tenants/${STROMY}/audit?table=services`);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Chalet STRÖMY");
+    await page.goto(`${ADMIN_URL}/platform/tenants/${TENANT}/audit?table=services`);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(TENANT_NAME);
     const entry = page.getByRole("listitem").filter({ hasText: `${name} — zmenené` });
     await expect(entry).toContainText("→");
     await entry.getByRole("button", { name: "Vrátiť túto zmenu" }).click();

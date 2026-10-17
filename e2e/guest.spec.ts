@@ -1,14 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { GUEST_URL } from "../playwright.config";
-import { freeStay, pickStay, service, TEST_DOMAIN } from "./helpers";
+import { PROPERTY_NAME, PROPERTY_SLUG, TEST_DOMAIN, freeStay, pickStay, service } from "./helpers";
 
-test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, payment details, cancellation request", async ({
+test("guest books the demo chalet: calendar, 3-step cart, service, consents, payment details, cancellation request", async ({
   page,
 }, info) => {
   const stay = await freeStay(3);
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Chalet STRÖMY");
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(PROPERTY_NAME);
 
   // No horizontal scrolling (390 px on the phone project).
   const overflow = await page.evaluate(
@@ -34,7 +34,7 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
     await cart.getByRole("button", { name: /Rozpis a podmienky/ }).click();
   }
   // Step 1 (v2): extras as rows right under the dates.
-  const breakfast = cart.getByRole("button", { name: "Raňajky v chalete", exact: true });
+  const breakfast = cart.getByRole("button", { name: "Raňajky", exact: true });
   await breakfast.click();
   await expect(breakfast).toHaveAttribute("aria-pressed", "true");
   await expect(cart.getByText("Vaše doplnky").first()).toBeAttached();
@@ -44,7 +44,7 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await cart.locator("#c-name").fill(`E2E ${info.project.name}`);
   await cart.locator("#c-email").fill(`e2e-${Date.now()}@${TEST_DOMAIN}`);
   await cart.locator("#c-phone").fill("+421900000000");
-  await expect(cart.getByText("Raňajky v chalete").filter({ visible: true }).first()).toBeVisible();
+  await expect(cart.getByText("Raňajky").filter({ visible: true }).first()).toBeVisible();
   await cart
     .getByRole("button", { name: "Skontrolovať a zaplatiť" })
     .filter({ visible: true })
@@ -68,7 +68,7 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await expect(page.getByText("Variabilný symbol")).toBeVisible();
   await expect(page.getByText(/SK\d{2}/).first()).toBeVisible();
   await expect(page.getByRole("img", { name: /PAY by square/ }).locator("svg")).toBeVisible();
-  await expect(page.getByText("Raňajky v chalete").filter({ visible: true }).first()).toBeVisible();
+  await expect(page.getByText("Raňajky").filter({ visible: true }).first()).toBeVisible();
 
   // The link works again later (no session needed).
   const link = page.url();
@@ -84,7 +84,7 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
 
 test("calendar works with the keyboard", async ({ page }, info) => {
   test.skip(info.project.name === "mobile", "keyboard on desktop");
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   const day = page.locator("#termin button[data-date]:not([disabled])").first();
   await day.focus();
   await expect(day).toHaveAttribute("aria-label", /\d{4}/);
@@ -96,13 +96,13 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   page,
 }, info) => {
   test.skip(info.project.name === "mobile", "desktop layout");
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   const scrollBefore = await page.evaluate(() => window.scrollY);
 
   // Gallery: photo on the page → window with albums → big photo; Esc and Back close one level each.
   await page
     .locator("main")
-    .getByRole("button", { name: /Chalet STRÖMY večer/ })
+    .getByRole("button", { name: /Chalet pod Smrekom v zime/ })
     .first()
     .click();
   const gallery = page.getByRole("dialog");
@@ -150,7 +150,7 @@ test("surroundings map is interactive (OpenFreeMap + MapLibre, zoom buttons, nav
   page,
 }, info) => {
   test.skip(info.project.name === "mobile", "desktop");
-  await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  await page.goto(`${GUEST_URL}/p/${PROPERTY_SLUG}`);
   // No map library and no tiles before the map comes near the screen (Z40).
   expect(
     await page.evaluate(() =>
@@ -168,7 +168,7 @@ test("surroundings map is interactive (OpenFreeMap + MapLibre, zoom buttons, nav
   const { data: p } = await db
     .from("properties")
     .select("latitude, longitude, location_mode")
-    .eq("slug", "chalet-stromy")
+    .eq("slug", PROPERTY_SLUG)
     .single();
   const nav = page.locator("#okolie").getByRole("link", { name: /Navigovať v Google Mapách/ });
   if (p?.location_mode === "exact") {
