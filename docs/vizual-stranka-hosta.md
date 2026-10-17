@@ -227,9 +227,28 @@ Dosky `UcetPrehlad` (počítač), `MobilUcet`, `StavyPobytu`; detail pobytu pred
   nie všeobecné „keď bude pobyt zaplatený“, ak už zaplatený je.
 - Rovnaké stránky cez **prístupový odkaz** `/r/<kód>` (bez účtu) — bez lišty kariet, s ponukou „Uložiť do účtu“.
 
+## Správy s hosťom (v2.5, schválené 17. 10.) — modul `messages`
+
+Dosky `SpravyPobyt` (počítač), `MobilSpravy`, `EmailSprava` (prepínač hore: e-mail hosťovi / majiteľovi). Pravidlá v `ARCHITEKTURA.md` → B11 Správy.
+- **Detail pobytu:** sekcia **Správy** hneď pod stavom pobytu (pred doobjednaním). Nadpis „Píšte priamo Jane.“, vpravo telefón „V núdzi
+  počas pobytu volajte …“. Karta konverzácie: hlavička (fotka/iniciály majiteľa, meno, „Majiteľka chaletu · správy k tomuto pobytu“,
+  „Odpovede aj e-mailom“), správy ako bubliny — majiteľ vľavo svetlá, hosť vpravo v akcente; oddeľovače dní (mono), udalosť
+  „Rezervácia potvrdená…“ ako sivá pilulka v strede; pri poslednej správe hosťa „prečítané“ / „odoslané“; oddeľovač **„Dnes · nová správa“**
+  v medenej pred neprečítanými. Pod tým 2–3 rýchle témy (pilulky vložia začiatok vety — z nastavenia klienta, nie natvrdo), pole
+  „Napíšte správu Jane…“ a tlačidlo „Odoslať“ (grafitové), veta „Jana dostane upozornenie hneď. Jej odpoveď vám príde aj e-mailom.“
+  Automatické správy sa u hosťa **neoznačujú** — sú od majiteľa.
+- **Neprečítaná správa:** odznak na karte **Pobyty** v lište účtu, v hlavičke pobytu pilulka „Nová správa od Jany ↓“ (skok na sekciu),
+  na prehľade pri pobyte bod „Nová správa od Jany“. Vpravo karta **Kontakt na Janu** (Napísať správu → sekcia, telefón na naliehavé veci).
+- **Mobil:** konverzácia cez celú obrazovku (z detailu pobytu „Správy“ / z e-mailu): hore „‹“ späť na pobyt, majiteľ, termín, ikona telefónu;
+  dole pole a okrúhle tlačidlo odoslať (písmo 16 px kvôli priblíženiu na iPhone).
+- **E-mail hosťovi:** predmet „Jana vám napísala k pobytu 22. – 26. 12.“, odosielateľ meno majiteľa · objekt, Reply-To majiteľ; celý text
+  správy v bubline, tlačidlo **„Odpovedať Jane“** (prihlási k pobytu bez hesla), veta o odpovedi priamo na e-mail. **E-mail majiteľovi:**
+  „Tomáš Kováč napísal · číslo · termín“, text, „Odpovedať v administrácii“ (otvorí rezerváciu na karte Správy).
+- Po 30 dňoch od odchodu: pole nahradí veta „Konverzácia je uzavretá — napíšte na …“ (kontakt klienta).
+
 ## Neskôr (zapísané nápady)
 
 - Hlavný upsell **e-mailom 7–14 dní pred príchodom** (modul upsell pred príchodom).
 - „Váš pobyt deň po dni“ po rezervácii s doplnkami (kandidát Premium+). Balíky služieb („Zimný pobyt bez starostí“).
-- Správy hosť ↔ majiteľ pri rezervácii (modul), neskôr AI recepčný; živý chat nie.
+- AI recepčný (návrh odpovede v Správach); živý chat nie.
 - Fotky od hostí (súhlas a schvaľovanie), známka z overených recenzií (modul Recenzie).

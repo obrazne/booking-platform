@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Správy — schránka</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+button,textarea{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.row-b{transition:background 140ms ease}
+.row-b:hover{background:#f7f6f2 !important}
+.qr:hover{background:#f4f3ef}
+textarea:focus{outline:none}
+.composer:focus-within{border-color:#11212f !important;box-shadow:0 0 0 3px rgba(17,33,47,0.08)}
+@keyframes panelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.panel{animation:panelIn 220ms cubic-bezier(.2,.8,.2,1)}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg-new{animation:msgIn 220ms cubic-bezier(.2,.8,.2,1)}
+@keyframes dropIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.drop{animation:dropIn 160ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.panel,.msg-new,.drop{animation:none}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="spravy" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; position: relative; display: flex; flex-direction: column; overflow: hidden;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e9e5db;">
+<label style="flex: 0 1 380px; display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px; border-radius: 9999px; background: #f7f6f2; color: #5a6672;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" placeholder="Hľadať hosťa, číslo rezervácie…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 14px; color: #11212f; outline: none;"></label>
+<span style="display: flex; align-items: center; gap: 10px;">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e3e1da; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: none;">Stránka pre hostí ↗</a>
+<span style="position: relative; width: 42px; height: 42px; border-radius: 9999px; border: 1px solid #e3e1da; display: inline-flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#11212f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg><span style="position: absolute; top: -3px; right: -3px; min-width: 19px; height: 19px; padding: 0 5px; box-sizing: border-box; border-radius: 9999px; border: 2px solid #ffffff; background: #c2552d; color: #ffffff; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">2</span></span>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;">+ Ručná rezervácia</a>
+</span>
+</div>
+
+<header style="padding: 28px 40px 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;">
+<span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Chalet STRÖMY</span><h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Správy</h1></span>
+<a href="#" style="font-size: 14px; font-weight: 500; color: {{accent}}; text-decoration: none;">Automatické správy (4 zapnuté) →</a>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 0 40px 18px; border-bottom: 1px solid #e9e5db;">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}} <span style="{{f.countStyle}}">{{f.count}}</span></button></sc-for>
+</div>
+
+<div style="padding: 0 40px 56px;">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<button type="button" class="row-b" onClick="{{r.open}}" aria-current="{{r.selected}}" style="{{r.rowStyle}}">
+<span style="width: 10px; flex-shrink: 0; display: flex; justify-content: center; padding-top: 8px;"><sc-if value="{{r.unread}}" hint-placeholder-val="{{false}}"><span style="width: 8px; height: 8px; border-radius: 9999px; background: #c2552d;"></span></sc-if></span>
+<span style="flex: 0 0 210px; display: flex; flex-direction: column; gap: 3px; min-width: 0;"><span style="{{r.nameStyle}}">{{r.guest}}</span><span style="font-size: 13px; color: #8b929b;">{{r.dates}}</span></span>
+<span style="flex: 0 0 120px;"><span style="{{r.stayPill}}">{{r.stay}}</span></span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px;"><span style="{{r.snipStyle}}">{{r.snippet}}</span><span class="mono" style="font-size: 11px; color: #8b929b;">{{r.number}}</span></span>
+<span style="flex: 0 0 64px; text-align: right; font-size: 13px; color: #8b929b; padding-top: 2px;">{{r.time}}</span>
+</button>
+</sc-for>
+<p style="margin: 16px 8px 0; font-size: 13px; color: #8b929b;">Jedna konverzácia = jedna rezervácia. Hostia z Bookingu a Airbnb tu nie sú — s nimi sa píše na portáli.</p>
+</div>
+
+<sc-if value="{{panelOpen}}" hint-placeholder-val="{{true}}">
+<aside class="panel" aria-label="Rezervácia — správy" style="position: absolute; top: 0; right: 0; bottom: 0; width: 680px; max-width: 100%; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 60px -40px rgba(17,33,47,0.35); display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 32px; border-bottom: 1px solid #e9e5db;">
+<span style="display: flex; align-items: center; gap: 10px;"><span class="mono" style="font-size: 13px; font-weight: 500; color: #11212f;">{{p.number}}</span><span style="font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 9999px; background: #e6efeb; color: {{accent}};">Zaplatené</span></span>
+<button type="button" onClick="{{closePanel}}" aria-label="Zavrieť" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#11212f" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+<div style="flex-shrink: 0; padding: 20px 32px 0; display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{p.guest}}</span>
+<span style="font-size: 14px; color: #5a6672;">{{p.summary}}</span>
+<nav style="display: flex; gap: 4px; margin-top: 14px; border-bottom: 1px solid #e9e5db;"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><span style="{{t.style}}">{{t.label}}</span></sc-for></nav>
+</div>
+
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 20px 32px 12px; display: flex; flex-direction: column; gap: 10px; background: #fbfaf7;">
+<sc-for list="{{thread}}" as="m" hint-placeholder-count="5">
+<sc-if value="{{m.isDay}}" hint-placeholder-val="{{false}}"><span class="mono" style="align-self: center; margin: 6px 0 0; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #8b929b;">{{m.label}}</span></sc-if>
+<sc-if value="{{m.isMsg}}" hint-placeholder-val="{{true}}"><div class="{{m.cls}}" style="{{m.wrap}}"><sc-if value="{{m.auto}}" hint-placeholder-val="{{false}}"><span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6672; padding: 0 4px;">Automaticky · {{m.rule}}</span></sc-if><div style="{{m.bubble}}">{{m.text}}</div><span style="font-size: 12px; color: #8b929b; padding: 0 4px;">{{m.meta}}</span></div></sc-if>
+<sc-if value="{{m.isPlanned}}" hint-placeholder-val="{{false}}"><div style="align-self: flex-end; max-width: 78%; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;"><span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}}; padding: 0 4px;">Naplánované · {{m.rule}}</span><div style="padding: 12px 16px; border-radius: 16px 16px 4px 16px; border: 1.5px dashed #d9c4ad; background: #ffffff; font-size: 14px; line-height: 1.55; color: #5a6672;">{{m.text}}</div><span style="display: flex; gap: 14px; font-size: 13px;"><button type="button" style="border: none; background: none; padding: 0; color: {{accent}}; font-weight: 500; cursor: pointer;">Upraviť pre tohto hosťa</button><button type="button" onClick="{{skip}}" style="border: none; background: none; padding: 0; color: #5a6672; font-weight: 500; cursor: pointer;">Neposielať</button></span></div></sc-if>
+<sc-if value="{{m.isSkipped}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-end; font-size: 12px; color: #8b929b;">Automatická správa „Je všetko v poriadku?“ sa tomuto hosťovi nepošle · <button type="button" onClick="{{unskip}}" style="border: none; background: none; padding: 0; font-size: 12px; color: {{accent}}; font-weight: 500; cursor: pointer;">Vrátiť</button></span></sc-if>
+</sc-for>
+</div>
+
+<div style="flex-shrink: 0; position: relative; padding: 12px 32px 20px; border-top: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 8px; background: #ffffff;">
+<sc-if value="{{qrOpen}}" hint-placeholder-val="{{false}}">
+<div class="drop" role="menu" aria-label="Rýchle odpovede" style="position: absolute; left: 32px; bottom: 100%; margin-bottom: -6px; width: 420px; background: #ffffff; border: 1px solid #e3e1da; border-radius: 10px; box-shadow: 0 24px 60px -24px rgba(17,33,47,0.35); overflow: hidden;">
+<span class="mono" style="display: block; padding: 12px 16px 6px; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Rýchle odpovede</span>
+<sc-for list="{{quick}}" as="q" hint-placeholder-count="4"><button type="button" class="qr" role="menuitem" onClick="{{q.use}}" style="width: 100%; border: none; background: #ffffff; text-align: left; padding: 10px 16px; display: flex; flex-direction: column; gap: 2px; cursor: pointer;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{q.title}}</span><span style="font-size: 12px; color: #8b929b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;">{{q.text}}</span></button></sc-for>
+<span style="display: block; padding: 10px 16px 12px; border-top: 1px solid #efece5; font-size: 13px; color: {{accent}}; font-weight: 500;">Upraviť rýchle odpovede →</span>
+</div>
+</sc-if>
+<div class="composer" style="display: flex; align-items: flex-end; gap: 10px; padding: 8px 8px 8px 16px; border: 1px solid #dcd9d1; border-radius: 14px; transition: border-color 140ms ease, box-shadow 140ms ease;">
+<textarea aria-label="Odpoveď hosťovi" rows="2" placeholder="{{placeholder}}" value="{{draft}}" onChange="{{type}}" style="flex: 1 1 auto; min-height: 44px; resize: none; border: none; background: transparent; font-size: 15px; line-height: 1.5; color: #11212f; padding: 6px 0;"></textarea>
+<button type="button" onClick="{{send}}" style="flex-shrink: 0; min-height: 42px; padding: 0 20px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; opacity: {{sendOpacity}};">Odoslať</button>
+</div>
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px;"><button type="button" onClick="{{toggleQr}}" aria-expanded="{{qrAttr}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; cursor: pointer;">Rýchle odpovede ▾</button><span style="font-size: 12px; color: #8b929b;">Hosť ju dostane do účtu aj e-mailom.</span></span>
+</div>
+</aside>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: 0, filter: 'all', read: { 0: true }, draft: '', sent: {}, qrOpen: false, skipped: false }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var accent2 = this.props.accent2 ?? '#ad5a2b';
+    var convs = [
+      { guest: 'Tomáš Kováč', number: '2026-0648', dates: '22. – 26. 12. 2026', stay: 'o 3 dni', stayKind: 'soon', snippet: 'Ďakujeme za info! Ešte otázka — je tam miesto, kde môžeme vysušiť…', time: '14:12', waiting: true, summary: '22. – 26. 12. 2026 · 4 noci · 4 hostia · tomas.kovac@… · +421 908 …' },
+      { guest: 'Lucia Bartošová', number: '2026-0702', dates: '19. – 21. 12. 2026', stay: 'prebieha', stayKind: 'now', snippet: 'Je sauna už zapnutá? Neviem nájsť vypínač.', time: '9:31', waiting: true, summary: '19. – 21. 12. 2026 · 2 noci · 2 hostia' },
+      { guest: 'Peter Hudák', number: '2026-0671', dates: '27. 12. – 2. 1. 2027', stay: 'o 8 dní', stayKind: 'soon', snippet: 'Vy: Áno, psíka môžete vziať, poplatok je 30 € za pobyt.', time: 'včera', waiting: false, summary: '27. 12. – 2. 1. 2027 · 6 nocí · 6 hostí' },
+      { guest: 'Eva Kollárová', number: '2027-0012', dates: '8. – 11. 1. 2027', stay: 'o 3 týždne', stayKind: 'later', snippet: 'Automaticky: Tešíme sa na vás — ako sa k nám dostanete…', time: '16. 12.', waiting: false, summary: '8. – 11. 1. 2027 · 3 noci · 3 hostia' },
+      { guest: 'Martina Šimková', number: '2026-0655', dates: '12. – 15. 12. 2026', stay: 'odišli', stayKind: 'past', snippet: 'Ďakujeme, bolo to krásne! Určite prídeme znova.', time: '16. 12.', waiting: false, summary: '12. – 15. 12. 2026 · 3 noci · 2 hostia' }
+    ];
+    var isUnread = function (i) { return convs[i].waiting && !s.read[i] && !(s.sent[i] && s.sent[i].length); };
+    var isWaiting = function (i) { return convs[i].waiting && !(s.sent[i] && s.sent[i].length); };
+    var defs = [['all', 'Všetky', convs.length], ['waiting', 'Čakajú na odpoveď', convs.filter(function (c, i) { return isWaiting(i); }).length], ['upcoming', 'Pred príchodom a počas pobytu', 4], ['past', 'Po odchode', 1]];
+    var filters = defs.map(function (d) {
+      var on = s.filter === d[0];
+      return { label: d[1], count: d[2], on: on ? 'true' : 'false', pick: function () { self.setState({ filter: d[0] }); },
+        style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; border-radius: 9999px; border: 1px solid ' + (on ? '#11212f' : '#e3e1da') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + '; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;',
+        countStyle: 'font-size: 12px; font-weight: 700; color: ' + (on ? 'rgba(255,255,255,0.7)' : (d[0] === 'waiting' ? '#c2552d' : '#8b929b')) + ';' };
+    });
+    var pills = { soon: ['#eef2f7', '#2e4a6b'], now: ['#e6efeb', accent], later: ['#f4f3ef', '#5a6672'], past: ['#f4f3ef', '#8b929b'] };
+    var rows = [];
+    convs.forEach(function (c, i) {
+      if (s.filter === 'waiting' && !isWaiting(i)) return;
+      if (s.filter === 'upcoming' && c.stayKind === 'past') return;
+      if (s.filter === 'past' && c.stayKind !== 'past') return;
+      var sel = s.sel === i; var un = isUnread(i);
+      var mine = s.sent[i] && s.sent[i].length;
+      rows.push({
+        guest: c.guest, dates: c.dates, stay: c.stay, number: c.number, time: mine ? 'teraz' : c.time, unread: un,
+        snippet: mine ? 'Vy: ' + s.sent[i][s.sent[i].length - 1] : c.snippet,
+        selected: sel ? 'true' : 'false',
+        open: function () { var r = Object.assign({}, self.state.read); r[i] = true; self.setState({ sel: i, read: r, qrOpen: false, draft: '' }); },
+        rowStyle: 'width: 100%; display: flex; align-items: flex-start; gap: 16px; padding: 16px 8px; border: none; border-bottom: 1px solid #e9e5db; background: ' + (sel ? '#f4f3ef' : '#ffffff') + '; text-align: left; font-family: inherit; cursor: pointer;',
+        nameStyle: 'font-size: 15px; font-weight: ' + (un ? '800' : '700') + '; color: #11212f;',
+        snipStyle: 'font-size: 14px; color: ' + (un ? '#11212f' : '#5a6672') + '; font-weight: ' + (un ? '500' : '300') + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;',
+        stayPill: 'font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 9999px; background: ' + pills[c.stayKind][0] + '; color: ' + pills[c.stayKind][1] + ';'
+      });
+    });
+    var cur = s.sel == null ? null : convs[s.sel];
+    var T = {
+      0: [
+        { k: 'day', label: 'Ne 18. 10.' },
+        { k: 'owner', auto: true, rule: 'po rezervácii', text: 'Dobrý deň, Tomáš, ďakujem za rezerváciu. Keby ste čokoľvek potrebovali, napíšte mi sem. Jana', time: '11:02', meta: 'prečítané' },
+        { k: 'day', label: 'Po 16. 12.' },
+        { k: 'guest', text: 'Dobrý deň, prídeme asi až okolo 20:00, nevadí to? A dalo by sa pripraviť detskú postieľku?', time: '14:12' },
+        { k: 'owner', text: 'Dobrý deň, Tomáš, neskorý príchod je v poriadku — kód od dverí uvidíte v pokynoch deň pred príchodom. Postieľku pripravím do spálne na prízemí.', time: '15:40', meta: 'prečítané' },
+        { k: 'guest', text: 'Super, ďakujeme!', time: '15:52' },
+        { k: 'day', label: 'Dnes' },
+        { k: 'owner', auto: true, rule: '3 dni pred príchodom', text: 'Dobrý deň, o tri dni sa vidíme. Na cestu potrebujete zimné pneumatiky, posledných 300 m ide do kopca. Raňajky alebo saunu si objednáte priamo v pobyte. Jana', time: '10:00', meta: 'prečítané' },
+        { k: 'guest', text: 'Ďakujeme za info! Ešte otázka — je tam miesto, kde môžeme vysušiť lyžiarky?', time: '14:12' }
+      ],
+      1: [
+        { k: 'day', label: 'Dnes' },
+        { k: 'guest', text: 'Je sauna už zapnutá? Neviem nájsť vypínač.', time: '9:31' }
+      ]
+    };
+    var base = (s.sel != null && T[s.sel]) ? T[s.sel] : (cur ? [{ k: 'day', label: 'Posledná správa' }, { k: cur.snippet.indexOf('Vy:') === 0 || cur.snippet.indexOf('Automaticky') === 0 ? 'owner' : 'guest', text: cur.snippet.replace(/^Vy: |^Automaticky: /, ''), time: cur.time, auto: cur.snippet.indexOf('Automaticky') === 0, rule: 'pred príchodom' }] : []);
+    var mineSent = (s.sel != null && s.sent[s.sel]) || [];
+    var all = base.concat(mineSent.map(function (t) { return { k: 'owner', text: t, time: 'teraz', meta: 'Odoslané · hosťovi ide aj e-mail', fresh: true }; }));
+    if (s.sel === 0) all.push(s.skipped ? { k: 'skipped' } : { k: 'planned', rule: '23. 12. o 10:00 · deň po príchode', text: 'Dobrý deň, je všetko v poriadku? Keby niečo chýbalo, napíšte mi sem. Jana' });
+    var thread = all.map(function (m) {
+      var mine = m.k === 'owner';
+      return {
+        isDay: m.k === 'day', isMsg: m.k === 'owner' || m.k === 'guest', isPlanned: m.k === 'planned', isSkipped: m.k === 'skipped',
+        label: m.label || '', text: m.text || '', auto: !!m.auto, rule: m.rule || '', cls: m.fresh ? 'msg-new' : '',
+        wrap: 'display: flex; flex-direction: column; gap: 4px; max-width: 78%; align-self: ' + (mine ? 'flex-end' : 'flex-start') + '; align-items: ' + (mine ? 'flex-end' : 'flex-start') + ';',
+        bubble: 'padding: 12px 16px; border-radius: ' + (mine ? '16px 16px 4px 16px' : '16px 16px 16px 4px') + '; background: ' + (mine ? (m.auto ? '#e9efec' : accent) : '#ffffff') + '; border: 1px solid ' + (mine ? (m.auto ? '#dbe5df' : accent) : '#e9e5db') + '; color: ' + (mine && !m.auto ? '#ffffff' : '#11212f') + '; font-size: 15px; font-weight: 400; line-height: 1.55;',
+        meta: mine ? (m.time + (m.meta ? ' · ' + m.meta : '')) : (cur ? cur.guest.split(' ')[0] : '') + ' · ' + m.time
+      };
+    });
+    var tabs = ['Prehľad', 'Platby', 'Správy', 'Check-in', 'Objednávky'].map(function (l) {
+      var on = l === 'Správy';
+      return { label: l, style: 'height: 42px; padding: 0 12px; display: inline-flex; align-items: center; font-size: 14px; font-weight: ' + (on ? '700' : '500') + '; color: ' + (on ? '#11212f' : '#5a6672') + '; border-bottom: 2px solid ' + (on ? accent : 'transparent') + '; margin-bottom: -1px;' };
+    });
+    var quick = [
+      ['Neskorý príchod', 'Neskorý príchod je v poriadku — kód od dverí nájdete v pokynoch k príchodu.'],
+      ['Sauna', 'Sauna sa zapína vypínačom vľavo pri dverách, nahreje sa za 40 minút.'],
+      ['Parkovanie', 'Pred chaletom zaparkujú 2 autá, ďalšie miesto je 100 m nižšie pri ceste.'],
+      ['Lyžiarne', 'Lyžiarky a lyže môžete nechať v lyžiarni pri vchode, je tam sušiak na topánky.'],
+      ['Domáce zviera', 'Psíka môžete vziať, poplatok je 30 € za pobyt — pridám ho do účtu pobytu.']
+    ].map(function (q) { return { title: q[0], text: q[1], use: function () { self.setState({ draft: (self.state.draft ? self.state.draft + ' ' : '') + q[1], qrOpen: false }); } }; });
+    return {
+      accent: accent, accent2: accent2, filters: filters, rows: rows, panelOpen: !!cur,
+      p: cur ? { guest: cur.guest, number: cur.number, summary: cur.summary } : { guest: '', number: '', summary: '' },
+      tabs: tabs, thread: thread, quick: quick, qrOpen: s.qrOpen, qrAttr: s.qrOpen ? 'true' : 'false', draft: s.draft,
+      placeholder: cur ? 'Odpovedzte ' + (cur.guest.split(' ')[0] === 'Tomáš' ? 'Tomášovi' : 'hosťovi') + '…' : '',
+      sendOpacity: s.draft.trim() ? '1' : '0.45',
+      closePanel: function () { self.setState({ sel: null, qrOpen: false }); },
+      toggleQr: function () { self.setState({ qrOpen: !self.state.qrOpen }); },
+      skip: function () { self.setState({ skipped: true }); }, unskip: function () { self.setState({ skipped: false }); },
+      type: function (e) { self.setState({ draft: e.target.value }); },
+      send: function () { var t = self.state.draft.trim(); if (!t || self.state.sel == null) return; var n = Object.assign({}, self.state.sent); n[self.state.sel] = (n[self.state.sel] || []).concat([t]); self.setState({ sent: n, draft: '', qrOpen: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

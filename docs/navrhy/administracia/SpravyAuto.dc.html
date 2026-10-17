@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Automatické správy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+button,textarea,select,input{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.card{transition:border-color 140ms ease,box-shadow 140ms ease}
+.card:hover{border-color:#cfcabf !important}
+.var:hover{background:#eef2ef}
+textarea:focus,select:focus,input:focus{outline:none;border-color:#11212f !important;box-shadow:0 0 0 3px rgba(17,33,47,0.08)}
+@keyframes panelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.panel{animation:panelIn 220ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.panel{animation:none}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="automaticke" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; position: relative; display: flex; flex-direction: column; overflow: hidden;">
+
+<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 16px 40px; border-bottom: 1px solid #e9e5db; min-height: 42px;">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e3e1da; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: none;">Stránka pre hostí ↗</a>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;">+ Ručná rezervácia</a>
+</div>
+
+<header style="padding: 28px 40px 8px; display: flex; flex-direction: column; gap: 8px; max-width: 760px;">
+<nav style="display: flex; gap: 8px; font-size: 14px;"><span style="color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">Správy</span><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">Automatické správy</span></nav>
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Automatické správy</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #5a6672;">Pošlú sa samy každému hosťovi s priamou rezerváciou — v jeho účte aj e-mailom. Hosť ich vidí ako správu od vás. Vy ich v konverzácii vidíte označené „Automaticky“ a pri konkrétnom hosťovi ich môžete upraviť alebo vynechať.</p>
+</header>
+
+<div style="padding: 24px 40px 48px; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 0 24px; max-width: 980px;">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="5">
+<div style="position: relative; padding: 18px 0 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right;">
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: {{st.phaseColor}};">{{st.phase}}</span>
+<span style="font-size: 13px; color: #8b929b;">{{st.when}}</span>
+</div>
+<div style="position: relative; padding: 8px 0 8px 28px; border-left: 2px solid #ece9e1;">
+<span style="{{st.dot}}"></span>
+<div class="card" style="{{st.cardStyle}}">
+<div style="display: flex; align-items: center; gap: 14px;">
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 16px; font-weight: 700; color: #11212f;">{{st.name}}</span><span style="font-size: 13px; color: #5a6672;">{{st.trigger}}</span></span>
+<button type="button" onClick="{{st.edit}}" style="min-height: 34px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; cursor: pointer;">Upraviť</button>
+<button type="button" role="switch" aria-checked="{{st.onAttr}}" aria-label="{{st.switchLabel}}" onClick="{{st.toggle}}" style="{{st.track}}"><span style="{{st.knob}}"></span></button>
+</div>
+<p style="{{st.textStyle}}">{{st.preview}}</p>
+<sc-if value="{{st.hasNote}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #5a6672; display: flex; align-items: center; gap: 6px;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: {{accent2}};"></span>{{st.note}}</span></sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+
+<section style="padding: 0 40px 64px; max-width: 980px; display: flex; flex-direction: column; gap: 12px;">
+<span style="display: flex; justify-content: space-between; align-items: baseline;"><span style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 20px; font-weight: 800; color: #11212f;">Rýchle odpovede</span><span style="font-size: 14px; color: #5a6672;">Hotové texty na časté otázky — v konverzácii ich vložíte jedným klikom.</span></span><button type="button" style="border: none; background: none; padding: 0; font-size: 14px; font-weight: 500; color: {{accent}}; cursor: pointer;">+ Pridať odpoveď</button></span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+<sc-for list="{{quick}}" as="q" hint-placeholder-count="4"><div style="border: 1px solid #e9e5db; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 14px; font-weight: 700; color: #11212f;">{{q.t}}</span><span style="font-size: 13px; line-height: 1.5; color: #5a6672;">{{q.x}}</span></div></sc-for>
+</div>
+</section>
+
+<sc-if value="{{panelOpen}}" hint-placeholder-val="{{true}}">
+<aside class="panel" aria-label="Upraviť automatickú správu" style="position: absolute; top: 0; right: 0; bottom: 0; width: 680px; max-width: 100%; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 60px -40px rgba(17,33,47,0.35); display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 32px; border-bottom: 1px solid #e9e5db;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6672;">Automatická správa</span>
+<button type="button" onClick="{{closePanel}}" aria-label="Zavrieť" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#11212f" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 24px 32px 28px; display: flex; flex-direction: column; gap: 22px;">
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{e.name}}</span>
+
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Kedy sa pošle</span>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: #11212f;">
+<input type="number" defaultValue="{{e.n}}" aria-label="Počet" style="width: 64px; min-height: 42px; box-sizing: border-box; padding: 0 12px; border: 1px solid #dcd9d1; border-radius: 10px; font-size: 15px; color: #11212f;">
+<select aria-label="Jednotka" style="min-height: 42px; padding: 0 12px; border: 1px solid #dcd9d1; border-radius: 10px; background: #ffffff; font-size: 15px; color: #11212f;"><option>deň</option><option>hodinu</option></select>
+<select aria-label="Vzhľadom na" style="min-height: 42px; padding: 0 12px; border: 1px solid #dcd9d1; border-radius: 10px; background: #ffffff; font-size: 15px; color: #11212f;"><option>{{e.rel}}</option><option>pred príchodom</option><option>po odchode</option><option>pred odchodom</option></select>
+<span>o</span>
+<input type="text" defaultValue="{{e.time}}" aria-label="Čas" style="width: 76px; min-height: 42px; box-sizing: border-box; padding: 0 12px; border: 1px solid #dcd9d1; border-radius: 10px; font-size: 15px; color: #11212f;">
+</div>
+<span style="font-size: 13px; color: #5a6672;">Pri rezervácii na poslednú chvíľu sa správa, ktorej čas už uplynul, nepošle.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="display: flex; justify-content: space-between; align-items: baseline;"><span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Text</span><span style="font-size: 12px; color: #8b929b;">Slovensky · ďalšie jazyky po zapnutí na webe</span></span>
+<textarea aria-label="Text správy" rows="5" value="{{e.text}}" onChange="{{type}}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid #dcd9d1; border-radius: 10px; font-size: 15px; line-height: 1.6; color: #11212f; resize: vertical;"></textarea>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;"><span style="font-size: 13px; color: #5a6672; margin-right: 4px;">Vložiť:</span><sc-for list="{{vars}}" as="v" hint-placeholder-count="4"><button type="button" class="var" onClick="{{v.add}}" style="min-height: 30px; padding: 0 10px; border-radius: 9999px; border: 1px solid #dbe5df; background: #f6f9f7; font-size: 13px; color: {{accent}}; cursor: pointer;">{{v.label}}</button></sc-for></div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 12px; background: #fbfaf7; border: 1px solid #efece5;">
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Ako to uvidí hosť · napr. Tomáš, 22. – 26. 12.</span>
+<div style="display: flex; gap: 10px; align-items: flex-start;"><span style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 9999px; background: #d9dcd8; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #3b3d42;">JH</span><div style="padding: 12px 16px; border-radius: 4px 16px 16px 16px; background: #ffffff; border: 1px solid #ebe8e0; font-size: 15px; font-weight: 400; line-height: 1.55; color: #11212f; white-space: pre-line;">{{e.preview}}</div></div>
+</div>
+</div>
+<div style="flex-shrink: 0; padding: 14px 32px 20px; border-top: 1px solid #e9e5db; display: flex; align-items: center; gap: 10px;">
+<button type="button" onClick="{{closePanel}}" style="min-height: 44px; padding: 0 22px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer;">Uložiť</button>
+<button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Poslať skúšobne mne</button>
+<span style="margin-left: auto; font-size: 13px; color: #8b929b;">Zmena platí pre správy, ktoré ešte neodišli.</span>
+</div>
+</aside>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      on: [true, true, true, false, true],
+      edit: 2,
+      texts: [
+        'Dobrý deň, {meno}, ďakujem za rezerváciu. Keby ste čokoľvek potrebovali, napíšte mi sem. {podpis}',
+        'Dobrý deň, o tri dni sa vidíme. Na cestu potrebujete zimné pneumatiky, posledných 300 m ide do kopca. Raňajky alebo saunu si objednáte priamo v pobyte. {podpis}',
+        'Dobrý deň, {meno}, je všetko v poriadku? Keby niečo chýbalo alebo nefungovalo, napíšte mi sem. {podpis}',
+        'Dobrý deň, zajtra je odchod do 10:00. Kľúč nechajte na stole, riad stačí dať do umývačky. Ďakujem! {podpis}',
+        'Ďakujem, že ste boli u nás, {meno}. Ak sa vám páčilo, budem rada, keď pobyt ohodnotíte: {odkaz na hodnotenie} {podpis}'
+      ]
+    };
+  }
+  fill(t) {
+    return t.replace(/\{meno\}/g, 'Tomáš').replace(/\{podpis\}/g, 'Jana').replace(/\{príchod\}/g, '22. 12.').replace(/\{odchod\}/g, '26. 12.').replace(/\{odkaz na hodnotenie\}/g, 'chaletstromy.sk/hodnotenie…');
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var accent2 = this.props.accent2 ?? '#ad5a2b';
+    var defs = [
+      { phase: 'Rezervácia', when: 'hneď po potvrdení', name: 'Privítanie', trigger: 'Hneď po potvrdení rezervácie · ide v potvrdzovacom e-maile, nie samostatne', rel: 'po potvrdení', n: 0, time: '—' },
+      { phase: 'Pred príchodom', when: '3 dni pred', name: 'Ako sa k nám dostanete', trigger: '3 dni pred príchodom o 10:00', rel: 'pred príchodom', n: 3, time: '10:00' },
+      { phase: 'Počas pobytu', when: 'deň po príchode', name: 'Je všetko v poriadku?', trigger: '1 deň po príchode o 10:00', rel: 'po príchode', n: 1, time: '10:00' },
+      { phase: 'Pred odchodom', when: 'deň pred', name: 'Pokyny k odchodu', trigger: '1 deň pred odchodom o 18:00', rel: 'pred odchodom', n: 1, time: '18:00' },
+      { phase: 'Po odchode', when: 'deň po', name: 'Poďakovanie', trigger: '1 deň po odchode o 11:00', rel: 'po odchode', n: 1, time: '11:00', note: 'S modulom Recenzie obsahuje odkaz na hodnotenie — samostatná žiadosť o hodnotenie sa potom neposiela.' }
+    ];
+    var steps = defs.map(function (d, i) {
+      var on = s.on[i]; var ed = s.edit === i;
+      return {
+        phase: d.phase, when: d.when, name: d.name, trigger: d.trigger, preview: self.fill(s.texts[i]), hasNote: !!d.note, note: d.note || '',
+        phaseColor: on ? accent : '#a9aeb5', onAttr: on ? 'true' : 'false', switchLabel: (on ? 'Vypnúť: ' : 'Zapnúť: ') + d.name,
+        dot: 'position: absolute; left: -8px; top: 24px; width: 14px; height: 14px; border-radius: 9999px; box-sizing: border-box; border: 2px solid ' + (on ? accent : '#d6d2c8') + '; background: ' + (on ? accent : '#ffffff') + ';',
+        cardStyle: 'border: 1px solid ' + (ed ? '#11212f' : '#e9e5db') + '; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; background: #ffffff; box-shadow: ' + (ed ? '0 0 0 3px rgba(17,33,47,0.06)' : 'none') + ';',
+        textStyle: 'margin: 0; font-size: 14px; line-height: 1.55; color: ' + (on ? '#3b3d42' : '#a9aeb5') + '; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;',
+        track: 'flex-shrink: 0; position: relative; width: 44px; height: 26px; border-radius: 9999px; border: none; padding: 0; background: ' + (on ? accent : '#d6d2c8') + '; cursor: pointer; transition: background 160ms ease;',
+        knob: 'position: absolute; top: 3px; left: ' + (on ? 21 : 3) + 'px; width: 20px; height: 20px; border-radius: 9999px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: left 160ms ease;',
+        toggle: function () { var o = self.state.on.slice(); o[i] = !o[i]; self.setState({ on: o }); },
+        edit: function () { self.setState({ edit: i }); }
+      };
+    });
+    var cur = s.edit == null ? null : defs[s.edit];
+    var vars = [['Meno hosťa', '{meno}'], ['Príchod', '{príchod}'], ['Odchod', '{odchod}'], ['Podpis', '{podpis}']].map(function (v) {
+      return { label: v[0], add: function () { if (self.state.edit == null) return; var t = self.state.texts.slice(); t[self.state.edit] = t[self.state.edit] + ' ' + v[1]; self.setState({ texts: t }); } };
+    });
+    var quick = [
+      { t: 'Neskorý príchod', x: 'Neskorý príchod je v poriadku — kód od dverí nájdete v pokynoch k príchodu.' },
+      { t: 'Sauna', x: 'Sauna sa zapína vypínačom vľavo pri dverách, nahreje sa za 40 minút.' },
+      { t: 'Parkovanie', x: 'Pred chaletom zaparkujú 2 autá, ďalšie miesto je 100 m nižšie pri ceste.' },
+      { t: 'Lyžiareň', x: 'Lyžiarky a lyže môžete nechať v lyžiarni pri vchode, je tam sušiak na topánky.' }
+    ];
+    return {
+      accent: accent, accent2: accent2, steps: steps, quick: quick, vars: vars, panelOpen: !!cur,
+      e: cur ? { name: cur.name, n: cur.n, rel: cur.rel, time: cur.time, text: s.texts[s.edit], preview: self.fill(s.texts[s.edit]) } : { name: '', n: 0, rel: '', time: '', text: '', preview: '' },
+      type: function (ev) { if (self.state.edit == null) return; var t = self.state.texts.slice(); t[self.state.edit] = ev.target.value; self.setState({ texts: t }); },
+      closePanel: function () { self.setState({ edit: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

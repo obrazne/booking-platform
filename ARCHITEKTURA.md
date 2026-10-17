@@ -388,7 +388,7 @@ Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia 
   v jej vizuáli; na jej webe vyhľadávací pás (príchod, odchod, osoby), ktorý presmeruje na subdoménu s predvyplneným termínom;
   tlačidlá „Rezervovať“ smerujú tam. Kalendár s cenami na jej webe neskôr.
 
-## B11. Moduly po MVP — upsell, recenzie, push (17. 10. 2026)
+## B11. Moduly po MVP — upsell, recenzie, check-in, push, správy (17. 10. 2026)
 
 *Postup: Claude Code stavia dátový a technický základ, Claude chat medzitým kreslí obrazovky; rozhranie sa doplní podľa plátna.*
 
@@ -431,6 +431,32 @@ u klienta iné (obec, sadzba dane, oslobodenia, pokyny), je nastavenie. **Sloven
 **Push notifikácie (modul `push`).** Web Push (VAPID) z nainštalovanej administrácie — bez platenej služby. Kanál nad upozorneniami (A13):
 zariadenia per používateľ, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných. iPhone len po „Pridať na plochu“
 (návod). Správca platformy dostáva push na svoje platformové upozornenia bez modulu.
+
+**Správy s hosťom (modul `messages`, platený; návrh 17. 10.).** Cieľ: hostia si zvyknú chodiť do účtu — každá správa majiteľa
+príde aj e-mailom s tlačidlom, ktoré hosťa prihlási rovno k pobytu.
+- **Jedna konverzácia = jedna rezervácia** (len priame rezervácie; obsadenosť z iCal hosťa nemá). Tabuľka správ s `tenant_id`,
+  `reservation_id`, odosielateľ (hosť / člen tímu / automatika s odkazom na pravidlo), text (max. 4 000 znakov), čas, prečítanie
+  hosťom a tímom (tím zdieľa jeden stav „vybavené“, osobné prečítanie len v zvončeku). História (`record_history`) áno; správy sú osobné
+  údaje — patria do exportu „Moje dáta“ a mažú sa s rezerváciou podľa lehôt uchovávania. **Prístupové kódy ani Wi-Fi sa v správach
+  nepoužívajú** (premenné ich neponúkajú) — ostávajú v pokynoch k príchodu.
+- **Hosť píše** od vytvorenia rezervácie do 30 dní po odchode (potom len čítanie), v účte aj cez prístupový odkaz; limit podľa IP/hosťa.
+- **Nová správa majiteľa → e-mail hosťovi** s celým textom a tlačidlom „Odpovedať“ (prihlásenie k pobytu bez hesla, odkaz platí 7 dní),
+  odosielateľ meno majiteľa · názov objektu z domény klienta (A7), **Reply-To = kontaktný e-mail klienta** (odpoveď na e-mail príde majiteľovi
+  do schránky, nič sa nestratí; zapisovanie takých odpovedí do konverzácie je ďalšia fáza). Viac správ do 15 minút = jeden e-mail.
+- **Nová správa hosťa →** upozornenie (zvonček, druh `message.new`), push a e-mail majiteľovi (zlúčené po 15 minútach, neposiela sa,
+  ak ju niekto z tímu medzitým otvoril). Odznak v menu = počet konverzácií, kde posledná správa je od hosťa a nikto neodpovedal.
+- **Automatické správy** (pravidlá klienta): názov, zapnuté, kotva (potvrdenie rezervácie / príchod / odchod), posun v dňoch pred/po,
+  čas odoslania v časovom pásme klienta, text po jazykoch s premennými `{meno}`, `{príchod}`, `{odchod}`, `{podpis}`, `{odkaz na hodnotenie}`.
+  Posielanie cez pg_cron, každé pravidlo raz na rezerváciu (unikátnosť), nie pre zrušené rezervácie, **čas, ktorý už uplynul, sa nedobieha**.
+  Hosť ich vidí ako správu od majiteľa; tím ich vidí označené „Automaticky · …“ a **naplánovanú** správu pri konkrétnom hosťovi môže
+  upraviť alebo vynechať. Predvolené pravidlá pri zapnutí modulu: Privítanie (po potvrdení), Ako sa k nám dostanete (3 dni pred príchodom
+  10:00), Je všetko v poriadku? (1 deň po príchode 10:00), Pokyny k odchodu (1 deň pred odchodom 18:00, vypnuté), Poďakovanie (1 deň po odchode 11:00).
+- **Bez dvojitých e-mailov:** Privítanie ide v potvrdzovacom e-maile (nie samostatne). Ak v ten istý deň ide hosťovi e-mail s pokynmi
+  k príchodu alebo ponuka upsell, automatická správa sa pošle ako blok v ňom. S modulom `reviews`: ak je Poďakovanie zapnuté a obsahuje
+  `{odkaz na hodnotenie}`, samostatná pozvánka na hodnotenie sa neposiela (pripomienka po 7 dňoch áno).
+- **Jadro vs. modul:** povinné e-maily B6 (potvrdenie, platba, pokyny, zrušenie) sú jadro. Modul pridáva konverzáciu, automatické správy
+  a **rýchle odpovede** (uložené texty tímu). Bez modulu má hosť kontakt telefón / WhatsApp ako doteraz.
+- Neskôr: odpovede e-mailom priamo do konverzácie (príjem pošty), fotky v správach, preklad správ, AI návrh odpovede.
 
 ## Showroom (ukážkové dáta)
 

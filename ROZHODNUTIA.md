@@ -2,6 +2,17 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Správy s hosťom: konverzácia pri pobyte + automatické správy (modul)
+
+- Martin: Jana píše hosťom, chce, aby si zvykli chodiť do účtu. Rozhodnuté: modul **Správy** — konverzácia pri rezervácii, každá správa
+  majiteľa aj e-mailom s tlačidlom „Odpovedať“ (prihlási rovno k pobytu), Reply-To na majiteľa, aby sa odpoveď na e-mail nestratila.
+- **Automatické správy nahrádzajú „workflows“ z JetBookingu** (správa X dní pred/po príchode či odchode) — navyše sú v konverzácii, hosť
+  na ne môže odpovedať a majiteľ naplánovanú správu pri hosťovi upraví alebo vynechá. Hosť ich vidí ako správu od majiteľa.
+- **Jadro vs. modul (Martin: „dobre je to“):** povinné e-maily ostávajú v jadre, konverzácia, automatické správy a rýchle odpovede sú
+  platený modul. Riziko: JetBooking mal naplánované e-maily v základe — ak by to klienti namietali, dá sa v jadre ponúknuť jednoduchá verzia len e-mailom.
+- **Bez dvojitých e-mailov:** privítanie v potvrdzovacom e-maile, správa v deň pokynov/ponuky ako blok v tom e-maile, poďakovanie
+  s odkazom na hodnotenie nahrádza pozvánku modulu Recenzie. SMS nie (platené, neskôr modul). (Martin + Claude) → Z45–Z47.
+
 ## 2026-10-17 — Mapa: OpenFreeMap, Google len ako odkaz na navigáciu
 
 - Martin navrhol Google Maps, aby to bolo zadarmo. Vložená Google mapa (Embed API) je síce zadarmo, ale potrebuje Google Cloud účet

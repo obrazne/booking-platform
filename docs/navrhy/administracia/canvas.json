@@ -91,6 +91,24 @@
       "w": 248,
       "h": 1000,
       "title": "00 Komponent — bočné menu"
+    },
+    "Spravy.dc.html": {
+      "x": 0,
+      "y": 2440,
+      "w": 1440,
+      "h": 1000,
+      "title": "10 Správy — schránka; klik otvorí rezerváciu na karte Správy (klikací: filtre, odpoveď, rýchle odpovede, naplánovaná správa)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "SpravyAuto.dc.html": {
+      "x": 1520,
+      "y": 2440,
+      "w": 1440,
+      "h": 1000,
+      "title": "11 Automatické správy — časová os pobytu, vypínače, úprava s náhľadom (klikací)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "order": [
@@ -103,7 +121,9 @@
     "PrihlasenieHost.dc.html",
     "MobilPrehlad.dc.html",
     "MobilRezervacia.dc.html",
-    "Sidebar.dc.html"
+    "Sidebar.dc.html",
+    "Spravy.dc.html",
+    "SpravyAuto.dc.html"
   ],
   "notes": {
     "titul": {
@@ -133,6 +153,13 @@
       "w": 620,
       "fill": "blue",
       "text": "09 Štatistiky: čísla sú ilustračné (rozšírené ukážkové dáta ~1,5 roka). Tržby podľa termínu pobytu, len priame rezervácie; obsadenosť vrátane Booking/Airbnb. Bodkovaná časť čiary = potvrdené pobyty, ktoré ešte neprebehli. Na Prehľade bude malý graf posledných 12 mesiacov s odkazom sem. Zvonček vpravo hore je v hlavičke každej stránky administrácie."
+    },
+    "spravy": {
+      "x": 0,
+      "y": 2260,
+      "w": 1100,
+      "fill": "teal",
+      "text": "Správy (návrh 17. 10.): v menu nová skupina Správy s počtom nezodpovedaných. Schránka nemá vlastný panel — klik otvorí bočný panel rezervácie na karte Správy (rovnaký panel ako v Rezerváciách, karta cez slot booking.detail.tabs). Automatické správy sú v konverzácii označené, naplánované vidno vopred a pri hosťovi sa dajú upraviť alebo vynechať. Nová správa od hosťa = zvonček + push + e-mail Jane (zlúčené po 15 minútach)."
     }
   },
   "designSystems": []

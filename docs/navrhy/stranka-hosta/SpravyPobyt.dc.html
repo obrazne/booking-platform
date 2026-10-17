@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Detail pobytu — správy s Janou</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button,textarea{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.cta-dark{background:#2b3036;transition:background 160ms ease}
+.cta-dark:hover{background:#0c0e11}
+.chip{transition:border-color 140ms ease,background 140ms ease}
+.chip:hover{border-color:#11212f;background:#f7f6f2}
+textarea:focus{outline:none}
+.composer:focus-within{border-color:#11212f !important;box-shadow:0 0 0 3px rgba(17,33,47,0.08)}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg-new{animation:msgIn 220ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.msg-new{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; background: #ffffff; font-weight: 300; min-height: 1250px;">
+
+<header style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</span>
+<nav style="display: flex; gap: 22px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;"><span style="color: #11212f; font-weight: 500;">Môj účet</span><span style="color: #595959;">Späť na web ↗</span></nav>
+</div>
+</header>
+<div style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center;">
+<nav style="display: flex; gap: 6px;"><span style="height: 52px; padding: 0 14px; border-bottom: 2px solid {{accent}}; color: #11212f; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">Pobyty<sc-if value="{{hasUnread}}" hint-placeholder-val="{{true}}"><span style="min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9999px; background: {{accent2}}; color: #ffffff; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">1</span></sc-if></span><span style="height: 52px; padding: 0 14px; color: #5a6672; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center;">Moje údaje</span></nav>
+<span style="font-size: 14px; color: #5a6672;">Odhlásiť sa</span>
+</div>
+</div>
+
+<section style="background: linear-gradient(165deg, #f9f8f5 0%, #f2f3f0 50%, #e9eeeb 100%); border-bottom: 1px solid #e3e6e2;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 30px; display: flex; flex-direction: column; gap: 10px;">
+<nav style="display: flex; gap: 8px; font-size: 14px;"><span style="color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">Pobyty</span><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">22. – 26. 12. 2026</span></nav>
+<div style="display: flex; align-items: center; gap: 12px;"><span class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6672;">Rezervácia 2026-0648</span><span style="font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 9999px; background: #e6efeb; color: {{accent}};">Zaplatené</span></div>
+<h1 style="margin: 0; font-size: 38px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Tešíme sa na vás. <span style="color: #a9aeb5;">O 3 dni.</span></h1>
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;"><span style="font-size: 17px; color: #3b3d42;">22. – 26. 12. 2026 · 4 noci · 4 hostia</span>
+<sc-if value="{{hasUnread}}" hint-placeholder-val="{{true}}"><a href="#spravy" style="display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 14px; border-radius: 9999px; background: #ffffff; border: 1px solid #ecd9c4; font-size: 14px; font-weight: 500; color: #8a4a1c; text-decoration: none;"><span style="width: 7px; height: 7px; border-radius: 9999px; background: {{accent2}};"></span>Nová správa od Jany ↓</a></sc-if></div>
+</div>
+</section>
+
+<div style="max-width: 1180px; margin: 0 auto; padding: 36px 24px 96px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 28px; min-width: 0;">
+
+<div style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 10px; background: #f6f9f7; border: 1px solid #dfe8e2; font-size: 14px; color: #3b3d42;"><span style="width: 26px; height: 26px; border-radius: 9999px; background: {{accent}}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg></span><span style="flex: 1 1 auto;"><b style="font-weight: 700; color: #11212f;">Online check-in hotový.</b> Pokyny k príchodu a kód od dverí sa tu odomknú 21. 12.</span><span style="font-size: 13px; color: #8b929b;">Pokyny, objednávky a doklady sú nižšie ↓</span></div>
+
+<section id="spravy" style="display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;">
+<span style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Správy</span><span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Píšte priamo Jane.</span></span>
+<span style="font-size: 13px; color: #5a6672; text-align: right; line-height: 1.5;">V núdzi počas pobytu volajte<br><b style="font-weight: 700; color: #11212f;">+421 905 123 456</b></span>
+</div>
+
+<div style="border: 1px solid #e9e5db; border-radius: 14px; overflow: hidden; background: #ffffff;">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #efece5; background: #fbfaf7;">
+<span style="width: 38px; height: 38px; border-radius: 9999px; background: #d9dcd8; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #3b3d42;">JH</span>
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">Jana Hladká</span><span style="font-size: 13px; color: #5a6672;">Majiteľka chaletu · správy k tomuto pobytu</span></span>
+<span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Odpovede aj e-mailom</span>
+</div>
+
+<div style="padding: 22px 24px 8px; display: flex; flex-direction: column; gap: 10px; max-height: 520px; overflow-y: auto;">
+<sc-for list="{{items}}" as="m" hint-placeholder-count="6">
+<sc-if value="{{m.isDay}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 12px; margin: 8px 0 2px;"><span style="flex: 1 1 auto; height: 1px; background: {{m.lineColor}};"></span><span class="mono" style="{{m.dayStyle}}">{{m.label}}</span><span style="flex: 1 1 auto; height: 1px; background: {{m.lineColor}};"></span></div></sc-if>
+<sc-if value="{{m.isEvent}}" hint-placeholder-val="{{false}}"><div style="align-self: center; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 9999px; background: #f4f3ef; font-size: 12px; color: #5a6672;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>{{m.text}}</div></sc-if>
+<sc-if value="{{m.isMsg}}" hint-placeholder-val="{{true}}"><div class="{{m.cls}}" style="{{m.wrap}}"><div style="{{m.bubble}}">{{m.text}}</div><span style="{{m.metaStyle}}">{{m.meta}}</span></div></sc-if>
+</sc-for>
+</div>
+
+<div style="padding: 12px 20px 18px; display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; gap: 8px; flex-wrap: wrap;"><sc-for list="{{chips}}" as="c" hint-placeholder-count="3"><button type="button" class="chip" onClick="{{c.use}}" style="min-height: 32px; padding: 0 12px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-size: 13px; color: #3b3d42; cursor: pointer;">{{c.label}}</button></sc-for></div>
+<div class="composer" style="display: flex; align-items: flex-end; gap: 10px; padding: 8px 8px 8px 16px; border: 1px solid #dcd9d1; border-radius: 14px; transition: border-color 140ms ease, box-shadow 140ms ease;">
+<textarea aria-label="Správa pre Janu" rows="2" placeholder="Napíšte správu Jane…" value="{{draft}}" onChange="{{type}}" style="flex: 1 1 auto; min-height: 44px; resize: none; border: none; background: transparent; font-size: 15px; line-height: 1.5; color: #11212f; padding: 6px 0;"></textarea>
+<button type="button" class="cta-dark" onClick="{{send}}" style="flex-shrink: 0; min-height: 44px; padding: 0 20px; border: none; border-radius: 9999px; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer; opacity: {{sendOpacity}};">Odoslať</button>
+</div>
+<span style="font-size: 12px; color: #8b929b;">Jana dostane upozornenie hneď. Jej odpoveď vám príde aj e-mailom na tomas.kovac@…</span>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px; opacity: 0.55;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">K pobytu si môžete doobjednať</span>
+<div style="height: 120px; border: 1px dashed #dcd9d1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #8b929b;">… ďalšie časti pobytu ako na doskách 11 a 17</div>
+</section>
+</div>
+
+<aside style="display: flex; flex-direction: column; gap: 18px; position: sticky; top: 24px;">
+<div style="border: 1px solid #e9e5db; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Kontakt na Janu</span>
+<span style="display: flex; align-items: center; gap: 12px;"><span style="width: 44px; height: 44px; border-radius: 9999px; background: #d9dcd8; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #3b3d42;">JH</span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 16px; font-weight: 700; color: #11212f;">Jana Hladká</span><span style="font-size: 13px; color: #5a6672;">Hovorí po slovensky a anglicky</span></span></span>
+<a href="#spravy" style="display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 9999px; border: 1px solid #11212f; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: none;">Napísať správu</a>
+<span style="font-size: 13px; color: #5a6672; line-height: 1.5;">Telefón <b style="font-weight: 700; color: #11212f;">+421 905 123 456</b> — pre veci, ktoré nepočkajú (počas pobytu).</span>
+</div>
+<div style="border: 1px solid #e9e5db; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px;">
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Účet pobytu</span>
+<div style="display: flex; justify-content: space-between; font-size: 14px;"><span>Ubytovanie · zaplatené</span><span style="font-weight: 500; color: #11212f;">4 450 €</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 14px;"><span>Na účet pobytu</span><span style="font-weight: 500; color: #11212f;">30 €</span></div>
+</div>
+</aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      draft: '',
+      sent: [],
+      read: false
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var accent2 = this.props.accent2 ?? '#ad5a2b';
+    var base = [
+      { k: 'event', text: 'Rezervácia potvrdená a zaplatená · 18. 10.' },
+      { k: 'owner', text: 'Dobrý deň, Tomáš, ďakujem za rezerváciu. Keby ste čokoľvek potrebovali, napíšte mi sem. Jana', time: '18. 10. 11:02' },
+      { k: 'day', label: 'Pondelok 16. 12.' },
+      { k: 'guest', text: 'Dobrý deň, prídeme asi až okolo 20:00, nevadí to? A dalo by sa pripraviť detskú postieľku?', time: '14:12' },
+      { k: 'owner', text: 'Dobrý deň, Tomáš, neskorý príchod je v poriadku — kód od dverí uvidíte v pokynoch deň pred príchodom. Postieľku pripravím do spálne na prízemí.', time: '15:40' },
+      { k: 'guest', text: 'Super, ďakujeme!', time: '15:52' },
+      { k: 'day', label: 'Dnes · nová správa', isNew: true },
+      { k: 'owner', text: 'Dobrý deň, o tri dni sa vidíme. Na cestu do Demänovskej doliny potrebujete zimné pneumatiky, posledných 300 m ide do kopca. Ak by ste chceli raňajky alebo saunu, objednáte si ich priamo tu v pobyte. Jana', time: '10:00' }
+    ];
+    var all = base.concat(s.sent.map(function (t) { return { k: 'guest', text: t, time: 'teraz', fresh: true }; }));
+    var lastGuest = -1; all.forEach(function (m, i) { if (m.k === 'guest') lastGuest = i; });
+    var items = all.map(function (m, i) {
+      var mine = m.k === 'guest';
+      return {
+        isDay: m.k === 'day', isEvent: m.k === 'event', isMsg: m.k === 'guest' || m.k === 'owner',
+        label: m.label || '', text: m.text || '',
+        lineColor: m.isNew ? '#ecd9c4' : '#efece5',
+        dayStyle: 'font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: ' + (m.isNew ? accent2 : '#8b929b') + ';',
+        cls: m.fresh ? 'msg-new' : '',
+        wrap: 'display: flex; flex-direction: column; gap: 4px; max-width: 74%; align-self: ' + (mine ? 'flex-end' : 'flex-start') + '; align-items: ' + (mine ? 'flex-end' : 'flex-start') + ';',
+        bubble: 'padding: 12px 16px; border-radius: ' + (mine ? '16px 16px 4px 16px' : '16px 16px 16px 4px') + '; background: ' + (mine ? accent : '#f4f3ef') + '; color: ' + (mine ? '#ffffff' : '#11212f') + '; font-size: 15px; font-weight: 400; line-height: 1.55;',
+        metaStyle: 'font-size: 12px; color: #8b929b; padding: 0 4px;',
+        meta: mine ? (m.time + (i === lastGuest ? (m.fresh ? ' · odoslané' : ' · Jana prečítala') : '')) : ('Jana · ' + m.time)
+      };
+    });
+    var chips = ['Neskorší príchod', 'Parkovanie', 'Detská postieľka'].map(function (c) {
+      return { label: c, use: function () { self.setState({ draft: c === 'Neskorší príchod' ? 'Dobrý deň, prídeme neskôr, okolo ' : c === 'Parkovanie' ? 'Dobrý deň, koľko áut môžeme zaparkovať pri chalete?' : 'Dobrý deň, dalo by sa pripraviť detskú postieľku?' }); } };
+    });
+    return {
+      accent: accent, accent2: accent2, hasUnread: !s.read, items: items, chips: chips, draft: s.draft,
+      sendOpacity: s.draft.trim() ? '1' : '0.45',
+      type: function (e) { self.setState({ draft: e.target.value, read: true }); },
+      send: function () { var t = self.state.draft.trim(); if (!t) return; self.setState({ sent: self.state.sent.concat([t]), draft: '', read: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

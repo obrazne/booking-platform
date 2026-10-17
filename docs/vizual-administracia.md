@@ -219,3 +219,28 @@ Na mobile fotka len ako pruh hore.
   klient, osoba, hľadanie; stránkovanie, export CSV. Prihlásenia do administrácie a riadiaceho centra sa do auditu **zapisujú**
   (úspešné; neúspešné len počtom podľa IP, bez hesla).
 
+## v1.3 — Správy s hosťom (modul `messages`, schválené 17. 10.)
+
+Dosky `Spravy` (schránka + panel rezervácie na karte Správy) a `SpravyAuto` (automatické správy); bočné menu `Sidebar` má novú skupinu.
+- **Menu:** skupina **Správy** (za Rezerváciami) s tehlovým odznakom = počet konverzácií, ktoré čakajú na odpoveď; položky **Schránka**,
+  **Automatické správy**. Zobrazí sa len so zapnutým modulom.
+- **Schránka:** nadpis Správy, vpravo odkaz „Automatické správy (N zapnuté) →“. Filtre (pilulky): Všetky · **Čakajú na odpoveď** (počet tehlovo)
+  · Pred príchodom a počas pobytu · Po odchode. Riadok = rezervácia: bodka neprečítané, hosť (tučnejšie, ak neprečítané) a termín,
+  štítok stavu pobytu (o 3 dni / prebieha / o 3 týždne / odišli), posledná správa jedným riadkom (predpona „Vy:“ / „Automaticky:“) + číslo
+  rezervácie, čas. Pod zoznamom veta, že hostia z Bookingu a Airbnb tu nie sú. Hľadanie v hornej lište.
+- **Klik na riadok otvorí bočný panel rezervácie (680 px) na karte Správy** — žiadny samostatný panel konverzácie. Karta Správy je v paneli
+  rezervácie aj v zozname Rezervácií (slot `booking.detail.tabs`, s počtom neprečítaných). Konverzácia: hosť vľavo biela, tím vpravo v akcente;
+  automatické správy svetlozelené so štítkom „Automaticky · 3 dni pred príchodom“; **naplánovaná** automatická správa na konci prerušovaná
+  so štítkom „Naplánované · 23. 12. o 10:00 · deň po príchode“ a akciami **Upraviť pre tohto hosťa** · **Neposielať** (vrátiteľné).
+  Dole pole „Odpovedzte Tomášovi…“, **Odoslať** (akcent), **Rýchle odpovede ▾** (ponuka nad poľom, klik vloží text; „Upraviť rýchle odpovede →“),
+  veta „Hosť ju dostane do účtu aj e-mailom.“ Otvorením sa konverzácia označí ako prečítaná.
+- **Automatické správy:** drobčeky Správy › Automatické správy, vysvetlenie (posielajú sa samy, hosť ich vidí ako správu od vás, pri hosťovi
+  sa dajú upraviť alebo vynechať). **Časová os pobytu** — vľavo fáza (Rezervácia, Pred príchodom, Počas pobytu, Pred odchodom, Po odchode)
+  a kedy, vpravo karta pravidla: názov, kedy presne, **Upraviť**, vypínač, náhľad textu na 2 riadky (vypnuté sivé); pri Poďakovaní poznámka
+  o odkaze na hodnotenie (modul Recenzie). Pod osou **Rýchle odpovede** (mriežka 2 stĺpce, „+ Pridať odpoveď“).
+- **Úprava pravidla** (bočný panel 680): „Kedy sa pošle“ — počet, jednotka, vzhľadom na (po potvrdení / pred príchodom / po príchode / pred
+  odchodom / po odchode), čas; veta, že čas, ktorý pri rezervácii na poslednú chvíľu už uplynul, sa nepošle; **upozornenie**, ak padne na deň
+  e-mailu s pokynmi alebo ponuky (pošle sa v ňom). „Text“ s premennými (pilulky Meno hosťa, Príchod, Odchod, Podpis) a **náhľad, ako to uvidí hosť**
+  (vyplnený ukážkovým hosťom). **Uložiť**, „Poslať skúšobne mne“, veta „Zmena platí pre správy, ktoré ešte neodišli.“
+- **Mobil:** schránka ako zoznam, klik → rezervácia cez celú obrazovku na karte Správy, pole prilepené dole.
+

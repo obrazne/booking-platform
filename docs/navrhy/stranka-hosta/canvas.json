@@ -133,6 +133,31 @@
       "h": 1250,
       "title": "17 Detail pobytu — ďalšie stavy: čaká na platbu, počas pobytu (pokyny a kódy), zrušený; žiadosť o zrušenie (klikací)",
       "is_interactive": true
+    },
+    "SpravyPobyt.dc.html": {
+      "x": 0,
+      "y": 11300,
+      "w": 1440,
+      "h": 1250,
+      "title": "18 Správy s Janou v detaile pobytu (klikací: napíšte a odošlite, rýchle témy)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "MobilSpravy.dc.html": {
+      "x": 1520,
+      "y": 11300,
+      "w": 390,
+      "h": 844,
+      "title": "19 Mobil — správy cez celú obrazovku (klikací)",
+      "is_interactive": true
+    },
+    "EmailSprava.dc.html": {
+      "x": 1990,
+      "y": 11300,
+      "w": 760,
+      "h": 1000,
+      "title": "20 E-mail o novej správe — hosťovi aj Jane (prepínač hore)",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -214,6 +239,13 @@
       "w": 900,
       "fill": "teal",
       "text": "Môj účet (pripomienka 30, 17. 10.): pod hlavičkou webu lišta s kartami Pobyty / Moje údaje (prilepená), v detaile pobytu karta Pobyty aktívna + drobčeky „Pobyty › termín“ — hosť vždy vie, kde je a ako späť. Najbližší pobyt ako veľká karta s tým, čo treba urobiť (check-in, platba, pokyny, objednané). Dokumenty patria k pobytu, nie ako samostatná karta. Bez bočného panela — detail pobytu je celá stránka (veľa obsahu, hosť má 1–3 pobyty)."
+    },
+    "spravy": {
+      "x": 0,
+      "y": 11120,
+      "w": 1100,
+      "fill": "teal",
+      "text": "Správy s hosťom (návrh 17. 10., modul „Správy“): jedna konverzácia = jedna rezervácia, v detaile pobytu hneď pod stavom. Každá správa od Jany príde hosťovi aj e-mailom s tlačidlom „Odpovedať Jane“ — prihlási ho rovno k pobytu bez hesla; tak si hostia zvyknú chodiť do účtu. Odpoveď priamo na e-mail ide Jane do schránky (Reply-To), nič sa nestratí; zapisovanie takých odpovedí do konverzácie je ďalšia fáza. Automatické správy hosť vidí ako správy od Jany. Telefón ostáva na naliehavé veci. Fotky v správach až v ďalšej fáze."
     }
   },
   "order": [
@@ -233,7 +265,10 @@
     "Recenzie.dc.html",
     "UcetPrehlad.dc.html",
     "MobilUcet.dc.html",
-    "StavyPobytu.dc.html"
+    "StavyPobytu.dc.html",
+    "SpravyPobyt.dc.html",
+    "MobilSpravy.dc.html",
+    "EmailSprava.dc.html"
   ],
   "pages": [],
   "title": "Rezervačná stránka — návrh"

@@ -11,8 +11,8 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje) — *zabratá linkou A*; **B:** ~~Z44 (detail pobytu: stavy, zrušenie)~~ ✅ — linka B má frontu prázdnu.
-- **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
+- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa) — *zabratá linkou A*, potom Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia).
+- **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
   Ďalej preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
@@ -173,6 +173,43 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
+### Z45 [B] — Modul Správy: základ (databáza, automatické správy, e-maily, upozornenia) (Martin 17. 10.)
+Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10. Rozhranie robia Z46 (administrácia) a Z47 (hosť).
+1. Modul `messages` (manifest, katalóg „Správy s hosťom“, `ready: false` kým nie sú hotové Z46 a Z47), migrácia: správy pri rezervácii,
+   pravidlá automatických správ (po jazykoch), vynechania/úpravy naplánovanej správy pri rezervácii, rýchle odpovede; RLS + pgTAP
+   (oddelenie klientov, hosť vidí len svoje rezervácie — aj cez `p_token` prístupového odkazu), `record_history`.
+2. DB funkcie: odoslanie správy hosťom a tímom (limit, dĺžka, okno do 30 dní po odchode), označenie prečítania, počet čakajúcich,
+   zoznam konverzácií pre schránku (filtre podľa stavu pobytu), naplánované správy pre rezerváciu.
+3. `messages_tick` cez pg_cron: pravidlá podľa kotvy, posunu a času v pásme klienta, raz na rezerváciu, nie zrušené, uplynutý čas
+   sa nedobieha; predvolené pravidlá a rýchle odpovede pri zapnutí modulu (texty v prekladoch).
+4. E-maily: hosťovi (tlačidlo „Odpovedať“ s prihlásením k pobytu, Reply-To kontakt klienta, zlúčenie do 15 min), majiteľovi (zlúčenie,
+   nie ak už prečítané); **bez dvojitých e-mailov** — privítanie v potvrdzovacom e-maile, správa v deň pokynov/ponuky upsell ako blok
+   v tom e-maile, Poďakovanie s `{odkaz na hodnotenie}` nahrádza pozvánku `reviews_tick`.
+5. Upozornenie `message.new` (kontrola `kind`, push `kinds`, texty `notifications.kinds.*`), udalosť pre slot.
+6. Ukážkové dáta (len Ukážkový klient): konverzácie k niekoľkým rezerváciám vrátane automatických a jednej čakajúcej.
+7. Testy: pgTAP + jednotkové (výpočet času pravidla, zlúčenie e-mailov).
+
+### Z46 [B] — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
+Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `SpravyAuto`, `Sidebar`.
+1. Menu: skupina Správy s odznakom (Schránka, Automatické správy), len so zapnutým modulom.
+2. Schránka `/admin/messages` (filtre, riadky, hľadanie) → klik otvorí **panel rezervácie na karte Správy** (`?panel=reservation:id&tab=messages`).
+3. Karta **Správy** v paneli rezervácie cez slot `booking.detail.tabs`: konverzácia, štítky automatických, naplánovaná správa
+   (Upraviť pre tohto hosťa / Neposielať / Vrátiť), pole, Rýchle odpovede, prečítanie pri otvorení.
+4. Automatické správy: časová os, vypínače, úprava v bočnom paneli (kedy, text s premennými, náhľad, upozornenie na kolíziu s e-mailom
+   pokynov/ponuky, Poslať skúšobne mne); rýchle odpovede (pridať, upraviť, poradie).
+5. Mobil: schránka zoznam → rezervácia cez celú obrazovku na karte Správy.
+6. Playwright (Ukážkový klient): odpoveď hosťovi, rýchla odpoveď, vynechanie naplánovanej správy, úprava pravidla; axe.
+
+### Z47 [A] — Modul Správy: hosť (konverzácia v detaile pobytu, mobil, e-mail) — po Z43 a Z45
+Podľa `docs/vizual-stranka-hosta.md` → **Správy s hosťom (v2.5)**, dosky `SpravyPobyt`, `MobilSpravy`, `EmailSprava`.
+Ak Z45 ešte nie je ✅, počkaj (pull každých pár minút) — linka A nemá nič iné.
+1. Sekcia Správy v detaile pobytu cez slot `guest.stay.top` (pod stavom), v účte aj cez prístupový odkaz; rýchle témy z nastavenia klienta.
+2. Neprečítané: odznak na karte Pobyty v lište účtu (Z43), pilulka v hlavičke pobytu, bod na karte najbližšieho pobytu, karta Kontakt na majiteľa.
+3. Mobil: konverzácia cez celú obrazovku (`/ucet/pobyt/<id>/spravy`), písmo poľa 16 px.
+4. Šablóny e-mailov podľa `EmailSprava` (hosťovi aj majiteľovi), tlačidlo „Odpovedať“ otvorí pobyt prihláseného hosťa na sekcii Správy.
+5. Po 30 dňoch od odchodu len čítanie s vetou o kontakte. Správy v exporte „Moje dáta“ (Z43).
+6. Playwright (Ukážkový klient, PC + mobil): hosť napíše, majiteľ vidí v schránke; odkaz z e-mailu; axe.
+
 ### Z43 [A] — Účet hosťa: lišta s kartami, prehľad a Moje údaje (pripomienka 30, 17. 10.)
 Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy pobytu (v2.4)**, dosky `UcetPrehlad`, `MobilUcet` (+ hlavička v `UcetPobyt`).
 1. Spoločný komponent **lišty účtu** (karty Pobyty s odznakom / Moje údaje, Odhlásiť sa; mobil pilulky) na prehľade, v detaile pobytu aj na
@@ -295,6 +332,13 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
   **„na účet pobytu“ s vyúčtovaním na konci**. Martin: „super predajný argument“ pre ubytovateľa. Rozhodnúť: uzávierky objednávok
   (napr. raňajky do 18:00 deň vopred), služby s potvrdením majiteľom (kapacita), ktoré služby a do akej sumy idú na účet pobytu,
   účet pobytu v administrácii a vyúčtovanie pri odchode (doklad cez fakturačný nástroj), ponuky v e-mailoch pred príchodom. Plátno + špecifikácia.
+
+- [x] 🧠 **Návrh modulu Správy s hosťom** (Martin 17. 10.; → Z45–Z47): konverzácia pri pobyte, každá správa majiteľa aj e-mailom
+  s tlačidlom „Odpovedať“, automatické správy (náhrada workflows z JetBookingu), rýchle odpovede. Platený modul, povinné e-maily ostávajú v jadre.
+- [ ] 🧠 + 🔧 **Zaučenie klienta — návod a prechod systémom** (Martin 17. 10., **teraz nerobiť** — až keď bude systém vyladený, najneskôr po
+  prezentácii Jane): popri prehliadke „Čo je nové“ niečo, s čím sa klient rýchlo zžije — **mapa administrácie** (diagram: čo kde nájde),
+  **krátke slajdy** „prvý deň s rezerváciami“ (prvá rezervácia, platba, kalendár, Booking/Airbnb, správy, moduly), prípadne krátke videá;
+  ten istý materiál poslúži pri predaji ďalším klientom. Rozhodnúť formu a kde to klient nájde (napr. Pomoc v menu).
 
 ## Fáza 5 — Značka a predajný web 🧠 + 🔧 *(po MVP; cieľ: hotové pred eventom v eXtreme parku Žilina)*
 - [ ] Značka produktu: názov, doména, vizuál 🧠

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>E-mail — nová správa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#eceae4;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+</style>
+</helmet>
+<div style="width: 760px; min-height: 1000px; background: #eceae4; font-weight: 300; display: flex; flex-direction: column;">
+<div style="background: #11212f; color: #ffffff; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px;">
+<span class="mono" style="letter-spacing: 0.08em; text-transform: uppercase; color: #8a97a5;">E-mail (len v návrhu):</span>
+<sc-for list="{{kinds}}" as="k" hint-placeholder-count="2"><button type="button" onClick="{{k.go}}" style="{{k.style}}">{{k.label}}</button></sc-for>
+</div>
+<div style="background: #ffffff; border-bottom: 1px solid #dcd9d1; padding: 16px 28px; display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 6px 12px; font-size: 13px;">
+<span style="color: #8b929b;">Od</span><span style="color: #11212f;">{{from}}</span>
+<span style="color: #8b929b;">Komu</span><span style="color: #11212f;">{{to}}</span>
+<span style="color: #8b929b;">Predmet</span><span style="color: #11212f; font-weight: 700;">{{subject}}</span>
+</div>
+<div style="padding: 32px 0 48px; display: flex; justify-content: center;">
+<div style="width: 600px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e3e1da;">
+<div style="padding: 24px 36px; border-bottom: 1px solid #efece5; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{brand}}</span><span class="mono" style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #8b929b;">{{ref}}</span></div>
+<div style="padding: 32px 36px 12px; display: flex; flex-direction: column; gap: 18px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">{{kicker}}</span>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; color: #11212f;">{{headline}}</span>
+<div style="display: flex; gap: 14px; align-items: flex-start;">
+<span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 9999px; background: #d9dcd8; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #3b3d42;">{{initials}}</span>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; color: #5a6672;"><b style="font-weight: 700; color: #11212f;">{{author}}</b> · {{when}}</span><div style="padding: 14px 18px; border-radius: 4px 14px 14px 14px; background: #f4f3ef; font-size: 16px; font-weight: 400; line-height: 1.6; color: #11212f;">{{body}}</div></div>
+</div>
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 50px; padding: 0 28px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; margin-top: 6px;">{{cta}}</a>
+<span style="font-size: 13px; line-height: 1.6; color: #5a6672;">{{help}}</span>
+</div>
+<div style="margin-top: 22px; padding: 20px 36px 26px; background: #fbfaf7; border-top: 1px solid #efece5; font-size: 12px; line-height: 1.6; color: #8b929b;">{{footer}}</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":760,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { kind: 'guest' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var g = s.kind === 'guest';
+    var kind = function (k, l) { var on = s.kind === k; return { label: l, go: function () { self.setState({ kind: k }); }, style: 'border: 1px solid ' + (on ? '#ffffff' : '#3a4a58') + '; background: ' + (on ? '#ffffff' : 'transparent') + '; color: ' + (on ? '#11212f' : '#c9d1d9') + '; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 500; cursor: pointer;' }; };
+    return {
+      accent: accent, accent2: this.props.accent2 ?? '#ad5a2b',
+      kinds: [kind('guest', 'Hosťovi — Jana napísala'), kind('owner', 'Jane — hosť napísal')],
+      from: g ? 'Jana Hladká · Chalet STRÖMY <spravy@chaletstromy.sk>  (Odpovedať: jana@chaletstromy.sk)' : '[Názov platformy] <upozornenia@…>',
+      to: g ? 'Tomáš Kováč <tomas.kovac@…>' : 'Jana Hladká <jana@chaletstromy.sk>',
+      subject: g ? 'Jana vám napísala k pobytu 22. – 26. 12.' : 'Tomáš Kováč napísal · 2026-0648 · 22. – 26. 12.',
+      brand: g ? 'Chalet STRÖMY' : '[Názov platformy]',
+      ref: g ? 'Pobyt 22. – 26. 12. 2026' : 'Rezervácia 2026-0648',
+      kicker: g ? 'Nová správa' : 'Nová správa od hosťa',
+      headline: g ? 'Dobrý deň, Tomáš, Jana vám napísala.' : 'Tomáš Kováč čaká na odpoveď.',
+      initials: g ? 'JH' : 'TK', author: g ? 'Jana Hladká' : 'Tomáš Kováč', when: g ? 'dnes 10:00' : 'dnes 14:12 · príchod o 3 dni',
+      body: g ? 'Dobrý deň, o tri dni sa vidíme. Na cestu do Demänovskej doliny potrebujete zimné pneumatiky, posledných 300 m ide do kopca. Ak by ste chceli raňajky alebo saunu, objednáte si ich priamo v pobyte. Jana' : 'Dobrý deň, prídeme asi až okolo 20:00, nevadí to? A dalo by sa pripraviť detskú postieľku?',
+      cta: g ? 'Odpovedať Jane' : 'Odpovedať v administrácii',
+      help: g ? 'Tlačidlo vás rovno prihlási k pobytu — bez hesla. Ak odpoviete priamo na tento e-mail, správa príde Jane do jej schránky.' : 'Otvorí rezerváciu na karte Správy. Rovnaké upozornenie vidíte aj v zvončeku a v telefóne (push).',
+      footer: g ? 'Chalet STRÖMY · Demänovská Dolina · +421 905 123 456. Tento e-mail ste dostali, lebo máte u nás rezerváciu 2026-0648. Viac správ za sebou vám príde v jednom e-maile.' : 'Upozornenia na nové správy si nastavíte v Nastavenia › E-maily a upozornenia. Viac správ od jedného hosťa za 15 minút príde v jednom e-maile.'
+    };
+  }
+}
+</script>
+</body>
+</html>
