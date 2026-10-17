@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa) — *zabratá linkou A*, potom Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa) — *zabratá linkou A*, potom Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → Z48 (storno pásma) ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -235,6 +235,17 @@ Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišt
 6. **Oprava textu pri pokynoch:** konkrétny dátum odomknutia podľa stavu (zaplatené, check-in, `arrival_email_days_before`), nie „keď bude pobyt zaplatený“ pri zaplatenom pobyte.
 7. Playwright na Ukážkovom klientovi pre každý stav + žiadosť o zrušenie; axe.
 
+### Z48 [B] ✅ — Storno pásma: výpočet vrátenej sumy (Martin 17. 10.: „urob ako uznáš za vhodné“ k otázke zo Z44)
+Pri klientovi voliteľné pásma „zrušenie aspoň N dní pred príchodom → vrátiť P % ceny“ (Nastavenia → Storno podmienky). Hosť v okne
+žiadosti o zrušenie vidí presnú vrátenú sumu a poplatok, majiteľ v paneli rezervácie návrh podľa dňa žiadosti. Bez pásiem ako doteraz.
+
+### Z49 [B] — Prístupový odkaz `/r/<kód>` ako detail pobytu v účte (v2.4; rozhodol Claude Code 17. 10. podľa „urob ako uznáš“)
+Podľa v2.4 majú byť stránky cez prístupový odkaz rovnaké ako v účte (bez lišty kariet, s ponukou „Uložiť do účtu“). Dnes je `/r/<kód>`
+potvrdenie rezervácie v2.1 (platba, kroky, moduly). Navrhovaný postup: hneď po rezervácii a kým čaká na platbu ostáva potvrdenie v2.1
+(schválený vizuál, nadväzuje na košík); od zaplatenia `/r/<kód>` vykreslí `StayDetail` s prístupom cez kód (stavy zo Z44 — dlaždice
+počas pobytu, rozpis v Účte pobytu, žiadosť o zrušenie cez okno s pásmami) a nahor riadok „Uložiť do účtu“. `StayDetail` treba
+odpojiť od `requireGuest` (načítanie pobytu účtom aj kódom). Playwright: zaplatený pobyt cez odkaz (stavy), žiadosť o zrušenie cez odkaz.
+
 ### Z42 [B] ✅ — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
 Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku
 Prepojenia (zoznam kalendárov) — tam nič o kolízii nie je. Majiteľ potrebuje vidieť **čo s čím koliduje a čo s tým spraviť**.
@@ -347,12 +358,6 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
-- **Zrušenie pobytu (Z44) — storno pásma:** okno žiadosti ukazuje dni do príchodu a znenie storno podmienok klienta, ale **sumu
-  nevypočíta** — podmienky sú len text (Nastavenia), štruktúrované pásma v systéme nie sú. Navrhujem pri klientovi pásma (napr.
-  „30+ dní 100 %, 14–29 dní 50 %, menej 0 %“) — potom okno ukáže presnú vrátenú sumu a majiteľ dostane návrh storno poplatku (B5).
-  Je to súčasť storno podmienok (právny text klienta) — chceš to tak, a kto pásma pre STRÖMY zadá?
-- **Prístupový odkaz `/r/<kód>` (v2.4: „rovnaké stránky aj cez prístupový odkaz“):** stavy zo Z44 sú v účte hosťa; stránka cez odkaz
-  ostáva potvrdenie v2.1 (platba, kroky, moduly). Zjednotiť ju s detailom v účte (bez lišty kariet) ako samostatnú úlohu?
 - **Online check-in pre hostí (Z39):** (1) Hosť **môže údaje upraviť aj po dokončení, až do dňa príchodu** (tak to hovorí návrh);
   úprava check-in znova otvorí a hosť ho dokončí znova — majiteľka sa pri tom znova neupozorní (rovnaký kľúč upozornenia). Ak už
   cudzinca nahlásila, záznam o nahlásení ostáva. Stačí tak? (2) Veta z návrhu „Dieťa bez dokladu: stačí meno, dátum narodenia a adresa“
@@ -400,6 +405,15 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z48 [linka B]: **storno pásma** (Martin k otázke zo Z44: „urob ako uznáš za vhodné“). (Claude Code)
+  - `tenant_settings.cancellation_bands` (migrácia `20261017280000_cancellation_bands.sql`, po `…270000` linky A), výpočet
+    `src/core/booking/cancellation.ts` (poplatok = časť ceny, ktorá sa nevracia; vrátime = zaplatené mínus poplatok; vitest).
+  - **Nastavenia → Storno podmienky:** až 4 pásma pod textom podmienok s vetou, že musia zodpovedať textu. **Prázdne = ako doteraz.**
+    Pre STRÖMY som pásma nezadával (právny text klienta — zadá majiteľ podľa svojho znenia); Ukážkovému klientovi ich nastavuje len test.
+  - **Okno žiadosti o zrušenie:** „Podľa storno podmienok vám vrátime X € (P % ceny)“, storno poplatok, pri nezaplatenom „nič sa nevracia“;
+    sumu potvrdí majiteľ. **Panel rezervácie:** pri žiadosti o storno „Návrh podľa storno pásiem: vrátiť … , storno poplatok …“ k dňu žiadosti.
+  - **`/r/<kód>`** — rozhodnutie a postup zapísané ako **Z49 [B]** (potvrdenie v2.1 ostáva do zaplatenia, potom detail pobytu).
+  - Playwright `stay-states.spec.ts` doplnený (pásma si nastaví a vráti; zaplatený pobyt → „vrátime 300,00 € (100 % ceny)“), PC aj mobil.
 - 2026-10-17 — Z44 [linka B]: **detail pobytu podľa stavu** (návrh v2.4 `StavyPobytu`). (Claude Code)
   - `ucet/pobyt/[id]/page.tsx` je tenký (lišta účtu a drobčeky — Z43 cez prop `crumbs`), obsah v `stay-detail.tsx`; fáza pobytu
     `stay-state.ts` (čaká na platbu / pred príchodom / počas — od dňa príchodu / po odchode / zrušený; vitest).

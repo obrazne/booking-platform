@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronLeft, FileText, Lock, MessageCircle, Phone } from "lucide-react";
 import { CopyButton } from "@/app/(guest)/r/[token]/confirm-ui";
+import { cancellationOutcome, parseBands } from "@/core/booking/cancellation";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import {
   arrivalNavigation,
@@ -46,7 +47,9 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
       .then(({ data }) => stayStateOf(data)),
     createAdminClient()
       .from("tenant_settings")
-      .select("contact_name, contact_phone, whatsapp_phone, cancellation_policy")
+      .select(
+        "contact_name, contact_phone, whatsapp_phone, cancellation_policy, cancellation_bands",
+      )
       .eq("tenant_id", tenant.id)
       .maybeSingle(),
   ]);
@@ -94,6 +97,16 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
     cancelled: [ts("hero.cancelled"), ts("hero.cancelled2")],
   };
   const modules = phase !== "cancelled";
+  // Storno bands of the client (optional): what this cancellation would mean today.
+  const paidCents = stay.payments
+    .filter((p) => p.status === "received")
+    .reduce((sum, p) => sum + p.amount_cents, 0);
+  const outcome = cancellationOutcome(
+    parseBands(settings?.cancellation_bands),
+    daysToArrival,
+    stay.total_cents,
+    paidCents,
+  );
   const canRequestCancel =
     (stay.status === "pending_payment" || stay.status === "confirmed") && daysToArrival > 0;
 
@@ -431,6 +444,15 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
                     daysToArrival={daysToArrival}
                     policy={policy}
                     ownerName={ownerFirst}
+                    outcome={
+                      outcome
+                        ? {
+                            refundPct: outcome.refundPct,
+                            fee: outcome.feeCents > 0 ? fmt(outcome.feeCents) : null,
+                            refund: paidCents > 0 ? fmt(outcome.refundCents) : null,
+                          }
+                        : null
+                    }
                   />
                 </>
               )}

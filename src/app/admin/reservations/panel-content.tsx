@@ -18,6 +18,7 @@ import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
 import { diffDays } from "@/core/pricing/dates";
 import { getTenantInfo } from "@/core/tenant/info";
+import { cancellationOutcome, parseBands } from "@/core/booking/cancellation";
 import { createClient } from "@/lib/supabase/server";
 import { CancelReservationButton, NoteForm, ReservationActions } from "./panel-actions";
 import { getReservationDetail, SOURCES, type ReservationStatus } from "./query";
@@ -40,7 +41,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
   ]);
   if (!detail) return { body: <p className="text-muted-foreground text-sm">{tc("noResults")}</p> };
   const supabase = await createClient();
-  const [{ data: documents }, { data: propertyDocs }] = await Promise.all([
+  const [{ data: documents }, { data: propertyDocs }, { data: storno }] = await Promise.all([
     supabase
       .from("documents")
       .select("id, title, visible_when")
@@ -52,7 +53,25 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
       .eq("property_id", detail.property_id)
       .is("reservation_id", null)
       .order("created_at"),
+    supabase
+      .from("tenant_settings")
+      .select("cancellation_bands")
+      .eq("tenant_id", active.tenantId)
+      .maybeSingle(),
   ]);
+  // A guest's request to cancel: the proposal by the client's storno bands, as of the day of the request.
+  const checkIn = detail.items.map((i) => i.check_in).sort()[0];
+  const proposal =
+    detail.cancellation_requested_at && checkIn
+      ? cancellationOutcome(
+          parseBands(storno?.cancellation_bands),
+          diffDays(detail.cancellation_requested_at.slice(0, 10), checkIn),
+          detail.total_cents,
+          detail.payments
+            .filter((p) => p.status === "received")
+            .reduce((sum, p) => sum + p.amount_cents, 0),
+        )
+      : null;
   const fmt = (cents: number, currency = tenant.currency) =>
     formatMoney(money(cents, currency), locale);
   const when = (iso: string) => formatDateTime(iso, locale, tenant.timezone, "short");
@@ -175,6 +194,15 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             {detail.cancellation_request_note ? (
               <p className="[overflow-wrap:anywhere]">
                 {t("panel.cancelRequestNote", { note: detail.cancellation_request_note })}
+              </p>
+            ) : null}
+            {proposal ? (
+              <p>
+                {t("panel.cancelProposal", {
+                  refund: fmt(proposal.refundCents, detail.currency),
+                  fee: fmt(proposal.feeCents, detail.currency),
+                  pct: proposal.refundPct,
+                })}
               </p>
             ) : null}
           </div>

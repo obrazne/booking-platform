@@ -13,11 +13,14 @@ export function CancelDialog({
   daysToArrival,
   policy,
   ownerName,
+  outcome,
 }: {
   reservationId: string;
   daysToArrival: number;
   policy: string;
   ownerName: string | null;
+  /** By the client's storno bands (formatted amounts); null without bands — the owner decides by the wording. */
+  outcome: { refundPct: number; fee: string | null; refund: string | null } | null;
 }) {
   const t = useTranslations("guest.stay.cancel");
   const ref = useRef<HTMLDialogElement>(null);
@@ -54,7 +57,21 @@ export function CancelDialog({
           <div className="grid gap-2 rounded-[10px] bg-[#fafaf8] p-4 text-sm leading-relaxed">
             <p>{t.rich("daysLeft", { count: daysToArrival, b: (c) => <strong>{c}</strong> })}</p>
             {policy ? <p className="text-[#5a6672]">{t("policy", { policy })}</p> : null}
-            <p className="text-[#5a6672]">{t("amount", { name })}</p>
+            {outcome ? (
+              <p>
+                {outcome.refund !== null
+                  ? t.rich("refund", {
+                      amount: outcome.refund,
+                      pct: outcome.refundPct,
+                      b: (c) => <strong>{c}</strong>,
+                    })
+                  : t("nothingPaid")}
+                {outcome.fee ? ` ${t("fee", { fee: outcome.fee })}` : ""}
+              </p>
+            ) : null}
+            <p className="text-[#5a6672]">
+              {outcome ? t("confirmAmount", { name }) : t("amount", { name })}
+            </p>
           </div>
           <label className="grid gap-1.5">
             <span className="text-sm font-medium">

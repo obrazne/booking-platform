@@ -7,6 +7,7 @@ import type { ActionResult } from "@/core/admin/form";
 import { parseMinorUnits } from "@/core/format/format";
 import { localizedFromForm } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
+import { bandsToJson, parseBands, type CancellationBand } from "@/core/booking/cancellation";
 import { createClient } from "@/lib/supabase/server";
 
 const text = (max: number) =>
@@ -77,6 +78,17 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
   const { stay_account_limit, upsell_offer_days, ...settings } = parsed.data;
+  // Storno bands (after Z44): rows with both values; an empty row is skipped, a half-filled one is an error.
+  const bands: CancellationBand[] = [];
+  for (let i = 0; i < 4; i++) {
+    const d = String(form.get(`band_days_${i}`) ?? "").trim();
+    const p = String(form.get(`band_pct_${i}`) ?? "").trim();
+    if (!d && !p) continue;
+    const parsedBand = parseBands([{ days: Number(d), refund_pct: Number(p) }]);
+    if (!d || !p || !parsedBand.length) return fail("invalid");
+    bands.push(parsedBand[0]!);
+  }
+  if (new Set(bands.map((b) => b.days)).size !== bands.length) return fail("invalid");
   // Module reviews: Google link offered after a review — only when the form had it.
   const google = form.has("google_review_url")
     ? z
@@ -107,6 +119,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     ...(google?.success ? { google_review_url: google.data } : {}),
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     ...(upsell_offer_days === undefined ? {} : { upsell_offer_days }),
+    cancellation_bands: bandsToJson(bands),
     cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
   });
   if (error) return fail(dbErrorKey(error));

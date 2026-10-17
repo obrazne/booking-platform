@@ -8,6 +8,7 @@ import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/fo
 import { asLocalized } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
 import { isModuleEnabled } from "@/core/modules/registry";
+import { parseBands } from "@/core/booking/cancellation";
 import { createClient } from "@/lib/supabase/server";
 import { saveSettings } from "./actions";
 
@@ -30,6 +31,7 @@ export default async function SettingsPage() {
     .select("*")
     .eq("tenant_id", tenant.id)
     .maybeSingle();
+  const bands = parseBands(s?.cancellation_bands);
 
   return (
     <div className="grid max-w-3xl gap-6">
@@ -133,6 +135,40 @@ export default async function SettingsPage() {
               value={asLocalized(s?.cancellation_policy)}
               multiline
             />
+            {/* Storno bands (after Z44): the calculation of the refund for the guest and the owner. */}
+            <fieldset className="mt-5 grid gap-3">
+              <legend className="text-ink text-sm font-medium">{t("bands.title")}</legend>
+              <p className="text-muted-foreground text-[13px]">{t("bands.hint")}</p>
+              {Array.from({ length: 4 }, (_, i) => {
+                const band = bands[i];
+                return (
+                  <div key={i} className="flex flex-wrap items-center gap-2 text-sm">
+                    <span>{t("bands.atLeast")}</span>
+                    <Input
+                      name={`band_days_${i}`}
+                      type="number"
+                      min={0}
+                      max={365}
+                      aria-label={t("bands.daysLabel", { n: i + 1 })}
+                      defaultValue={band?.days ?? ""}
+                      className="w-24"
+                    />
+                    <span>{t("bands.daysBefore")}</span>
+                    <Input
+                      name={`band_pct_${i}`}
+                      type="number"
+                      min={0}
+                      max={100}
+                      aria-label={t("bands.pctLabel", { n: i + 1 })}
+                      defaultValue={band?.refundPct ?? ""}
+                      className="w-24"
+                    />
+                    <span>{t("bands.pct")}</span>
+                  </div>
+                );
+              })}
+              <p className="text-muted-foreground text-[13px]">{t("bands.rest")}</p>
+            </fieldset>
           </CardContent>
         </Card>
         <Card>

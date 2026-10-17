@@ -105,7 +105,22 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
     .select("arrival_instructions, door_code, wifi_name, wifi_password")
     .eq("property_id", PROPERTY)
     .maybeSingle();
+  const { data: settings0 } = await db
+    .from("tenant_settings")
+    .select("cancellation_bands")
+    .eq("tenant_id", TENANT)
+    .single();
   try {
+    // Storno bands as the demo client's wording ("do 14 dní pred príchodom zdarma, potom 50 %").
+    await db
+      .from("tenant_settings")
+      .update({
+        cancellation_bands: [
+          { days: 14, refund_pct: 100 },
+          { days: 0, refund_pct: 50 },
+        ],
+      })
+      .eq("tenant_id", TENANT);
     await db
       .from("properties")
       .update({ checkin_required_for_instructions: false })
@@ -132,6 +147,11 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
     } as never);
     if (cancelError) throw cancelError;
 
+    await db
+      .from("payments")
+      .update({ status: "received", received_at: new Date().toISOString() })
+      .eq("reservation_id", before.id)
+      .eq("purpose", "reservation");
     await login(page, email);
 
     // Waiting for payment: the payment card on top, ordering after payment, "Na zaplatenie" in the stay account.
@@ -172,6 +192,8 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
     await page.getByRole("button", { name: "Požiadať o zrušenie pobytu" }).click();
     const dialog = page.getByRole("dialog", { name: "Požiadať o zrušenie?" });
     await expect(dialog).toContainText("Do príchodu");
+    // Paid in full, long before arrival → everything back by the bands.
+    await expect(dialog).toContainText("vrátime 300,00 € (100 % ceny)");
     await axe(page);
     await dialog.getByRole("button", { name: "Ponechať pobyt" }).click();
     await expect(dialog).toBeHidden();
@@ -197,6 +219,10 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
       await db.from("reservations").delete().in("id", ids);
       await db.from("record_history").delete().eq("tenant_id", TENANT).in("record_id", ids);
     }
+    await db
+      .from("tenant_settings")
+      .update({ cancellation_bands: settings0?.cancellation_bands ?? [] })
+      .eq("tenant_id", TENANT);
     if (hadPrivate)
       await db.from("property_private").update(hadPrivate).eq("property_id", PROPERTY);
     else await db.from("property_private").delete().eq("property_id", PROPERTY);

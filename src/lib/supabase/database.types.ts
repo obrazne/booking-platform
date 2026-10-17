@@ -582,6 +582,7 @@ export type Database = {
         Row: {
           country: string | null
           created_at: string
+          deletion_requested_at: string | null
           email: string
           id: string
           marketing_consent: boolean
@@ -595,6 +596,7 @@ export type Database = {
         Insert: {
           country?: string | null
           created_at?: string
+          deletion_requested_at?: string | null
           email: string
           id?: string
           marketing_consent?: boolean
@@ -608,6 +610,7 @@ export type Database = {
         Update: {
           country?: string | null
           created_at?: string
+          deletion_requested_at?: string | null
           email?: string
           id?: string
           marketing_consent?: boolean
@@ -2599,6 +2602,7 @@ export type Database = {
           account_holder: string | null
           arrival_email_days_before: number
           bic: string | null
+          cancellation_bands: Json
           cancellation_policy: Json
           checkin_retention_days: number
           city_tax_cents: number
@@ -2627,6 +2631,7 @@ export type Database = {
           account_holder?: string | null
           arrival_email_days_before?: number
           bic?: string | null
+          cancellation_bands?: Json
           cancellation_policy?: Json
           checkin_retention_days?: number
           city_tax_cents?: number
@@ -2655,6 +2660,7 @@ export type Database = {
           account_holder?: string | null
           arrival_email_days_before?: number
           bic?: string | null
+          cancellation_bands?: Json
           cancellation_policy?: Json
           checkin_retention_days?: number
           city_tax_cents?: number
@@ -3364,6 +3370,10 @@ export type Database = {
       }
       purge_expired_holds: { Args: { p_unit_id: string }; Returns: undefined }
       release_hold: { Args: { p_hold_id: string }; Returns: undefined }
+      request_account_deletion: {
+        Args: { p_note?: string; p_tenant_id: string }
+        Returns: string
+      }
       request_cancellation: {
         Args: { p_note?: string; p_token: string }
         Returns: boolean
