@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z29** (košík pre 13″ notebook — prednostne), potom **Z27** (menu so skupinami, Štatistiky, zvonček s upozorneniami), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** **Z29** (košík pre 13″ notebook — prednostne), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -221,7 +221,7 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
 6. Playwright: košík na **1440 × 800** — súhrn bez posúvania (tlačidlo aj riadok istoty viditeľné bez scrollu aj s 2 doplnkami),
    rozbalenie služby, Zmeniť → kalendár → Hotovo, kroky 1–3; mobil 390 px; axe. Obnov snímku košíka v prehliadke „Čo je nové“, ak tam je.
 
-### Z27 — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia (pripomienky 16–18, 24)
+### Z27 ✅ — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia (pripomienky 16–18, 24)
 1. **Bočné menu so skupinami** podľa dosky `Sidebar`: Prehľad · Rezervácie › Zoznam, Kalendár, Blokácie · Objekt › Údaje, Fotky,
    Ceny a sezóny, Stránka, Dokumenty · Ponuka › Doplnkové služby, Referencie · Štatistiky · Prepojenia › Booking a Airbnb · dole
    Nastavenia › Všeobecné, Tím, Platby, E-maily a upozornenia.
@@ -360,6 +360,29 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z27: **administrácia v1.2.**
+  - **Menu so skupinami:** Rezervácie › Zoznam, Kalendár, Blokácie · Objekt › Údaje, Fotky, Ceny a sezóny, Stránka, Dokumenty
+    (pri viacerých objektoch len „Objekty“ → zoznam) · Ponuka › Doplnkové služby, Referencie · Štatistiky · Prepojenia › Booking a Airbnb ·
+    Nastavenia › Všeobecné, Tím, E-maily a upozornenia. Položky cez celú šírku, čiara medzi hlavnými, aktívna s 3 px čiarou,
+    `aria-expanded`, skupina aktívnej stránky otvorená; moduly sa zaraďujú cez `group` v manifeste. **Platby** vynechané — nastavenia
+    platby sú na stránke Všeobecné, samostatná stránka zatiaľ nie je. Zbalené menu: pri prejdení myšou/fokuse sa rozbalí celé
+    (rovnako ako doteraz), takže skupiny sú viditeľné bez samostatného vyskakovacieho zoznamu. Farby menu cez premenné — tmavé menu
+    riadiaceho centra má už hover biela 6 % / aktívna 10 % (Z28.1 tým čiastočne hotové).
+  - **Štatistiky** (`/admin/statistics`): funkcia `tenant_monthly_stats` (tržby podľa termínu pobytu, noci rozdelené do mesiacov, len priame
+    zaplatené; obsadenosť s portálmi bez blokácií; RLS) + pgTAP na prelom mesiaca a roka, zrušené a prázdne mesiace. Obdobie rok / 12 mesiacov,
+    porovnanie s minulým rokom, 5 čísel, SVG graf (plná/bodkovaná/sivá, najsilnejší/najslabší, klik na mesiac → bublina + riadok) a tabuľka.
+    Provízia portálov už bola v Nastaveniach (`portal_commission_bp`) — použitá. **Prehľad:** malý graf 12 mesiacov a „Tržby priamo“ roka
+    teraz z tej istej funkcie (predtým podľa dátumu vytvorenia — čísla sa líšili).
+  - **Zvonček** vpravo hore v spoločnej hornej lište (administrácia: hľadanie, Stránka pre hostí, zvonček, + Ručná rezervácia; riadiace
+    centrum: zvonček; mobil: v hornej lište). Tabuľky `notifications` + `notification_reads` (RLS: člen tímu len svojho klienta, platformové
+    len správca; zapisujú len databázové funkcie) + pgTAP. Vznikajú triggermi z udalostí (nová rezervácia, platba prijatá — kto ju označil,
+    má ju prečítanú, žiadosť o storno, zrušenie, obsadenosť z portálu mimo prvého importu, kolízia, zlyhaná synchronizácia, neodoslané
+    e-maily, nový klient) a každých 15 min (`notify_scheduled`: splatnosť do 24 h, koniec skúšky 7 a 1 deň). Jedna udalosť = jedno upozornenie;
+    so zmazanou rezerváciou/obsadenosťou/kalendárom zmiznú aj jej upozornenia. **Nastavenia → E-maily a upozornenia** (len na čítanie).
+  - **Ukážkové dáta:** `npm run demo-data` pridá 22 mesiacov histórie (45 rezervácií cez rovnaký výpočet ceny, zopár zrušených, pobyty
+    z portálov, zima a leto silnejšie) a pár upozornení; e-maily z ukážky sa neposielajú.
+  - Playwright `admin-v12.spec.ts` (menu, štatistiky, zvonček; PC aj 390 px, axe), prehliadka „Čo je nové“ v1.2 pre majiteľa
+    (12 snímok, nové menu/Štatistiky/zvonček na začiatku). Celá sada 35/35. (Claude Code)
 - 2026-10-17 — Z26: **rýchlosť bočného panela a dokumenty.** Meranie: funkcie Vercelu bežali v **iad1 (Washington)**
   (`X-Vercel-Id: fra1::iad1`), databáza vo Frankfurte; panel = celé nové vykreslenie stránky (~10–20 dotazov za sebou) → ~3 s
   na stagingu, ~850 ms lokálne bez akejkoľvek odozvy. Úpravy: `vercel.json` región **fra1** (bezplatný plán, jeden región);

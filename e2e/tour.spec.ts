@@ -14,8 +14,8 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
   await loginOwner(page, ADMIN_URL);
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("heading")).toHaveText("Prehľad na jednom mieste");
-  await expect(dialog).toContainText("1 z 11");
+  await expect(dialog.getByRole("heading")).toHaveText("Menu v skupinách");
+  await expect(dialog).toContainText("1 z 12");
   // The screenshot really loads (not just a broken image).
   await expect
     .poll(() => dialog.locator("img").evaluate((img: HTMLImageElement) => img.naturalWidth))
@@ -38,17 +38,17 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
     await dialog.dispatchEvent("touchend", {
       changedTouches: [{ identifier: 0, clientX: 80, clientY: 400 }],
     });
-    await expect(dialog.getByRole("heading")).toHaveText("Rezervácie a bočný panel");
+    await expect(dialog.getByRole("heading")).toHaveText("Štatistiky");
     await page.keyboard.press("ArrowLeft");
   }
 
   await dialog.getByRole("button", { name: "Ďalej" }).click();
-  await expect(dialog.getByRole("heading")).toHaveText("Rezervácie a bočný panel");
+  await expect(dialog.getByRole("heading")).toHaveText("Štatistiky");
   await page.keyboard.press("ArrowRight");
-  await expect(dialog.getByRole("heading")).toHaveText("Platba prijatá jedným klikom");
+  await expect(dialog.getByRole("heading")).toHaveText("Upozornenia vo zvončeku");
   await dialog.getByRole("button", { name: "Späť" }).click();
-  await expect(dialog.getByRole("heading")).toHaveText("Rezervácie a bočný panel");
-  await expect(dialog.locator("img")).toHaveAttribute("src", /reservations\.jpg/);
+  await expect(dialog.getByRole("heading")).toHaveText("Štatistiky");
+  await expect(dialog.locator("img")).toHaveAttribute("src", /statistics\.jpg/);
 
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
@@ -60,9 +60,9 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
 
   // Menu "What's new" opens it from the start; "Show me" goes to the page.
   await openWhatsNew(page, info.project.name === "mobile");
-  await expect(dialog.getByRole("heading")).toHaveText("Prehľad na jednom mieste");
+  await expect(dialog.getByRole("heading")).toHaveText("Menu v skupinách");
   await dialog.getByRole("button", { name: "Ďalej" }).click();
   await dialog.getByRole("button", { name: "Ukázať mi to" }).click();
   await expect(dialog).toBeHidden();
-  await page.waitForURL(/\/admin\/reservations/);
+  await page.waitForURL(/\/admin\/statistics/);
 });

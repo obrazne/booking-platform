@@ -44,5 +44,6 @@ export default async function teardown() {
     .delete()
     .eq("tenant_id", STROMY)
     .like("email", `%@${TEST_DOMAIN}`);
+  await db.from("notifications").delete().like("dedupe_key", "e2e:%");
   console.log(`[e2e] cleanup: ${ids.length} reservations, ${testUsers.length} guest logins`);
 }

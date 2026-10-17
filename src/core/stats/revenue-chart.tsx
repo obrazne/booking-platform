@@ -113,7 +113,13 @@ export function RevenueChart({
             ) : null}
           </ul>
         </div>
-        <div className="relative overflow-x-auto">
+        {/* Scrolls sideways on a phone — reachable by keyboard too. */}
+        <div
+          className="relative overflow-x-auto"
+          tabIndex={0}
+          role="region"
+          aria-label={t("chartTitle")}
+        >
           <svg
             viewBox="0 0 1060 280"
             role="img"

@@ -1315,6 +1315,18 @@
     "showMe": "Ukázať mi to",
     "close": "Zavrieť prehliadku",
     "owner": {
+      "menu": {
+        "title": "Menu v skupinách",
+        "body": "Rezervácie, objekt, ponuka a prepojenia majú vlastné skupiny. Kliknutím ich rozbalíte; skupina stránky, na ktorej práve ste, je otvorená sama."
+      },
+      "statistics": {
+        "title": "Štatistiky",
+        "body": "Tržby po mesiacoch podľa termínu pobytu, obsadenosť aj s Bookingom a Airbnb a porovnanie s minulým rokom. Kliknite na mesiac a uvidíte podrobnosti."
+      },
+      "notifications": {
+        "title": "Upozornenia vo zvončeku",
+        "body": "Nová rezervácia, blížiaca sa splatnosť či kolízia v kalendári sa ukážu vpravo hore. Kliknutím otvoríte, čoho sa týkajú; čo chodí aj e-mailom, nájdete v Nastaveniach."
+      },
       "dashboard": {
         "title": "Prehľad na jednom mieste",
         "body": "Po prihlásení vidíte, kto prichádza, čo čaká na platbu a čo treba vybaviť. Stačí kliknúť na riadok a ste pri veci."
@@ -1336,20 +1348,12 @@
         "body": "Keď hosť zavolá, zapíšete ho ručne. Systém skontroluje voľný termín, vypočíta cenu a pošle mu potvrdenie ako pri rezervácii z webu."
       },
       "property": {
-        "title": "Objekt a jeho stránka",
-        "body": "Údaje, fotky a poloha objektu na jednom mieste. Stránku pre hostí skladáte z hotových sekcií — zapnete, zoradíte a doplníte text."
-      },
-      "pricing": {
-        "title": "Ceny a sezóny",
-        "body": "Sezóny s vlastnou cenou za noc, minimálny počet nocí a poplatky. Hosť vždy vidí presnú sumu ešte pred rezerváciou."
+        "title": "Objekt, ceny a dokumenty",
+        "body": "Údaje, fotky, ceny a sezóny, stránka pre hostí a dokumenty — každé má v menu svoju položku pod Objektom. Stránku skladáte z hotových sekcií."
       },
       "services": {
         "title": "Doplnkové služby",
         "body": "Šéfkuchár, raňajky alebo transfer si hosť objedná rovno v košíku. Služba sa pripočíta k cene a uvidíte ju pri rezervácii."
-      },
-      "documents": {
-        "title": "Dokumenty pre hostí",
-        "body": "Ubytovací poriadok alebo pokyny k príchodu nahráte raz. Hosť ich nájde na stránke rezervácie — niektoré až po zaplatení."
       },
       "ical": {
         "title": "Prepojenie s Bookingom a Airbnb",
@@ -1642,5 +1646,99 @@
     "origin": "Tržby a priemerná cena sú len z priamych rezervácií (web a ručné). Pri Bookingu a Airbnb poznáme len obsadené dni, nie sumy — preto sú zahrnuté len v obsadenosti. Zrušené a nezaplatené rezervácie sa nepočítajú.",
     "overviewTitle": "Tržby za posledných 12 mesiacov",
     "overviewLink": "Všetky štatistiky"
+  },
+  "notifications": {
+    "label": "Upozornenia",
+    "labelUnread": "Upozornenia, neprečítané: {count}",
+    "title": "Upozornenia",
+    "readAll": "Označiť všetko ako prečítané",
+    "close": "Zavrieť upozornenia",
+    "unread": "neprečítané",
+    "empty": "Zatiaľ žiadne upozornenia.",
+    "footer": "Čo sa ukazuje tu a čo chodí aj e-mailom:",
+    "footerLink": "Nastavenia → E-maily a upozornenia",
+    "minutesAgo": "pred {count} min",
+    "hoursAgo": "pred {count} h",
+    "kinds": {
+      "reservation_new": {
+        "title": "Nová rezervácia {number}",
+        "text": "{guest} · {stay} · {amount}"
+      },
+      "payment_due": {
+        "title": "Splatnosť sa blíži — {number}",
+        "text": "{guest} · splatné {due}, potom sa termín uvoľní"
+      },
+      "payment_received": {
+        "title": "Platba prijatá — {number}",
+        "text": "{guest} · {amount}"
+      },
+      "cancel_request": {
+        "title": "Žiadosť o zrušenie — {number}",
+        "text": "{guest} · {stay}"
+      },
+      "reservation_cancelled": {
+        "title": "Rezervácia zrušená — {number}",
+        "text": "{guest} · {stay} · termín je znova voľný"
+      },
+      "portal_booking": {
+        "title": "{channel} obsadil termín",
+        "text": "{stay} · prenesené zo synchronizácie"
+      },
+      "calendar_conflict": {
+        "title": "Kolízia v kalendári",
+        "text": "{channel} · {stay} — termín je už obsadený, skontrolujte ho"
+      },
+      "sync_failed": {
+        "title": "Synchronizácia zlyhala",
+        "text": "{channel} · obsadenosť sa neaktualizuje, kým sa to nevyrieši"
+      },
+      "trial_ending": {
+        "title": "Skúšobná doba končí {ends}",
+        "text": "Modul {module} — {days, plural, one {zostáva 1 deň} few {zostávajú # dni} other {zostáva # dní}}; potom sa len skryje, nič sa nezmaže"
+      },
+      "client_sync_failed": {
+        "title": "Synchronizácia zlyhala — {tenant}",
+        "text": "{channel}"
+      },
+      "client_emails_failed": {
+        "title": "Neodoslané e-maily — {tenant}",
+        "text": "E-mail sa nepodarilo odoslať, pozrite stav klienta"
+      },
+      "client_trial_ending": {
+        "title": "Koniec skúšky — {tenant}",
+        "text": "Modul {module} končí {ends}"
+      },
+      "client_new": {
+        "title": "Nový klient — {tenant}",
+        "text": "Založený v riadiacom centre"
+      },
+      "other": {
+        "title": "Upozornenie",
+        "text": ""
+      }
+    },
+    "settings": {
+      "title": "E-maily a upozornenia",
+      "intro": "Čo sa ukáže v zvončeku vpravo hore a čo príde aj e-mailom. Prečítanie je osobné — každý z tímu má svoje. Vypínanie jednotlivých druhov pribudne neskôr.",
+      "kind": "Udalosť",
+      "bell": "Zvonček",
+      "email": "E-mail",
+      "yes": "áno",
+      "no": "—",
+      "emailTo": "E-maily pre majiteľa chodia na {email}.",
+      "emailToDefault": "E-maily pre majiteľa chodia na kontaktný e-mail ubytovania (Nastavenia → Všeobecné).",
+      "kinds": {
+        "reservation_new": "Nová rezervácia",
+        "payment_due": "Blíži sa splatnosť (24 h)",
+        "payment_received": "Platba prijatá (ak ju označil niekto iný z tímu)",
+        "cancel_request": "Žiadosť hosťa o zrušenie",
+        "reservation_cancelled": "Rezervácia zrušená",
+        "portal_booking": "Nová obsadenosť z Bookingu alebo Airbnb",
+        "calendar_conflict": "Kolízia v kalendári",
+        "sync_failed": "Zlyhaná synchronizácia kalendára",
+        "trial_ending": "Koniec skúšobnej doby modulu (7 dní a 1 deň vopred)"
+      },
+      "onlyExpired": "len pri neuhradení"
+    }
   }
 }

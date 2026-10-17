@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ArrowUpRight, Clock, Plus, Search } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { kindsByNight, loadOccupancy, loadSyncState } from "@/core/admin/occupancy";
 import { OccupancyLegend, SyncLine } from "@/core/admin/occupancy-ui";
@@ -13,7 +13,7 @@ import { loadMonthlyStats } from "@/core/stats/load";
 import { MiniRevenueChart } from "@/core/stats/mini-chart";
 import { addDays, diffDays, isoWeekday, todayIso } from "@/core/pricing/dates";
 import { getActiveMembership } from "@/core/tenant/active";
-import { getGuestSiteUrl, getTenantInfo } from "@/core/tenant/info";
+import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { MarkPaidButton } from "./reservations/quick-actions";
@@ -36,11 +36,7 @@ export default async function AdminDashboard() {
   const active = await getActiveMembership();
   if (!active) return <p className="text-muted-foreground max-w-prose p-8">{ta("noMembership")}</p>;
 
-  const [locale, tenant, guestUrl] = await Promise.all([
-    getLocale(),
-    getTenantInfo(active.tenantId),
-    getGuestSiteUrl(active.tenantId),
-  ]);
+  const [locale, tenant] = await Promise.all([getLocale(), getTenantInfo(active.tenantId)]);
   const today = todayIso(tenant.timezone);
   const year = today.slice(0, 4);
   const horizon = addDays(today, 90);
@@ -157,35 +153,6 @@ export default async function AdminDashboard() {
 
   return (
     <div data-bleed>
-      <header className="border-line hidden flex-wrap items-center justify-between gap-4 border-b px-10 py-[22px] md:flex">
-        <form action="/admin/reservations" className="flex-[0_1_380px]">
-          <label className="bg-muted text-muted-foreground flex min-h-[42px] items-center gap-2.5 rounded-full px-3.5 text-sm">
-            <Search className="size-4" />
-            <input
-              type="search"
-              name="q"
-              placeholder={t("search")}
-              aria-label={t("search")}
-              className="text-ink min-w-0 flex-1 bg-transparent outline-none"
-            />
-          </label>
-        </form>
-        <div className="flex items-center gap-2.5">
-          {guestUrl ? (
-            <Button asChild variant="outline">
-              <a href={guestUrl} target="_blank" rel="noreferrer">
-                {t("guestPage")} <ArrowUpRight />
-              </a>
-            </Button>
-          ) : null}
-          <Button asChild className="font-bold">
-            <Link href="/admin/reservations/new">
-              <Plus /> {tr("new")}
-            </Link>
-          </Button>
-        </div>
-      </header>
-
       <div className="grid w-full max-w-[1180px] gap-9 px-5 pt-7 pb-14 md:px-10 md:pt-9">
         <div className="grid gap-2">
           <span className="kicker text-brand-secondary first-letter:uppercase">

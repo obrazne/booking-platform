@@ -1,15 +1,20 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
+  ArrowUpRight,
   BookOpenCheck,
   CalendarCheck,
   ChartLine,
   Gift,
   House,
   LayoutDashboard,
+  Plus,
   RefreshCw,
+  Search,
   Settings,
   Shield,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
@@ -17,6 +22,9 @@ import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/ses
 import { getEnabledModules } from "@/core/modules/registry";
 import type { NavGroupKey } from "@/core/modules/types";
 import { getActiveMembership } from "@/core/tenant/active";
+import { getGuestSiteUrl } from "@/core/tenant/info";
+import { loadBell } from "@/core/notifications/actions";
+import { NotificationBell } from "@/core/notifications/bell";
 import { DEFAULT_THEME } from "@/core/theme/theme";
 import { ThemeStyle } from "@/core/theme/theme-style";
 import { TourDialog } from "@/core/tours/tour-dialog";
@@ -130,6 +138,18 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     });
   }
   const tourNew = active ? await tourIsNewForUser("owner") : false;
+  const [bell, guestUrl] = active
+    ? await Promise.all([loadBell("tenant"), getGuestSiteUrl(active.tenantId)])
+    : [null, null];
+  const bellFor = (media: "mobile" | "desktop") =>
+    bell ? (
+      <NotificationBell
+        scope="tenant"
+        initial={bell}
+        settingsHref="/admin/settings/notifications"
+        media={media}
+      />
+    ) : null;
 
   return (
     <AdminShell
@@ -169,6 +189,40 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           whatsNew={Boolean(active)}
         />
       }
+      topbar={
+        active ? (
+          <>
+            <form action="/admin/reservations" className="flex-[0_1_380px]">
+              <label className="bg-muted text-muted-foreground flex min-h-[42px] items-center gap-2.5 rounded-full px-3.5 text-sm">
+                <Search className="size-4" />
+                <input
+                  type="search"
+                  name="q"
+                  placeholder={t("adminV1.overview.search")}
+                  aria-label={t("adminV1.overview.search")}
+                  className="text-ink min-w-0 flex-1 bg-transparent outline-none"
+                />
+              </label>
+            </form>
+            <div className="ml-auto flex items-center gap-2.5">
+              {guestUrl ? (
+                <Button asChild variant="outline">
+                  <a href={guestUrl} target="_blank" rel="noreferrer">
+                    {t("adminV1.overview.guestPage")} <ArrowUpRight />
+                  </a>
+                </Button>
+              ) : null}
+              {bellFor("desktop")}
+              <Button asChild className="font-bold">
+                <Link href="/admin/reservations/new">
+                  <Plus /> {t("reservations.new")}
+                </Link>
+              </Button>
+            </div>
+          </>
+        ) : undefined
+      }
+      mobileBell={bellFor("mobile")}
       mobileTitle={active?.tenantName ?? platformBrand.name}
       addHref={active ? "/admin/reservations/new" : undefined}
       addLabel={t("reservations.new")}

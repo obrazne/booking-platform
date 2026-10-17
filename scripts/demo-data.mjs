@@ -42,6 +42,29 @@ const GUEST_ZONE_EMAIL = "demo-host@obrazne.sk";
 const MARTIN = "info@obrazne.sk";
 const NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
 const reset = process.argv.includes("--reset");
+const runId = Date.now().toString(36);
+const GUESTS = [
+  "Peter Novák",
+  "Lucia Kováčová",
+  "Martin Baláž",
+  "Zuzana Hudecová",
+  "Tomáš Mráz",
+  "Eva Krajčírová",
+  "Jakub Šimko",
+  "Andrea Polakovičová",
+  "Michal Varga",
+  "Simona Tóthová",
+  "Marek Benko",
+  "Veronika Lukáčová",
+  "Juraj Oravec",
+  "Katarína Pavlíková",
+  "Róbert Kollár",
+  "Ivana Hrušovská",
+  "Filip Gajdoš",
+  "Barbora Kubišová",
+];
+/** Stays per month, January–December: winter and summer stronger, spring and autumn weak. */
+const SEASON = [4, 3, 2, 1, 1, 2, 3, 4, 2, 1, 1, 3];
 
 const must = ({ data, error }, what) => {
   if (error) throw new Error(`${what}: ${error.message}`);
@@ -88,6 +111,37 @@ async function removeDemo() {
       "delete documents",
     );
   }
+  must(
+    await db
+      .from("notifications")
+      .delete()
+      .eq("tenant_id", TENANT)
+      .filter("data->>demo", "eq", "true"),
+    "delete demo notifications",
+  );
+  // Notifications the events of the demo created: by reservation number or by a demo calendar.
+  const numbers = must(
+    await db.from("reservations").select("number").eq("tenant_id", TENANT).eq("guest_note", NOTE),
+    "demo numbers",
+  ).map((r) => r.number);
+  for (let i = 0; i < numbers.length; i += 50) {
+    must(
+      await db
+        .from("notifications")
+        .delete()
+        .eq("tenant_id", TENANT)
+        .in("data->>number", numbers.slice(i, i + 50)),
+      "delete notifications of demo reservations",
+    );
+  }
+  must(
+    await db
+      .from("notifications")
+      .delete()
+      .eq("tenant_id", TENANT)
+      .like("data->>channel", "%(ukážka)"),
+    "delete notifications of demo calendars",
+  );
   if (ids.length) {
     must(await db.from("email_outbox").delete().in("reservation_id", ids), "delete demo e-mails");
     must(await db.from("reservations").delete().in("id", ids), "delete reservations");
@@ -197,11 +251,18 @@ const label = (l) =>
 
 // ---------------------------------------------------------------- reservations
 async function book(cat, stay) {
-  // First free week from the wished date (never overwrites anything — the database refuses overlaps).
-  for (let shift = 0; shift < 10; shift++) {
-    const checkIn = addDays(stay.checkIn, shift * 7);
-    const checkOut = addDays(stay.checkOut, shift * 7);
-    const p = price(cat, { ...stay, checkIn, checkOut });
+  // First free term from the wished date (never overwrites anything — the database refuses overlaps).
+  const step = stay.step ?? 7;
+  for (let shift = 0; shift < (stay.tries ?? 10); shift++) {
+    const checkIn = addDays(stay.checkIn, shift * step);
+    const checkOut = addDays(stay.checkOut, shift * step);
+    let p;
+    try {
+      p = price(cat, { ...stay, checkIn, checkOut });
+    } catch (e) {
+      if (stay.optional) continue;
+      throw e;
+    }
     const { data, error } = await db
       .rpc("create_reservation", {
         p: {
@@ -262,6 +323,7 @@ async function book(cat, stay) {
     );
     return { ...data, checkIn, checkOut, total: p.totalCents };
   }
+  if (stay.optional) return null;
   throw new Error(`No free term near ${stay.checkIn}`);
 }
 
@@ -336,6 +398,7 @@ if (!reset && (await demoReservationIds()).length)
 else await createDemo();
 
 async function createDemo() {
+  const runStart = new Date().toISOString();
   const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
   const martin = users.users.find((u) => u.email === MARTIN);
   if (!martin) throw new Error(`${MARTIN} has no login on staging`);
@@ -421,6 +484,7 @@ async function createDemo() {
 
   // Occupancy: two events from other portals (inactive demo channels — nothing is downloaded) and one owner block.
   const nights = (from, to) => `[${from},${to})`;
+  const channels = {};
   for (const [name, source, from, to, uid] of [
     ["Booking.com (ukážka)", "booking", `${year + 1}-01-09`, `${year + 1}-01-12`, "demo-booking-1"],
     ["Airbnb (ukážka)", "airbnb", `${year + 1}-03-05`, `${year + 1}-03-08`, "demo-airbnb-1"],
@@ -442,6 +506,7 @@ async function createDemo() {
         .single(),
       name,
     );
+    channels[source] = ch.id;
     const { error } = await db.from("occupancy").insert({
       tenant_id: TENANT,
       unit_id: UNIT,
@@ -493,8 +558,18 @@ async function createDemo() {
     "audit",
   );
 
+  // History of ~18 months (Z27), so Statistics and the overview chart have something to show.
+  await createHistory(cat, martin, channels);
+
+  // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
+  must(
+    await db.from("notifications").delete().eq("tenant_id", TENANT).gte("created_at", runStart),
+    "clear generated notifications",
+  );
+  await curatedNotifications(martin, { a, b }, trialEnds);
+
   // E-mails the demo queued: not sent (Martin's inbox stays quiet; the guest-zone code is sent only on login).
-  const ids = [a.id, b.id, c.id];
+  const ids = await demoReservationIds();
   must(
     await db
       .from("email_outbox")
@@ -512,4 +587,179 @@ Demo data for Chalet STRÖMY are ready (staging).
   (c) ${c.number}  ${c.checkIn} – ${c.checkOut}  completed
 Guest zone: ${host}/ucet → ${GUEST_ZONE_EMAIL} (the code arrives at ${MARTIN} through the staging redirect).
 `);
+}
+
+// ---------------------------------------------------------------- history (Z27)
+function monthStart(offset) {
+  const d = new Date(`${today.slice(0, 7)}-01T00:00:00Z`);
+  d.setUTCMonth(d.getUTCMonth() + offset);
+  return iso(d);
+}
+
+async function createHistory(cat, martin, channels) {
+  let k = 0;
+  let made = 0;
+  for (let m = -18; m <= 3; m++) {
+    const first = monthStart(m);
+    const count = SEASON[Number(first.slice(5, 7)) - 1];
+    for (let j = 0; j < count; j++, k++) {
+      const day = 1 + Math.floor(((j + 0.3) / count) * 26);
+      const length = 2 + (k % 4);
+      const checkIn = addDays(first, day - 1);
+      const checkOut = addDays(checkIn, length);
+      // The stay around today is left out (nothing in progress in the demo).
+      if (checkIn <= addDays(today, 2) && checkOut >= today) continue;
+      const name = GUESTS[k % GUESTS.length];
+      const slug = name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z]+/g, ".");
+      const r = await book(cat, {
+        name,
+        email: `${slug}.${k}@${DEMO_DOMAIN}`,
+        phone: `+421 900 100 ${String(100 + k).slice(-3)}`,
+        adults: 2 + (k % 3) * 2,
+        children: k % 5 === 0 ? 2 : 0,
+        checkIn,
+        checkOut,
+        step: 1,
+        tries: 4,
+        optional: true,
+      });
+      if (!r) continue;
+      made++;
+      const created = [addDays(r.checkIn, -(12 + ((k * 13) % 50))), today].sort()[0];
+      const paidAt = `${[addDays(created, 2), today].sort()[0]}T10:00:00Z`;
+      if (k % 13 === 5) {
+        must(
+          await db.rpc("change_reservation_status", {
+            p_reservation_id: r.id,
+            p_to: "cancelled",
+            p_actor: martin.id,
+            p_reason: "guest_request",
+          }),
+          "cancel",
+        );
+      } else {
+        await pay(r, martin.id, paidAt);
+        if (r.checkOut <= today)
+          must(
+            await db.rpc("change_reservation_status", {
+              p_reservation_id: r.id,
+              p_to: "completed",
+              p_actor: martin.id,
+            }),
+            "complete",
+          );
+      }
+      must(
+        await db
+          .from("reservations")
+          .update({ created_at: `${created}T09:30:00Z` })
+          .eq("id", r.id),
+        "created_at",
+      );
+    }
+    // A stay from a portal in most months (occupancy only — portals send no amounts).
+    if (m % 3 !== 1) {
+      const source = m % 2 ? "airbnb" : "booking";
+      const from = addDays(first, 20);
+      const { error } = await db.from("occupancy").insert({
+        tenant_id: TENANT,
+        unit_id: UNIT,
+        kind: "ical",
+        ical_channel_id: channels[source],
+        ical_uid: `demo-history-${first}`,
+        label: `${source === "booking" ? "Booking.com" : "Airbnb"} (DEMO)`,
+        nights: `[${from},${addDays(from, 3)})`,
+      });
+      if (error && error.code !== "23P01") throw new Error(`portal stay: ${error.message}`);
+    }
+  }
+  console.log(`History: ${made} reservations over 22 months.`);
+}
+
+async function curatedNotifications(martin, { a, b }, trialEnds) {
+  const ago = (hours) => new Date(Date.now() - hours * 3_600_000).toISOString();
+  const facts = async (id) =>
+    must(
+      await db
+        .from("reservations")
+        .select(
+          "number, guest_name, total_cents, currency, payment_due_at, items:reservation_items(check_in, check_out)",
+        )
+        .eq("id", id)
+        .single(),
+      "facts",
+    );
+  const [fa, fb] = [await facts(a.id), await facts(b.id)];
+  const data = (r) => ({
+    number: r.number,
+    guest: r.guest_name,
+    total_cents: r.total_cents,
+    currency: r.currency,
+    due_at: r.payment_due_at,
+    check_in: r.items[0]?.check_in,
+    check_out: r.items[0]?.check_out,
+    demo: true,
+  });
+  const rows = [
+    {
+      kind: "reservation_new",
+      data: data(fa),
+      target: `/admin/reservations?panel=reservation:${a.id}`,
+      at: ago(2),
+    },
+    {
+      kind: "portal_booking",
+      data: {
+        channel: "Booking.com (ukážka)",
+        check_in: `${year + 1}-01-09`,
+        check_out: `${year + 1}-01-12`,
+        demo: true,
+      },
+      target: `/admin/calendar?month=${year + 1}-01`,
+      at: ago(20),
+    },
+    {
+      kind: "payment_received",
+      data: data(fb),
+      target: `/admin/reservations?panel=reservation:${b.id}`,
+      at: ago(30),
+      read: true,
+    },
+    {
+      kind: "trial_ending",
+      data: { module: "services", ends_at: trialEnds, days: 7, demo: true },
+      target: "/admin",
+      at: ago(50),
+      read: true,
+    },
+  ];
+  const inserted = must(
+    await db
+      .from("notifications")
+      .insert(
+        rows.map((r, i) => ({
+          tenant_id: TENANT,
+          audience: "tenant",
+          kind: r.kind,
+          data: r.data,
+          target: r.target,
+          created_at: r.at,
+          dedupe_key: `demo:${r.kind}:${i}:${runId}`,
+        })),
+      )
+      .select("id, kind"),
+    "notifications",
+  );
+  const read = inserted.filter((n, i) => rows[i].read).map((n) => n.id);
+  if (read.length)
+    must(
+      await db
+        .from("notification_reads")
+        .insert(read.map((id) => ({ notification_id: id, user_id: martin.id }))),
+      "reads",
+    );
 }

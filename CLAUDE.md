@@ -103,6 +103,9 @@ Do 16. 10. sa migrácie na staging nahrávali cez Supabase MCP a verzie v `supab
 **Ukážkové dáta STRÖMY (staging):** `npm run demo-data` (chýbajúce vytvorí), `npm run demo-data -- --reset` (zmaže a vytvorí znova) —
 3 rezervácie cez `create_reservation` s cenou z rovnakého výpočtu ako web, dokumenty, iCal udalosti, blokácia, skúška modulu.
 Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `stromy-demo.invalid` (hosť b: demo-host@obrazne.sk pre zónu hosťa); e-maily z nich sa neposielajú.
+**Štatistiky (Z27):** jedna funkcia `tenant_monthly_stats` (DB, RLS) pre Štatistiky, Prehľad aj riadiace centrum; pomocné výpočty
+v `src/core/stats/compute.ts`. **Upozornenia:** vznikajú len v databáze (`notify()` z triggerov a `notify_scheduled` cez pg_cron),
+deduplikované cez `dedupe_key`; zvonček `src/core/notifications/`. Nový druh = pridať do kontroly `kind`, trigger, text `notifications.kinds.*`.
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
 zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens`
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).

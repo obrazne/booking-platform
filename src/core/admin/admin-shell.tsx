@@ -291,6 +291,8 @@ export function AdminShell({
   variant = "admin",
   tag,
   banner,
+  topbar,
+  mobileBell,
   children,
 }: {
   brand: { icon: ReactNode; label: string };
@@ -300,6 +302,10 @@ export function AdminShell({
   tag?: string;
   /** Bar above the content ("Prezeráš ako správca: …"). */
   banner?: ReactNode;
+  /** Header row of every page on a computer (search, guest page, bell, new reservation — v1.2). */
+  topbar?: ReactNode;
+  /** Bell in the phone top bar. */
+  mobileBell?: ReactNode;
   /** Accommodation picker (none in the control center); reads `useShellExpanded()`. */
   picker?: ReactNode;
   items: ShellNavItem[];
@@ -393,6 +399,7 @@ export function AdminShell({
           <span className="text-ink min-w-0 flex-1 truncate text-[15px] font-bold">
             {mobileTitle}
           </span>
+          {mobileBell}
           {addHref ? (
             <Link
               href={addHref}
@@ -404,6 +411,11 @@ export function AdminShell({
             </Link>
           ) : null}
         </header>
+        {topbar ? (
+          <div className="border-line hidden min-h-[87px] flex-wrap items-center gap-4 border-b px-10 py-[22px] md:flex">
+            {topbar}
+          </div>
+        ) : null}
         {/* Default page padding; redesigned pages with their own header mark their root with data-bleed. */}
         <main className="min-w-0 flex-1 p-5 has-[>[data-bleed]]:p-0 md:px-10 md:py-8">
           {children}

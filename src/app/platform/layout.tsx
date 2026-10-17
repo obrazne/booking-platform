@@ -8,6 +8,8 @@ import { DEFAULT_THEME } from "@/core/theme/theme";
 import { ThemeStyle } from "@/core/theme/theme-style";
 import { TourDialog } from "@/core/tours/tour-dialog";
 import { tourIsNewForUser } from "@/core/tours/server";
+import { loadBell } from "@/core/notifications/actions";
+import { NotificationBell } from "@/core/notifications/bell";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -18,6 +20,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
   const t = await getTranslations();
   const [user, admin] = await Promise.all([getCurrentUser(), isPlatformAdmin()]);
   const tourNew = admin ? await tourIsNewForUser("admin") : false;
+  const bell = admin ? await loadBell("platform") : null;
   const { data: profile } = user
     ? await (
         await createClient()
@@ -46,6 +49,14 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
       user={
         <UserMenu name={profile?.full_name ?? null} email={user?.email ?? null} whatsNew={admin} />
       }
+      topbar={
+        bell ? (
+          <div className="ml-auto">
+            <NotificationBell scope="platform" initial={bell} media="desktop" />
+          </div>
+        ) : undefined
+      }
+      mobileBell={bell ? <NotificationBell scope="platform" initial={bell} media="mobile" /> : null}
       mobileTitle={t("platform.title")}
     >
       <ThemeStyle theme={DEFAULT_THEME} scope="page" />

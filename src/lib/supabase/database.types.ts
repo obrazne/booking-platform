@@ -610,6 +610,73 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_reads: {
+        Row: {
+          notification_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          notification_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          notification_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          audience: string
+          created_at: string
+          data: Json
+          dedupe_key: string
+          id: string
+          kind: string
+          target: string | null
+          tenant_id: string | null
+        }
+        Insert: {
+          audience: string
+          created_at?: string
+          data?: Json
+          dedupe_key: string
+          id?: string
+          kind: string
+          target?: string | null
+          tenant_id?: string | null
+        }
+        Update: {
+          audience?: string
+          created_at?: string
+          data?: Json
+          dedupe_key?: string
+          id?: string
+          kind?: string
+          target?: string | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       occupancy: {
         Row: {
           conflict: boolean
@@ -2523,6 +2590,19 @@ export type Database = {
         Args: { p_tenant_id: string }
         Returns: string
       }
+      notify: {
+        Args: {
+          p_audience: string
+          p_data: Json
+          p_dedupe: string
+          p_kind: string
+          p_read_by?: string
+          p_target: string
+          p_tenant_id: string
+        }
+        Returns: undefined
+      }
+      notify_scheduled: { Args: never; Returns: undefined }
       owner_reset_sections: {
         Args: { p_property_id: string; p_template: string }
         Returns: string
@@ -2572,6 +2652,7 @@ export type Database = {
         Returns: string
       }
       reservation_by_token: { Args: { p_token: string }; Returns: Json }
+      reservation_notice: { Args: { p_reservation_id: string }; Returns: Json }
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }
         Returns: undefined

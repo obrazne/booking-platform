@@ -126,9 +126,27 @@ async function shoot(page, tour, slide, path, opts = {}) {
       });
   }
   await blurPrivate(page);
-  // Mouse away from the side menu (hovering expands it) and wait until it has collapsed.
-  await page.mouse.move(page.viewportSize().width - 4, page.viewportSize().height - 4);
-  await page.waitForTimeout(400);
+  if (opts.menu) {
+    // The menu itself: expanded rail with the Reservations and Property groups open.
+    await page.locator("aside").hover();
+    for (const name of [/^Rezervácie/, /^Objekt/]) {
+      const group = page.locator("aside").getByRole("button", { name });
+      if ((await group.getAttribute("aria-expanded")) === "false") await group.click();
+    }
+    await page.waitForTimeout(400);
+  } else {
+    // Mouse away from the side menu (hovering expands it) and wait until it has collapsed.
+    await page.mouse.move(page.viewportSize().width - 4, page.viewportSize().height - 4);
+    await page.waitForTimeout(400);
+  }
+  if (opts.bell) {
+    await page
+      .getByRole("button", { name: /^Upozornenia/ })
+      .first()
+      .click();
+    await page.waitForTimeout(300);
+    await blurPrivate(page); // the list appears only now
+  }
   mkdirSync(`${OUT}${tour}`, { recursive: true });
   await page.screenshot({ path: `${OUT}${tour}/${slide}.jpg`, type: "jpeg", quality: 78 });
   console.log(`  ${tour}/${slide}.jpg`);
@@ -156,19 +174,20 @@ try {
   // January: an event from Booking.com next to other stays.
   const month = `${new Date().getFullYear() + 1}-01`;
   const shots = {
-    dashboard: "/admin",
-    reservations: "/admin/reservations",
-    payment: `/admin/reservations?panel=reservation:${pendingDemo.id}`,
-    calendar: `/admin/calendar?month=${month}`,
-    manual: "/admin/reservations/new",
-    property: `/admin/properties/${PROPERTY}/page`,
-    pricing: `/admin/properties/${PROPERTY}/pricing`,
-    services: "/admin/services",
-    documents: `/admin/properties/${PROPERTY}/documents`,
-    ical: "/admin/ical",
-    settings: "/admin/settings",
+    menu: ["/admin/calendar", { menu: true }],
+    statistics: ["/admin/statistics"],
+    notifications: ["/admin", { bell: true }],
+    dashboard: ["/admin"],
+    reservations: ["/admin/reservations"],
+    payment: [`/admin/reservations?panel=reservation:${pendingDemo.id}`],
+    calendar: [`/admin/calendar?month=${month}`],
+    manual: ["/admin/reservations/new"],
+    property: [`/admin/properties/${PROPERTY}/page`],
+    services: ["/admin/services"],
+    ical: ["/admin/ical"],
+    settings: ["/admin/settings"],
   };
-  for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, shots[s.id]);
+  for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, ...shots[s.id]);
 
   console.log("Admin tour:");
   // The platform admin is not a member of the client (v1.1) — it enters through "Otvoriť administráciu".
