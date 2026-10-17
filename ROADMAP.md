@@ -173,7 +173,7 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z45 [B] — Modul Správy: základ (databáza, automatické správy, e-maily, upozornenia) (Martin 17. 10.)
+### Z45 [B] 🔄 — Modul Správy: základ (databáza, automatické správy, e-maily, upozornenia) (Martin 17. 10.)
 Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10. Rozhranie robia Z46 (administrácia) a Z47 (hosť).
 1. Modul `messages` (manifest, katalóg „Správy s hosťom“, `ready: false` kým nie sú hotové Z46 a Z47), migrácia: správy pri rezervácii,
    pravidlá automatických správ (po jazykoch), vynechania/úpravy naplánovanej správy pri rezervácii, rýchle odpovede; RLS + pgTAP
