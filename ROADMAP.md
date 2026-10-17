@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z35** (upsell — základ), **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
