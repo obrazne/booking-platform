@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Vrátenie chyby jedného klienta bez vracania celej databázy
+
+- Martin: „Ak klient niečo pokazí alebo sa v appke niečo pokazí, nemôžem vrátiť databázu všetkých týždeň dozadu — ostatným by zmizli
+  objednávky. Toto nemáme dobre vymyslené.“ Má pravdu — obnova k okamihu z A9 platí pre celú databázu.
+- Riešenie po vrstvách (A9): **kôš** pre majiteľa (30 dní), **história zmien** každého záznamu s vrátením konkrétnej zmeny,
+  **chirurgická obnova jedného klienta** zo zálohy bokom (vďaka `tenant_id` na každom riadku), celá databáza len pri katastrofe. (Martin + Claude)
+- História sa zapína **hneď, ešte pred ostrými dátami** — história spred zapnutia neexistuje. Obnova ostáva ručný zákrok (Claude Code
+  po Martinovom potvrdení), nie tlačidlo — jeden zlý klik by prepísal skutočné rezervácie. Export dát klienta a stav záloh v riadiacom centre. (Claude)
+
 ## 2026-10-17 — Košík: Pokračovať hneď po výbere termínu
 
 - Martin si nevšimol „Hotovo“ pod kalendárom a nevedel, prečo je Pokračovať neaktívne. Namiesto správy „najprv kliknite Hotovo“ krok

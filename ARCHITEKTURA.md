@@ -99,6 +99,19 @@ PLATFORMA (Martin)
 - **Návrat:** predchádzajúca verzia cez Vercel jedným klikom. Migrácie len pridávajú.
 - **Zálohy:** Supabase zálohy s obnovou k okamihu + **nezávislá nočná záloha mimo Supabase**: šifrovaná pred odoslaním, úložisko v EÚ
   so zmluvou o spracúvaní, kľúč mimo Supabase aj úložiska. Skúšobné obnovenie raz mesačne.
+- **Vrátenie chyby jedného klienta — nikdy nie celej databázy** (17. 10.). Klienti zdieľajú databázu, preto sa pri chybe u jedného
+  nevracia všetko. Štyri vrstvy od najčastejšej:
+  1. **Kôš** — zmazané veci (služby, sezóny a ceny, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre) si majiteľ sám
+     obnoví 30 dní. Rezervácie sa nemažú, len rušia.
+  2. **História zmien** — každá zmena v dátach klienta sa zapíše (tabuľka, záznam, pred/po, kto, kedy). Správca v riadiacom centre
+     vidí históriu klienta či záznamu a vráti konkrétnu zmenu; podľa nej sa dá zistiť a opraviť aj to, čo pokazila chyba aplikácie.
+  3. **Chirurgická obnova jedného klienta zo zálohy** k zvolenému okamihu — záloha sa obnoví bokom (dočasná databáza) a späť sa
+     prenesú len riadky toho klienta (`tenant_id`). Ostatní klienti sa nedotknú. Robí Claude Code podľa spísaného postupu, vždy po
+     potvrdení Martina, s výpisom, čo sa zmení. Postup sa skúša pri mesačnom skúšobnom obnovení.
+  4. **Celá databáza** sa vracia len pri katastrofe (strata alebo poškodenie celej databázy).
+  História obsahuje aj osobné údaje hostí → drží sa obmedzene (napr. 180 dní) a pri anonymizácii hosťa sa vyčistí aj jeho história.
+- **Riadiace centrum:** stav záloh (posledná záloha, posledné skúšobné obnovenie) a **export dát klienta** (ZIP — ručná záloha jedného
+  klienta, odchod klienta, žiadosť podľa GDPR). Obnova nie je tlačidlo.
 - **Upozornenia Martinovi:** zlyhaná platba, iCal, e-mail, záloha.
 - **Postup pri výpadku:** spísaný dokument (doplní sa).
 - **Účty:** všetko na Obrazne s.r.o., dvojfaktorové overenie, heslá v správcovi hesiel. Platené plány pred prvým platiacim klientom.

@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** fronta hotová (Z1–Z30) — čaká na ďalšie zadanie z Claude chatu.
+- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš — musí bežať ešte pred ostrými dátami).
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -25,6 +25,23 @@ zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 
 *Fronta je prázdna — čaká na ďalšie zadanie z Claude chatu.*
+
+### Z31 — História zmien a kôš (vrátenie chyby jedného klienta, 17. 10.)
+Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1 a 2; vrstva 3 je úloha prípravy produkcie). Úpravy DB len pridávajú.
+1. **História zmien:** tabuľka napr. `record_history` (tenant_id, table_name, record_id, op insert/update/delete, old/new jsonb, changed_by,
+   changed_at) plnená **triggerom** na všetkých tabuľkách s `tenant_id` (okrem samotnej histórie, upozornení a technických tabuliek —
+   zoznam zapíš do Denníka). Zmeny bez prihláseného používateľa (cron, iCal, hosť) označ zdrojom. RLS: číta len správca platformy
+   (majiteľ zatiaľ nie); pgTAP. Výkon: index (tenant_id, table_name, record_id, changed_at).
+2. **Kôš pre majiteľa:** zmazanie služby, sezóny s cenami, poplatku, zľavy, fotky, sekcie, dokumentu, blokácie, iCal kalendára,
+   miesta v okolí sa dá **30 dní obnoviť** — „Nedávno zmazané“ (napr. v Nastavenia → Všeobecné alebo pri danom zozname), obnova
+   z `record_history` vrátane závislých riadkov (sezóna → rozsahy a ceny). Súbory (fotky, dokumenty) v úložisku mazať až po 30 dňoch.
+   Pri obnove kontrola kolízií (napr. blokácia cez medzitým vzniknutú rezerváciu → nepovoliť, vysvetliť).
+3. **Riadiace centrum → detail klienta → Záznam zmien:** história dát klienta s filtrom (obdobie, typ záznamu, osoba), pri zmene
+   „pred → po“ čitateľne (preklady názvov polí, nie surové kľúče) a **„Vrátiť túto zmenu“** s potvrdením; vrátenie sa samo zapíše
+   do histórie aj auditu. Ak sa záznam medzitým znova zmenil, upozorni a ukáž aktuálny stav.
+4. **Uchovávanie:** história 180 dní (pg_cron), pri anonymizácii hosťa vyčistiť aj jeho riadky v histórii. Zapíš do Denníka.
+5. Testy: pgTAP (RLS, trigger zapisuje insert/update/delete, iný klient nevidí), Playwright (zmazať službu → obnoviť z koša;
+   zmeniť cenu → vrátiť v riadiacom centre).
 
 ---
 
@@ -58,6 +75,10 @@ riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 - [ ] 3b Rezervácia pre hostí: dostupnosť, výpočet ceny, služby, údaje hosťa, súhlasy (aj marketingový), dočasná blokácia, iCal
 - [ ] 3c Platba prevodom s QR, stavy rezervácie, e-maily
 - [ ] 3d Doklady cez fakturačný nástroj, prehľad rezervácií pre majiteľa, export, testovanie, spustenie popri Bookingu
+- [ ] 3f Príprava produkcie — zálohy a obnova (A9, 17. 10.): nezávislá nočná záloha mimo Supabase + upozornenie pri zlyhaní;
+  **stav záloh** v Stave systému (posledná záloha, posledné skúšobné obnovenie); **export dát klienta** (ZIP) v detaile klienta;
+  **skript a spísaný postup chirurgickej obnovy jedného klienta** zo zálohy bokom (len jeho `tenant_id`, výpis zmien pred zápisom,
+  potvrdenie Martina); prvé skúšobné obnovenie. Postup pri výpadku (dokument).
 - [ ] 3e Nasadenie u Jany: `rezervacia.chaletstromy.sk`, vyhľadávací pás na jej webe (Elementor HTML widget), tlačidlá „Rezervovať“ (A17)
 
 ## Fáza 4 — Po spustení 🔧 + 🧠
