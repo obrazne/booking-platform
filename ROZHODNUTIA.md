@@ -2,6 +2,21 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia, riadiace centrum
+
+- **Menu so skupinami a podpoložkami** (Rezervácie, Objekt, Ponuka, Prepojenia, Nastavenia), položky **cez celú šírku bez zaoblenia**
+  s tenkými čiarami medzi hlavnými položkami — ako WordPress, ktorý Martin a klienti poznajú; plochý zoznam by s modulmi rástol bez poriadku.
+  Rovnaký vzor má tmavé menu riadiaceho centra (dnes biely text na bielom pri prejdení myšou). (Martin, pripomienky 17, 19, 24)
+- **Štatistiky sú v jadre, nie modul** — tržby a podiel priamych rezervácií sú hlavný argument krabice („ušetrené na províziách“, A14);
+  klient má hneď vidieť, čo mu systém prináša. Pokročilé prehľady (zdroje návštev, prípadové štúdie) môžu byť neskôr modul. (Martin + Claude)
+- **Tržby sa počítajú podľa termínu pobytu a len z priamych rezervácií** — z Booking/Airbnb máme len obsadenosť (iCal nemá sumy);
+  obsadenosť zahŕňa všetky kanály. Zmiešať to by klamalo. (Claude)
+- **Upozornenia v aplikácii (zvonček) sú v jadre**, čítanie osobné pre každého člena tímu; e-mail o novej rezervácii ostáva v jadre,
+  **push na mobil ostáva modul** (A13). Vzor z Martinovho FabLabu. (Martin, pripomienka 18)
+- **Riadiace centrum:** klienti ako **rozbaľovacie riadky** s kľúčovými číslami (rýchly prehľad bez klikania), detail klienta ako vlastná
+  stránka so záložkami a viacerými cestami k nej (menu, riadok, drobčeky); moduly ako **katalóg so správou priradenia**; audit s filtrami
+  podľa obdobia a kategórie. (Martin, pripomienky 20–23)
+
 ## 2026-10-17 — Pripomienky zo stagingu: vzory administrácie v1.1
 
 - **Bočný panel má jeden stĺpec** so súhrnnou kartou hore a zbalenými vedľajšími sekciami — dva stĺpce z v1 pri skutočných dátach nefungovali

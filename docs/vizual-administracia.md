@@ -1,4 +1,4 @@
-# Vizuál administrácie a prihlásení — v1.1 (v1 schválené 17. 10. 2026, v1.1 podľa pripomienok zo stagingu 17. 10.)
+# Vizuál administrácie a prihlásení — v1.2 (v1 schválené 17. 10. 2026; v1.1 a v1.2 podľa pripomienok zo stagingu 17. 10.)
 
 *Návrh vznikol v Claude chate s Martinom na plátne „Administrácia — návrh“ (Claude Design). Zdroj plátna: `docs/navrhy/administracia/`
 (ako ho čítať: `docs/navrhy/README.md`). Údaje na doskách = ukážkové dáta STRÖMY zo stagingu (Z21).
@@ -7,7 +7,7 @@ texty cez preklady, farby z témy (administrácia a riadiace centrum = téma pla
 
 | Doska | Obrazovka | Cesta v kóde |
 |---|---|---|
-| `Sidebar` | bočné menu administrácie (komponent, prop `active`) | `src/core/admin/admin-shell.tsx` |
+| `Sidebar` | bočné menu administrácie so skupinami (komponent, prop `active`; **v1.2**) | `src/core/admin/admin-shell.tsx` |
 | `Prihlasenie` | 01 prihlásenie majiteľa a správcu | `src/app/(auth)/login` |
 | `Main` | 02 prehľad majiteľa | `src/app/admin/page.tsx` |
 | `Rezervacie` | 03 rezervácie + bočný panel (klikací) | `src/app/admin/reservations` |
@@ -16,6 +16,7 @@ texty cez preklady, farby z témy (administrácia a riadiace centrum = téma pla
 | `MobilPrehlad` | 06 prehľad na mobile, menu zo strany (klikací) | — |
 | `MobilRezervacia` | 07 detail rezervácie na mobile | — |
 | `PrihlasenieHost` | 08 prihlásenie hosťa do zóny hosťa (klikací: e-mail → kód) | `src/app/(guest)/ucet/prihlasenie` |
+| `Statistiky` | 09 štatistiky + zvonček s upozorneniami (klikací: rok, porovnanie, mesiac, zvonček) — **v1.2** | `src/app/admin/statistics` (nová) |
 
 ## Pravidlá vzhľadu administrácie
 
@@ -142,4 +143,59 @@ Na mobile fotka len ako pruh hore.
   preložené). Dole Stránka pre hostí ↗ (nová karta, verejná doména) a Otvoriť administráciu (nová karta).
 - **Objekty:** formulár „Nový objekt“ ubytovateľ zatiaľ **nevidí** — objekt zakladá správca (v riadiacom centre alebo v režime
   „Prezeráš ako správca“). Či si ho bude môcť pridať sám, rozhodne obchodný model (počet objektov v balíku).
+
+## v1.2 — menu so skupinami, štatistiky, upozornenia, riadiace centrum (pripomienky 16–24, 17. 10.)
+
+### Bočné menu administrácie (doska `Sidebar`)
+- **Skupiny s podpoložkami:** Prehľad · **Rezervácie** › Zoznam, Kalendár, Blokácie · **Objekt** › Údaje, Fotky, Ceny a sezóny, Stránka,
+  Dokumenty · **Ponuka** › Doplnkové služby, Referencie · Štatistiky · **Prepojenia** › Booking a Airbnb · dole **Nastavenia** › Všeobecné,
+  Tím, Platby, E-maily a upozornenia. Moduly pridávajú položky do skupiny cez manifest (`group`); prázdna skupina sa nezobrazí.
+- Skupina sa rozbalí klikom (šípka sa otočí), automaticky otvorená je skupina aktívnej stránky; v zbalenom menu (len ikony) sa
+  podpoložky ukážu pri prejdení myšou ako vyskakovací zoznam.
+- **Položky cez celú šírku menu, bez zaoblenia** (ako WordPress): aktívna = jemný podklad v akcente + **3 px čiara vľavo** v akcente,
+  hover = o odtieň tmavší podklad. **Medzi hlavnými položkami tenká čiara** `#e7e4dc` cez celú šírku; podpoložky bez čiar, odsadené.
+- Pod názvom platformy len **názov ubytovania** (výber len pri viac ubytovaniach — Z25).
+
+### Tmavé menu riadiaceho centra
+- Rovnaký vzor ako svetlé menu: položky cez celú šírku, bez zaoblenia; **hover = biela 6 %**, **aktívna = biela 10 % + 3 px čiara vľavo**
+  (svetlejší odtieň akcentu); **text a ikony vždy biele/svetlé** — žiadny svetlý podklad s bielym textom (dnes nečitateľné).
+- **Hierarchia:** **Klienti** › Všetci klienti, Založiť klienta, a keď si v detaile klienta, pod tým **<názov klienta>** › Prehľad,
+  Moduly, Vzhľad, Domény, Ľudia, Záznam zmien · **Moduly** › Katalóg, Skúšobné doby · Stav systému · Audit.
+- **Drobčeková navigácia** hore na podstránkach: `Klienti › Chalet STRÖMY › Vzhľad`.
+
+### Štatistiky majiteľa (doska `Statistiky`)
+- **Stránka Štatistiky:** výber obdobia (rok, posledných 12 mesiacov), prepínač **Porovnať s predchádzajúcim rokom** (druhá sivá čiara).
+- **Päť čísel** na jemne sivej karte: tržby priamo, rezervácie, obsadenosť (vrátane Booking/Airbnb), Ø cena za noc, ušetrené na províziách
+  (≈, podľa nastavenej provízie); pri každom zmena oproti minulému roku (▲ zelená / ▼ tehlová).
+- **Čiarový graf tržieb po mesiacoch** (SVG, bez knižnice alebo s ľahkou): plná čiara = prebehnuté, **bodkovaná = potvrdené pobyty,
+  ktoré ešte neprebehli**, jemná plocha pod čiarou, štítky **najsilnejší / najslabší** mesiac; klik na mesiac → bublina (tržby, minulý rok,
+  obsadenosť, rezervácie) a zvýraznený riadok tabuľky.
+- **Tabuľka po mesiacoch** (mesiac, tržby, minulý rok, rezervácie, obsadenosť, Ø cena/noc) a veta o pôvode čísel.
+- **Pravidlá výpočtu:** tržby **podľa termínu pobytu** (noci rozdelené do mesiacov, v ktorých pripadajú), len **priame** rezervácie
+  v stave potvrdená/prebieha/ukončená (čakajúce na platbu nie, zrušené nie); obsadenosť = obsadené noci (priame + portály + **bez** blokácií
+  majiteľa) / dostupné noci; Ø cena = tržby / predané noci. Všetko v centoch a v mene klienta. Jedna serverová funkcia pre Prehľad aj Štatistiky.
+- **Na Prehľade** malý graf tržieb za posledných 12 mesiacov s odkazom „Všetky štatistiky →“.
+
+### Upozornenia (zvonček)
+- **Zvonček vpravo hore** v hlavičke každej stránky administrácie aj riadiaceho centra; **odznak s počtom neprečítaných** (tehlová),
+  kým ich človek neprečíta. Klik otvorí zoznam (420 px): ikona podľa druhu, nadpis (tučný = neprečítané), jedna veta, čas; neprečítané
+  majú bodku a jemný podklad. Klik na upozornenie ho označí ako prečítané a **otvorí cieľ** (napr. panel rezervácie).
+  „Označiť všetko ako prečítané“. Pätička odkazuje na Nastavenia → E-maily a upozornenia (zoznam druhov a čo chodí aj e-mailom).
+- **Druhy (majiteľ):** nová rezervácia, blíži sa splatnosť (24 h), platba prijatá (ak ju označil niekto iný z tímu), žiadosť o storno,
+  zrušenie, nová obsadenosť z portálu, **kolízia v kalendári**, zlyhaná synchronizácia, koniec skúšobnej doby modulu (7 dní a 1 deň).
+  **Správca:** zlyhaná synchronizácia / neodoslané e-maily u klienta, koniec skúšky u klienta, nový klient.
+- Prečítanie je **osobné** (každý člen tímu má svoje). Na mobile zvonček v hornej lište, zoznam cez celú obrazovku.
+
+### Riadiace centrum — klienti, moduly, audit
+- **Zoznam klientov = rozbaľovacie riadky** (pravidlo 7) namiesto bočného panela. Po rozbalení: tržby priamo tento/minulý mesiac,
+  rezervácie za 30 dní a posledná, obsadenosť 90 dní, zdravie (synchronizácia, e-maily — bodky), moduly a koniec skúšok, majiteľ
+  (meno, e-mail, telefón, posledné prihlásenie); akcie **Otvoriť detail** · **Otvoriť administráciu ↗** · **Stránka pre hostí ↗**.
+- **Detail klienta** = stránka so záložkami Prehľad, Moduly, Vzhľad, Domény, Ľudia, Záznam zmien (dnešný obsah „Všetky nastavenia“
+  rozdelený do záložiek). Domény: vývojové `*.localhost` sa nezobrazujú (alebo štítok „len vývoj“); náhľad témy bez zástupného textu.
+- **Moduly = správa:** katalóg (riadok: názov, popis, závislosti, počet klientov, stav **hotový / v príprave** — v príprave podľa
+  ARCHITEKTURA: recenzie, správy s hosťom, push notifikácie, SMS, online check-in, upsell); rozbalenie → klienti s vypínačom
+  skúška/aktívny/vypnutý, dátum konca skúšky, **Priradiť klientovi**. To isté zo záložky Moduly v detaile klienta. Cena až s obchodným modelom.
+- **Audit — filtre:** obdobie od–do, **kategória** (Prihlásenie, Vstup správcu, Moduly a skúšky, Tím a prístupy, Nastavenia, Klienti),
+  klient, osoba, hľadanie; stránkovanie, export CSV. Prihlásenia do administrácie a riadiaceho centra sa do auditu **zapisujú**
+  (úspešné; neúspešné len počtom podľa IP, bez hesla).
 

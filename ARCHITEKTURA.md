@@ -148,11 +148,16 @@ PLATFORMA (Martin)
 
 - Administrácia ako **inštalovateľná webová aplikácia** (bez App Store).
 - **E-mail majiteľovi o novej rezervácii je v jadre.** Push notifikácie na mobil sú **modul (upsell)**.
+- **Upozornenia v aplikácii (zvonček) sú v jadre** (17. 10.): zoznam udalostí pre majiteľa a tím (nová rezervácia, splatnosť, platba,
+  storno, obsadenosť z portálu, kolízia, zlyhaná synchronizácia, koniec skúšky) aj pre správcu platformy; prečítanie osobné pre každého
+  používateľa. Push a SMS posielajú tie isté udalosti ďalej ako moduly.
 
 ## A14. Meranie
 
 - **Vlastné štatistiky z databázy** (bez cookies, spoľahlivé): zdroj rezervácie (priama / Booking / Airbnb / iný), obsadenosť, tržby,
   podiel priamych rezervácií v čase — podklad pre štatistiky v administrácii a prípadové štúdie.
+- **Stránka Štatistiky je v jadre** (17. 10.): tržby podľa termínu pobytu len z priamych rezervácií, obsadenosť zo všetkých kanálov,
+  porovnanie s minulým rokom, odhad ušetrených provízií. Pravidlá výpočtu: `docs/vizual-administracia.md` (v1.2).
 - **Nástroje návštevnosti** (Google Analytics a pod.) na rezervačnej stránke s cookie súhlasom (Consent Mode). Klient si môže
   doplniť vlastné ID (GA4, Meta pixel) v nastaveniach.
 
@@ -199,7 +204,8 @@ Platba (vrátane Stripe) a celý rezervačný tok bežia vždy v aplikácii. Kli
 - **Bočný panel so záznamom:** klik na rezerváciu, hosťa či objekt v zozname vysunie detail sprava cez časť stránky — používateľ neodíde zo zoznamu.
   Stav panelu je v URL (napr. `?panel=booking:<id>`) so zápisom do histórie: **Späť ho zavrie**, odkaz sa dá poslať, Esc a klik mimo zatvárajú.
   Na mobile ide cez celú obrazovku. Jeden spoločný komponent pre celú aplikáciu (Martin 16. 10.: „vytiahne sa na časť obsahu, aby človek neodchádzal“).
-- **Navigácia administrácie:** zbaľovací bočný pás (ikony, rozbalenie, pripnutie), položky menu dodávajú moduly; na mobile menu zo strany.
+- **Navigácia administrácie:** zbaľovací bočný pás (ikony, rozbalenie, pripnutie) so **skupinami a podpoložkami** (v1.2, 17. 10.);
+  položky menu dodávajú moduly do skupín; na mobile menu zo strany. Riadiace centrum má rovnaký vzor v tmavom.
 
 ---
 
@@ -386,7 +392,7 @@ Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia 
 | služby (modul) bez doplňujúcich polí, poplatok za zviera | vlastné polia a dostupnosť služieb, upsell pred príchodom |
 | prevod s QR, 24 h lehota, automatické zrušenie, ručné potvrdenie platby | Stripe, záloha a doplatok, párovanie platieb z banky |
 | e-maily z B6 (okrem recenzie) | SMS, push notifikácie (moduly) |
-| administrácia z B8, ručná rezervácia, CSV | štatistiky, online check-in, recenzie |
+| administrácia z B8, ručná rezervácia, CSV, štatistiky a upozornenia (v1.2) | online check-in, recenzie |
 | prístupový odkaz k rezervácii (stav, platba, storno) | účet a zóna hosťa (B10) — hneď po MVP |
 | iCal export a import s upozornením na kolíziu | API prepojenie s OTA |
 | stránka hosťa pre klienta s webom + katalóg pre showroom | vkladací widget (hneď po MVP, úloha 3e) |

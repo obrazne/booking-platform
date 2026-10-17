@@ -10,10 +10,10 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** fronta je prázdna (Z26 hotová) — čaká na ďalšie zadanie z Claude chatu.
+- **Ďalší krok pre Claude Code:** **Z27** (menu so skupinami, Štatistiky, zvonček s upozorneniami), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
-- **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
+- **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
@@ -201,6 +201,71 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
    (podľa viditeľnosti vždy / po potvrdení a stavu rezervácie), napr. „Pre všetkých hostí objektu (2) · upraviť pri objekte →“ s odkazom
    na záložku Dokumenty objektu. Pri objekte (záložka Dokumenty) krátka veta, že dokument pre jedného hosťa sa nahráva v jeho rezervácii.
 3. Playwright: otvorenie panela (kostra hneď, údaje potom), prepnutie záznamu, dokumenty objektu viditeľné v paneli; axe.
+
+**Kontext pre frontu Z27–Z28 (pripomienky 16–24, 17. 10.):** návrh v1.2 je schválený — `docs/vizual-administracia.md` → kapitola **v1.2**,
+dosky `docs/navrhy/administracia/Sidebar.dc.html` a `Statistiky.dc.html` (klikateľné: rok, porovnanie, mesiac v grafe, zvonček, skupiny menu).
+Doska je **zámer, nie doslovná predloha**; platia pravidlá v1.1 (jeden stĺpec v paneli, pilulky, sivé karty, rozbaľovacie riadky, žiadne
+technické texty). Stále len staging, rovnaké pravidlá (`tenant_id` + RLS + pgTAP, centy, preklady, téma, A18). Režim: za sebou bez prerušenia.
+
+### Z27 — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia (pripomienky 16–18, 24)
+1. **Bočné menu so skupinami** podľa dosky `Sidebar`: Prehľad · Rezervácie › Zoznam, Kalendár, Blokácie · Objekt › Údaje, Fotky,
+   Ceny a sezóny, Stránka, Dokumenty · Ponuka › Doplnkové služby, Referencie · Štatistiky · Prepojenia › Booking a Airbnb · dole
+   Nastavenia › Všeobecné, Tím, Platby, E-maily a upozornenia.
+   - **Mapuj existujúce stránky a záložky** do skupín (záložky objektu sa môžu stať podpoložkami s odkazom na záložku). Novú stránku
+     vytvor len pre Štatistiky a E-maily a upozornenia; položku, ku ktorej stránka zatiaľ nie je, vynechaj (žiadne prázdne stránky).
+   - Manifest modulu dostane `group` (do ktorej skupiny patrí položka); prázdna skupina sa nezobrazí. Pri jednom objekte vedie
+     skupina Objekt priamo na jeho záložky, pri viacerých najprv zoznam objektov.
+   - Vzhľad: položky cez celú šírku bez zaoblenia, aktívna = jemný podklad + 3 px čiara vľavo, hover o odtieň tmavší, **tenká čiara
+     `#e7e4dc` medzi hlavnými položkami**, podpoložky odsadené bez čiar; skupina sa otvára klikom, skupina aktívnej stránky je otvorená;
+     v zbalenom menu podpoložky ako vyskakovací zoznam pri prejdení myšou a fokuse. Klávesnica a `aria-expanded`. Mobil: rovnaký strom v menu zo strany.
+2. **Stránka Štatistiky** (`/admin/statistics`) podľa dosky 09 a pravidiel výpočtu v kapitole v1.2:
+   - výber obdobia (rok / posledných 12 mesiacov), prepínač porovnania s minulým rokom, 5 čísel s medziročnou zmenou, čiarový graf
+     tržieb po mesiacoch (plná = prebehnuté, bodkovaná = potvrdené budúce, sivá = minulý rok, štítky najsilnejší/najslabší, klik na mesiac
+     → bublina + zvýraznený riadok), tabuľka po mesiacoch, veta o pôvode čísel. Graf ako vlastné SVG (žiadna ťažká knižnica);
+     prístupný: tabuľka je textová alternatíva, graf má `aria-label` so súhrnom.
+   - **Výpočet v databáze alebo na serveri jednou funkciou** (napr. RPC `tenant_monthly_stats(tenant, from, to)`), rešpektuje RLS;
+     noci rozdelené do mesiacov pobytu; len priame rezervácie v stavoch potvrdená/prebieha/ukončená; obsadenosť = obsadené noci (priame +
+     portály, bez blokácií majiteľa) / dostupné noci všetkých objektov; peniaze v centoch a mene klienta. Unit testy na hranice mesiacov
+     (pobyt cez prelom mesiaca a roka), zrušené rezervácie a prázdne mesiace.
+   - **Ušetrené na províziách** = tržby priamo × provízia portálu; provízia je nastavenie klienta (predvolene 15 %, upraviteľné v Prepojeniach,
+     text „≈ … pri provízii 15 %“). Rozhodnuté Claude chatom — ak už v dátach podobné pole je, použi ho.
+3. **Prehľad:** malý graf tržieb za posledných 12 mesiacov (ten istý výpočet) s odkazom „Všetky štatistiky →“.
+4. **Upozornenia (zvonček)** vpravo hore v hlavičke každej stránky administrácie aj riadiaceho centra:
+   - tabuľky napr. `notifications` (tenant_id, druh, údaje, cieľový odkaz, čas; pre správcu platformy bez tenant_id s publikom „platforma“)
+     a `notification_reads` (user_id, prečítané kedy) — **RLS: člen tímu vidí len upozornenia svojho klienta, platformové len správca**; pgTAP.
+   - vznik upozornení z existujúcich udalostí (`emitBookingEvent`, import iCal, kontrola splatnosti/skúšok — kde už beží denná kontrola,
+     pridaj zápis). Druhy podľa kapitoly v1.2. Nedupľuj: rovnaká udalosť pre ten istý záznam = jedno upozornenie.
+   - odznak s počtom neprečítaných, zoznam 420 px (mobil cez celú obrazovku), klik = označí prečítané a otvorí cieľ (napr. `?panel=booking:<id>`),
+     „Označiť všetko ako prečítané“; počet sa obnoví pri navigácii (stačí, žiadny realtime). Starších ako 90 dní nezobrazuj.
+   - **Nastavenia → E-maily a upozornenia:** prehľad druhov (čo sa ukáže v zvončeku, čo príde aj e-mailom) — zatiaľ len na čítanie;
+     vypínanie jednotlivých druhov až neskôr.
+5. **Ukážkové dáta na stagingu:** rozšír `npm run demo-data` o históriu ~18 mesiacov (priame rezervácie cez rovnaký výpočet ceny,
+   zopár zrušených, udalosti z portálov, sezónny priebeh — zima a leto silnejšie) a niekoľko upozornení, aby grafy a zvonček neboli prázdne.
+   Len ukážkový klient a STRÖMY na stagingu, označenie „DEMO — …“, `--reset` ich zmaže.
+6. Playwright (PC + mobil 390 px): menu (otvorenie skupiny, aktívna položka, zbalený režim), štatistiky (prepnutie roka, porovnanie,
+   klik na mesiac), zvonček (odznak, prečítanie, prechod na cieľ); axe. Obnov snímky prehliadky „Čo je nové“ a zvýš `version`
+   (nové: menu so skupinami, Štatistiky, zvonček).
+
+### Z28 — Riadiace centrum v1.2 (pripomienky 19–23 + drobnosti)
+1. **Tmavé menu:** položky cez celú šírku bez zaoblenia, hover biela 6 %, aktívna biela 10 % + 3 px čiara vľavo, text vždy svetlý
+   (dnes biely text na bielom podklade). Kontrast skontroluj axe.
+2. **Hierarchia menu:** Klienti › Všetci klienti, Založiť klienta, a v detaile klienta pod tým jeho názov › Prehľad, Moduly, Vzhľad,
+   Domény, Ľudia, Záznam zmien · Moduly › Katalóg, Skúšobné doby · Stav systému · Audit. Drobčeky hore na podstránkach.
+3. **Detail klienta ako stránka so záložkami** (`/platform/tenants/[id]/<záložka>`) — obsah dnešného „Všetky nastavenia“ rozdelený
+   do záložiek; cesty: menu, riadok v zozname, drobčeky.
+4. **Zoznam klientov = rozbaľovacie riadky** namiesto bočného panela (obsah v kapitole v1.2: tržby tento/minulý mesiac, rezervácie 30 dní
+   a posledná, obsadenosť 90 dní, zdravie, moduly a koniec skúšok, majiteľ + posledné prihlásenie; akcie Otvoriť detail / Otvoriť
+   administráciu ↗ / Stránka pre hostí ↗). Čísla z rovnakej funkcie ako Štatistiky (Z27), načítanie až pri rozbalení, s prednačítaním (Z26).
+5. **Moduly = správa:** katalóg (popis, závislosti, počet klientov, stav hotový / **v príprave** — recenzie, správy s hosťom, push, SMS,
+   online check-in, upsell; moduly v príprave len ako riadky katalógu bez zapnutia), rozbalenie → klienti s prepínačom skúška/aktívny/vypnutý,
+   koniec skúšky, **Priradiť klientovi**; to isté v záložke Moduly v detaile klienta. Každá zmena do auditu. Ceny modulov zatiaľ nie.
+6. **Audit:** filtre obdobie od–do, kategória (Prihlásenie, Vstup správcu, Moduly a skúšky, Tím a prístupy, Nastavenia, Klienti), klient,
+   osoba, hľadanie; stránkovanie, CSV. **Zapisuj úspešné prihlásenia** do administrácie a riadiaceho centra (ak sa ešte nezapisujú);
+   neúspešné len ak to ide jednoducho (počet podľa IP, nikdy heslo ani zadaný e-mail v čistom texte).
+7. **Drobnosti zo stagingu:** domény `*.localhost` v detaile klienta skry (alebo štítok „len vývoj“); náhľad témy bez zástupného textu;
+   testovacie účty (`@booking-platform.test`) sa neukazujú ako kontakt majiteľa; ukážkové iCal kalendáre (`example.invalid`) označ ako
+   ukážkové, aby Stav systému nehlásil falošnú chybu synchronizácie.
+8. Playwright: menu (hover čitateľný, hierarchia, drobčeky), rozbalenie klienta, priradenie modulu klientovi, filtre auditu; axe.
 
 ---
 
