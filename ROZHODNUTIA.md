@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Moduly po MVP: základ teraz, rozhranie po plátne
+
+- Martin nechal postup na Claude: **Claude Code hneď stavia dátový a technický základ** (Z33 push celý — rozhranie z existujúcich vzorov;
+  Z34 recenzie a Z35 upsell bez obrazoviek pre hostí), **Claude chat medzitým kreslí** obrazovky upsellu a recenzií; rozhranie potom
+  podľa plátna. Online check-in čaká na Janu (zákonné údaje, citlivé dáta). (Claude)
+- Predvolené voľby Claude (Martin môže zmeniť): upsell od potvrdenia rezervácie do odchodu, uzávierka a potvrdenie majiteľom per služba,
+  „na účet pobytu“ do 300 € na pobyt, inak platba vopred; recenzie sa zverejnia samy po 72 h, ak majiteľ nezasiahne; ručné referencie
+  ostávajú ako „z iných zdrojov“ mimo priemeru. Detail v ARCHITEKTURA B11.
+
 ## 2026-10-17 — Recenzie: overené recenzie z pobytov, nie výber majiteľa
 
 - Hodnotiť môže len hosť po odchode (účet + e-mail). **Zverejnia sa všetky**; majiteľ zamietne len porušenie pravidiel (vulgarizmy,

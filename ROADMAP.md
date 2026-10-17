@@ -11,8 +11,8 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš — musí bežať ešte pred ostrými dátami).
-- **Claude chat po Z31:** návrh modulov Online check-in a Upsell (Fáza 4, 🧠).
+- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ).
+- **Claude chat:** kreslí obrazovky Upsellu a Recenzií (účet hosťa, stránka, e-maily); online check-in po odpovediach Jany.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -41,6 +41,55 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
 4. **Uchovávanie:** história 180 dní (pg_cron), pri anonymizácii hosťa vyčistiť aj jeho riadky v histórii. Zapíš do Denníka.
 5. Testy: pgTAP (RLS, trigger zapisuje insert/update/delete, iný klient nevidí), Playwright (zmazať službu → obnoviť z koša;
    zmeniť cenu → vrátiť v riadiacom centre).
+
+**Kontext pre Z33–Z35 (moduly po MVP, 17. 10.):** `ARCHITEKTURA.md` → **B11**. Claude Code stavia základ, Claude chat medzitým kreslí
+obrazovky upsellu a recenzií — **obrazovky pre hostí v Z34/Z35 nerob** (prídu ako ďalšie úlohy podľa plátna). Moduly sú v katalógu
+„v príprave“: prepni na hotový až keď bude aj rozhranie (Z33 áno, Z34/Z35 nie). Každý modul podľa návodu v CLAUDE.md (manifest,
+`public.modules`, `isModuleEnabled`, preklady). Stále len staging.
+
+### Z33 — Modul Push notifikácie (celý)
+1. **PWA:** manifest administrácie (názov platformy, ikony, `display: standalone`, štart `/admin`), service worker len pre push
+   (bez cachovania stránok). Riadiace centrum rovnako.
+2. **Zariadenia:** tabuľka napr. `push_subscriptions` (user_id, tenant_id alebo null pre platformu, endpoint, kľúče, popis zariadenia,
+   created_at, last_success_at, failures) — RLS: každý len svoje; pgTAP. VAPID kľúče v premenných prostredia (do repozitára len názvy).
+3. **Odosielanie:** pri vzniku upozornenia (Z27, `notify()`) poslať push členom tímu, ktorí majú zariadenie a daný druh zapnutý —
+   spôsob vyber sám (napr. Edge Function cez databázový webhook alebo pg_net → chránený endpoint), zdôvodni v Denníku.
+   Odpoveď 404/410 → zariadenie zmazať; text a odkaz rovnaké ako v zvončeku (klik otvorí cieľ). Bez osobných údajov hosťa v texte
+   notifikácie nad rámec mena a termínu.
+4. **Rozhranie:** Nastavenia → E-maily a upozornenia → sekcia „Upozornenia na tomto zariadení“: zapnúť/vypnúť, zoznam mojich zariadení
+   (odobrať), výber druhov (predvolene nová rezervácia, kolízia, zlyhaná synchronizácia, žiadosť o storno), „Poslať skúšobné upozornenie“.
+   **iPhone/iPad v Safari mimo plochy** → namiesto tlačidla návod „Pridať na plochu“ (3 kroky, ikonky zatiaľ textom). Vzory v1.1/v1.2.
+   Modul `push` per klient (vypnutý = sekcia skrytá s vetou o module); správca platformy má push pre platformové upozornenia vždy.
+5. Testy: unit (výber príjemcov podľa druhov a modulu), pgTAP, Playwright (zapnutie s povolením notifikácií v prehliadači, uloženie
+   zariadenia, skúšobné upozornenie volá odosielanie — skutočné doručenie netestovať), axe. Modul v katalógu → hotový.
+
+### Z34 — Modul Recenzie: základ (bez obrazoviek pre hostí)
+Podľa B11. 1. Tabuľka napr. `reviews` (tenant_id, property_id, reservation_id unique, guest_id, hodnotenia, text, zobrazené meno, mesiac
+pobytu, jazyk, stav submitted/published/rejected, dôvod zamietnutia, odpoveď majiteľa + čas, featured, published_at) — RLS: hosť len
+svoju (vytvoriť len ak je oprávnený — kontrola v DB), majiteľ svojho klienta, verejne len zverejnené (cez funkciu/pohľad bez osobných údajov).
+2. Oprávnenosť a okno 30 dní v DB funkcii; **automatické zverejnenie po 72 h** (pg_cron); priemer a počty pre objekt/klienta (funkcia).
+3. E-maily cez existujúcu frontu: pozvánka deň po odchode, pripomienka po 7 dňoch (ak nehodnotil), hosťovi pri zamietnutí (s dôvodom),
+   šablóny prekladateľné v téme klienta; odkaz vedie do účtu hosťa (stránku hodnotenia doplní ďalšia úloha — zatiaľ 404-bezpečný odkaz).
+4. Upozornenia (Z27): nová recenzia, recenzia sa zverejní o 24 h. Udalosti modulu.
+5. **Administrácia (vzor v1.1 — zoznam + panel):** Ponuka › Recenzie — zoznam (stav, hodnotenie, objekt, dátum), panel s textom,
+   Zverejniť teraz / Zamietnuť (dôvod zo zoznamu) / Odpovedať / Navrch. Ručné referencie ostávajú v Ponuka › Referencie s popisom
+   „z iných zdrojov“. Na stránke hosťa zatiaľ nič nemeň.
+6. Ukážkové dáta: 6–8 recenzií STRÖMY v rôznych stavoch (`npm run demo-data`). Testy pgTAP (oprávnenosť, RLS, auto-zverejnenie), unit, Playwright admin.
+
+### Z35 — Modul Upsell: základ (bez obrazoviek pre hostí)
+Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
+1. Nastavenia služby (modul `services` rozšíriť): ponúkať po rezervácii, uzávierka (hodiny pred dňom služby / príchodom), vyžaduje potvrdenie,
+   povoliť na účet pobytu. Nastavenie klienta: limit účtu pobytu (predvolene 300 €).
+2. Tabuľka dodatočných objednávok (napr. `reservation_orders`): rezervácia, služba, počet, dátum služby (voliteľne), zmrazená cena
+   (centy, mena, DPH, rozpis podľa cenového modelu), spôsob platby (na účet pobytu / prevod / karta neskôr), stav
+   (ordered/awaiting_confirmation/confirmed/declined/cancelled), dôvod, kto a kedy. RLS: hosť len k svojej rezervácii
+   (aj cez prístupový odkaz — serverová funkcia s overením tokenu), majiteľ svojho klienta; pgTAP.
+3. DB funkcie: `place_order` (kontrola okna rezervácie, uzávierky, aktívnej služby, limitu účtu pobytu, cena z rovnakého výpočtu ako košík),
+   zrušenie hosťom do uzávierky, potvrdenie/zamietnutie majiteľom, **účet pobytu** (súčet objednávok, zaplatené/otvorené) a „Vyúčtovať“
+   (záznam v `payments`, spôsob na mieste/prevod). Udalosti + upozornenia (nová objednávka, čaká na potvrdenie) + e-maily hosťovi (prijatá, potvrdená/zamietnutá).
+4. **Administrácia:** v paneli rezervácie sekcia „Účet pobytu“ (objednávky, stav, Potvrdiť/Zamietnuť, Vyúčtovať); v nastavení služby nové polia.
+   Vzory v1.1. Obrazovky pre hostí a e-maily s ponukami pred príchodom prídu podľa plátna.
+5. Ukážkové dáta (2–3 objednávky v rôznych stavoch), testy unit (výpočet, uzávierka, limit), pgTAP, Playwright admin.
 
 ---
 
@@ -93,7 +142,7 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
   medzi referenciami na stránke. **Rozhodnuté (Martin 17. 10.): (b) „overené recenzie z pobytov“** — zverejnia sa všetky okrem porušení
   pravidiel (vulgarizmy, osobné údaje, mimo témy; dôvod zamietnutia sa zapíše), s priemerom, verejnou odpoveďou majiteľa a možnosťou
   vybrať niekoľko navrch. Na stránke veta, ako sa overuje, že recenzia je od skutočného hosťa (Omnibus). Odkaz na Google recenzie ponúknuť všetkým, nie len spokojným.
-- [ ] 🧠 **Návrh modulu Push notifikácie** (Martin 17. 10.): Web Push z nainštalovanej administrácie (A13) — **bez platenej služby**
+- [x] 🧠 **Návrh modulu Push notifikácie** (Martin 17. 10.; špecifikácia → Z33): Web Push z nainštalovanej administrácie (A13) — **bez platenej služby**
   (štandard prehliadačov, vlastné VAPID kľúče, odosielanie zo servera). Kanál nad existujúcimi upozorneniami (Z27): zapnutie
   per zariadenie a člen tímu, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných zariadení. iPhone len po
   „Pridať na plochu“ → návod pre majiteľa s obrázkami. Odhad 2–3 dni. Platený modul pre klienta, pre nás bez nákladov.
@@ -129,6 +178,7 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
   vlastnú doménu. Ktoré?
 - Fotky showroomu: kľúč Pexels API (zadarmo) do `.env.local` ako `PEXELS_API_KEY` — potom ich doplním. Dovtedy zástupné obrázky.
 - Kľúč Resend bol poslaný v chate — po dokončení Z11 ho v Resende vymeň za nový.
+- **Jana (online check-in):** ako dnes vedie knihu ubytovaných (papier, program?), v ktorej obci platí daň z ubytovania a ako ju hlási, ako často má hostí zo zahraničia (hlásenie polícii)?
 - **Jana:** skutočné ceny služieb a poplatku za zviera, storno pásma 11–13 a 15–29 dní, je platiteľka DPH? (zatiaľ orientačne)
 - Supabase aj Vercel CLI sa z tvojho PC nevedia spojiť (Transport error / zaseknuté). Nevadí — Vercel je napojený cez web a databáza cez MCP; ak chceš CLI, treba pozrieť firewall/antivírus/proxy pre PowerShell.
 - Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.

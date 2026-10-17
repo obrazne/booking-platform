@@ -295,7 +295,7 @@ OBSADENOSŤ (occupancy) ── jedna tabuľka všetkého, čo blokuje jednotku: 
 
 - Služba = názov, popis, cenový model, cena, aktívna, poradie. Hosť ju volí v rezervácii (množstvo, ak dáva zmysel).
 - **Bez doplňujúcich polí** v MVP (dátum večere, číslo letu) — majiteľ sa dohodne s hosťom e-mailom; hosť má pole poznámka (rozhodnutie z 13. 10.).
-- Neskôr: vlastné polia, vlastná dostupnosť, objednávka po rezervácii (upsell pred príchodom — Premium+).
+- Neskôr: vlastné polia, vlastná dostupnosť. Objednávka po rezervácii = modul `upsell` (B11).
 
 ## B5. Rezervačný tok a stavy
 
@@ -387,6 +387,37 @@ Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia 
 - **Nasadenie (A17, úroveň 2):** Janin web beží na WordPresse s Elementorom (bez WooCommerce). Rezervácia na `rezervacia.chaletstromy.sk`
   v jej vizuáli; na jej webe vyhľadávací pás (príchod, odchod, osoby), ktorý presmeruje na subdoménu s predvyplneným termínom;
   tlačidlá „Rezervovať“ smerujú tam. Kalendár s cenami na jej webe neskôr.
+
+## B11. Moduly po MVP — upsell, recenzie, push (17. 10. 2026)
+
+*Postup: Claude Code stavia dátový a technický základ, Claude chat medzitým kreslí obrazovky; rozhranie sa doplní podľa plátna.
+Online check-in počká na odpovede Jany (ako dnes vedie knihu ubytovaných, obec, cudzinci).*
+
+**Upsell (modul `upsell`, potrebuje `services`).** Objednávka služby **po vytvorení rezervácie** — od potvrdenia rezervácie do odchodu,
+v účte hosťa (aj cez prístupový odkaz) jedným ťuknutím **záväzne**.
+- Samostatná tabuľka dodatočných objednávok (napr. `reservation_orders`) — **zmrazené riadky ceny rezervácie sa nemenia** (B1);
+  cena objednávky sa zmrazí pri objednaní (centy, mena, DPH), počet podľa cenového modelu služby.
+- Nastavenia služby pre upsell: ponúkať po rezervácii áno/nie, **uzávierka** (hodiny pred dňom služby / pred príchodom),
+  **vyžaduje potvrdenie majiteľa** (kapacita — napr. šéfkuchár), **povoliť „na účet pobytu“**.
+- Stavy: objednaná → (čaká na potvrdenie →) potvrdená / zamietnutá majiteľom (dôvod) / zrušená hosťom (do uzávierky).
+- Platba: **„na účet pobytu“** (vyúčtovanie pri odchode — na mieste alebo prevodom), **prevod s QR hneď**, **karta** až so Stripe.
+  Limit sumy na účte pobytu (nastavenie klienta, predvolene 300 €); nad limit len platba vopred.
+- **Účet pobytu** pri rezervácii: objednávky, zaplatené / otvorené, „Vyúčtovať“ (zaznamená platbu, doklad cez fakturačný adaptér, keď bude).
+- Ponuky v e-mailoch pred príchodom (napr. 7 a 2 dni) podľa nastavenia; udalosti rezervácie pre upozornenia (nová objednávka, čaká na potvrdenie).
+
+**Recenzie (modul `reviews`) — overené recenzie z pobytov** (rozhodnutie 17. 10.).
+- Hodnotiť môže len hosť rezervácie, ktorá nie je zrušená a ktorej **odchod už prebehol**; jedna recenzia na rezerváciu; okno 30 dní.
+  Pozvánka e-mailom deň po odchode, jedna pripomienka po 7 dňoch (len ak nehodnotil); v účte hosťa „Ohodnoťte pobyt“.
+- Obsah: celkové hodnotenie 1–5, voliteľne čiastkové (čistota, poloha, komunikácia, pomer cena/kvalita), text, zobrazené meno
+  (krstné + iniciála, hosť môže zmeniť), mesiac pobytu, jazyk.
+- **Zverejnenie automaticky po 72 h**, ak majiteľ nezasiahne (môže zverejniť skôr). Zamietnuť len z pevného zoznamu dôvodov
+  (vulgarizmy, osobné údaje, nesúvisí s pobytom, spam) — dôvod sa zapíše, hosť dostane e-mail. Verejná odpoveď majiteľa, výber navrch.
+- Priemer len z overených zverejnených recenzií; na stránke veta, ako sa overuje (Omnibus). **Doterajšie ručné referencie
+  (`testimonials`) ostávajú** ako „hodnotenia z iných zdrojov“ so zdrojom, do priemeru sa nepočítajú a neoznačujú sa ako overené.
+
+**Push notifikácie (modul `push`).** Web Push (VAPID) z nainštalovanej administrácie — bez platenej služby. Kanál nad upozorneniami (A13):
+zariadenia per používateľ, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných. iPhone len po „Pridať na plochu“
+(návod). Správca platformy dostáva push na svoje platformové upozornenia bez modulu.
 
 ## Showroom (ukážkové dáta)
 
