@@ -53,6 +53,9 @@ zapíš ich do *Denníka* (čo a prečo) a pokračuj. Neblokujúce otázky zapí
 - si zaseknutý (2 pokusy / ~30 minút) a nedá sa to obísť ani odložiť.
 Po každej dokončenej úlohe commit a push, aby Claude chat videl priebeh.
 
+**Vetva: pracuj priamo na `main`** (Martin 17. 10.). Žiadne vlastné vetvy ani pull requesty — aj keď session štartuje na inej vetve
+(napr. `claude/…`), prepni sa na `main` (`git checkout main && git pull --rebase`) a po každej dokončenej úlohe `git push origin main`.
+
 **Po dokončení úlohy:**
 1. Odškrtni ju v `ROADMAP.md` (`- [x]`) a aktualizuj sekciu *Aktuálne*.
 2. Pridaj riadok do *Denníka* (najnovšie hore): `RRRR-MM-DD — čo sa spravilo a kde (Claude Code)`.
