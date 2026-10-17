@@ -189,7 +189,7 @@ Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10
 6. Ukážkové dáta (len Ukážkový klient): konverzácie k niekoľkým rezerváciám vrátane automatických a jednej čakajúcej.
 7. Testy: pgTAP + jednotkové (výpočet času pravidla, zlúčenie e-mailov).
 
-### Z50 [B] — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, prvá na linke B**
+### Z50 [B] 🔄 — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, prvá na linke B**
 Staging je na bezplatnom pláne Supabase, ktorý **nerobí žiadne zálohy**. Nenahraditeľné sú nastavenia a texty STRÖMY, fotky v úložisku
 (~40 súborov), Janin iCal kanál a používatelia (databáza ~40 MB). Je to predstupeň 3f (A9) — postav ho tak, aby sa dal pre produkciu len
 prepnúť na iné úložisko. Nič neplatené.
