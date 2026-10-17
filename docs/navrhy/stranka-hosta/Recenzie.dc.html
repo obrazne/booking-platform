@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Recenzie na stránke</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.fade{animation:fadein 180ms ease}
+@media (prefers-reduced-motion: reduce){.fade{animation:none}}
+</style>
+</helmet>
+<div style="background: #ffffff; font-weight: 300; padding: 80px 0 96px;">
+<section style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 36px;">
+
+<div style="display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 56px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 18px; position: sticky; top: 24px;">
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Hostia hovoria</span>
+<h2 style="margin: 0; font-size: 36px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: #11212f;">Vracajú sa. <span style="color: #a9aeb5;">A hovoria prečo.</span></h2>
+<div style="display: flex; align-items: center; gap: 14px;">
+<span style="font-size: 56px; font-weight: 800; letter-spacing: -0.04em; color: #11212f; line-height: 1;">4,9</span>
+<span style="display: flex; flex-direction: column; gap: 4px;"><span style="color: #d39a2c; font-size: 18px; letter-spacing: 2px;">★★★★★</span><span style="font-size: 14px; color: #5a6672;">z 23 overených recenzií</span></span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 9px;">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="4"><div style="display: grid; grid-template-columns: 150px 1fr 30px; align-items: center; gap: 10px; font-size: 14px;"><span style="color: #3b3d42;">{{c.label}}</span><span style="height: 6px; border-radius: 9999px; background: #ecebe6; overflow: hidden;"><span style="{{c.bar}}"></span></span><span class="mono" style="font-size: 12px; color: #5a6672; text-align: right;">{{c.val}}</span></div></sc-for>
+</div>
+<div style="display: flex; gap: 10px; padding: 14px 16px; border-radius: 10px; background: #f6f9f7; border: 1px solid #dfe8e2;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+<span style="font-size: 13px; line-height: 1.55; color: #3b3d42;"><strong style="font-weight: 700;">Overené recenzie.</strong> Hodnotiť môže len hosť, ktorý u nás býval, a len raz za pobyt. Zverejňujeme všetky — okrem textov s vulgarizmami, osobnými údajmi alebo bez súvisu s pobytom.</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
+<div style="display: flex; gap: 8px; flex-wrap: wrap;"><sc-for list="{{filters}}" as="f" hint-placeholder-count="3"><button type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}}</button></sc-for></div>
+<sc-for list="{{reviews}}" as="r" hint-placeholder-count="4">
+<article class="fade" style="{{r.cardStyle}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 12px;">
+<span style="width: 36px; height: 36px; border-radius: 9999px; background: #f1eee6; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5a6672;">{{r.ini}}</span>
+<span style="display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">{{r.name}}</span><span style="font-size: 12px; color: #8b929b;">{{r.meta}}</span></span>
+</div>
+<span style="display: inline-flex; align-items: center; gap: 8px;"><sc-if value="{{r.featured}}" hint-placeholder-val="{{false}}"><span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}};">Vybrala Jana</span></sc-if><span style="color: #d39a2c; letter-spacing: 1px; font-size: 15px;">{{r.stars}}</span></span>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #11212f;">{{r.text}}</p>
+<sc-if value="{{r.hasReply}}" hint-placeholder-val="{{false}}">
+<div style="margin-left: 16px; padding: 12px 16px; border-left: 3px solid {{accent}}; background: #fafaf8; border-radius: 0 8px 8px 0; display: flex; flex-direction: column; gap: 4px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent}};">Odpoveď majiteľky · Jana</span>
+<span style="font-size: 14px; line-height: 1.55; color: #3b3d42;">{{r.reply}}</span>
+</div>
+</sc-if>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5a6672;"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Overený pobyt</span>
+</article>
+</sc-for>
+<button type="button" style="align-self: flex-start; min-height: 44px; padding: 0 18px; border-radius: 9999px; border: 1px solid #dcd9d1; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Zobraziť všetky (23)</button>
+</div>
+</div>
+
+<div style="border-top: 1px solid #e9e5db; padding-top: 24px; display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 56px;">
+<div style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 16px; font-weight: 700; color: #11212f;">Hodnotenia z iných zdrojov</span><span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Pridala ich majiteľka z Google a Bookingu. Neoverujeme ich a do priemeru sa nepočítajú.</span></div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+<figure style="margin: 0; padding: 16px 18px; border: 1px solid #e9e5db; border-radius: 10px; display: flex; flex-direction: column; gap: 8px;"><blockquote style="margin: 0; font-size: 14px; line-height: 1.55; color: #11212f;">„Toto miesto… nádherné! Skvelá lokalita a služby na vysokej úrovni.“</blockquote><figcaption class="mono" style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6672;">Zuzana · Google ↗</figcaption></figure>
+<figure style="margin: 0; padding: 16px 18px; border: 1px solid #e9e5db; border-radius: 10px; display: flex; flex-direction: column; gap: 8px;"><blockquote style="margin: 0; font-size: 14px; line-height: 1.55; color: #11212f;">„Chalet je ešte krajší ako na fotkách. Deti si najviac užili krb.“</blockquote><figcaption class="mono" style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6672;">Lucia · Booking.com ↗</figcaption></figure>
+</div>
+</div>
+
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { f: 'all' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var all = [
+      { name: 'Petra N.', meta: 'december 2026 · pár', s: 5, featured: true, text: 'Ticho, les a vírivka pod hviezdami. Jana nám poradila trasy na skialp. Jediné, čo by sme privítali, je viac vešiakov v predsieni.', reply: 'Ďakujeme, Petra! Vešiaky už visia — budúcu zimu ich nájdete štyri navyše.' },
+      { name: 'Martin K.', meta: 'november 2026 · rodina s deťmi', s: 5, featured: true, text: 'Deti nechceli odísť. Raňajky na terase s výhľadom na Chopok si budeme pamätať dlho. Komunikácia s Janou rýchla a milá.', reply: '' },
+      { name: 'Ondřej V.', meta: 'október 2026 · priatelia', s: 3, featured: false, text: 'Chalet je krásny, ale cesta hore bola po daždi rozbitá a autom sme mali problém. Uvítali by sme upozornenie vopred.', reply: 'Máte pravdu, Ondřej, a mrzí nás to. Do pokynov k príchodu sme doplnili upozornenie a obec cestu medzitým opravila.' },
+      { name: 'Eva a Juraj', meta: 'september 2026 · pár', s: 5, featured: false, text: 'Šéfkuchár bol vrchol pobytu. Ďakujeme za skvelý servis a krásne miesto.', reply: '' }
+    ];
+    var list = all.filter(function (r) { return s.f === 'all' || (s.f === 'reply' ? !!r.reply : r.s <= 3); });
+    var mk = function (k, l) { var on = s.f === k; return { label: l, on: on, pick: function () { self.setState({ f: k }); }, style: 'min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid ' + (on ? '#11212f' : '#dcd9d1') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + '; font-size: 13px; font-weight: 500; cursor: pointer;' }; };
+    return {
+      accent: accent, accent2: this.props.accent2 ?? '#ad5a2b',
+      cats: [['Čistota', 4.9], ['Poloha', 5.0], ['Komunikácia', 5.0], ['Pomer cena / kvalita', 4.6]].map(function (c) { return { label: c[0], val: String(c[1].toFixed(1)).replace('.', ','), bar: 'display: block; height: 100%; width: ' + (c[1] / 5 * 100) + '%; background: ' + accent + '; border-radius: 9999px;' }; }),
+      filters: [mk('all', 'Všetky · 23'), mk('reply', 'S odpoveďou majiteľky'), mk('low', 'Kritické (3★ a menej)')],
+      reviews: list.map(function (r) {
+        return {
+          name: r.name, meta: r.meta, ini: r.name.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2),
+          stars: '★★★★★'.slice(0, r.s) + '☆☆☆☆☆'.slice(0, 5 - r.s), text: r.text, featured: r.featured,
+          hasReply: !!r.reply, reply: r.reply,
+          cardStyle: 'padding: 20px 22px; border-radius: 10px; border: 1px solid ' + (r.featured ? '#dfe8e2' : '#e9e5db') + '; background: ' + (r.featured ? '#fbfdfc' : '#ffffff') + '; display: flex; flex-direction: column; gap: 12px;'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

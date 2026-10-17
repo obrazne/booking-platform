@@ -2,6 +2,11 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Obrazovky modulov pre hostí v2.3 schválené
+
+- Martin schválil dosky `UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` („môže byť“). Detail pobytu v účte hosťa je jedno miesto pre
+  check-in, doobjednanie, účet pobytu a po odchode hodnotenie; recenzie na stránke ukazujú aj kritické s odpoveďou majiteľky. → Z37–Z39.
+
 ## 2026-10-17 — Online check-in nečaká na Janu
 
 - Martin: „Prečo by mal check-in čakať na Janu? Nechcem čakať.“ Má pravdu — povinnosti (kniha ubytovaných, hlásenie cudzincov, daň

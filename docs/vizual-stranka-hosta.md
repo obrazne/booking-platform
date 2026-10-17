@@ -1,8 +1,8 @@
-# Vizuál stránky hosťa — v2.2 (v2.1 schválené 16. 10. 2026, košík v2.2 17. 10.)
+# Vizuál stránky hosťa — v2.3 (v2.1 schválené 16. 10. 2026, košík v2.2 a moduly v2.3 17. 10.)
 
 *Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design). **v2 schválená 16. 10. 2026.**
 Zdroj plátna: `docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Platné dosky: `Main.dc.html` (počítač, klikací),
-`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. **v2.2:** `KosikNotebook` (košík na 13″ notebooku, klikací) — platí pre košík na počítači namiesto košíka v `Main.dc.html`. `Mobil.dc.html` je z v1 — neplatí.
+`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. **v2.2:** `KosikNotebook` (košík na 13″ notebooku, klikací) — platí pre košík na počítači namiesto košíka v `Main.dc.html`. **v2.3 (moduly):** `UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie`. `Mobil.dc.html` je z v1 — neplatí.
 Je to **zámer, nie pixelová predloha** — farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov a z dát objektu (sekcie B7).*
 
 ## Zmeny oproti v1
@@ -157,6 +157,49 @@ Musí vyzerať ako **ten istý web**: rovnaká hlavička (názov, Účet, Späť
 - **Mobil:** úvod → **platba: najprv údaje s Kopírovať**, QR až pod nimi s vetou „Platíte z počítača alebo iného telefónu? Naskenujte kód.
   Alebo ho uložte a otvorte v bankovej aplikácii.“ + **Uložiť QR** (obrázok) — QR sa nedá naskenovať tým istým telefónom →
   kroky → zelená karta pobytu → rozpis → účet → zmena plánov → päta.
+
+## Moduly v účte hosťa a na stránke (v2.3, schválené 17. 10.)
+
+Dátový model a pravidlá: `ARCHITEKTURA.md` B11. Každá časť sa zobrazí len pri zapnutom module klienta.
+
+**Detail pobytu v účte hosťa (`UcetPobyt`, mobil `MobilPobyt`)** — rovnaký jazyk ako potvrdenie rezervácie: hlavička webu klienta
+(„Môj účet“), jemný prechod s číslom, stavom, nadpisom („Tešíme sa na vás. / Ďakujeme za návštevu.“), termínom; pod tým dva stĺpce
+(obsah + 360 px vpravo, prilepený). Poradie pred príchodom:
+1. **Karta check-inu** (modul `checkin`): nedokončený = kicker „Online check-in“, „Vybavte to teraz. Na mieste už len kľúče.“, veta čo
+   to je a čo odomkne, grafitové „Začať check-in →“; dokončený = svetlozelená karta s fajkou „Check-in hotový · 2 hostia · príchod okolo 16:00“ + Upraviť.
+2. **Riadok „Pokyny k príchodu a kód od dverí“** so zámkom a vetou kedy sa odomkne (po check-ine, najskôr X dní pred príchodom).
+3. **„K pobytu si môžete doobjednať. Kedykoľvek.“** (modul `upsell`) — jednoriadkové riadky ako v košíku v2.2 (názov, sivo cenový model,
+   „od 30 €“, šípka); objednaná služba má štítok **Objednané** / **Čaká na potvrdenie** a sumu. Rozbalenie: fotka, popis, **výber dní**
+   (pri službách na deň — dni pobytu ako pilulky; pri jednom večeri len jeden), **„Ako zaplatíte“** dve karty *Na účet pobytu — zaplatíte
+   pri odchode* / *Zaplatiť teraz — prevodom cez QR kód* (karta až so Stripe), pri službe s potvrdením veta „Termín potvrdí Jana do
+   24 hodín. Kým nepotvrdí, nič neplatíte.“, tlačidlo v akcente **„Objednať záväzne · 90 €“** a pod ním uzávierka. Objednaná: veta
+   s dňami a spôsobom platby, „Zrušiť objednávku“ (do uzávierky). Zaplatiť teraz → po objednaní platobné údaje s QR ako pri rezervácii.
+   Nad limit účtu pobytu karta „Na účet pobytu“ neaktívna s vetou prečo.
+4. Dokumenty (riadky).
+**Vpravo zelená karta „Účet pobytu“:** pobyt (zaplatené ✓), objednané služby so stavom a spôsobom platby, súčet „Na účet pobytu“
+veľkým písmom + veta o vyúčtovaní pri odchode a limite; pod ňou karta kontaktu na majiteľa. Po vyúčtovaní „Vyúčtované ✓“ + doklad.
+**Mobil:** riadok služby otvorí **spodné okno** (fotka, popis, dni, spôsob platby, „Objednať záväzne“, uzávierka); dole zelený pás
+„Na účet pobytu · suma“ s „Účet pobytu ▴“.
+
+**Po odchode** (modul `reviews`, rezervácia ukončená, okno 30 dní): namiesto objednávok **„Ako sa vám u nás páčilo? Úprimne.“** —
+celkové hviezdičky (veľké, s popisom Sklamanie…Výborné), „Podrobnejšie · nepovinné“ (Čistota, Poloha, Komunikácia, Pomer cena/kvalita,
+bodky 1–5) na sivej karte, text, „Zobraziť ako“ (krstné + iniciála), veta o zverejnení a pravidlách, „Odoslať hodnotenie“. Po odoslaní
+poďakovanie, **„Ohodnotiť aj na Google ↗“ (všetkým, nezávisle od hviezdičiek)** a „Rezervovať znova“.
+
+**Online check-in (`Checkin`)** — samostatná stránka z karty check-inu (aj z prístupového odkazu): „Kto prichádza? Údaje pre knihu
+ubytovaných.“; **karta na každého hosťa** (rozbaľovacia, hotová má fajku): meno, priezvisko, štátna príslušnosť (Slovenská republika /
+Iná krajina → pribudne krajina a dátum narodenia), doklad (typ + číslo), adresa trvalého pobytu; dieťa bez dokladu — veta. Polia podľa
+pravidiel krajiny (B11), nie natvrdo. **Čas príchodu** pilulkami, **súhlas s ubytovacím poriadkom** (odkaz), „Dokončiť check-in“
+(neaktívne bez súhlasu, dôvod vedľa). Vpravo sivá karta **„Prečo to od vás chceme“** (zákon, vidí len majiteľka, mazanie po lehote) a
+„Po dokončení“ (3 fajky). Hotovo: „Hotovo. Na mieste už len kľúče.“ + dátum odomknutia pokynov, Späť na pobyt / Upraviť údaje.
+
+**Overené recenzie na stránke objektu (`Recenzie`)** — sekcia „Hostia hovoria“ nahrádza doterajšie referencie, keď má klient modul:
+vľavo (360 px, prilepené) nadpis, **priemer veľkým číslom** + hviezdičky + „z N overených recenzií“, čiastkové hodnotenia ako pruhy,
+zelená karta **„Overené recenzie.“** (kto môže hodnotiť, že zverejňujeme všetky okrem porušení pravidiel); vpravo filtre (Všetky ·
+S odpoveďou majiteľky · Kritické 3★ a menej), karty recenzií (iniciály, meno, mesiac a typ pobytu, hviezdičky, text, **odpoveď majiteľky**
+s čiarou v akcente, „Overený pobyt“, vybrané majiteľkou s jemným podkladom a štítkom „Vybrala Jana“), „Zobraziť všetky (N)“.
+Pod tým oddelene **„Hodnotenia z iných zdrojov“** (ručné referencie so zdrojom ↗) s vetou, že sa neoverujú a do priemeru sa nepočítajú.
+V košíku a hornej časti detailu sa namiesto ručnej referencie zobrazí vybraná overená recenzia (ak existuje).
 
 ## Neskôr (zapísané nápady)
 

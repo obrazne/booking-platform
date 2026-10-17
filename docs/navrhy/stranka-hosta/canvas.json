@@ -77,6 +77,38 @@
       "h": 800,
       "title": "10 Košík v2.2 — notebook 13″ (1440 × 800, klikací: riadky služieb, Zmeniť, kroky)",
       "is_interactive": true
+    },
+    "UcetPobyt.dc.html": {
+      "x": 0,
+      "y": 8100,
+      "w": 1440,
+      "h": 1500,
+      "title": "11 Účet hosťa — pobyt: check-in, doobjednanie (upsell), účet pobytu, hodnotenie po odchode (klikací, prepínač stavu hore)",
+      "is_interactive": true
+    },
+    "MobilPobyt.dc.html": {
+      "x": 1520,
+      "y": 8100,
+      "w": 390,
+      "h": 844,
+      "title": "12 Mobil — doobjednanie zo spodného okna (klikací)",
+      "is_interactive": true
+    },
+    "Checkin.dc.html": {
+      "x": 0,
+      "y": 9800,
+      "w": 1440,
+      "h": 1300,
+      "title": "13 Online check-in — údaje hostí (klikací: hosť, krajina, čas, dokončiť)",
+      "is_interactive": true
+    },
+    "Recenzie.dc.html": {
+      "x": 1520,
+      "y": 9800,
+      "w": 1440,
+      "h": 1250,
+      "title": "14 Overené recenzie na stránke objektu (klikací filter)",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -144,6 +176,13 @@
       "w": 720,
       "fill": "teal",
       "text": "Košík v2.2 (pripomienka 25, 17. 10.): na 13″ MacBooku sa súhrn nevošiel a oba stĺpce sa posúvali. Princíp: vpravo len to, čo kupujem a koľko (termín, hostia, cena, doplnky, tlačidlo + jedna istota), vľavo práca aktuálneho kroku. Bez fotiek (hosť ich má na stránke pod panelom), termín len raz (vpravo „Zmeniť“ otvorí kalendár vľavo), služby jednoriadkové, referencia vľavo pod službami, kontakt na Janu v kroku 2, tri istoty v kroku 3 pri záväznom tlačidle. Lišta krokov 52 px. Rovnaké rozloženie na všetkých obrazovkách."
+    },
+    "moduly": {
+      "x": 0,
+      "y": 7930,
+      "w": 900,
+      "fill": "teal",
+      "text": "Moduly po MVP (17. 10.) — návrh obrazoviek pre hostí. Upsell: objednávka jedným ťuknutím, platba na účet pobytu (vyúčtovanie pri odchode, do 300 €) alebo hneď prevodom; karta po Stripe. Check-in: údaje pre knihu ubytovaných a hlásenie cudzincov, po dokončení sa odomknú pokyny a kód. Recenzie: overené, zverejnené všetky okrem porušení pravidiel, odpoveď majiteľky, iné zdroje oddelene a mimo priemeru. Dáta a administráciu stavia Claude Code (Z33–Z36), tieto dosky sú pre obrazovky hostí."
     }
   },
   "order": [
@@ -156,7 +195,11 @@
     "MobilGaleria.dc.html",
     "Potvrdenie.dc.html",
     "MobilPotvrdenie.dc.html",
-    "KosikNotebook.dc.html"
+    "KosikNotebook.dc.html",
+    "UcetPobyt.dc.html",
+    "MobilPobyt.dc.html",
+    "Checkin.dc.html",
+    "Recenzie.dc.html"
   ],
   "pages": [],
   "title": "Rezervačná stránka — návrh"

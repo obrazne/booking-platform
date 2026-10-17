@@ -11,8 +11,8 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ).
-- **Claude chat:** kreslí obrazovky Upsellu, Recenzií a Online check-inu pre hostí (účet hosťa, stránka).
+- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -112,6 +112,30 @@ v komponentoch**; pred ostrým nasadením ich overíme.
    Upozornenia: check-in dokončený, cudzinec nenahlásený 4. deň.
 7. Ukážkové dáta: check-in u 2 ukážkových pobytov (jeden cudzinec). Testy pgTAP (RLS, maskovanie, mazanie po lehote), unit (pravidlá, daň), Playwright admin.
 
+
+**Kontext pre Z37–Z39 (obrazovky pre hostí, schválené 17. 10.):** `docs/vizual-stranka-hosta.md` → **Moduly v účte hosťa a na stránke (v2.3)**,
+dosky `docs/navrhy/stranka-hosta/UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` (klikacie). Zámer, nie pixelová predloha; téma klienta,
+preklady, PC aj mobil 390 px, axe. Každá úloha nadväzuje na svoj základ (Z34–Z36) — ak základ chýba, sprav najprv ho.
+
+### Z37 — Upsell pre hostí (po Z35)
+Detail pobytu v účte hosťa podľa `UcetPobyt` (aj cez prístupový odkaz `/r/<kód>`): sekcia „K pobytu si môžete doobjednať“ s rozbalením,
+výberom dní, spôsobom platby, „Objednať záväzne“, stavmi, zrušením do uzávierky; pravý stĺpec „Účet pobytu“; mobil so spodným oknom
+a zeleným pásom. Zaplatiť teraz → platobné údaje s QR. E-maily hosťovi s ponukami pred príchodom (7 a 2 dni, podľa nastavenia;
+len aktívne služby s upsellom, s odkazom do účtu). Modul v katalógu → hotový. Playwright: objednanie na účet pobytu, objednanie s potvrdením,
+zrušenie, limit účtu pobytu.
+
+### Z38 — Recenzie pre hostí a na stránke (po Z34)
+Formulár „Ako sa vám u nás páčilo?“ v detaile ukončeného pobytu (hviezdičky, podrobnosti, text, zobrazené meno, poďakovanie s Google odkazom
+pre všetkých — URL Google profilu je nastavenie klienta, bez nej sa tlačidlo neukáže); odkaz z pozvánky (Z34) vedie sem. Na stránke objektu
+sekcia podľa `Recenzie` (priemer, pruhy, overenie, filtre, odpovede, vybrané, iné zdroje oddelene); v košíku a hore na detaile vybraná
+overená recenzia. **Štruktúrované dáta (schema.org AggregateRating) len z overených recenzií.** Modul → hotový. Playwright: odoslanie, zobrazenie
+po zverejnení, filter kritických.
+
+### Z39 — Online check-in pre hostí (po Z36)
+Karta check-inu a zamknuté pokyny v detaile pobytu, stránka check-inu podľa `Checkin` (karty hostí, polia podľa pravidiel krajiny, čas príchodu,
+súhlas, hotovo), aj cez prístupový odkaz; pripomienky e-mailom (Z36). Citlivé polia sa po uložení hosťovi zobrazujú maskované.
+Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknutie pokynov podľa nastavenia, validácie.
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -155,10 +179,10 @@ v komponentoch**; pred ostrým nasadením ich overíme.
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
 - [ ] Vkladací widget, ďalšie moduly podľa katalógu
-- [ ] 🧠 **Návrh modulu Online check-in** (Martin 17. 10.; základ → Z36, obrazovky hosťa na plátne): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
+- [x] 🧠 **Návrh modulu Online check-in** (Martin 17. 10.; základ → Z36, obrazovky hosťa na plátne): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
   (kniha ubytovaných, hlásenie cudzincov, ubytovacia daň — slovenský balík pravidiel A6), čas príchodu, súhlas s ubytovacím poriadkom;
   po check-ine sa mu X dní pred príchodom odomknú pokyny a prístupové kódy. Majiteľ vidí stav check-inu pri rezervácii. Plátno + špecifikácia.
-- [ ] 🧠 **Návrh modulu Recenzie** (po Z31, Martin 17. 10.): po odchode sa hosťovi v účte odomkne „Ohodnoťte pobyt“ (+ e-mail deň po
+- [x] 🧠 **Návrh modulu Recenzie** (po Z31, Martin 17. 10.): po odchode sa hosťovi v účte odomkne „Ohodnoťte pobyt“ (+ e-mail deň po
   odchode, jedna pripomienka, okno napr. 30 dní); majiteľ recenziu vidí v administrácii, môže verejne odpovedať; schválené sa zobrazia
   medzi referenciami na stránke. **Rozhodnuté (Martin 17. 10.): (b) „overené recenzie z pobytov“** — zverejnia sa všetky okrem porušení
   pravidiel (vulgarizmy, osobné údaje, mimo témy; dôvod zamietnutia sa zapíše), s priemerom, verejnou odpoveďou majiteľa a možnosťou
@@ -167,7 +191,7 @@ v komponentoch**; pred ostrým nasadením ich overíme.
   (štandard prehliadačov, vlastné VAPID kľúče, odosielanie zo servera). Kanál nad existujúcimi upozorneniami (Z27): zapnutie
   per zariadenie a člen tímu, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných zariadení. iPhone len po
   „Pridať na plochu“ → návod pre majiteľa s obrázkami. Odhad 2–3 dni. Platený modul pre klienta, pre nás bez nákladov.
-- [ ] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): spokojný hosť si **kedykoľvek** (pred príchodom
+- [x] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): spokojný hosť si **kedykoľvek** (pred príchodom
   aj počas pobytu) v účte jedným ťuknutím **záväzne objedná** doplnkovú službu a vyberie platbu: **kartou hneď** (po Stripe), alebo
   **„na účet pobytu“ s vyúčtovaním na konci**. Martin: „super predajný argument“ pre ubytovateľa. Rozhodnúť: uzávierky objednávok
   (napr. raňajky do 18:00 deň vopred), služby s potvrdením majiteľom (kapacita), ktoré služby a do akej sumy idú na účet pobytu,
