@@ -49,25 +49,26 @@ select is((select count(*)::int from public.owner_trash('10000000-0000-0000-0000
   where table_name in ('rates', 'season_ranges')), 0, 'prices that went with a season are not separate items');
 reset role;
 
-select is((select array_agg(op order by id)::text from public.record_history where table_name = 'services'),
+select is((select array_agg(op order by id)::text from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services'),
   '{insert,update,delete}', 'insert, update and delete are recorded');
 select is((select (old_row ->> 'amount_cents') || '→' || (new_row ->> 'amount_cents') from public.record_history
-  where table_name = 'services' and op = 'update'), '1500→1800', 'before and after are kept');
-select is((select distinct source from public.record_history where table_name = 'services'), 'user',
+  where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services' and op = 'update'), '1500→1800', 'before and after are kept');
+select is((select distinct source from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services'), 'user',
   'changes by the client''s staff are marked as their own');
-select is((select changed_by from public.record_history where table_name = 'services' and op = 'delete'),
+select is((select changed_by from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services' and op = 'delete'),
   '00000000-0000-0000-0000-0000000000a1'::uuid, 'who changed it is kept');
 
 -- A block over the deleted block's dates appears in the meantime (a job, nobody signed in).
 select set_config('request.jwt.claims', '', true);
 insert into public.occupancy (tenant_id, unit_id, nights, kind, label) values
   ('10000000-0000-0000-0000-00000000000a', '30000000-0000-0000-0000-00000000000a', daterange('2030-03-02', '2030-03-04'), 'block', 'Iná');
-select is((select source from public.record_history where table_name = 'occupancy' order by id desc limit 1), 'system',
+select is((select source from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'occupancy' order by id desc limit 1), 'system',
   'changes without a signed-in person are marked as the system');
 
 -- History ids for the people who cannot read the history themselves.
 create temporary table h as
   select table_name, op, old_row ->> 'label' as label, min(id) as id from public.record_history
+  where tenant_id = '10000000-0000-0000-0000-00000000000a'
   group by table_name, op, old_row ->> 'label';
 grant select on h to authenticated;
 
@@ -90,10 +91,10 @@ select throws_ok($$ select * from public.owner_trash('10000000-0000-0000-0000-00
 
 -- The platform admin reverts the price change; a record changed again is not overwritten without asking.
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000c1","role":"authenticated"}';
-select is(public.platform_revert_change((select id from public.record_history where table_name = 'services' and op = 'update')) ->> 'status',
+select is(public.platform_revert_change((select id from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services' and op = 'update')) ->> 'status',
   'ok', 'the admin reverts a change');
 update public.services set amount_cents = 2500 where id = '40000000-0000-0000-0000-00000000000a';
-select is(public.platform_revert_change((select min(id) from public.record_history where table_name = 'services' and op = 'update')) ->> 'status',
+select is(public.platform_revert_change((select min(id) from public.record_history where tenant_id = '10000000-0000-0000-0000-00000000000a' and table_name = 'services' and op = 'update')) ->> 'status',
   'changed', 'a record that changed again since is reported, not overwritten');
 
 select * from finish();
