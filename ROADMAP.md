@@ -88,6 +88,12 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
 - [ ] 🧠 **Návrh modulu Online check-in** (po Z31, Martin 17. 10.): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
   (kniha ubytovaných, hlásenie cudzincov, ubytovacia daň — slovenský balík pravidiel A6), čas príchodu, súhlas s ubytovacím poriadkom;
   po check-ine sa mu X dní pred príchodom odomknú pokyny a prístupové kódy. Majiteľ vidí stav check-inu pri rezervácii. Plátno + špecifikácia.
+- [ ] 🧠 **Návrh modulu Recenzie** (po Z31, Martin 17. 10.): po odchode sa hosťovi v účte odomkne „Ohodnoťte pobyt“ (+ e-mail deň po
+  odchode, jedna pripomienka, okno napr. 30 dní); majiteľ recenziu vidí v administrácii, môže verejne odpovedať; schválené sa zobrazia
+  medzi referenciami na stránke. **Rozhodnúť:** (a) „vybrané referencie“ — majiteľ vyberá, bez priemerného hodnotenia, popis „vybrané“,
+  alebo (b) „overené recenzie z pobytov“ — zverejnia sa všetky okrem porušení pravidiel (vulgarizmy, osobné údaje, mimo témy),
+  s priemerom a odpoveďou majiteľa. Pri (b) zákon o ochrane spotrebiteľa (Omnibus) vyžaduje informovať, ako sa overuje, že recenzia
+  je od skutočného hosťa; skrývať len negatívne a zobrazovať priemer = klamlivé. Odkaz na Google recenzie ponúknuť všetkým, nie len spokojným.
 - [ ] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): spokojný hosť si **kedykoľvek** (pred príchodom
   aj počas pobytu) v účte jedným ťuknutím **záväzne objedná** doplnkovú službu a vyberie platbu: **kartou hneď** (po Stripe), alebo
   **„na účet pobytu“ s vyúčtovaním na konci**. Martin: „super predajný argument“ pre ubytovateľa. Rozhodnúť: uzávierky objednávok
