@@ -2,6 +2,13 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Recenzie: overené recenzie z pobytov, nie výber majiteľa
+
+- Hodnotiť môže len hosť po odchode (účet + e-mail). **Zverejnia sa všetky**; majiteľ zamietne len porušenie pravidiel (vulgarizmy,
+  osobné údaje, mimo témy) so zapísaným dôvodom, môže verejne odpovedať a vybrať niekoľko recenzií navrch. Zobrazuje sa priemer
+  a veta o overení. Dôvod: Omnibus (zákon o ochrane spotrebiteľa) — skrývať negatívne a ukazovať priemer by bolo klamlivé; „overené
+  od skutočných hostí“ je navyše silnejší predajný argument. Odkaz na Google recenzie dostanú všetci, nie len spokojní. (Martin + Claude)
+
 ## 2026-10-17 — Vrátenie chyby jedného klienta bez vracania celej databázy
 
 - Martin: „Ak klient niečo pokazí alebo sa v appke niečo pokazí, nemôžem vrátiť databázu všetkých týždeň dozadu — ostatným by zmizli
