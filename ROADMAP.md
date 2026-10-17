@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa) — *zabratá linkou A* → **Z50 (nočná záloha stagingu, prednostne)**; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa) — *zabratá linkou A* ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha stagingu, prednostne)** → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -189,18 +189,7 @@ Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10
 6. Ukážkové dáta (len Ukážkový klient): konverzácie k niekoľkým rezerváciám vrátane automatických a jednej čakajúcej.
 7. Testy: pgTAP + jednotkové (výpočet času pravidla, zlúčenie e-mailov).
 
-### Z46 [B] — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
-Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `SpravyAuto`, `Sidebar`.
-1. Menu: skupina Správy s odznakom (Schránka, Automatické správy), len so zapnutým modulom.
-2. Schránka `/admin/messages` (filtre, riadky, hľadanie) → klik otvorí **panel rezervácie na karte Správy** (`?panel=reservation:id&tab=messages`).
-3. Karta **Správy** v paneli rezervácie cez slot `booking.detail.tabs`: konverzácia, štítky automatických, naplánovaná správa
-   (Upraviť pre tohto hosťa / Neposielať / Vrátiť), pole, Rýchle odpovede, prečítanie pri otvorení.
-4. Automatické správy: časová os, vypínače, úprava v bočnom paneli (kedy, text s premennými, náhľad, upozornenie na kolíziu s e-mailom
-   pokynov/ponuky, Poslať skúšobne mne); rýchle odpovede (pridať, upraviť, poradie).
-5. Mobil: schránka zoznam → rezervácia cez celú obrazovku na karte Správy.
-6. Playwright (Ukážkový klient): odpoveď hosťovi, rýchla odpoveď, vynechanie naplánovanej správy, úprava pravidla; axe.
-
-### Z50 [A] — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, hneď po rozpracovanej úlohe**
+### Z50 [B] — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, prvá na linke B**
 Staging je na bezplatnom pláne Supabase, ktorý **nerobí žiadne zálohy**. Nenahraditeľné sú nastavenia a texty STRÖMY, fotky v úložisku
 (~40 súborov), Janin iCal kanál a používatelia (databáza ~40 MB). Je to predstupeň 3f (A9) — postav ho tak, aby sa dal pre produkciu len
 prepnúť na iné úložisko. Nič neplatené.
@@ -217,6 +206,17 @@ prepnúť na iné úložisko. Nič neplatené.
 6. Postup obnovy `docs/prevadzka/zaloha-a-obnova.md`: stiahnutie artefaktu, rozšifrovanie, obnova do nového projektu aj do stagingu,
    nahratie súborov späť; bez tajných hodnôt. **Jedna skúšobná obnova s Martinom** (on rozšifruje) — výsledok do Denníka.
 7. Pozn. pre 3f: na produkciu úložisko v EÚ (A9) — GitHub artefakty sú dočasné riešenie len pre staging.
+
+### Z46 [B] — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
+Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `SpravyAuto`, `Sidebar`.
+1. Menu: skupina Správy s odznakom (Schránka, Automatické správy), len so zapnutým modulom.
+2. Schránka `/admin/messages` (filtre, riadky, hľadanie) → klik otvorí **panel rezervácie na karte Správy** (`?panel=reservation:id&tab=messages`).
+3. Karta **Správy** v paneli rezervácie cez slot `booking.detail.tabs`: konverzácia, štítky automatických, naplánovaná správa
+   (Upraviť pre tohto hosťa / Neposielať / Vrátiť), pole, Rýchle odpovede, prečítanie pri otvorení.
+4. Automatické správy: časová os, vypínače, úprava v bočnom paneli (kedy, text s premennými, náhľad, upozornenie na kolíziu s e-mailom
+   pokynov/ponuky, Poslať skúšobne mne); rýchle odpovede (pridať, upraviť, poradie).
+5. Mobil: schránka zoznam → rezervácia cez celú obrazovku na karte Správy.
+6. Playwright (Ukážkový klient): odpoveď hosťovi, rýchla odpoveď, vynechanie naplánovanej správy, úprava pravidla; axe.
 
 ### Z47 [A] — Modul Správy: hosť (konverzácia v detaile pobytu, mobil, e-mail) — po Z43 a Z45
 Podľa `docs/vizual-stranka-hosta.md` → **Správy s hosťom (v2.5)**, dosky `SpravyPobyt`, `MobilSpravy`, `EmailSprava`.
