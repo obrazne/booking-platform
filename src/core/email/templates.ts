@@ -19,7 +19,10 @@ export type EmailKind =
   | "guest_arrival"
   | "owner_new"
   | "owner_expired"
-  | "owner_cancel_request";
+  | "owner_cancel_request"
+  | "guest_review_invite"
+  | "guest_review_reminder"
+  | "guest_review_rejected";
 
 function esc(s: string): string {
   return s.replace(
@@ -267,6 +270,65 @@ export async function renderEmail(
           times,
           instructions,
         ].join("\n\n"),
+      };
+    }
+    case "guest_review_invite":
+    case "guest_review_reminder": {
+      const lastOut = [...r.items]
+        .map((i) => i.check_out)
+        .sort()
+        .pop();
+      const until = lastOut
+        ? formatDate(
+            new Date(Date.parse(`${lastOut}T00:00:00Z`) + 30 * 86_400_000)
+              .toISOString()
+              .slice(0, 10),
+            locale,
+          )
+        : "";
+      const intro = t(`${kind}.intro`);
+      const windowLine = until ? t("guest_review_invite.window", { date: until }) : "";
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t(`${kind}.subject`, vars),
+        html: layout(
+          accent,
+          t(`${kind}.subject`, vars),
+          [
+            p(t("greeting", { name: r.guest_name })),
+            p(intro),
+            windowLine ? p(windowLine) : "",
+            signature,
+          ],
+          { href: ctx.reviewLink, label: t("guest_review_invite.button") },
+        ),
+        text: [t("greeting", { name: r.guest_name }), intro, windowLine, ctx.reviewLink].join(
+          "\n\n",
+        ),
+      };
+    }
+    case "guest_review_rejected": {
+      const key = typeof payload.reason === "string" ? payload.reason : "";
+      const reasonKey = `reviewReasons.${key}`;
+      const reason = t.has(reasonKey as never) ? t(reasonKey as never) : key;
+      const lines = [
+        t("guest_review_rejected.intro"),
+        reason ? t("guest_review_rejected.reason", { reason }) : "",
+        t("guest_review_rejected.contact"),
+      ].filter(Boolean);
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t("guest_review_rejected.subject", vars),
+        html: layout(accent, t("guest_review_rejected.subject", vars), [
+          p(t("greeting", { name: r.guest_name })),
+          ...lines.map(p),
+          signature,
+        ]),
+        text: [t("greeting", { name: r.guest_name }), ...lines].join("\n\n"),
       };
     }
     case "owner_new":

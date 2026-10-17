@@ -12,6 +12,7 @@ import {
   Clock,
   Plus,
   RefreshCw,
+  Star,
   Undo2,
   X,
   type LucideIcon,
@@ -35,6 +36,8 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   client_emails_failed: { icon: AlertTriangle, tone: "warn" },
   client_trial_ending: { icon: Clock, tone: "neutral" },
   client_new: { icon: Plus, tone: "accent" },
+  review_new: { icon: Star, tone: "accent" },
+  review_publishing: { icon: Clock, tone: "neutral" },
 };
 
 const TONE = {

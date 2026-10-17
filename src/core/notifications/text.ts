@@ -13,6 +13,8 @@ export const NOTIFICATION_KINDS = [
   "client_emails_failed",
   "client_trial_ending",
   "client_new",
+  "review_new",
+  "review_publishing",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {
@@ -60,6 +62,8 @@ export function notificationText(
     module: moduleName,
     ends: date(d.ends_at),
     days: Number(d.days ?? 0),
+    rating: String(d.rating ?? ""),
+    property: String(d.property ?? ""),
   };
   const key = (NOTIFICATION_KINDS as readonly string[]).includes(n.kind) ? n.kind : "other";
   return { title: t(`kinds.${key}.title`, args), body: t(`kinds.${key}.text`, args) };

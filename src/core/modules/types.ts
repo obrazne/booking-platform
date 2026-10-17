@@ -35,6 +35,11 @@ export type ModuleManifest = {
   key: string;
   /** Translation namespace in messages/<locale>.json, e.g. "modules.services". */
   messages: string;
+  /**
+   * False while the module has no guest screens yet (B11): the catalog shows it as "v príprave" and the control
+   * center cannot switch it on; a switch set in the database (demo data) still works.
+   */
+  ready?: boolean;
   /** Other modules this one needs (e.g. upsell needs services). */
   dependsOn?: readonly string[];
   navItems?: readonly ModuleNavItem[];

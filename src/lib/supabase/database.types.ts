@@ -1917,6 +1917,113 @@ export type Database = {
           },
         ]
       }
+      reviews: {
+        Row: {
+          body: string
+          display_name: string
+          featured: boolean
+          guest_id: string | null
+          id: string
+          locale: string
+          owner_reply: string | null
+          owner_reply_at: string | null
+          property_id: string
+          published_at: string | null
+          rating: number
+          rating_cleanliness: number | null
+          rating_communication: number | null
+          rating_location: number | null
+          rating_value: number | null
+          reject_reason: string | null
+          rejected_at: string | null
+          reservation_id: string
+          status: string
+          stay_month: string
+          submitted_at: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          display_name: string
+          featured?: boolean
+          guest_id?: string | null
+          id?: string
+          locale?: string
+          owner_reply?: string | null
+          owner_reply_at?: string | null
+          property_id: string
+          published_at?: string | null
+          rating: number
+          rating_cleanliness?: number | null
+          rating_communication?: number | null
+          rating_location?: number | null
+          rating_value?: number | null
+          reject_reason?: string | null
+          rejected_at?: string | null
+          reservation_id: string
+          status?: string
+          stay_month: string
+          submitted_at?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          display_name?: string
+          featured?: boolean
+          guest_id?: string | null
+          id?: string
+          locale?: string
+          owner_reply?: string | null
+          owner_reply_at?: string | null
+          property_id?: string
+          published_at?: string | null
+          rating?: number
+          rating_cleanliness?: number | null
+          rating_communication?: number | null
+          rating_location?: number | null
+          rating_value?: number | null
+          reject_reason?: string | null
+          rejected_at?: string | null
+          reservation_id?: string
+          status?: string
+          stay_month?: string
+          submitted_at?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: true
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       season_ranges: {
         Row: {
           end_date: string
@@ -2723,6 +2830,10 @@ export type Database = {
         Args: { p_tour: string; p_version: string }
         Returns: undefined
       }
+      my_review_eligibility: {
+        Args: { p_reservation_id: string }
+        Returns: string
+      }
       my_tenant_ids: { Args: never; Returns: string[] }
       next_reservation_number: {
         Args: { p_tenant_id: string }
@@ -2795,6 +2906,26 @@ export type Database = {
           street: string
         }[]
       }
+      public_reviews: {
+        Args: { p_limit?: number; p_property_id?: string; p_tenant_id: string }
+        Returns: {
+          body: string
+          display_name: string
+          featured: boolean
+          id: string
+          locale: string
+          owner_reply: string
+          owner_reply_at: string
+          property_id: string
+          published_at: string
+          rating: number
+          rating_cleanliness: number
+          rating_communication: number
+          rating_location: number
+          rating_value: number
+          stay_month: string
+        }[]
+      }
       purge_expired_holds: { Args: { p_unit_id: string }; Returns: undefined }
       release_hold: { Args: { p_hold_id: string }; Returns: undefined }
       request_cancellation: {
@@ -2807,6 +2938,25 @@ export type Database = {
       }
       reservation_by_token: { Args: { p_token: string }; Returns: Json }
       reservation_notice: { Args: { p_reservation_id: string }; Returns: Json }
+      review_display_name: { Args: { p_name: string }; Returns: string }
+      review_eligibility: {
+        Args: { p_reservation_id: string }
+        Returns: string
+      }
+      review_notice: { Args: { p_review_id: string }; Returns: Json }
+      review_summary: {
+        Args: { p_property_id?: string; p_tenant_id: string }
+        Returns: {
+          average: number
+          cleanliness: number
+          communication: number
+          count: number
+          distribution: Json
+          location: number
+          value: number
+        }[]
+      }
+      reviews_tick: { Args: never; Returns: Json }
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }
         Returns: undefined
@@ -2818,6 +2968,17 @@ export type Database = {
       store_access_token: {
         Args: { p_reservation_id: string; p_token: string }
         Returns: undefined
+      }
+      submit_review: {
+        Args: {
+          p_body?: string
+          p_display_name?: string
+          p_locale?: string
+          p_rating: number
+          p_ratings?: Json
+          p_reservation_id: string
+        }
+        Returns: string
       }
       tenant_by_host: {
         Args: { p_host: string }

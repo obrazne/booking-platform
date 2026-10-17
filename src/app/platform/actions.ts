@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isPlatformAdmin } from "@/core/auth/session";
+import { moduleCatalog } from "@/core/modules/catalog";
 import { createClient } from "@/lib/supabase/server";
 
 export type FormState = {
@@ -69,6 +70,9 @@ export async function setModule(_prev: FormState, formData: FormData): Promise<F
   if (!parsed.success) return { error: "invalidInput" };
   const v = parsed.data;
   if (v.status === "trial" && !v.trialEndsAt) return { error: "trialNeedsDate" };
+  // Modules in preparation (no guest screens yet) can only be switched off.
+  const entry = moduleCatalog().find((m) => m.key === v.moduleKey);
+  if (!entry || (!entry.ready && v.status !== "off")) return { error: "invalidInput" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("platform_set_module", {

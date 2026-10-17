@@ -36,6 +36,8 @@ export async function loadEmailContext(reservationId: string) {
     settings,
     accent: theme?.primary_color ?? "#2f5d50",
     guestLink: token ? `${guestBase}/r/${token}` : null,
+    // Review of the stay in the guest's account (Z34; the page itself comes with the guest screens).
+    reviewLink: `${guestBase}/ucet/pobyt/${r.id}/hodnotenie`,
     adminLink: `${appUrl}/admin/reservations?panel=reservation:${r.id}`,
   };
 }

@@ -334,6 +334,10 @@
     "push": {
       "nav": "Push notifikácie",
       "title": "Push notifikácie"
+    },
+    "reviews": {
+      "nav": "Recenzie",
+      "title": "Recenzie"
     }
   },
   "forms": {
@@ -1242,6 +1246,28 @@
       "intro": "na prihlásenie do administrácie kliknite na tlačidlo nižšie.",
       "note": "Odkaz platí 1 hodinu a dá sa použiť raz. Ak ste o prihlásenie nežiadali, správu pokojne ignorujte.",
       "button": "Prihlásiť sa"
+    },
+    "guest_review_invite": {
+      "subject": "Ako sa vám páčilo — {property}?",
+      "intro": "ďakujeme, že ste u nás boli. Budeme radi, keď nám napíšete, ako sa vám páčilo — zaberie to minútu. Hodnotiť môžu len hostia, ktorí u nás naozaj bývali; recenzia sa zverejní s vaším krstným menom a iniciálou.",
+      "button": "Ohodnotiť pobyt",
+      "window": "Hodnotiť môžete do {date}."
+    },
+    "guest_review_reminder": {
+      "subject": "Pripomienka: ohodnoťte pobyt — {property}",
+      "intro": "pred týždňom sme vás poprosili o hodnotenie pobytu. Ak máte chvíľu, budeme veľmi radi."
+    },
+    "guest_review_rejected": {
+      "subject": "Vašu recenziu sme nezverejnili — {property}",
+      "intro": "ďakujeme za hodnotenie pobytu. Recenziu sme, žiaľ, nezverejnili.",
+      "reason": "Dôvod: {reason}",
+      "contact": "Ak ide podľa vás o omyl, odpovedzte na tento e-mail."
+    },
+    "reviewReasons": {
+      "profanity": "Vulgarizmy alebo urážky",
+      "personal_data": "Osobné údaje",
+      "unrelated": "Nesúvisí s pobytom",
+      "spam": "Spam alebo reklama"
     }
   },
   "ical": {
@@ -1443,7 +1469,8 @@
     "featuredBadge": "zvýraznená",
     "hidden": "skrytá",
     "tooManyFeatured": "Zvýraznených môže byť najviac 5.",
-    "reviewsLink": "Odkaz na všetky hodnotenia nastavíte v Nastaveniach."
+    "reviewsLink": "Odkaz na všetky hodnotenia nastavíte v Nastaveniach.",
+    "otherSources": "Referencie z iných zdrojov (Google, Booking.com, e-mail…). Do priemeru overených recenzií sa nepočítajú a neoznačujú sa ako overené."
   },
   "location": {
     "tab": "Poloha a okolie",
@@ -1887,6 +1914,14 @@
       "other": {
         "title": "Upozornenie",
         "text": ""
+      },
+      "review_new": {
+        "title": "Nová recenzia ★ {rating} — {property}",
+        "text": "{guest} · zverejní sa automaticky o 72 hodín"
+      },
+      "review_publishing": {
+        "title": "Recenzia sa zverejní o 24 h",
+        "text": "{guest} · ★ {rating} · {property}"
       }
     },
     "settings": {
@@ -1908,7 +1943,9 @@
         "portal_booking": "Nová obsadenosť z Bookingu alebo Airbnb",
         "calendar_conflict": "Kolízia v kalendári",
         "sync_failed": "Zlyhaná synchronizácia kalendára",
-        "trial_ending": "Koniec skúšobnej doby modulu (7 dní a 1 deň vopred)"
+        "trial_ending": "Koniec skúšobnej doby modulu (7 dní a 1 deň vopred)",
+        "review_new": "Nová recenzia hosťa",
+        "review_publishing": "Recenzia sa o 24 h zverejní"
       },
       "onlyExpired": "len pri neuhradení"
     }
@@ -2114,5 +2151,62 @@
     },
     "pageTitle": "Upozornenia",
     "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia."
+  },
+  "reviews": {
+    "title": "Recenzie",
+    "lead": "Overené recenzie hostí z pobytov. Zverejnia sa automaticky 72 hodín po odoslaní, ak nezasiahnete. Referencie z iných zdrojov sú v Ponuka › Referencie.",
+    "summary": "Priemer {average} z {count, plural, one {1 zverejnenej recenzie} few {# zverejnených recenzií} other {# zverejnených recenzií}}",
+    "noSummary": "Zatiaľ žiadna zverejnená recenzia.",
+    "empty": "Zatiaľ žiadne recenzie. Hostia dostanú pozvánku e-mailom deň po odchode.",
+    "all": "Všetky",
+    "statuses": {
+      "submitted": "Čaká na zverejnenie",
+      "published": "Zverejnená",
+      "rejected": "Zamietnutá"
+    },
+    "stars": "{rating} z 5",
+    "featured": "Navrchu",
+    "replied": "S odpoveďou",
+    "panel": {
+      "verified": "Overená recenzia z pobytu",
+      "rating": "Hodnotenie",
+      "property": "Objekt",
+      "stay": "Pobyt",
+      "submitted": "Odoslaná",
+      "publishesAt": "Zverejní sa automaticky {date}",
+      "publishedAt": "Zverejnená {date}",
+      "rejectedWith": "Zamietnutá — {reason}",
+      "reservation": "Rezervácia",
+      "text": "Text recenzie",
+      "noText": "Hosť nenapísal text, len hodnotenie.",
+      "partial": "Čiastkové hodnotenia",
+      "reply": "Verejná odpoveď",
+      "replyHint": "Zobrazí sa pod recenziou na stránke. Pokojne a vecne — číta ju aj ďalší hosť.",
+      "replySave": "Uložiť odpoveď",
+      "replyRemove": "Odstrániť odpoveď",
+      "publishNow": "Zverejniť teraz",
+      "publish": "Zverejniť",
+      "reject": "Zamietnuť",
+      "rejectTitle": "Zamietnuť recenziu",
+      "rejectText": "Recenziu je možné zamietnuť len z dôvodov nižšie. Hosť dostane e-mail s dôvodom.",
+      "rejectReason": "Dôvod",
+      "cancel": "Zrušiť",
+      "feature": "Dať navrch",
+      "unfeature": "Zrušiť navrch",
+      "saved": "Uložené.",
+      "error": "Nepodarilo sa uložiť. Skúste to znova."
+    },
+    "parts": {
+      "cleanliness": "Čistota",
+      "location": "Poloha",
+      "communication": "Komunikácia",
+      "value": "Pomer cena/kvalita"
+    },
+    "reasons": {
+      "profanity": "Vulgarizmy alebo urážky",
+      "personal_data": "Osobné údaje",
+      "unrelated": "Nesúvisí s pobytom",
+      "spam": "Spam alebo reklama"
+    }
   }
 }

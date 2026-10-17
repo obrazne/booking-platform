@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -65,7 +65,7 @@ obrazovky upsellu, recenzií a check-inu — **obrazovky pre hostí v Z34–Z36 
 5. Testy: unit (výber príjemcov podľa druhov a modulu), pgTAP, Playwright (zapnutie s povolením notifikácií v prehliadači, uloženie
    zariadenia, skúšobné upozornenie volá odosielanie — skutočné doručenie netestovať), axe. Modul v katalógu → hotový.
 
-### Z34 — Modul Recenzie: základ (bez obrazoviek pre hostí)
+### Z34 ✅ — Modul Recenzie: základ (bez obrazoviek pre hostí)
 Podľa B11. 1. Tabuľka napr. `reviews` (tenant_id, property_id, reservation_id unique, guest_id, hodnotenia, text, zobrazené meno, mesiac
 pobytu, jazyk, stav submitted/published/rejected, dôvod zamietnutia, odpoveď majiteľa + čas, featured, published_at) — RLS: hosť len
 svoju (vytvoriť len ak je oprávnený — kontrola v DB), majiteľ svojho klienta, verejne len zverejnené (cez funkciu/pohľad bez osobných údajov).
@@ -239,6 +239,20 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z34: **modul Recenzie — základ** (B11), bez obrazoviek pre hostí.
+  - **`reviews`** (objekt, rezervácia unique, hosť, hodnotenie 1–5 + čiastkové, text, zobrazené meno, mesiac pobytu, jazyk, stav
+    submitted/published/rejected, dôvod z pevného zoznamu, odpoveď majiteľa, navrchu). RLS: tím klienta a hosť svoju; zápis hosťa len
+    cez `submit_review` (oprávnenosť v DB: `review_eligibility` — nie zrušená, nie z portálu, odchod prebehol, okno 30 dní, jedna na
+    rezerváciu, modul zapnutý); tím mení len stav, dôvod, odpoveď a navrch (stĺpcové práva + trigger `reviews_moderate`). Verejne len
+    `public_reviews` a `review_summary` (priemer a rozdelenie len zo zverejnených, bez osobných údajov). Má `record_history`.
+  - **pg_cron `reviews_tick`** (každých 15 min): zverejnenie po 72 h, upozornenie 24 h pred, pozvánka deň po odchode o 10:00 miestneho
+    času, jedna pripomienka 7 dní po odoslanej pozvánke (ak nehodnotil a okno trvá). Pri zamietnutí e-mail hosťovi s dôvodom.
+    E-maily cez existujúcu frontu, texty `emails.guest_review_*` vo farbe témy klienta; odkaz `/ucet/pobyt/<id>/hodnotenie` (stránku doplní Z38).
+  - Upozornenia `review_new`, `review_publishing` (zvonček, push, nastavenia — druhy modulu len pri zapnutom module).
+  - **Administrácia:** Ponuka › Recenzie (zoznam so stavmi a priemerom, panel: Zverejniť teraz / Zamietnuť s dôvodom / Odpoveď / Navrch);
+    Referencie s vetou „z iných zdrojov“. Modul má v manifeste `ready: false` → v katalógu „v príprave“ a riadiace centrum ho nezapne
+    (len vypne); na STRÖMY ho zapína `npm run demo-data` (7 recenzií vo všetkých stavoch).
+  - Testy: pgTAP `reviews.test.sql` (22), vitest `modules/reviews/model.test.ts`, Playwright `reviews.spec.ts` (+ axe); celá sada 52 ok.
 - 2026-10-17 — Z33: **modul Push notifikácie** (B11).
   - **Zariadenia:** `push_subscriptions` (osoba, klient alebo null = platforma, endpoint, kľúče, popis, vybrané druhy, posledné doručenie,
     zlyhania). RLS: každý len svoje; klientske zariadenie len člen tímu so zapnutým modulom `push`, platformové len správca platformy;

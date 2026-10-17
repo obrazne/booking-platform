@@ -3,6 +3,7 @@ import { Bell, Mail } from "lucide-react";
 import { requireTenant } from "@/core/admin/action";
 import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
+import { getEnabledModules } from "@/core/modules/registry";
 import { TENANT_KINDS } from "@/core/notifications/types";
 import { loadPushState } from "@/core/push/load";
 import { PushSettings } from "@/core/push/push-settings";
@@ -28,6 +29,9 @@ export default async function NotificationSettingsPage() {
       .maybeSingle(),
     loadPushState("tenant", active.tenantId),
   ]);
+  // Kinds of a module (e.g. reviews) only when the module is on.
+  const enabled = new Set((await getEnabledModules(active.tenantId)).map((m) => m.key));
+  const kinds = TENANT_KINDS.filter((k) => !("module" in k) || enabled.has(k.module));
 
   return (
     <div data-bleed>
@@ -55,7 +59,7 @@ export default async function NotificationSettingsPage() {
               </tr>
             </thead>
             <tbody>
-              {TENANT_KINDS.map((k) => (
+              {kinds.map((k) => (
                 <tr key={k.kind} className="border-line-hair border-b last:border-b-0">
                   <th scope="row" className="text-ink px-5 py-3 text-left font-medium">
                     {t(`kinds.${k.kind}`)}
@@ -93,7 +97,7 @@ export default async function NotificationSettingsPage() {
                 scope="tenant"
                 publicKey={push.publicKey}
                 devices={push.devices}
-                kindOptions={TENANT_KINDS.map((k) => ({
+                kindOptions={kinds.map((k) => ({
                   kind: k.kind,
                   label: t(`kinds.${k.kind}`),
                 }))}

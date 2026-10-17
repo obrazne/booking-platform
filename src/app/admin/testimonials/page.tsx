@@ -137,7 +137,7 @@ export default async function TestimonialsPage() {
       />
       <div className="px-5 pb-14 md:px-10">
         <ExpandableList
-          description={t("lead")}
+          description={`${t("lead")} ${t("otherSources")}`}
           rows={list.map((r) => ({
             id: r.id,
             title: r.author_name,

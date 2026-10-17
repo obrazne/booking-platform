@@ -25,6 +25,8 @@ export const TENANT_KINDS = [
   { kind: "calendar_conflict", email: "yes" },
   { kind: "sync_failed", email: "no" },
   { kind: "trial_ending", email: "no" },
+  { kind: "review_new", email: "no", module: "reviews" },
+  { kind: "review_publishing", email: "no", module: "reviews" },
 ] as const;
 
 export const PLATFORM_KINDS = [

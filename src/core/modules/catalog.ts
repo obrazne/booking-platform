@@ -8,7 +8,6 @@ import { listModules } from "./registry";
 export type CatalogEntry = { key: string; ready: boolean; dependsOn: readonly string[] };
 
 const PLANNED: CatalogEntry[] = [
-  { key: "reviews", ready: false, dependsOn: [] },
   { key: "messages", ready: false, dependsOn: [] },
   { key: "sms", ready: false, dependsOn: [] },
   { key: "checkin", ready: false, dependsOn: [] },
@@ -17,7 +16,11 @@ const PLANNED: CatalogEntry[] = [
 
 export function moduleCatalog(): CatalogEntry[] {
   return [
-    ...listModules().map((m) => ({ key: m.key, ready: true, dependsOn: m.dependsOn ?? [] })),
+    ...listModules().map((m) => ({
+      key: m.key,
+      ready: m.ready !== false,
+      dependsOn: m.dependsOn ?? [],
+    })),
     ...PLANNED,
   ];
 }

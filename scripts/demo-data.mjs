@@ -64,6 +64,56 @@ const GUESTS = [
   "Barbora Kubišová",
 ];
 /** Stays per month, January–December: winter and summer stronger, spring and autumn weak. */
+// Reviews of past stays in every state (Z34).
+const REVIEWS = [
+  {
+    hours: 20,
+    status: "submitted",
+    rating: 5,
+    parts: [5, 5, 5, 4],
+    body: "Nádherné miesto, ticho a výhľad na hory. Sauna po túre bola presne to, čo sme potrebovali.",
+  },
+  {
+    hours: 52,
+    status: "submitted",
+    rating: 4,
+    parts: [4, 5, 4, 4],
+    body: "Chata je krásna a čistá. Len príjazdová cesta je v zime náročnejšia, odporúčame zimné pneumatiky.",
+  },
+  {
+    hours: 24 * 9,
+    status: "published",
+    rating: 5,
+    parts: [5, 5, 5, 5],
+    featured: true,
+    reply: "Ďakujeme, tešíme sa na vás znova!",
+    body: "Najlepší víkend tohto roka. Všetko pripravené, krb, drevo, kuchyňa vybavená do posledného detailu.",
+  },
+  {
+    hours: 24 * 40,
+    status: "published",
+    rating: 5,
+    parts: [5, 4, 5, 5],
+    body: "Ideálne pre rodinu s deťmi. Deti si užívali záhradu, my večery na terase.",
+  },
+  {
+    hours: 24 * 75,
+    status: "published",
+    rating: 4,
+    parts: [4, 5, 5, 3],
+    reply: "Ďakujeme za tip, na jar pribudne druhá rýchlovarná kanvica.",
+    body: "Veľmi príjemný pobyt, komunikácia rýchla. Pre šesť ľudí by sa zišlo viac riadu.",
+  },
+  { hours: 24 * 120, status: "published", rating: 5, parts: [], body: "" },
+  {
+    hours: 24 * 160,
+    status: "rejected",
+    rating: 1,
+    parts: [],
+    reason: "spam",
+    body: "Navštívte našu stránku s výhodnými pôžičkami!!!",
+  },
+];
 const SEASON = [4, 3, 2, 1, 1, 2, 3, 4, 2, 1, 1, 3];
 
 const must = ({ data, error }, what) => {
@@ -560,6 +610,8 @@ async function createDemo() {
 
   // History of ~18 months (Z27), so Statistics and the overview chart have something to show.
   await createHistory(cat, martin, channels);
+  // Reviews of past stays in every state (Z34).
+  await demoReviews(martin);
 
   // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
   must(
@@ -587,6 +639,75 @@ Demo data for Chalet STRÖMY are ready (staging).
   (c) ${c.number}  ${c.checkIn} – ${c.checkOut}  completed
 Guest zone: ${host}/ucet → ${GUEST_ZONE_EMAIL} (the code arrives at ${MARTIN} through the staging redirect).
 `);
+}
+
+// ---------------------------------------------------------------- reviews (Z34)
+
+function reviewName(full) {
+  const parts = full.trim().split(/\s+/);
+  return parts.length === 1 ? parts[0] : `${parts[0]} ${parts[parts.length - 1][0].toUpperCase()}.`;
+}
+
+async function demoReviews(martin) {
+  must(
+    await db
+      .from("tenant_modules")
+      .upsert(
+        { tenant_id: TENANT, module_key: "reviews", status: "active", updated_by: martin.id },
+        { onConflict: "tenant_id,module_key" },
+      ),
+    "reviews module",
+  );
+  const stays = must(
+    await db
+      .from("reservations")
+      .select("id, guest_name, guest_id, items:reservation_items(check_in, check_out)")
+      .eq("tenant_id", TENANT)
+      .eq("guest_note", NOTE)
+      .eq("status", "completed"),
+    "completed stays",
+  )
+    .map((r) => ({ ...r, checkIn: r.items[0]?.check_in, checkOut: r.items[0]?.check_out }))
+    .filter((r) => r.checkOut && r.checkOut < today)
+    .sort((x, y) => (x.checkOut < y.checkOut ? 1 : -1));
+  let made = 0;
+  for (const [i, spec] of REVIEWS.entries()) {
+    const stay = stays[i];
+    if (!stay) break;
+    const submitted = new Date(Date.now() - spec.hours * 3_600_000).toISOString();
+    const [c, l, m, v] = spec.parts;
+    must(
+      await db.from("reviews").insert({
+        tenant_id: TENANT,
+        property_id: PROPERTY,
+        reservation_id: stay.id,
+        guest_id: stay.guest_id,
+        rating: spec.rating,
+        rating_cleanliness: c ?? null,
+        rating_location: l ?? null,
+        rating_communication: m ?? null,
+        rating_value: v ?? null,
+        body: spec.body,
+        display_name: reviewName(stay.guest_name),
+        stay_month: `${stay.checkIn.slice(0, 7)}-01`,
+        locale: "sk",
+        status: spec.status,
+        reject_reason: spec.reason ?? null,
+        owner_reply: spec.reply ?? null,
+        owner_reply_at: spec.reply ? submitted : null,
+        featured: spec.featured ?? false,
+        submitted_at: submitted,
+        published_at:
+          spec.status === "published"
+            ? new Date(Date.parse(submitted) + 72 * 3_600_000).toISOString()
+            : null,
+        rejected_at: spec.status === "rejected" ? submitted : null,
+      }),
+      "review",
+    );
+    made++;
+  }
+  console.log(`Reviews: ${made} (module reviews on).`);
 }
 
 // ---------------------------------------------------------------- history (Z27)
@@ -694,6 +815,15 @@ async function curatedNotifications(martin, { a, b }, trialEnds) {
       "facts",
     );
   const [fa, fb] = [await facts(a.id), await facts(b.id)];
+  // The newest review waiting for publication (Z34).
+  const { data: review } = await db
+    .from("reviews")
+    .select("id, display_name, rating, submitted_at, reservation:reservations(number)")
+    .eq("tenant_id", TENANT)
+    .eq("status", "submitted")
+    .order("submitted_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const data = (r) => ({
     number: r.number,
     guest: r.guest_name,
@@ -705,6 +835,22 @@ async function curatedNotifications(martin, { a, b }, trialEnds) {
     demo: true,
   });
   const rows = [
+    ...(review
+      ? [
+          {
+            kind: "review_new",
+            data: {
+              guest: review.display_name,
+              rating: review.rating,
+              property: "Chalet STRÖMY",
+              number: review.reservation?.number,
+              demo: true,
+            },
+            target: `/admin/reviews?panel=review:${review.id}`,
+            at: review.submitted_at,
+          },
+        ]
+      : []),
     {
       kind: "reservation_new",
       data: data(fa),
