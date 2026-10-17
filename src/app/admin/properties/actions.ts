@@ -165,6 +165,32 @@ export async function updateArrival(_: ActionResult, form: FormData): Promise<Ac
     arrival_instructions: localizedFromForm(form, "arrival", tenant.locales),
   });
   if (error) return fail(dbErrorKey(error));
+  // Module checkin (Z36): settings of online check-in of the property, when the form had them.
+  if (form.get("checkin") === "1") {
+    const days = String(form.get("checkin_reminder_days") ?? "")
+      .split(/[,;\s]+/)
+      .filter(Boolean)
+      .map(Number);
+    const opens = Number(form.get("checkin_opens_days_before"));
+    if (
+      !Number.isInteger(opens) ||
+      opens < 0 ||
+      opens > 90 ||
+      days.length > 5 ||
+      days.some((d) => !Number.isInteger(d) || d < 0 || d > 90)
+    )
+      return fail("invalid");
+    const { error: e } = await supabase
+      .from("properties")
+      .update({
+        checkin_opens_days_before: opens,
+        checkin_reminder_days: [...new Set(days)].sort((a, b) => b - a),
+        checkin_required_for_instructions: form.get("checkin_required_for_instructions") === "on",
+      })
+      .eq("id", id.data)
+      .eq("tenant_id", tenant.id);
+    if (e) return fail(dbErrorKey(e));
+  }
   return done(id.data);
 }
 

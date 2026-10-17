@@ -39,6 +39,8 @@ export async function loadEmailContext(reservationId: string) {
     guestLink: token ? `${guestBase}/r/${token}` : null,
     // Review of the stay in the guest's account (Z34; the page itself comes with the guest screens).
     reviewLink: `${guestBase}/ucet/pobyt/${r.id}/hodnotenie`,
+    // Online check-in of the stay in the guest's account (Z36; the page comes with the guest screens, Z39).
+    checkinLink: `${guestBase}/ucet/pobyt/${r.id}/checkin`,
     adminLink: `${appUrl}/admin/reservations?panel=reservation:${r.id}`,
   };
 }

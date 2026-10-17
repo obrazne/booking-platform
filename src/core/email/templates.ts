@@ -26,7 +26,8 @@ export type EmailKind =
   | "guest_review_rejected"
   | "guest_order_received"
   | "guest_order_confirmed"
-  | "guest_order_declined";
+  | "guest_order_declined"
+  | "guest_checkin_reminder";
 
 function esc(s: string): string {
   return s.replace(
@@ -387,6 +388,22 @@ export async function renderEmail(
           guestButton,
         ),
         text: [t("greeting", { name: r.guest_name }), ...lines, ctx.guestLink ?? ""].join("\n\n"),
+      };
+    }
+    case "guest_checkin_reminder": {
+      const intro = t("guest_checkin_reminder.intro", { days: Number(payload.days ?? 0) });
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t("guest_checkin_reminder.subject", vars),
+        html: layout(
+          accent,
+          t("guest_checkin_reminder.subject", vars),
+          [p(t("greeting", { name: r.guest_name })), p(intro), signature],
+          { href: ctx.checkinLink, label: t("guest_checkin_reminder.button") },
+        ),
+        text: [t("greeting", { name: r.guest_name }), intro, ctx.checkinLink].join("\n\n"),
       };
     }
     case "owner_new":

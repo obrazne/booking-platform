@@ -99,7 +99,7 @@ Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
 5. Ukážkové dáta (2–3 objednávky v rôznych stavoch), testy unit (výpočet, uzávierka, limit), pgTAP, Playwright admin.
 
 
-### Z36 — Modul Online check-in: základ (bez obrazoviek pre hostí)
+### Z36 ✅ — Modul Online check-in: základ (bez obrazoviek pre hostí)
 Podľa B11 → Online check-in (slovenský balík pravidiel). Polia a lehoty sú zo zákona — **v kóde ako pravidlá krajiny, nie natvrdo
 v komponentoch**; pred ostrým nasadením ich overíme.
 1. Tabuľky napr. `checkins` (rezervácia, stav not_started/in_progress/completed, čas príchodu, súhlas s ubytovacím poriadkom, kto a kedy)
@@ -226,6 +226,10 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Online check-in (Z36) — pred ostrou prevádzkou overiť:** polia knihy ubytovaných a hlásenia cudzinca, lehotu 5 dní a uchovávanie
+  (nastavené 730 dní po odchode, potom sa čísla dokladov a dátumy narodenia samy vymažú), či doklad treba aj pri deťoch (teraz áno pri
+  všetkých osobách) a sadzbu dane obce STRÖMY. **Oficiálne tlačivo MV SR v repozitári nie je** — PDF je vlastné prehľadné s rovnakými
+  údajmi a podpismi; ak chceš presné tlačivo, pošli vzor (PDF) a prerobím ho.
 - **Riadiace centrum v produkcii (pripomienka 17. 10.):** vlastná adresa (subdoména) s vlastným prihlásením a dvojstupňovým overením pre správcu — rozhodnúť pri príprave produkcie (DNS).
 - **Nový objekt:** zatiaľ ho zakladá len správca; či si ho ubytovateľ pridá sám (a či je počet objektov súčasťou balíka), rozhodne obchodný model.
 - **Kód hosťa (Z23):** návrh má 6 políčok, ale staging posiela **8-miestny** kód (nastavenie Supabase Auth → Email OTP length).
@@ -258,6 +262,26 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z36: **modul Online check-in — základ** (B11), bez obrazoviek pre hostí.
+  - **Pravidlá krajiny** (A6): `checkin_rules('SK')` v DB (vynucuje) a `src/modules/checkin/rules.ts` (rovnaký balík + výpočet dane, unit testy):
+    povinné polia pre všetkých / navyše pre cudzincov, druhy dokladov, hlásenie do 5 dní, uchovávanie, citlivé polia.
+  - **`checkins`** (stav, čas príchodu, súhlas s ubytovacím poriadkom, kto/ako dokončil; má `record_history`) a **`checkin_guests`**
+    (osoby; **bez** `record_history`, aby história nedržala kópie dokladov). Hosť cez účet alebo prístupový odkaz: `save_checkin`,
+    `complete_checkin` (kontrola `checkin_missing` podľa pravidiel, okno od X dní pred príchodom do odchodu). Tím osoby priamo nečíta:
+    `checkin_people` (doklad maskovaný), **`reveal_checkin_guest` len rola majiteľ a každé odkrytie ide do auditu** (`checkin.revealed`).
+    Pokyny k príchodu a kódy sa pri nastavení objektu ukážu až po dokončení (`arrival_instructions_visible`).
+  - **pg_cron `checkin_tick`** (hodinovo): pripomienky e-mailom podľa dní objektu (predvolene 7 a 2, len ak nedokončený), upozornenie
+    „cudzinec nenahlásený“ na 4. deň, mazanie čísel dokladov a dátumov narodenia po lehote klienta (predvolene 730 dní po odchode).
+  - **Daň za ubytovanie:** nastavenia klienta (obec, sadzba za osobu a noc, oslobodenie podľa veku), `city_tax_month` (vek z check-inu
+    počíta DB, dátumy narodenia neopustia databázu; inak dospelí z rezervácie), prehľad a CSV v Príchodoch.
+  - **Hlásenie cudzinca:** vlastné PDF (pdf-lib + Geist s diakritikou, `src/core/pdf`) na podpis, len majiteľ; „Označiť ako nahlásené“.
+  - **Administrácia:** panel rezervácie → „Check-in“ (slot modulu): stav, osoby maskované, Odkryť (audit), PDF, hlásenie. **Rezervácie › Príchody**
+    (podpoložka — je to pohľad na rezervácie podľa príchodu ako kalendár): príchody na 30 dní so stavom check-inu a hlásení, daň za mesiac.
+    Nastavenia → Online check-in (obec, sadzba, oslobodenie, uchovávanie); objekt → Príchod (otvorenie check-inu, pripomienky, pokyny až po check-ine).
+  - Ukážkové dáta: dokončený check-in pri (b) so 4 osobami (2 cudzinci GB, vymyslené doklady) a rozpracovaný pri ďalšom pobyte.
+    Overené: pri `demo-data --reset` už neodišiel žiadny e-mail.
+  - Testy: pgTAP `checkin.test.sql` (20 — RLS, maskovanie, audit, mazanie po lehote), vitest `rules.test.ts`, Playwright `checkin.spec.ts`
+    (+ axe); celá sada 51 ok, `cart.spec` Z30 a mobil `admin-v1` „v1.1 panel“ zlyhali len v plnom behu, samostatne prejdú.
 - 2026-10-17 — Z35: **modul Upsell — základ** (B11), bez obrazoviek pre hostí.
   - **Nastavenia služby:** ponúkať po rezervácii, uzávierka v hodinách (pred dňom služby, inak pred príchodom), vyžaduje potvrdenie,
     povoliť na účet pobytu (Ponuka › Doplnkové služby, len so zapnutým upsellom). Klient: **limit účtu pobytu** (Nastavenia, predvolene 300 €).

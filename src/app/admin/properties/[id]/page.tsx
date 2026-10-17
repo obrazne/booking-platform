@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { asLocalized, tr } from "@/core/i18n/localized";
+import { isModuleEnabled } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { updateArrival, updatePropertyDetails, updatePropertyTexts, updateTerms } from "../actions";
 import { centsToInput, getPropertyForEdit } from "../data";
@@ -40,12 +41,14 @@ function NativeSelect({
 
 export default async function PropertyDetailsPage({ params }: PageProps<"/admin/properties/[id]">) {
   const { id } = await params;
-  const [t, tf, locale] = await Promise.all([
+  const [t, tf, tc, locale] = await Promise.all([
     getTranslations("properties"),
     getTranslations("forms"),
+    getTranslations("modules.checkin.settings"),
     getLocale(),
   ]);
   const { tenant, property, termIds, arrival } = await getPropertyForEdit(id);
+  const checkin = await isModuleEnabled(tenant.id, "checkin");
   const supabase = await createClient();
   const { data: terms } = await supabase
     .from("terms")
@@ -272,6 +275,39 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
                 multiline
                 rows={6}
               />
+              {checkin ? (
+                // Module checkin (Z36): when check-in opens, reminders, instructions only after check-in.
+                <fieldset className="border-line grid gap-3 rounded-[10px] border p-4">
+                  <legend className="label-mono px-1">{tc("propertyTitle")}</legend>
+                  <input type="hidden" name="checkin" value="1" />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field label={tc("opens")} htmlFor="checkin_opens_days_before">
+                      <Input
+                        id="checkin_opens_days_before"
+                        name="checkin_opens_days_before"
+                        type="number"
+                        min={0}
+                        max={90}
+                        defaultValue={property.checkin_opens_days_before}
+                      />
+                    </Field>
+                    <Field label={tc("reminders")} htmlFor="checkin_reminder_days">
+                      <Input
+                        id="checkin_reminder_days"
+                        name="checkin_reminder_days"
+                        defaultValue={property.checkin_reminder_days.join(", ")}
+                      />
+                    </Field>
+                  </div>
+                  <Label className="font-normal">
+                    <Checkbox
+                      name="checkin_required_for_instructions"
+                      defaultChecked={property.checkin_required_for_instructions}
+                    />{" "}
+                    {tc("requiredForInstructions")}
+                  </Label>
+                </fieldset>
+              ) : null}
               <SubmitButton>{tf("save")}</SubmitButton>
             </ActionForm>
           </CardContent>

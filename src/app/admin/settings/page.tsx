@@ -13,12 +13,14 @@ import { saveSettings } from "./actions";
 
 export default async function SettingsPage() {
   const active = await requireTenant();
-  const [t, tf, tu, tenant, upsell] = await Promise.all([
+  const [t, tf, tu, tc, tenant, upsell, checkin] = await Promise.all([
     getTranslations("settings"),
     getTranslations("forms"),
     getTranslations("modules.upsell"),
+    getTranslations("modules.checkin.settings"),
     getTenantInfo(active.tenantId),
     isModuleEnabled(active.tenantId, "upsell"),
+    isModuleEnabled(active.tenantId, "checkin"),
   ]);
   const supabase = await createClient();
   const { data: s } = await supabase
@@ -172,6 +174,53 @@ export default async function SettingsPage() {
             </Field>
           </CardContent>
         </Card>
+        {checkin ? (
+          // Module checkin (Z36): tax for accommodation and how long documents are kept.
+          <Card>
+            <CardHeader>
+              <CardTitle>{tc("title")}</CardTitle>
+              <CardDescription>{tc("retentionHint")}</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 sm:grid-cols-2">
+              <Field label={tc("municipality")} htmlFor="city_tax_municipality">
+                <Input
+                  id="city_tax_municipality"
+                  name="city_tax_municipality"
+                  maxLength={120}
+                  defaultValue={s?.city_tax_municipality ?? ""}
+                />
+              </Field>
+              <Field label={tc("taxRate", { currency: tenant.currency })} htmlFor="city_tax">
+                <Input
+                  id="city_tax"
+                  name="city_tax"
+                  inputMode="decimal"
+                  defaultValue={((s?.city_tax_cents ?? 0) / 100).toFixed(2).replace(".", ",")}
+                />
+              </Field>
+              <Field label={tc("exemptUnder")} htmlFor="city_tax_exempt_under">
+                <Input
+                  id="city_tax_exempt_under"
+                  name="city_tax_exempt_under"
+                  type="number"
+                  min={0}
+                  max={120}
+                  defaultValue={s?.city_tax_exempt_under ?? 18}
+                />
+              </Field>
+              <Field label={tc("retention")} htmlFor="checkin_retention_days">
+                <Input
+                  id="checkin_retention_days"
+                  name="checkin_retention_days"
+                  type="number"
+                  min={30}
+                  max={3650}
+                  defaultValue={s?.checkin_retention_days ?? 730}
+                />
+              </Field>
+            </CardContent>
+          </Card>
+        ) : null}
         <SubmitButton>{tf("save")}</SubmitButton>
       </ActionForm>
     </div>

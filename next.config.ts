@@ -5,6 +5,10 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // The font of PDF documents (Slovak diacritics) is read from disk at runtime.
+  outputFileTracingIncludes: {
+    "/admin/arrivals/report/[guestId]": ["./src/core/pdf/*.ttf"],
+  },
   // Property photos from Supabase Storage are resized and served as AVIF/WebP by Next (Z16 — speed on phones).
   images: {
     formats: ["image/avif", "image/webp"],

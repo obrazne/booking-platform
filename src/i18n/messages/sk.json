@@ -386,6 +386,110 @@
         "saved": "Uložené.",
         "error": "Nepodarilo sa uložiť. Skúste to znova."
       }
+    },
+    "checkin": {
+      "nav": "Príchody",
+      "title": "Online check-in",
+      "section": {
+        "title": "Check-in",
+        "statuses": {
+          "not_started": "Nezačatý",
+          "in_progress": "Rozpracovaný",
+          "completed": "Dokončený"
+        },
+        "notStarted": "Hosť check-in ešte nezačal.",
+        "arrivalTime": "Príchod okolo {time}",
+        "houseRules": "Súhlasil s ubytovacím poriadkom",
+        "persons": "Osoby",
+        "citizen": "občan SR",
+        "foreigner": "cudzinec · {country}",
+        "documents": {
+          "id_card": "OP",
+          "passport": "pas"
+        },
+        "reveal": "Odkryť",
+        "revealLabel": "Odkryť doklad — {name}",
+        "born": "nar. {date}",
+        "ownerOnly": "Čísla dokladov a dátumy narodenia vidí len majiteľ; každé odkrytie sa zapíše do auditu.",
+        "reportPdf": "Tlačivo pre políciu (PDF)",
+        "reportDue": "nahlásiť do {date}",
+        "reportOverdue": "nahlásiť do {date} — termín prešiel",
+        "reported": "nahlásené {date}",
+        "markReported": "Označiť ako nahlásené",
+        "unmarkReported": "Zrušiť označenie",
+        "purged": "doklad vymazaný po lehote uchovávania",
+        "saved": "Uložené.",
+        "error": "Nepodarilo sa. Skúste to znova."
+      },
+      "arrivals": {
+        "title": "Príchody",
+        "lead": "Najbližšie príchody so stavom online check-inu a hlásení cudzincov (do 5 dní od ubytovania).",
+        "empty": "V najbližších 30 dňoch nikto nepricestuje.",
+        "guest": "Hosť",
+        "arrival": "Príchod",
+        "persons": "Osoby",
+        "checkin": "Check-in",
+        "reports": "Hlásenia",
+        "toReport": "{count, plural, one {1 cudzinec na nahlásenie} few {# cudzinci na nahlásenie} other {# cudzincov na nahlásenie}}",
+        "allReported": "nahlásené",
+        "none": "—",
+        "unreportedTitle": "Čaká na nahlásenie",
+        "taxTitle": "Daň za ubytovanie",
+        "taxLead": "Mesačný prehľad pre obec {municipality}: osoby a noci pobytov s príchodom v mesiaci. Pri dokončenom check-ine podľa veku hostí, inak podľa dospelých z rezervácie.",
+        "taxNotSet": "Obec a sadzbu nastavíte v Nastaveniach → Online check-in.",
+        "month": "Mesiac",
+        "taxSummary": "{stays, plural, one {1 pobyt} few {# pobyty} other {# pobytov}} · {paying} platiacich osôb · {amount}",
+        "exportCsv": "Stiahnuť CSV",
+        "show": "Zobraziť"
+      },
+      "settings": {
+        "title": "Online check-in",
+        "retention": "Uchovávanie dokladov (dni po odchode)",
+        "retentionHint": "Čísla dokladov a dátumy narodenia sa po tejto lehote automaticky vymažú (zákonná lehota pre tlačivo je 2 roky — overte pred ostrou prevádzkou).",
+        "municipality": "Obec (daň za ubytovanie)",
+        "taxRate": "Sadzba za osobu a noc ({currency})",
+        "exemptUnder": "Oslobodené osoby mladšie ako (roky)",
+        "propertyTitle": "Online check-in",
+        "opens": "Check-in sa otvorí (dní pred príchodom)",
+        "reminders": "Pripomienky e-mailom (dni pred príchodom, oddelené čiarkou)",
+        "requiredForInstructions": "Pokyny k príchodu a prístupové kódy ukázať až po dokončení check-inu"
+      },
+      "csv": {
+        "number": "Rezervácia",
+        "guest": "Hosť",
+        "checkIn": "Príchod",
+        "checkOut": "Odchod",
+        "nights": "Noci",
+        "paying": "Platiaci",
+        "exempt": "Oslobodení",
+        "amount": "Suma",
+        "source": "Podľa"
+      },
+      "csvSource": {
+        "checkin": "check-in",
+        "reservation": "rezervácia"
+      },
+      "pdf": {
+        "title": "Údaje o ubytovanom cudzincovi",
+        "subtitle": "Podklad na hlásenie pobytu cudzinca (zákon 404/2011 Z. z.) — skontrolujte podľa platného tlačiva MV SR.",
+        "accommodation": "Ubytovanie",
+        "provider": "Ubytovateľ",
+        "address": "Adresa",
+        "stay": "Pobyt",
+        "person": "Ubytovaný",
+        "firstName": "Meno",
+        "lastName": "Priezvisko",
+        "birthDate": "Dátum narodenia",
+        "nationality": "Štátna príslušnosť",
+        "documentType": "Druh dokladu",
+        "documentNumber": "Číslo dokladu",
+        "homeAddress": "Adresa trvalého pobytu",
+        "from": "Od",
+        "until": "Do",
+        "signature": "Podpis ubytovaného",
+        "signatureProvider": "Podpis ubytovateľa",
+        "date": "Dátum"
+      }
     }
   },
   "forms": {
@@ -1337,6 +1441,11 @@
       "stay_account": "na účet pobytu, vyúčtuje sa pri odchode",
       "transfer": "prevodom vopred",
       "card": "kartou"
+    },
+    "guest_checkin_reminder": {
+      "subject": "Online check-in — {property}",
+      "intro": "{days, plural, =0 {dnes vás čakáme} one {zajtra vás čakáme} few {o # dni vás čakáme} other {o # dní vás čakáme}}. Vyplňte, prosím, vopred údaje všetkých hostí — pri príchode tak nebudete nič vypĺňať.",
+      "button": "Vyplniť check-in"
     }
   },
   "ical": {
@@ -1999,6 +2108,14 @@
       "order_awaiting": {
         "title": "Objednávka čaká na potvrdenie — {service}",
         "text": "{guest} · {number} · {amount}"
+      },
+      "checkin_completed": {
+        "title": "Check-in dokončený — {number}",
+        "text": "{guest} · {stay}"
+      },
+      "foreigner_unreported": {
+        "title": "Cudzinec nenahlásený — {number}",
+        "text": "{person} · nahlásiť polícii do {reportDue}"
       }
     },
     "settings": {
@@ -2024,7 +2141,9 @@
         "review_new": "Nová recenzia hosťa",
         "review_publishing": "Recenzia sa o 24 h zverejní",
         "order_new": "Nová objednávka služby po rezervácii",
-        "order_awaiting": "Objednávka čaká na moje potvrdenie"
+        "order_awaiting": "Objednávka čaká na moje potvrdenie",
+        "checkin_completed": "Hosť dokončil online check-in",
+        "foreigner_unreported": "Cudzinec ešte nie je nahlásený (4. deň)"
       },
       "onlyExpired": "len pri neuhradení"
     }

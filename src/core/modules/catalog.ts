@@ -10,7 +10,6 @@ export type CatalogEntry = { key: string; ready: boolean; dependsOn: readonly st
 const PLANNED: CatalogEntry[] = [
   { key: "messages", ready: false, dependsOn: [] },
   { key: "sms", ready: false, dependsOn: [] },
-  { key: "checkin", ready: false, dependsOn: [] },
 ];
 
 export function moduleCatalog(): CatalogEntry[] {

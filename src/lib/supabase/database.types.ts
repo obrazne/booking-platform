@@ -110,6 +110,138 @@ export type Database = {
           },
         ]
       }
+      checkin_guests: {
+        Row: {
+          address: string | null
+          birth_date: string | null
+          created_at: string
+          document_number: string | null
+          document_type: string | null
+          first_name: string
+          id: string
+          is_citizen: boolean
+          last_name: string
+          nationality: string | null
+          purged_at: string | null
+          reported_at: string | null
+          reported_by: string | null
+          reservation_id: string
+          sort: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          birth_date?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string | null
+          first_name: string
+          id?: string
+          is_citizen?: boolean
+          last_name: string
+          nationality?: string | null
+          purged_at?: string | null
+          reported_at?: string | null
+          reported_by?: string | null
+          reservation_id: string
+          sort?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          birth_date?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string | null
+          first_name?: string
+          id?: string
+          is_citizen?: boolean
+          last_name?: string
+          nationality?: string | null
+          purged_at?: string | null
+          reported_at?: string | null
+          reported_by?: string | null
+          reservation_id?: string
+          sort?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkin_guests_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkin_guests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checkins: {
+        Row: {
+          arrival_time: string | null
+          completed_at: string | null
+          completed_by: string | null
+          completed_via: string | null
+          created_at: string
+          house_rules_accepted_at: string | null
+          id: string
+          reservation_id: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          arrival_time?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_via?: string | null
+          created_at?: string
+          house_rules_accepted_at?: string | null
+          id?: string
+          reservation_id: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          arrival_time?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_via?: string | null
+          created_at?: string
+          house_rules_accepted_at?: string | null
+          id?: string
+          reservation_id?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checkins_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: true
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checkins_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discounts: {
         Row: {
           active: boolean
@@ -959,6 +1091,9 @@ export type Database = {
           booking_mode: string
           check_in_from: string
           check_out_until: string
+          checkin_opens_days_before: number
+          checkin_reminder_days: number[]
+          checkin_required_for_instructions: boolean
           city: string | null
           cleaning_gap_days: number
           contact_email: string | null
@@ -996,6 +1131,9 @@ export type Database = {
           booking_mode?: string
           check_in_from?: string
           check_out_until?: string
+          checkin_opens_days_before?: number
+          checkin_reminder_days?: number[]
+          checkin_required_for_instructions?: boolean
           city?: string | null
           cleaning_gap_days?: number
           contact_email?: string | null
@@ -1033,6 +1171,9 @@ export type Database = {
           booking_mode?: string
           check_in_from?: string
           check_out_until?: string
+          checkin_opens_days_before?: number
+          checkin_reminder_days?: number[]
+          checkin_required_for_instructions?: boolean
           city?: string | null
           cleaning_gap_days?: number
           contact_email?: string | null
@@ -2434,6 +2575,10 @@ export type Database = {
           arrival_email_days_before: number
           bic: string | null
           cancellation_policy: Json
+          checkin_retention_days: number
+          city_tax_cents: number
+          city_tax_exempt_under: number
+          city_tax_municipality: string | null
           contact_name: string | null
           contact_phone: string | null
           hold_minutes: number
@@ -2456,6 +2601,10 @@ export type Database = {
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_policy?: Json
+          checkin_retention_days?: number
+          city_tax_cents?: number
+          city_tax_exempt_under?: number
+          city_tax_municipality?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           hold_minutes?: number
@@ -2478,6 +2627,10 @@ export type Database = {
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_policy?: Json
+          checkin_retention_days?: number
+          city_tax_cents?: number
+          city_tax_exempt_under?: number
+          city_tax_municipality?: string | null
           contact_name?: string | null
           contact_phone?: string | null
           hold_minutes?: number
@@ -2816,6 +2969,23 @@ export type Database = {
         Args: { p_reservation_id: string }
         Returns: boolean
       }
+      arrivals_overview: {
+        Args: { p_days?: number; p_tenant_id: string }
+        Returns: {
+          check_in: string
+          check_out: string
+          checkin_status: string
+          foreigners: number
+          guest_name: string
+          number: string
+          people: number
+          persons: number
+          property_name: string
+          report_due: string
+          reservation_id: string
+          unreported: number
+        }[]
+      }
       audit_sign_in: { Args: { p_method: string }; Returns: undefined }
       cancel_order: {
         Args: { p_order_id: string; p_token?: string }
@@ -2833,6 +3003,55 @@ export type Database = {
           p_to: string
         }
         Returns: undefined
+      }
+      checkin_missing: { Args: { p_reservation_id: string }; Returns: Json }
+      checkin_people: {
+        Args: { p_reservation_id: string }
+        Returns: {
+          address: string
+          document_masked: string
+          document_type: string
+          first_name: string
+          has_birth_date: boolean
+          id: string
+          is_citizen: boolean
+          last_name: string
+          nationality: string
+          purged: boolean
+          report_due: string
+          reported_at: string
+          sort: number
+        }[]
+      }
+      checkin_people_by_id: {
+        Args: { p_guest_id: string }
+        Returns: {
+          check_in: string
+          check_out: string
+          first_name: string
+          last_name: string
+          property_address: string
+          property_name: string
+          reservation_number: string
+          tenant_name: string
+        }[]
+      }
+      checkin_rules: { Args: { p_country: string }; Returns: Json }
+      checkin_tick: { Args: never; Returns: Json }
+      checkin_window: { Args: { p_reservation_id: string }; Returns: string }
+      city_tax_month: {
+        Args: { p_month: string; p_tenant_id: string }
+        Returns: {
+          check_in: string
+          check_out: string
+          exempt: number
+          guest_name: string
+          nights: number
+          number: string
+          paying: number
+          reservation_id: string
+          source: string
+        }[]
       }
       claim_email_jobs: {
         Args: { p_limit?: number }
@@ -2860,6 +3079,10 @@ export type Database = {
       }
       claim_guest_account: { Args: { p_tenant_id: string }; Returns: string }
       claim_push_jobs: { Args: { p_limit?: number }; Returns: string[] }
+      complete_checkin: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: undefined
+      }
       confirm_payment: {
         Args: { p_reservation_id: string }
         Returns: undefined
@@ -2971,6 +3194,10 @@ export type Database = {
       }
       is_tenant_owner: { Args: { p_tenant_id: string }; Returns: boolean }
       is_tenant_staff: { Args: { p_tenant_id: string }; Returns: boolean }
+      mark_foreigner_reported: {
+        Args: { p_guest_id: string; p_reported?: boolean }
+        Returns: undefined
+      }
       mark_tour_seen: {
         Args: { p_tour: string; p_version: string }
         Returns: undefined
@@ -3137,6 +3364,16 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      reveal_checkin_guest: {
+        Args: { p_guest_id: string; p_purpose?: string }
+        Returns: {
+          address: string
+          birth_date: string
+          document_number: string
+          document_type: string
+          nationality: string
+        }[]
+      }
       review_display_name: { Args: { p_name: string }; Returns: string }
       review_eligibility: {
         Args: { p_reservation_id: string }
@@ -3156,6 +3393,10 @@ export type Database = {
         }[]
       }
       reviews_tick: { Args: never; Returns: Json }
+      save_checkin: {
+        Args: { p_data: Json; p_reservation_id: string; p_token?: string }
+        Returns: string
+      }
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }
         Returns: undefined

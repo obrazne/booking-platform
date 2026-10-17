@@ -24,7 +24,16 @@ export type SectionData = {
   /** Public columns only — street, exact position and contacts come through `location` (B1). */
   property: Omit<
     Tables<"properties">,
-    "street" | "postal_code" | "latitude" | "longitude" | "contact_email" | "contact_phone"
+    | "street"
+    | "postal_code"
+    | "latitude"
+    | "longitude"
+    | "contact_email"
+    | "contact_phone"
+    // Online check-in settings (module checkin) are not public.
+    | "checkin_opens_days_before"
+    | "checkin_reminder_days"
+    | "checkin_required_for_instructions"
   >;
   /** Exact pin and address, or a rounded area when the owner chose an approximate location. */
   location: {

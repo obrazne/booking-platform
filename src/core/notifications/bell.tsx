@@ -9,6 +9,7 @@ import {
   Bell,
   CalendarX,
   CheckCircle2,
+  ClipboardCheck,
   ConciergeBell,
   Clock,
   Plus,
@@ -41,6 +42,8 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   review_publishing: { icon: Clock, tone: "neutral" },
   order_new: { icon: ConciergeBell, tone: "accent" },
   order_awaiting: { icon: ConciergeBell, tone: "warn" },
+  checkin_completed: { icon: ClipboardCheck, tone: "accent" },
+  foreigner_unreported: { icon: AlertTriangle, tone: "warn" },
 };
 
 const TONE = {

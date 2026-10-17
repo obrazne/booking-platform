@@ -636,6 +636,8 @@ async function createDemo() {
   await demoReviews(martin);
   // Orders after the reservation on (b) (Z35).
   await demoOrders(martin, b);
+  // Online check-in of two stays, one foreigner (Z36). Fictional documents.
+  await demoCheckins(martin, b);
 
   // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
   must(
@@ -820,6 +822,118 @@ async function demoOrders(martin, b) {
   must(await db.from("reservation_orders").insert(rows), "orders");
   await quiet(b.id);
   console.log(`Orders: ${rows.length} on ${b.number} (module upsell on).`);
+}
+
+// ---------------------------------------------------------------- online check-in (Z36)
+async function demoCheckins(martin, b) {
+  must(
+    await db
+      .from("tenant_modules")
+      .upsert(
+        { tenant_id: TENANT, module_key: "checkin", status: "active", updated_by: martin.id },
+        { onConflict: "tenant_id,module_key" },
+      ),
+    "checkin module",
+  );
+  const next = must(
+    await db
+      .from("reservations")
+      .select("id, number, items:reservation_items(check_in)")
+      .eq("tenant_id", TENANT)
+      .eq("guest_note", NOTE)
+      .eq("status", "confirmed")
+      .neq("id", b.id),
+    "upcoming stays",
+  )
+    .filter((r) => r.items[0]?.check_in >= today)
+    .sort((x, y) => (x.items[0].check_in < y.items[0].check_in ? -1 : 1))[0];
+  const person = (reservationId, sort, p) => ({
+    tenant_id: TENANT,
+    reservation_id: reservationId,
+    sort,
+    is_citizen: true,
+    nationality: "SK",
+    document_type: "id_card",
+    ...p,
+  });
+  must(
+    await db.from("checkins").insert([
+      {
+        tenant_id: TENANT,
+        reservation_id: b.id,
+        status: "completed",
+        arrival_time: "16:00",
+        house_rules_accepted_at: new Date().toISOString(),
+        completed_at: new Date().toISOString(),
+        completed_via: "link",
+      },
+      ...(next
+        ? [
+            {
+              tenant_id: TENANT,
+              reservation_id: next.id,
+              status: "in_progress",
+              arrival_time: "18:30",
+            },
+          ]
+        : []),
+    ]),
+    "checkins",
+  );
+  must(
+    await db
+      .from("checkin_guests")
+      .insert([
+        person(b.id, 0, {
+          first_name: "Tomáš",
+          last_name: "Kováč",
+          birth_date: "1984-03-12",
+          document_number: "EA000101",
+          address: "Hlavná 1, 058 01 Poprad (DEMO)",
+        }),
+        person(b.id, 1, {
+          first_name: "Zuzana",
+          last_name: "Kováčová",
+          birth_date: "1986-07-02",
+          document_number: "EA000102",
+          address: "Hlavná 1, 058 01 Poprad (DEMO)",
+        }),
+        person(b.id, 2, {
+          first_name: "Oliver",
+          last_name: "Brown",
+          is_citizen: false,
+          nationality: "GB",
+          birth_date: "1979-11-20",
+          document_type: "passport",
+          document_number: "DEMO12345",
+          address: "1 Demo Street, London (DEMO)",
+        }),
+        person(b.id, 3, {
+          first_name: "Emma",
+          last_name: "Brown",
+          is_citizen: false,
+          nationality: "GB",
+          birth_date: "2012-04-08",
+          document_type: "passport",
+          document_number: "DEMO12346",
+          address: "1 Demo Street, London (DEMO)",
+        }),
+        ...(next
+          ? [
+              person(next.id, 0, {
+                first_name: "Peter",
+                last_name: "Demo",
+                document_number: "EA000201",
+                address: "Námestie 2, Košice (DEMO)",
+              }),
+            ]
+          : []),
+      ]),
+    "checkin guests",
+  );
+  console.log(
+    `Check-in: completed on ${b.number}${next ? `, in progress on ${next.number}` : ""} (module checkin on).`,
+  );
 }
 
 // ---------------------------------------------------------------- history (Z27)

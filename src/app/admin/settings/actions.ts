@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { dbErrorKey, fail, ok, requireTenant } from "@/core/admin/action";
 import type { ActionResult } from "@/core/admin/form";
+import { parseMinorUnits } from "@/core/format/format";
 import { localizedFromForm } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
@@ -55,10 +56,25 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
   const { stay_account_limit, ...settings } = parsed.data;
+  // Module checkin: tax for accommodation and retention — only when the form had them.
+  let checkin = {};
+  if (form.has("checkin_retention_days")) {
+    const c = z
+      .object({
+        city_tax_municipality: text(120),
+        city_tax_exempt_under: z.coerce.number().int().min(0).max(120),
+        checkin_retention_days: z.coerce.number().int().min(30).max(3650),
+      })
+      .safeParse(Object.fromEntries(form));
+    const cents = parseMinorUnits(String(form.get("city_tax") ?? "0") || "0", tenant.currency);
+    if (!c.success || cents === null || cents < 0) return fail("invalid");
+    checkin = { ...c.data, city_tax_cents: cents };
+  }
   const supabase = await createClient();
   const { error } = await supabase.from("tenant_settings").upsert({
     tenant_id: tenant.id,
     ...settings,
+    ...checkin,
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
   });

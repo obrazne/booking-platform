@@ -29,6 +29,8 @@ export const TENANT_KINDS = [
   { kind: "review_publishing", email: "no", module: "reviews" },
   { kind: "order_new", email: "no", module: "upsell" },
   { kind: "order_awaiting", email: "no", module: "upsell" },
+  { kind: "checkin_completed", email: "no", module: "checkin" },
+  { kind: "foreigner_unreported", email: "no", module: "checkin" },
 ] as const;
 
 export const PLATFORM_KINDS = [
