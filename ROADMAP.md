@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z40 (mapa) → Z38 (recenzie pre hostí); **B:** Z37 (upsell pre hostí) → Z39 (check-in pre hostí).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** Z37 (upsell pre hostí) → Z39 (check-in pre hostí).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -294,6 +294,17 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z40: **mapa z OpenFreeMap + „Navigovať v Google Mapách“.**
+  - Interaktívna mapa (Okolie) = MapLibre GL + vektorové dlaždice OpenFreeMap (štýl Positron, URL na jednom mieste `src/core/maps/config.ts`,
+    prepísateľná `NEXT_PUBLIC_MAP_STYLE_URL`), značka / oblasť v akcente témy, atribúcia od MapLibre, priblíženie kolieskom až po kliknutí.
+    Knižnica a dlaždice sa načítajú až keď je mapa blízko obrazovky. **Leaflet odstránený.**
+  - **Statický náhľad** (malá mapa pri cene a miesto mapy kým sa nenačíta): kreslený náhľad bez mapových dát — 0 požiadaviek a 0 skriptov.
+    Zdôvodnenie: OpenFreeMap nemá statické obrázky, dlaždice OSM sa komerčne nesmú a vopred renderovaný obrázok by potreboval
+    serverové vykreslenie mapy (headless GL) — zbytočná ťarcha pre malý náhľad, ktorý aj tak vedie na skutočnú mapu.
+  - Výkon mobilu (`perf-check`, 4G, CPU 4×): **pred** LCP 2,64 s, 871 kB, 44 požiadaviek → **po** LCP 2,54–2,57 s, 644 kB, 35 požiadaviek.
+  - **Navigovať v Google Mapách ↗** (obyčajný odkaz, nič od Google sa nenačíta): Okolie len pri presnej polohe; potvrdenie rezervácie
+    (`/r/…`) pri presnej polohe vždy, pri približnej po potvrdení; pokyny k príchodu v účte hosťa.
+  - Playwright: canvas MapLibre, tlačidlo Priblížiť, žiadne dlaždice pred posunom k mape, odkaz so súradnicami (alebo žiadny pri približnej), axe; celá sada 55 ok.
 - 2026-10-17 — Z36: **modul Online check-in — základ** (B11), bez obrazoviek pre hostí.
   - **Pravidlá krajiny** (A6): `checkin_rules('SK')` v DB (vynucuje) a `src/modules/checkin/rules.ts` (rovnaký balík + výpočet dane, unit testy):
     povinné polia pre všetkých / navyše pre cudzincov, druhy dokladov, hlásenie do 5 dní, uchovávanie, citlivé polia.

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -214,13 +213,6 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Leaflet tiles must not be squeezed by the base image rule (max-width: 100%). */
-.leaflet-container img.leaflet-tile,
-.leaflet-container .leaflet-marker-pane img {
-  max-width: none !important;
-  max-height: none !important;
 }
 
 /* Administration, control center and staff login (vizuál administrácie v1): same language as the guest page v2.

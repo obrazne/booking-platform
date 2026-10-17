@@ -186,6 +186,16 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           </span>
         ))}
       </div>
+      {x.navigation && !cancelled ? (
+        <a
+          href={x.navigation}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-10 items-center gap-2 self-start rounded-full border border-white/40 px-4 text-sm font-medium text-white hover:bg-white/10"
+        >
+          {tg("v2.navigate")} <span aria-hidden>↗</span>
+        </a>
+      ) : null}
       <dl className="grid gap-2 text-sm">
         <div className="flex justify-between gap-3">
           <dt className="text-on-accent-muted">{t("guests")}</dt>

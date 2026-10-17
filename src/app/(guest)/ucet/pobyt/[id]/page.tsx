@@ -5,6 +5,7 @@ import { ChevronLeft, Clock, FileText, KeyRound } from "lucide-react";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import {
   arrivalInstructions,
+  arrivalNavigation,
   bankDetails,
   listStays,
   requireGuest,
@@ -53,6 +54,7 @@ export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">
     .eq("tenant_id", tenant.id)
     .maybeSingle();
   const rebook = rebookHref(stay);
+  const navigation = instructions ? await arrivalNavigation(stay.property_id) : null;
   const active = stay.status !== "cancelled" && stay.status !== "completed";
 
   return (
@@ -132,7 +134,19 @@ export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">
             <KeyRound className="text-primary size-5" /> {t("arrival")}
           </h2>
           {instructions ? (
-            <p className="leading-relaxed whitespace-pre-line">{tr(instructions, locale)}</p>
+            <>
+              <p className="leading-relaxed whitespace-pre-line">{tr(instructions, locale)}</p>
+              {navigation ? (
+                <a
+                  href={navigation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ink border-line inline-flex min-h-10 items-center gap-2 self-start rounded-full border px-4 text-sm font-medium hover:bg-black/5"
+                >
+                  {tg("v2.navigate")} <span aria-hidden>↗</span>
+                </a>
+              ) : null}
+            </>
           ) : (
             <p className="text-muted-foreground text-sm">
               {t("arrivalLater", { days: settings?.arrival_email_days_before ?? 3 })}

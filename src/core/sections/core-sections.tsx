@@ -44,7 +44,8 @@ import {
 import { tr } from "@/core/i18n/localized";
 import { cn } from "@/lib/utils";
 import { InteractiveMap } from "./interactive-map";
-import { OsmMap } from "./osm-map";
+import { MapPreview } from "./map-preview";
+import { googleDirectionsUrl } from "@/core/maps/config";
 import {
   defineSection,
   headingFields,
@@ -200,13 +201,8 @@ async function MiniMap({ data }: { data: SectionData }) {
       href="#okolie"
       className="border-line relative block h-[150px] overflow-hidden rounded-lg border"
     >
-      <OsmMap
-        latitude={loc.latitude}
-        longitude={loc.longitude}
+      <MapPreview
         approximate={loc.approximate}
-        zoom={11}
-        linkAttribution={false}
-        small
         className="absolute inset-0"
         label={t("mapOf", { place: data.property.city ?? data.property.name })}
       />
@@ -538,6 +534,17 @@ const location = defineSection({
                 <p className="text-ink inline-flex items-center gap-2 pt-4 text-sm">
                   <MapPin className="text-accent-2 size-4" /> {address}
                 </p>
+              ) : null}
+              {loc && !loc.approximate ? (
+                // Exact location only — an approximate one gets the link in the confirmation and instructions.
+                <a
+                  href={googleDirectionsUrl(loc.latitude, loc.longitude)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ink border-line mt-4 inline-flex min-h-10 items-center gap-2 self-start rounded-full border px-4 text-sm font-medium hover:bg-black/5"
+                >
+                  {tv("navigate")} <span aria-hidden>↗</span>
+                </a>
               ) : loc?.approximate ? (
                 <span className="pt-4 text-[13px] leading-relaxed text-[#5a6672]">
                   {tv("addressAfter")}

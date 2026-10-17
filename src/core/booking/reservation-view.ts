@@ -3,6 +3,7 @@ import { cache } from "react";
 import { photoUrl } from "@/core/booking/photo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { googleDirectionsUrl } from "@/core/maps/config";
 
 export type ReservationSummary = {
   id: string;
@@ -66,7 +67,7 @@ export async function reservationExtras(r: ReservationSummary) {
       admin
         .from("properties")
         .select(
-          "check_in_from, check_out_until, city, location_mode, street, postal_code, photos(storage_path, alt, sort, category)",
+          "check_in_from, check_out_until, city, location_mode, street, postal_code, latitude, longitude, photos(storage_path, alt, sort, category)",
         )
         .eq("id", r.property_id)
         .single(),
@@ -99,6 +100,13 @@ export async function reservationExtras(r: ReservationSummary) {
           .join(", ")
       : (property?.city ?? null),
     exactLocation: Boolean(exact && loc),
+    // Z40: navigation to the exact place — with an approximate location only once the stay is confirmed.
+    navigation:
+      property?.latitude != null &&
+      property?.longitude != null &&
+      (exact || ["confirmed", "in_progress"].includes(r.status))
+        ? googleDirectionsUrl(Number(property.latitude), Number(property.longitude))
+        : null,
     cover: cover ? { url: photoUrl(cover.storage_path), alt: "" } : null,
     paidAt: payment?.status === "received" ? payment.received_at : null,
     arrivalDays: settings?.arrival_email_days_before ?? 3,

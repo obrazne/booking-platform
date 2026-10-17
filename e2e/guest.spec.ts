@@ -1,6 +1,7 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { GUEST_URL } from "../playwright.config";
-import { freeStay, pickStay, TEST_DOMAIN } from "./helpers";
+import { freeStay, pickStay, service, TEST_DOMAIN } from "./helpers";
 
 test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, payment details, cancellation request", async ({
   page,
@@ -145,11 +146,44 @@ test("v2 windows: gallery levels, Back closes one level, dates and next free sta
   ).toBeVisible();
 });
 
-test("surroundings map is interactive (OpenStreetMap, zoom buttons)", async ({ page }, info) => {
+test("surroundings map is interactive (OpenFreeMap + MapLibre, zoom buttons, navigation)", async ({
+  page,
+}, info) => {
   test.skip(info.project.name === "mobile", "desktop");
   await page.goto(`${GUEST_URL}/p/chalet-stromy`);
+  // No map library and no tiles before the map comes near the screen (Z40).
+  expect(
+    await page.evaluate(() =>
+      performance
+        .getEntriesByType("resource")
+        .some((r) => /openfreemap|tile\.openstreetmap/.test(r.name)),
+    ),
+  ).toBe(false);
   await page.locator("#okolie").scrollIntoViewIfNeeded();
   const map = page.locator("#okolie").getByRole("region", { name: /Mapa/ });
-  await expect(map.locator(".leaflet-tile-loaded").first()).toBeVisible({ timeout: 20_000 });
+  await expect(map.locator("canvas.maplibregl-canvas")).toBeVisible({ timeout: 20_000 });
   await expect(map.getByRole("button", { name: "Priblížiť" })).toBeVisible();
+  await expect(map).toBeVisible();
+  const db = service();
+  const { data: p } = await db
+    .from("properties")
+    .select("latitude, longitude, location_mode")
+    .eq("slug", "chalet-stromy")
+    .single();
+  const nav = page.locator("#okolie").getByRole("link", { name: /Navigovať v Google Mapách/ });
+  if (p?.location_mode === "exact") {
+    await expect(nav).toHaveAttribute(
+      "href",
+      `https://www.google.com/maps/dir/?api=1&destination=${Number(p.latitude)},${Number(p.longitude)}`,
+    );
+  } else {
+    await expect(nav).toHaveCount(0);
+  }
+  const r = await new AxeBuilder({ page })
+    .include("#okolie")
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
+  expect(
+    r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id),
+  ).toEqual([]);
 });

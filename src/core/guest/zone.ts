@@ -5,6 +5,7 @@ import { photoUrl } from "@/core/booking/photo";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { googleDirectionsUrl } from "@/core/maps/config";
 
 export type Stay = Awaited<ReturnType<typeof listStays>>[number];
 
@@ -105,6 +106,18 @@ export async function stayDocuments(stay: Stay) {
 }
 
 /** Arrival instructions and codes — null until the rules of Z13 allow them. */
+/** Navigation to the exact place of a stay whose arrival instructions are visible (Z40). */
+export async function arrivalNavigation(propertyId: string): Promise<string | null> {
+  const { data } = await createAdminClient()
+    .from("properties")
+    .select("latitude, longitude")
+    .eq("id", propertyId)
+    .maybeSingle();
+  return data?.latitude != null && data?.longitude != null
+    ? googleDirectionsUrl(Number(data.latitude), Number(data.longitude))
+    : null;
+}
+
 export async function arrivalInstructions(reservationId: string) {
   const { supabase } = await requireGuest();
   const { data } = await supabase.rpc("guest_arrival_instructions", {

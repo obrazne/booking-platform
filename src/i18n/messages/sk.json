@@ -1150,7 +1150,8 @@
       "backToDetails": "Späť na údaje",
       "confirmDates": "Potvrdiť termín",
       "pickArrival": "Vyberte deň príchodu",
-      "pickDeparture": "Vyberte deň odchodu"
+      "pickDeparture": "Vyberte deň odchodu",
+      "navigate": "Navigovať v Google Mapách"
     },
     "confirm": {
       "number": "Rezervácia {number}",
