@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** ~~Z38 (recenzie pre hostí)~~ ✅ — linka A má frontu prázdnu; **B:** ~~Z37~~ ✅ → ~~Z39~~ ✅ → ~~Z42~~ ✅ — linka B má frontu prázdnu.
+- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje); **B:** Z44 (detail pobytu: stavy, zrušenie).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -172,6 +172,29 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    `https://www.google.com/maps/dir/?api=1&destination=<lat>,<lng>` — bez kľúča a bez načítania Google na stránke. Pri približnej
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
+
+### Z43 [A] — Účet hosťa: lišta s kartami, prehľad a Moje údaje (pripomienka 30, 17. 10.)
+Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy pobytu (v2.4)**, dosky `UcetPrehlad`, `MobilUcet` (+ hlavička v `UcetPobyt`).
+1. Spoločný komponent **lišty účtu** (karty Pobyty s odznakom / Moje údaje, Odhlásiť sa; mobil pilulky) na prehľade, v detaile pobytu aj na
+   check-ine; **drobčeky** v detaile pobytu a check-ine (mobil „‹ Pobyty“); odstrániť „Späť na moje pobyty“.
+2. **Pobyty:** najbližší pobyt ako veľká klikateľná karta s bodmi „čo treba urobiť“ (z modulov cez sloty — check-in, platba, pokyny, objednávky);
+   ďalšie budúce menšie; minulé ako riadky so štítkom „Ohodnoťte pobyt“; „Rezervovať ďalší pobyt“; karta kontaktu na majiteľa.
+3. **Moje údaje** (`/ucet/udaje`): kontakt, prihlásenie, novinky, **Moje dáta** — stiahnutie vlastných údajov (JSON v ZIPe: profil, pobyty, súhlasy;
+   citlivé údaje z check-inu maskované) a **žiadosť o zrušenie účtu** (vznikne úloha/upozornenie pre majiteľa; zákonom uchovávané údaje ostávajú).
+   Právne formulácie pri zrušení účtu zapíš do Otázok pre Martina na kontrolu.
+4. Playwright (Ukážkový klient, PC + mobil): prechod prehľad → pobyt → späť drobčekmi, karta Moje údaje, stiahnutie údajov; axe.
+
+### Z44 [B] — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
+Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišta účtu a drobčeky robí Z43 — nezasahuj do nich (len vlož komponent, ak už existuje).
+1. **Čaká na platbu:** navrchu karta s QR (PAY by square), sumou, IBAN, VS, lehotou a vetou o automatickom zrušení; doobjednávanie skryté s vetou „po zaplatení“.
+2. **Počas pobytu:** odomknuté pokyny ako dlaždice (kód od dverí, Wi-Fi, príchod, odchod — z údajov objektu, nič natvrdo), text pokynov, „Navigovať v Google Mapách“,
+   „Niečo nefunguje? Napíšte …“ (WhatsApp/telefón majiteľa); upsell „Na zajtra si môžete objednať“.
+3. **Zrušený:** dátum zrušenia, vrátená suma podľa storno pravidiel, „Vybrať nový termín“; moduly skryté.
+4. **Rozpis ceny** presunúť do zelenej karty „Účet pobytu“ ako rozbaľovací odkaz; samostatnú sekciu na konci odstrániť.
+5. **Žiadosť o zrušenie:** blok „Zmena alebo zrušenie“ + odkaz → okno s výpočtom podľa storno podmienok (existujúca logika storna), dôvod, odoslanie
+   = existujúca žiadosť o storno (upozornenie majiteľovi). Len pred príchodom.
+6. **Oprava textu pri pokynoch:** konkrétny dátum odomknutia podľa stavu (zaplatené, check-in, `arrival_email_days_before`), nie „keď bude pobyt zaplatený“ pri zaplatenom pobyte.
+7. Playwright na Ukážkovom klientovi pre každý stav + žiadosť o zrušenie; axe.
 
 ### Z42 [B] ✅ — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
 Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku

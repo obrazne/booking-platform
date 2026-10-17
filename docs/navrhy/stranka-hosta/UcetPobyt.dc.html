@@ -37,18 +37,20 @@ textarea,input{font-family:inherit}
 <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</span>
 <span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #8b929b;">Môj účet</span>
 </div>
-<nav style="display: flex; gap: 22px; align-items: center; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;">
-<a href="#" style="color: #595959; text-decoration: none;">Moje pobyty</a>
-<a href="#" style="color: #595959; text-decoration: none;">Späť na web</a>
-<span style="width: 34px; height: 34px; border-radius: 9999px; background: #f1eee6; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #5a6672; letter-spacing: 0;">PN</span>
-</nav>
+<nav style="display: flex; gap: 22px; align-items: center; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;"><span style="color: #11212f; font-weight: 500;">Môj účet</span><a href="#" style="color: #595959; text-decoration: none;">Späť na web ↗</a></nav>
 </div>
 </header>
+<div style="position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,0.96); border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;">
+<nav aria-label="Môj účet" style="display: flex; gap: 6px;"><span style="height: 52px; padding: 0 14px; border-bottom: 2px solid {{accent}}; color: #11212f; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center;">Pobyty</span><span style="height: 52px; padding: 0 14px; border-bottom: 2px solid transparent; color: #5a6672; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center;">Moje údaje</span></nav>
+<span style="font-size: 14px; color: #5a6672;">Odhlásiť sa</span>
+</div>
+</div>
 
 <section style="background: linear-gradient(165deg, #f9f8f5 0%, #f2f3f0 50%, #e9eeeb 100%); border-bottom: 1px solid #e3e6e2;">
 <div style="max-width: 1180px; margin: 0 auto; padding: 40px 24px 36px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px;">
 <div style="display: flex; flex-direction: column; gap: 12px;">
-<a href="#" style="font-size: 14px; color: #5a6672; text-decoration: none;">← Moje pobyty</a>
+<nav aria-label="Drobčeky" style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><a href="#" style="color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">Pobyty</a><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">21. – 24. 12. 2026</span></nav>
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
 <span class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6672;">Rezervácia 2026-0088</span>
 <span style="{{statusPill}}">{{statusLabel}}</span>

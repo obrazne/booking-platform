@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Detail pobytu — stavy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button,textarea{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.cta-dark{background:#2b3036;transition:background 160ms ease}
+.cta-dark:hover{background:#0c0e11}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.fade{animation:fadein 180ms ease}
+@media (prefers-reduced-motion: reduce){.fade{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; background: #ffffff; font-weight: 300; min-height: 1250px;">
+
+<div style="background: #11212f; color: #ffffff; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px;">
+<span class="mono" style="letter-spacing: 0.08em; text-transform: uppercase; color: #8a97a5;">Stav pobytu (len v návrhu):</span>
+<sc-for list="{{phases}}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{p.go}}" style="{{p.style}}">{{p.label}}</button></sc-for>
+</div>
+
+<header style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</span>
+<nav style="display: flex; gap: 22px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;"><span style="color: #11212f; font-weight: 500;">Môj účet</span><span style="color: #595959;">Späť na web ↗</span></nav>
+</div>
+</header>
+<div style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center;">
+<nav style="display: flex; gap: 6px;"><span style="height: 52px; padding: 0 14px; border-bottom: 2px solid {{accent}}; color: #11212f; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center;">Pobyty</span><span style="height: 52px; padding: 0 14px; color: #5a6672; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center;">Moje údaje</span></nav>
+<span style="font-size: 14px; color: #5a6672;">Odhlásiť sa</span>
+</div>
+</div>
+
+<section style="background: linear-gradient(165deg, #f9f8f5 0%, #f2f3f0 50%, #e9eeeb 100%); border-bottom: 1px solid #e3e6e2;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 30px; display: flex; flex-direction: column; gap: 10px;">
+<nav style="display: flex; gap: 8px; font-size: 14px;"><span style="color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">Pobyty</span><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">22. – 26. 12. 2026</span></nav>
+<div style="display: flex; align-items: center; gap: 12px;"><span class="mono" style="font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #5a6672;">Rezervácia 2026-0648</span><span style="{{pill}}">{{pillLabel}}</span></div>
+<h1 style="margin: 0; font-size: 38px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">{{title}} <span style="color: #a9aeb5;">{{title2}}</span></h1>
+<span style="font-size: 17px; color: #3b3d42;">22. – 26. 12. 2026 · 4 noci · 4 hostia</span>
+</div>
+</section>
+
+<div style="max-width: 1180px; margin: 0 auto; padding: 36px 24px 96px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 36px; min-width: 0;">
+
+<sc-if value="{{isPending}}" hint-placeholder-val="{{true}}">
+<section class="fade" style="border: 1px solid #f0d9c2; background: #fdf8f2; border-radius: 12px; display: grid; grid-template-columns: 210px minmax(0, 1fr);">
+<div style="padding: 22px; border-right: 1px solid #f0d9c2; display: flex; flex-direction: column; align-items: center; gap: 10px;"><div style="width: 160px; height: 160px; border-radius: 10px; background: repeating-linear-gradient(90deg,#11212f 0 6px,#ffffff 6px 12px), #ffffff; opacity: 0.85;"></div><span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">PAY by square</span></div>
+<div style="padding: 22px 26px; display: flex; flex-direction: column; gap: 12px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #8a4a1c;">Čaká na platbu</span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Zaplaťte do zajtra 18:40. <span style="color: #a9aeb5;">Termín vám držíme.</span></span>
+<div style="display: grid; grid-template-columns: auto 1fr; gap: 6px 20px; font-size: 14px;"><span style="color: #5a6672;">Suma</span><span style="font-weight: 700; color: #11212f;">4 450,00 €</span><span style="color: #5a6672;">IBAN</span><span class="mono" style="color: #11212f;">SK31 1200 0000 1987 4263 7541</span><span style="color: #5a6672;">Var. symbol</span><span class="mono" style="color: #11212f;">20260648</span></div>
+<span style="font-size: 13px; color: #5a6672;">Ak platba nepríde včas, rezervácia sa sama zruší a termín uvoľní.</span>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isDuring}}" hint-placeholder-val="{{false}}">
+<section class="fade" style="border-radius: 12px; background: #f6f9f7; border: 1px solid #dfe8e2; padding: 24px 26px; display: flex; flex-direction: column; gap: 16px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent}};">Pokyny k príchodu · odomknuté</span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Všetko pre príchod na jednom mieste.</span>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="4"><div style="border-radius: 10px; background: #ffffff; border: 1px solid #e3ebe6; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;"><span class="mono" style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;">{{f.k}}</span><span style="font-size: 17px; font-weight: 700; color: #11212f;">{{f.v}}</span><span style="font-size: 12px; color: #5a6672;">{{f.n}}</span></div></sc-for>
+</div>
+<span style="font-size: 14px; line-height: 1.6; color: #3b3d42;">Parkovanie pred chaletom (2 autá). Kľúče od sauny sú v zásuvke pri vchode. Odchod do 10:00 — kľúč nechajte na stole.</span>
+<div style="display: flex; gap: 10px;"><span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #dcd9d1; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f;">Navigovať v Google Mapách ↗</span><span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #dcd9d1; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f;">Niečo nefunguje? Napíšte Jane</span></div>
+</section>
+</sc-if>
+
+<sc-if value="{{isCancelled}}" hint-placeholder-val="{{false}}">
+<section class="fade" style="border-radius: 12px; border: 1px solid #e9e5db; background: #fafaf8; padding: 24px 26px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 22px; font-weight: 800; color: #11212f;">Pobyt je zrušený.</span>
+<span style="font-size: 15px; line-height: 1.6; color: #3b3d42;">Zrušené 3. 11. 2026 na vašu žiadosť. Podľa storno podmienok vám vrátime <strong style="font-weight: 700;">4 450,00 €</strong> na účet, z ktorého ste platili, do 14 dní.</span>
+<span style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700;">Vybrať nový termín</span>
+</section>
+</sc-if>
+
+<sc-if value="{{showModules}}" hint-placeholder-val="{{true}}">
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 20px; font-weight: 800; color: #11212f;">{{upsellTitle}}</span>
+<span style="font-size: 14px; color: #5a6672;">{{upsellNote}}</span>
+<div style="border-top: 1px solid #e9e5db;"><sc-for list="{{rows}}" as="r" hint-placeholder-count="3"><div style="display: flex; align-items: center; gap: 12px; padding: 15px 4px; border-bottom: 1px solid #e9e5db;"><span style="flex: 1 1 auto; font-size: 15px; font-weight: 500; color: #11212f;">{{r.t}} <span style="font-weight: 400; font-size: 13px; color: #8b929b;">{{r.u}}</span></span><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{r.p}}</span><span style="color: #5a6672;">⌄</span></div></sc-for></div>
+</section>
+</sc-if>
+
+<sc-if value="{{canCancel}}" hint-placeholder-val="{{true}}">
+<section style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid #e9e5db;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">Zmena alebo zrušenie</span>
+<span style="font-size: 14px; line-height: 1.55; color: #5a6672;">{{cancelText}}</span>
+<button type="button" onClick="{{openCancel}}" style="align-self: flex-start; border: none; background: none; padding: 0; font-size: 14px; font-weight: 500; color: #a04a1f; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">Požiadať o zrušenie pobytu</button>
+</section>
+</sc-if>
+</div>
+
+<aside style="display: flex; flex-direction: column; gap: 14px;">
+<div style="border-radius: 10px; background: {{accent}}; color: #ffffff; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Účet pobytu</span>
+<div style="display: flex; justify-content: space-between; font-size: 14px;"><span style="color: rgba(255,255,255,0.88);">Pobyt · 4 noci</span><span style="font-weight: 500;">{{stayAmount}}</span></div>
+<button type="button" onClick="{{toggleBreak}}" style="align-self: flex-start; border: none; background: none; padding: 0; font-size: 13px; color: #ffffff; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">{{breakLabel}}</button>
+<sc-if value="{{showBreak}}" hint-placeholder-val="{{false}}"><div class="fade" style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.25);"><div style="display: flex; justify-content: space-between;"><span style="color: rgba(255,255,255,0.75);">Vianoce a Silvester · 3 × 1 200 €</span><span>3 600 €</span></div><div style="display: flex; justify-content: space-between;"><span style="color: rgba(255,255,255,0.75);">Zimná sezóna · 1 × 850 €</span><span>850 €</span></div></div></sc-if>
+<div style="border-top: 1px solid rgba(255,255,255,0.22); padding-top: 12px; display: flex; justify-content: space-between; align-items: baseline;"><span style="font-size: 14px; color: rgba(255,255,255,0.88);">{{openLabel}}</span><span style="font-size: 24px; font-weight: 800;">{{openAmount}}</span></div>
+</div>
+<div style="border: 1px solid #ecebe6; background: #fafaf8; border-radius: 10px; padding: 16px 18px; font-size: 14px; color: #3b3d42;">Dokumenty: Ubytovací poriadok · Potvrdenie rezervácie (PDF)</div>
+</aside>
+</div>
+
+<sc-if value="{{cancelOpen}}" hint-placeholder-val="{{false}}">
+<div onClick="{{closeCancel}}" style="position: absolute; inset: 0; background: rgba(17,33,47,0.38);"></div>
+<div class="fade" role="dialog" aria-label="Zrušenie pobytu" style="position: absolute; top: 160px; left: 50%; transform: translateX(-50%); width: 560px; background: #ffffff; border-radius: 14px; padding: 28px 30px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 40px 80px -30px rgba(17,33,47,0.5);">
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Požiadať o zrušenie?</span>
+<div style="border-radius: 10px; background: #fafaf8; border: 1px solid #ecebe6; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #3b3d42;">
+<span>Do príchodu ostáva <strong style="font-weight: 700;">49 dní</strong> → podľa storno podmienok <strong style="font-weight: 700;">zdarma</strong>.</span>
+<span style="color: #5a6672;">Vrátime 4 450,00 € do 14 dní. Objednané služby sa zrušia s pobytom.</span>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Dôvod <span style="font-weight: 400; color: #8b929b;">· nepovinné</span></span><textarea rows="3" style="box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; font-size: 15px; resize: vertical;"></textarea></label>
+<span style="font-size: 13px; color: #5a6672;">Jana žiadosť potvrdí, zvyčajne do 24 hodín. Dovtedy pobyt platí.</span>
+<div style="display: flex; justify-content: flex-end; gap: 10px;"><button type="button" onClick="{{closeCancel}}" style="min-height: 44px; padding: 0 18px; border-radius: 9999px; border: 1px solid #dcd9d1; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Ponechať pobyt</button><button type="button" onClick="{{confirmCancel}}" style="min-height: 44px; padding: 0 18px; border-radius: 9999px; border: none; background: #a04a1f; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;">Odoslať žiadosť</button></div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { phase: 'pending', cancel: false, brk: false }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var defs = [['pending', 'Čaká na platbu'], ['during', 'Počas pobytu'], ['cancelled', 'Zrušený']];
+    var pills = { pending: ['Čaká na platbu', '#fbf1e6', '#8a4a1c'], during: ['Prebieha', '#e6efeb', accent], cancelled: ['Zrušený', '#eceae4', '#5a6672'] };
+    var pl = pills[s.phase];
+    return {
+      accent: accent,
+      phases: defs.map(function (d) { var on = s.phase === d[0]; return { label: d[1], go: function () { self.setState({ phase: d[0], cancel: false }); }, style: 'min-height: 28px; padding: 0 12px; border-radius: 9999px; border: 1px solid ' + (on ? '#ffffff' : 'rgba(255,255,255,0.25)') + '; background: ' + (on ? '#ffffff' : 'transparent') + '; color: ' + (on ? '#11212f' : '#ffffff') + '; font-size: 12px; font-weight: 500; cursor: pointer;' }; }),
+      pill: 'font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 9999px; background: ' + pl[1] + '; color: ' + pl[2] + ';', pillLabel: pl[0],
+      title: s.phase === 'pending' ? 'Ešte jeden krok.' : (s.phase === 'during' ? 'Vitajte v chalete.' : 'Mrzí nás to.'),
+      title2: s.phase === 'pending' ? 'Zaplaťte a termín je váš.' : (s.phase === 'during' ? 'Užite si to.' : 'Snáď nabudúce.'),
+      isPending: s.phase === 'pending', isDuring: s.phase === 'during', isCancelled: s.phase === 'cancelled',
+      facts: [{ k: 'Kód od dverí', v: '4 7 1 9 #', n: 'platí od 15:00 v deň príchodu' }, { k: 'Wi-Fi', v: 'STROMY-guest', n: 'heslo: lesnyvzduch' }, { k: 'Príchod', v: 'od 15:00', n: 'neskôr po dohode' }, { k: 'Odchod', v: 'do 10:00', n: 'neskorší odchod na požiadanie' }],
+      showModules: s.phase !== 'cancelled',
+      upsellTitle: s.phase === 'during' ? 'Na zajtra si môžete objednať.' : 'K pobytu si môžete doobjednať.',
+      upsellNote: s.phase === 'pending' ? 'Objednávať môžete hneď po zaplatení pobytu.' : 'Raňajky do 18:00 deň vopred, saunu do 12:00 v daný deň.',
+      rows: [{ t: 'Raňajky v chalete', u: '15 € za osobu', p: 'od 60 €' }, { t: 'Súkromná sauna na večer', u: 'za večer', p: '40 €' }, { t: 'Privátny šéfkuchár', u: 'potvrdí Jana', p: 'od 260 €' }],
+      canCancel: s.phase === 'pending' || s.phase === 'during' ? s.phase === 'pending' : false,
+      cancelText: 'Storno zdarma do 30 dní pred príchodom, potom podľa podmienok. Termín zmeníte po dohode s Janou.',
+      openCancel: function () { self.setState({ cancel: true }); }, closeCancel: function () { self.setState({ cancel: false }); },
+      confirmCancel: function () { self.setState({ cancel: false, phase: 'cancelled' }); },
+      cancelOpen: s.cancel,
+      stayAmount: s.phase === 'pending' ? '4 450,00 €' : '4 450,00 € ✓',
+      toggleBreak: function () { self.setState({ brk: !self.state.brk }); }, showBreak: s.brk, breakLabel: s.brk ? 'Skryť rozpis' : 'Rozpis ceny',
+      openLabel: s.phase === 'pending' ? 'Na zaplatenie' : (s.phase === 'cancelled' ? 'Vrátime' : 'Na účet pobytu'),
+      openAmount: s.phase === 'during' ? '240,00 €' : '4 450,00 €'
+    };
+  }
+}
+</script>
+</body>
+</html>

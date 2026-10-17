@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Účet hosťa — prehľad</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.cta-dark{background:#2b3036;transition:background 160ms ease}
+.cta-dark:hover{background:#0c0e11}
+.card:hover{box-shadow:0 20px 40px -30px rgba(17,33,47,0.35)}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.fade{animation:fadein 180ms ease}
+@media (prefers-reduced-motion: reduce){.fade{animation:none}}
+.f{height:46px;box-sizing:border-box;padding:0 14px;border-radius:10px;border:1px solid #e9e5db;font-size:15px;color:#11212f;background:#ffffff;width:100%}
+</style>
+</helmet>
+<div style="background: #ffffff; font-weight: 300; min-height: 1150px;">
+
+<header style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</span>
+<nav style="display: flex; gap: 22px; align-items: center; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;">
+<span style="color: #11212f; font-weight: 500;">Môj účet</span>
+<a href="#" style="color: #595959; text-decoration: none;">Späť na web ↗</a>
+</nav>
+</div>
+</header>
+
+<div style="position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,0.96); border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+<nav aria-label="Môj účet" style="display: flex; gap: 6px;">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{t.go}}" aria-current="{{t.current}}" style="{{t.style}}">{{t.label}}<sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{false}}"><span style="margin-left: 8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px; background: {{accent2}}; color: #ffffff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">{{t.badge}}</span></sc-if></button></sc-for>
+</nav>
+<button type="button" style="border: none; background: none; font-size: 14px; color: #5a6672; cursor: pointer;">Odhlásiť sa</button>
+</div>
+</div>
+
+<sc-if value="{{isStays}}" hint-placeholder-val="{{true}}">
+<div class="fade" style="max-width: 1180px; margin: 0 auto; padding: 40px 24px 96px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 36px; min-width: 0;">
+<h1 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: #11212f;">Dobrý deň, Tomáš. <span style="color: #a9aeb5;">Tešíme sa na vás.</span></h1>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Najbližší pobyt · o 65 dní</span>
+<button type="button" class="card" onClick="{{openStay}}" style="border: 1px solid #e9e5db; border-radius: 12px; background: #ffffff; padding: 0; overflow: hidden; display: grid; grid-template-columns: 300px minmax(0, 1fr); text-align: left; cursor: pointer; transition: box-shadow 160ms ease;">
+<span style="background: #d9dcd8; min-height: 230px; display: flex; align-items: flex-end; padding: 12px;"><span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b737c;">Exteriér večer</span></span>
+<span style="padding: 24px 26px; display: flex; flex-direction: column; gap: 14px;">
+<span style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">22. – 26. 12. 2026</span><span style="font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 9999px; background: #e6efeb; color: {{accent}};">Zaplatené</span></span>
+<span style="font-size: 15px; color: #5a6672;">4 noci · 2 hostia · 2026-0648</span>
+<span style="display: flex; flex-direction: column; gap: 8px; padding-top: 4px;">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #8a4a1c;"><span style="width: 8px; height: 8px; border-radius: 9999px; background: #c07a3e;"></span>Vyplňte online check-in — na mieste už len kľúče</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><span style="width: 8px; height: 8px; border-radius: 9999px; background: #c9cdd2;"></span>Pokyny k príchodu sa odomknú 19. 12.</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><span style="width: 8px; height: 8px; border-radius: 9999px; background: {{accent}};"></span>Objednané: Pobyt so psom · na účet pobytu 30 €</span>
+</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: {{accent}};">Otvoriť pobyt →</span>
+</span>
+</button>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Minulé pobyty</span>
+<div style="border-top: 1px solid #e9e5db;">
+<button type="button" onClick="{{openPast}}" style="width: 100%; border: none; border-bottom: 1px solid #e9e5db; background: none; padding: 16px 4px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer;">
+<span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 16px; font-weight: 700; color: #11212f;">8. – 10. 10. 2026</span><span style="font-size: 13px; color: #5a6672;">2 noci · 2026-0688 · Ukončený</span></span>
+<span style="font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 9999px; background: #fbf1e6; color: #8a4a1c;">Ohodnoťte pobyt</span>
+<span style="font-size: 14px; color: #5a6672;">→</span>
+</button>
+</div>
+<a href="#" style="align-self: flex-start; font-size: 14px; font-weight: 500; color: #11212f;">Rezervovať ďalší pobyt</a>
+</section>
+</div>
+
+<aside style="position: sticky; top: 76px; display: flex; flex-direction: column; gap: 14px;">
+<div style="border-radius: 10px; background: #fafaf8; border: 1px solid #ecebe6; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Otázky k pobytu?</span>
+<div style="display: flex; align-items: center; gap: 12px;"><span style="width: 38px; height: 38px; border-radius: 9999px; background: #e9e5db; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5a6672;">JH</span><span style="font-size: 14px; color: #3b3d42;">Odpovedá Jana, majiteľka</span></div>
+<div style="display: flex; gap: 8px;"><a href="#" style="display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; text-decoration: none;">WhatsApp</a><a href="#" style="display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; text-decoration: none;">Zavolať</a></div>
+</div>
+</aside>
+</div>
+</sc-if>
+
+<sc-if value="{{isStay}}" hint-placeholder-val="{{false}}">
+<div class="fade" style="max-width: 1180px; margin: 0 auto; padding: 22px 24px 96px; display: flex; flex-direction: column; gap: 18px;">
+<nav aria-label="Drobčeky" style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><button type="button" onClick="{{goStays}}" style="border: none; background: none; padding: 0; color: #5a6672; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;">Pobyty</button><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">{{stayCrumb}}</span></nav>
+<div style="border: 1px dashed #c9cdd2; border-radius: 12px; padding: 40px; background: #fafaf8; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 24px; font-weight: 800; color: #11212f;">{{stayTitle}}</span>
+<span style="font-size: 15px; line-height: 1.6; color: #5a6672; max-width: 640px;">Obsah detailu pobytu podľa dosky 11 (check-in, pokyny, doobjednanie, účet pobytu, dokumenty — alebo hodnotenie po odchode). Lišta s kartami ostáva hore, karta <strong>Pobyty</strong> je aktívna, drobčeky vedú späť. Na mobile namiesto drobčekov „‹ Pobyty“.</span>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+<div class="fade" style="max-width: 1180px; margin: 0 auto; padding: 40px 24px 96px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 32px; max-width: 620px;">
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Moje údaje. <span style="color: #a9aeb5;">Vyplníme ich za vás pri ďalšej rezervácii.</span></h1>
+<section style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Meno a priezvisko</span><input class="f" value="Tomáš Kováč"></label>
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Telefón</span><input class="f" value="+421 900 000 102"></label>
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Krajina</span><input class="f" value="Slovensko"></label>
+<button type="button" style="grid-column: 1 / -1; justify-self: start; min-height: 44px; padding: 0 20px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer;">Uložiť</button>
+</section>
+<section style="display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid #e9e5db;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">Prihlásenie</span>
+<span style="font-size: 14px; color: #5a6672;">info+host@obrazne.sk · prihlasujete sa kódom z e-mailu, bez hesla.</span>
+</section>
+<section style="display: flex; flex-direction: column; gap: 10px; padding-top: 22px; border-top: 1px solid #e9e5db;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">Novinky e-mailom</span>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><input type="checkbox" style="width: 18px; height: 18px; accent-color: {{accent}};">Chcem občas dostať ponuku od Chalet STRÖMY</label>
+</section>
+<section style="display: flex; flex-direction: column; gap: 8px; padding-top: 22px; border-top: 1px solid #e9e5db;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">Moje dáta</span>
+<span style="font-size: 14px; line-height: 1.55; color: #5a6672;">Stiahnite si kópiu svojich údajov alebo požiadajte o zrušenie účtu. Údaje, ktoré musíme uchovať zo zákona (doklady, kniha ubytovaných), zostanú do konca lehoty.</span>
+<div style="display: flex; gap: 14px;"><a href="#" style="font-size: 14px; font-weight: 500; color: #11212f;">Stiahnuť moje údaje</a><a href="#" style="font-size: 14px; font-weight: 500; color: #a04a1f;">Zrušiť účet</a></div>
+</section>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'stays', stay: null }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var tab = function (key, label, badge) {
+      var on = (key === 'stays' && (s.view === 'stays' || s.view === 'stay')) || s.view === key;
+      return {
+        label: label, current: on ? 'page' : 'false', hasBadge: !!badge, badge: badge || '',
+        go: function () { self.setState({ view: key }); },
+        style: 'height: 52px; padding: 0 14px; border: none; background: none; border-bottom: 2px solid ' + (on ? accent : 'transparent') + '; color: ' + (on ? '#11212f' : '#5a6672') + '; font-size: 15px; font-weight: ' + (on ? '700' : '500') + '; cursor: pointer; display: inline-flex; align-items: center;'
+      };
+    };
+    return {
+      accent: accent, accent2: this.props.accent2 ?? '#ad5a2b',
+      tabs: [tab('stays', 'Pobyty', '1'), tab('profile', 'Moje údaje', '')],
+      isStays: s.view === 'stays', isStay: s.view === 'stay', isProfile: s.view === 'profile',
+      openStay: function () { self.setState({ view: 'stay', stay: 'next' }); },
+      openPast: function () { self.setState({ view: 'stay', stay: 'past' }); },
+      goStays: function () { self.setState({ view: 'stays' }); },
+      stayCrumb: s.stay === 'past' ? '8. – 10. 10. 2026' : '22. – 26. 12. 2026',
+      stayTitle: s.stay === 'past' ? 'Detail pobytu 8. – 10. 10. 2026 (ukončený → hodnotenie)' : 'Detail pobytu 22. – 26. 12. 2026'
+    };
+  }
+}
+</script>
+</body>
+</html>

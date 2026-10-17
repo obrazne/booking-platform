@@ -2,7 +2,7 @@
 
 *Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design). **v2 schválená 16. 10. 2026.**
 Zdroj plátna: `docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Platné dosky: `Main.dc.html` (počítač, klikací),
-`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. **v2.2:** `KosikNotebook` (košík na 13″ notebooku, klikací) — platí pre košík na počítači namiesto košíka v `Main.dc.html`. **v2.3 (moduly):** `UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie`. `Mobil.dc.html` je z v1 — neplatí.
+`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. **v2.2:** `KosikNotebook` (košík na 13″ notebooku, klikací) — platí pre košík na počítači namiesto košíka v `Main.dc.html`. **v2.3 (moduly):** `UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie`. **v2.4 (účet hosťa):** `UcetPrehlad`, `MobilUcet`, `StavyPobytu`. `Mobil.dc.html` je z v1 — neplatí.
 Je to **zámer, nie pixelová predloha** — farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov a z dát objektu (sekcie B7).*
 
 ## Zmeny oproti v1
@@ -200,6 +200,32 @@ S odpoveďou majiteľky · Kritické 3★ a menej), karty recenzií (iniciály, 
 s čiarou v akcente, „Overený pobyt“, vybrané majiteľkou s jemným podkladom a štítkom „Vybrala Jana“), „Zobraziť všetky (N)“.
 Pod tým oddelene **„Hodnotenia z iných zdrojov“** (ručné referencie so zdrojom ↗) s vetou, že sa neoverujú a do priemeru sa nepočítajú.
 V košíku a hornej časti detailu sa namiesto ručnej referencie zobrazí vybraná overená recenzia (ak existuje).
+
+## Účet hosťa — navigácia a stavy pobytu (v2.4, schválené 17. 10.)
+
+Dosky `UcetPrehlad` (počítač), `MobilUcet`, `StavyPobytu`; detail pobytu pred príchodom a po odchode ostáva `UcetPobyt` (upravená hlavička).
+- **Hlavička webu klienta** vpravo „Môj účet“ (aktívne) a „Späť na web ↗“. Pod ňou **prilepená lišta s kartami** na každej stránke účtu
+  (prehľad, detail pobytu, check-in): **Pobyty** (odznak s počtom vecí na vybavenie — nevyplnený check-in, nezaplatené, hodnotenie)
+  · **Moje údaje**, vpravo „Odhlásiť sa“. Aktívna karta = podčiarknutie v akcente. Mobil: dve pilulky pod hlavičkou.
+- **Detail pobytu a check-in:** karta Pobyty aktívna + **drobčeky** nad nadpisom „Pobyty › 22. – 26. 12. 2026“ (pri check-ine
+  „Pobyty › termín › Check-in“); na mobile „‹ Pobyty“. Žiadne malé „Späť na moje pobyty“.
+- **Pobyty (prehľad):** pozdrav; **najbližší pobyt ako veľká karta** (fotka objektu, termín, stav, číslo; pod tým body „čo treba urobiť“ —
+  vyplniť check-in, zaplatiť do…, kedy sa odomknú pokyny, čo je objednané; celá karta klikateľná „Otvoriť pobyt →“); ďalšie budúce
+  pobyty menšie; **minulé pobyty ako riadky** so štítkom „Ohodnoťte pobyt“, ak sa dá hodnotiť; „Rezervovať ďalší pobyt“. Vpravo
+  karta „Otázky k pobytu?“ (majiteľ, WhatsApp, Zavolať). Dokumenty nie sú samostatná karta — patria k pobytu.
+- **Moje údaje:** meno, telefón, krajina, Uložiť; Prihlásenie (e-mail, „kódom z e-mailu, bez hesla“); Novinky e-mailom (zaškrtávacie
+  pole); **Moje dáta** — „Stiahnuť moje údaje“ (JSON/ZIP) a „Zrušiť účet“ (s vysvetlením, že zákonom uchovávané údaje ostanú do konca lehoty).
+- **Stavy detailu pobytu** (`StavyPobytu`): **čaká na platbu** — navrchu teplá karta s QR, sumou, IBAN, VS, lehotou a vetou o automatickom
+  zrušení; doobjednávanie až po zaplatení. **Počas pobytu** — odomknuté pokyny ako dlaždice (kód od dverí, Wi-Fi, príchod, odchod
+  + text pokynov, „Navigovať v Google Mapách“, „Niečo nefunguje? Napíšte …“), služby „Na zajtra si môžete objednať“. **Zrušený** —
+  kedy a koľko sa vráti, „Vybrať nový termín“. **Pred príchodom** a **po odchode** podľa `UcetPobyt`.
+- **Rozpis ceny** je v zelenej karte „Účet pobytu“ ako rozbaľovací odkaz „Rozpis ceny“ (nie samostatná sekcia na konci).
+- **Zrušenie:** na konci stránky len krátky blok „Zmena alebo zrušenie“ (storno podmienky jednou vetou) a odkaz „Požiadať o zrušenie
+  pobytu“ → **okno**: koľko dní do príchodu, výsledok podľa storno podmienok (vrátená suma, objednané služby sa zrušia), nepovinný dôvod,
+  „Ponechať pobyt“ / „Odoslať žiadosť“, veta, že žiadosť potvrdí majiteľ (zvyčajne do 24 h). Počas pobytu a po odchode sa nezobrazuje.
+- **Texty podľa skutočného stavu:** pri pokynoch vždy konkrétny dátum odomknutia podľa nastavenia a stavu (zaplatené, check-in) —
+  nie všeobecné „keď bude pobyt zaplatený“, ak už zaplatený je.
+- Rovnaké stránky cez **prístupový odkaz** `/r/<kód>` (bez účtu) — bez lišty kariet, s ponukou „Uložiť do účtu“.
 
 ## Neskôr (zapísané nápady)
 

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Mobil — môj účet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; background: #ffffff; font-weight: 300; display: flex; flex-direction: column;">
+<div style="padding: 14px 20px; border-bottom: 1px solid #e9e5db; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 18px; font-weight: 800; color: #11212f;">Chalet STRÖMY</span><span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #595959;">Web ↗</span></div>
+<div style="padding: 10px 16px; border-bottom: 1px solid #e9e5db; display: flex; gap: 6px;">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" onClick="{{t.go}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+<sc-if value="{{isStays}}" hint-placeholder-val="{{true}}">
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px;">
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f; line-height: 1.15;">Dobrý deň, Tomáš.</span>
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Najbližší pobyt · o 65 dní</span>
+<div style="border: 1px solid #e9e5db; border-radius: 12px; overflow: hidden;">
+<div style="height: 140px; background: #d9dcd8;"></div>
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 19px; font-weight: 800; color: #11212f;">22. – 26. 12. 2026</span>
+<span style="font-size: 13px; color: #5a6672;">4 noci · 2 hostia · Zaplatené</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #8a4a1c;"><span style="width: 7px; height: 7px; border-radius: 9999px; background: #c07a3e;"></span>Vyplňte online check-in</span>
+<button type="button" style="min-height: 46px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 15px; font-weight: 700;">Otvoriť pobyt</button>
+</div>
+</div>
+<span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Minulé pobyty</span>
+<div style="border-top: 1px solid #e9e5db; padding: 14px 2px; border-bottom: 1px solid #e9e5db; display: flex; align-items: center; gap: 10px;"><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #11212f;">8. – 10. 10. 2026</span><span style="font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 9999px; background: #fbf1e6; color: #8a4a1c;">Ohodnoťte</span></div>
+</div>
+</sc-if>
+<sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+<div style="flex: 1 1 auto; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+<span style="font-size: 24px; font-weight: 800; color: #11212f;">Moje údaje</span>
+<span style="font-size: 14px; color: #5a6672;">Meno, telefón, krajina, novinky, prihlásenie, moje dáta — pod sebou, rovnako ako na počítači.</span>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'stays' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var tab = function (k, l) { var on = s.view === k; return { label: l, go: function () { self.setState({ view: k }); }, style: 'flex: 1 1 0; min-height: 38px; border-radius: 9999px; border: 1px solid ' + (on ? '#11212f' : '#e9e5db') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + '; font-size: 14px; font-weight: 500;' }; };
+    return { accent: accent, tabs: [tab('stays', 'Pobyty'), tab('profile', 'Moje údaje')], isStays: s.view === 'stays', isProfile: s.view === 'profile' };
+  }
+}
+</script>
+</body>
+</html>
