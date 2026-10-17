@@ -93,6 +93,10 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
   medzi referenciami na stránke. **Rozhodnuté (Martin 17. 10.): (b) „overené recenzie z pobytov“** — zverejnia sa všetky okrem porušení
   pravidiel (vulgarizmy, osobné údaje, mimo témy; dôvod zamietnutia sa zapíše), s priemerom, verejnou odpoveďou majiteľa a možnosťou
   vybrať niekoľko navrch. Na stránke veta, ako sa overuje, že recenzia je od skutočného hosťa (Omnibus). Odkaz na Google recenzie ponúknuť všetkým, nie len spokojným.
+- [ ] 🧠 **Návrh modulu Push notifikácie** (Martin 17. 10.): Web Push z nainštalovanej administrácie (A13) — **bez platenej služby**
+  (štandard prehliadačov, vlastné VAPID kľúče, odosielanie zo servera). Kanál nad existujúcimi upozorneniami (Z27): zapnutie
+  per zariadenie a člen tímu, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných zariadení. iPhone len po
+  „Pridať na plochu“ → návod pre majiteľa s obrázkami. Odhad 2–3 dni. Platený modul pre klienta, pre nás bez nákladov.
 - [ ] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): spokojný hosť si **kedykoľvek** (pred príchodom
   aj počas pobytu) v účte jedným ťuknutím **záväzne objedná** doplnkovú službu a vyberie platbu: **kartou hneď** (po Stripe), alebo
   **„na účet pobytu“ s vyúčtovaním na konci**. Martin: „super predajný argument“ pre ubytovateľa. Rozhodnúť: uzávierky objednávok
