@@ -881,54 +881,52 @@ async function demoCheckins(martin, b) {
     "checkins",
   );
   must(
-    await db
-      .from("checkin_guests")
-      .insert([
-        person(b.id, 0, {
-          first_name: "Tomáš",
-          last_name: "Kováč",
-          birth_date: "1984-03-12",
-          document_number: "EA000101",
-          address: "Hlavná 1, 058 01 Poprad (DEMO)",
-        }),
-        person(b.id, 1, {
-          first_name: "Zuzana",
-          last_name: "Kováčová",
-          birth_date: "1986-07-02",
-          document_number: "EA000102",
-          address: "Hlavná 1, 058 01 Poprad (DEMO)",
-        }),
-        person(b.id, 2, {
-          first_name: "Oliver",
-          last_name: "Brown",
-          is_citizen: false,
-          nationality: "GB",
-          birth_date: "1979-11-20",
-          document_type: "passport",
-          document_number: "DEMO12345",
-          address: "1 Demo Street, London (DEMO)",
-        }),
-        person(b.id, 3, {
-          first_name: "Emma",
-          last_name: "Brown",
-          is_citizen: false,
-          nationality: "GB",
-          birth_date: "2012-04-08",
-          document_type: "passport",
-          document_number: "DEMO12346",
-          address: "1 Demo Street, London (DEMO)",
-        }),
-        ...(next
-          ? [
-              person(next.id, 0, {
-                first_name: "Peter",
-                last_name: "Demo",
-                document_number: "EA000201",
-                address: "Námestie 2, Košice (DEMO)",
-              }),
-            ]
-          : []),
-      ]),
+    await db.from("checkin_guests").insert([
+      person(b.id, 0, {
+        first_name: "Tomáš",
+        last_name: "Kováč",
+        birth_date: "1984-03-12",
+        document_number: "EA000101",
+        address: "Hlavná 1, 058 01 Poprad (DEMO)",
+      }),
+      person(b.id, 1, {
+        first_name: "Zuzana",
+        last_name: "Kováčová",
+        birth_date: "1986-07-02",
+        document_number: "EA000102",
+        address: "Hlavná 1, 058 01 Poprad (DEMO)",
+      }),
+      person(b.id, 2, {
+        first_name: "Oliver",
+        last_name: "Brown",
+        is_citizen: false,
+        nationality: "GB",
+        birth_date: "1979-11-20",
+        document_type: "passport",
+        document_number: "DEMO12345",
+        address: "1 Demo Street, London (DEMO)",
+      }),
+      person(b.id, 3, {
+        first_name: "Emma",
+        last_name: "Brown",
+        is_citizen: false,
+        nationality: "GB",
+        birth_date: "2012-04-08",
+        document_type: "passport",
+        document_number: "DEMO12346",
+        address: "1 Demo Street, London (DEMO)",
+      }),
+      ...(next
+        ? [
+            person(next.id, 0, {
+              first_name: "Peter",
+              last_name: "Demo",
+              document_number: "EA000201",
+              address: "Námestie 2, Košice (DEMO)",
+            }),
+          ]
+        : []),
+    ]),
     "checkin guests",
   );
   console.log(
