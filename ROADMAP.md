@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa) — *zabratá linkou A* ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha stagingu, prednostne)** → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha stagingu, prednostne)** → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -218,7 +218,7 @@ Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `Spr
 5. Mobil: schránka zoznam → rezervácia cez celú obrazovku na karte Správy.
 6. Playwright (Ukážkový klient): odpoveď hosťovi, rýchla odpoveď, vynechanie naplánovanej správy, úprava pravidla; axe.
 
-### Z47 [A] — Modul Správy: hosť (konverzácia v detaile pobytu, mobil, e-mail) — po Z43 a Z45
+### Z47 ✅ [A] — Modul Správy: hosť (konverzácia v detaile pobytu, mobil, e-mail) — po Z43 a Z45
 Podľa `docs/vizual-stranka-hosta.md` → **Správy s hosťom (v2.5)**, dosky `SpravyPobyt`, `MobilSpravy`, `EmailSprava`.
 Ak Z45 ešte nie je ✅, počkaj (pull každých pár minút) — linka A nemá nič iné.
 1. Sekcia Správy v detaile pobytu cez slot `guest.stay.top` (pod stavom), v účte aj cez prístupový odkaz; rýchle témy z nastavenia klienta.
@@ -430,6 +430,18 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z47 [linka A]: **modul Správy — hosť** (`SpravyPobyt`, `MobilSpravy`, `EmailSprava`). (Claude Code)
+  - Migrácia `20261017295000_messages_guest.sql`: `tenant_settings.message_topics` (rýchle témy) a `guest_messages(rezervácia, token)` —
+    konverzácia pre hosťa cez účet aj prístupový odkaz (`reservation_access`), otvorená do 30 dní po odchode, potom len čítanie.
+  - Sekcia **Správy** v detaile pobytu (slot `guest.stay.top`; PC karta s konverzáciou, mobil riadok → vlastná obrazovka
+    `/ucet/pobyt/<id>/spravy` a `/r/<token>/spravy`, pole 16 px); nový slot **`guest.stay.header`** s pilulkou „Nová správa od …“,
+    kontakt na majiteľa v `guest.stay.aside` (príznak manifestu `guestContact` skryje kartu kontaktu jadra). Prečítanie sa zapíše, len keď
+    hosť konverzáciu naozaj vidí. Oddeľovač „<deň> · nová správa“ ostáva na mieste aj po prečítaní.
+  - Neprečítané: bod „Nová správa od …“ cez `guestTodos` (odznak v lište účtu, karta pobytu; aj pri minulých pobytoch).
+  - E-maily: hosťovi oslovenie + „Odpovedať“ na `/r/<token>/spravy` (bez hesla), majiteľovi riadok, že hosť čaká na odpoveď.
+  - Správy v exporte „Moje dáta“; nastavenie rýchlych tém (max. 3 riadky) v Nastaveniach, keď je modul zapnutý.
+  - Modul ostáva `ready: false`, kým nebude Z46 (schránka majiteľa). Playwright `messages-guest.spec.ts` (PC + mobil, axe) overuje správu
+    a upozornenie `message_new` v databáze — „majiteľ vidí v schránke“ doplní Z46.
 - 2026-10-17 — Z45 oprava po CI: čas správy je `clock_timestamp()` (migrácia `20261017296000_messages_order.sql`) — správy z jednej
   transakcie (beh automatiky) mali rovnaký čas a „posledná správa“ nebola jednoznačná; v pgTAP vyčistené prihlásenie pred anonymom. (Claude Code)
 - 2026-10-17 — Z45 [linka B]: **modul Správy — základ** (B11 Správy s hosťom, bez obrazoviek — tie sú Z46/Z47). (Claude Code)

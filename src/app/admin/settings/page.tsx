@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { requireTenant } from "@/core/admin/action";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
@@ -14,16 +15,18 @@ import { saveSettings } from "./actions";
 
 export default async function SettingsPage() {
   const active = await requireTenant();
-  const [t, tf, tu, tc, tr, tenant, upsell, checkin, reviews] = await Promise.all([
+  const [t, tf, tu, tc, tr, tm, tenant, upsell, checkin, reviews, messages] = await Promise.all([
     getTranslations("settings"),
     getTranslations("forms"),
     getTranslations("modules.upsell"),
     getTranslations("modules.checkin.settings"),
     getTranslations("modules.reviews"),
+    getTranslations("modules.messages.guest"),
     getTenantInfo(active.tenantId),
     isModuleEnabled(active.tenantId, "upsell"),
     isModuleEnabled(active.tenantId, "checkin"),
     isModuleEnabled(active.tenantId, "reviews"),
+    isModuleEnabled(active.tenantId, "messages"),
   ]);
   const supabase = await createClient();
   const { data: s } = await supabase
@@ -196,6 +199,20 @@ export default async function SettingsPage() {
                 defaultValue={s?.reviews_url ?? ""}
               />
             </Field>
+            {messages ? (
+              <Field label={tm("topicsSetting")} hint={tm("topicsHint")} htmlFor="message_topics">
+                <Textarea
+                  id="message_topics"
+                  name="message_topics"
+                  rows={3}
+                  maxLength={300}
+                  defaultValue={(Array.isArray(s?.message_topics) ? s.message_topics : [])
+                    .map((x) => (x as Record<string, string>).sk ?? "")
+                    .filter(Boolean)
+                    .join("\n")}
+                />
+              </Field>
+            ) : null}
             {reviews ? (
               <Field label={tr("googleUrl")} hint={tr("googleUrlHint")} htmlFor="google_review_url">
                 <Input

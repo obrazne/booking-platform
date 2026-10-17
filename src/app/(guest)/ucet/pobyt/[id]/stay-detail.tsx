@@ -15,6 +15,7 @@ import {
 } from "@/core/guest/zone";
 import { tr } from "@/core/i18n/localized";
 import { ModuleSlot } from "@/core/modules/module-slot";
+import { guestContactByModule } from "@/core/modules/registry";
 import { money } from "@/core/money/money";
 import { payBySquareSvg } from "@/core/payments/pay-by-square";
 import { diffDays, todayIso } from "@/core/pricing/dates";
@@ -36,6 +37,8 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
   if (!stay) notFound();
   const today = todayIso();
   const phase = stayPhase(stay.status, stay.checkIn, stay.checkOut, today);
+  // A module may show the owner's contact itself (e.g. messages, Z47) — then the core card stays out.
+  const contactByModule = await guestContactByModule(tenant.id);
   const [t, tg, ts, locale, docs, state, { data: settings }] = await Promise.all([
     getTranslations("guest.account"),
     getTranslations("guest"),
@@ -138,6 +141,14 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               {tg("cart.guestsCount", { count: stay.adults + stay.children })}
               {stay.infants ? ` + ${stay.infants}` : ""}
             </p>
+            {modules ? (
+              <ModuleSlot
+                name="guest.stay.header"
+                tenantId={tenant.id}
+                locale={locale}
+                reservationId={stay.id}
+              />
+            ) : null}
             {rebook && phase === "after" ? (
               <Link
                 href={rebook}
@@ -527,7 +538,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               </div>
             ) : null}
           </section>
-          {settings?.contact_phone || settings?.whatsapp_phone ? (
+          {!contactByModule && (settings?.contact_phone || settings?.whatsapp_phone) ? (
             <div className="bg-surface border-line flex items-center gap-3 rounded-lg border px-[18px] py-4">
               <span className="inline-flex size-[38px] shrink-0 items-center justify-center rounded-full bg-[#e9e5db] text-[13px] font-bold text-[#5a6672]">
                 {initials}

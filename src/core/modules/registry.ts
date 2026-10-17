@@ -107,3 +107,9 @@ export async function moduleEmailBlocks(args: EmailBlockArgs): Promise<EmailBloc
 export async function runModuleOnEnable(key: string, tenantId: string): Promise<void> {
   await getModule(key)?.onEnable?.(tenantId);
 }
+
+/** Whether an enabled module shows the owner's contact in the guest's stay (the core card then stays out, Z47). */
+export async function guestContactByModule(tenantId: string): Promise<boolean> {
+  const keys = new Set(await enabledModuleKeysPublic(tenantId));
+  return resolveEnabled(MODULES, keys).some((m) => m.guestContact);
+}

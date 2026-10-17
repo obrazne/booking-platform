@@ -13,7 +13,8 @@ import { cn } from "@/lib/utils";
 export function AccountTabs({ badge, signOut }: { badge: number; signOut: () => Promise<void> }) {
   const t = useTranslations("guest.account");
   const path = usePathname();
-  if (path.startsWith("/ucet/prihlasenie")) return null;
+  // Not on the login, nor on the conversation's own screen (phones, Z47 — it has its own top bar).
+  if (path.startsWith("/ucet/prihlasenie") || path.endsWith("/spravy")) return null;
   const profile = path.startsWith("/ucet/udaje");
   const tabs = [
     { href: "/ucet", label: t("tabs.stays"), on: !profile, badge },

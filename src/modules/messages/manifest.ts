@@ -1,6 +1,8 @@
 import type { ModuleManifest } from "@/core/modules/types";
 import { ensureMessageDefaults } from "./defaults";
 import { messageEmailBlocks } from "./email-blocks";
+import { GuestMessagesContact, GuestMessagesPill, GuestMessagesSection } from "./guest/section";
+import { messageTodos } from "./guest/todos";
 
 /**
  * Messages with the guest (Z45, B11): one conversation per direct reservation, automatic messages by rules, quick
@@ -13,4 +15,11 @@ export const messagesModule: ModuleManifest = {
   ready: false,
   onEnable: ensureMessageDefaults,
   emailBlocks: messageEmailBlocks,
+  slots: {
+    "guest.stay.top": GuestMessagesSection,
+    "guest.stay.header": GuestMessagesPill,
+    "guest.stay.aside": GuestMessagesContact,
+  },
+  guestContact: true,
+  guestTodos: messageTodos,
 };

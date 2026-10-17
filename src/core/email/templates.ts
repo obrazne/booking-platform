@@ -521,7 +521,8 @@ export async function renderEmail(
           `<div style="margin:0 0 12px;padding:12px 16px;border-radius:12px;background:#f3f4f2">${p(m.body)}</div>`,
       );
       if (toGuest) {
-        const reply = ctx.guestLink ? `${ctx.guestLink}#spravy` : ctx.stayLink;
+        // Opens the conversation of the stay without a password (access link), or the stay in the account (Z47).
+        const reply = ctx.guestLink ? `${ctx.guestLink}/spravy` : `${ctx.stayLink}#spravy`;
         return {
           to: r.guest_email,
           replyTo: ownerTo,
@@ -530,7 +531,11 @@ export async function renderEmail(
           html: layout(
             accent,
             t("guest_message.subject", mv),
-            [...bubbles, p(t("guest_message.replyHint", mv))],
+            [
+              p(t("guest_message.greeting", { ...mv, name: r.guest_name.split(/\s+/)[0] ?? "" })),
+              ...bubbles,
+              p(t("guest_message.replyHint", mv)),
+            ],
             { href: reply, label: t("guest_message.button", mv) },
           ),
           text: [...items.map((m) => m.body), t("guest_message.replyHint", mv), reply].join("\n\n"),
@@ -542,10 +547,15 @@ export async function renderEmail(
         to: ownerTo,
         fromName: tenantName,
         subject: t("owner_message.subject", mv),
-        html: layout(accent, t("owner_message.subject", mv), bubbles, {
-          href: link,
-          label: t("owner_message.button"),
-        }),
+        html: layout(
+          accent,
+          t("owner_message.subject", mv),
+          [p(t("owner_message.waiting", mv)), ...bubbles, p(t("owner_message.note"))],
+          {
+            href: link,
+            label: t("owner_message.button"),
+          },
+        ),
         text: [...items.map((m) => m.body), link].join("\n\n"),
       };
     }

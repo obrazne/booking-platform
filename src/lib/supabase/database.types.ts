@@ -2861,6 +2861,7 @@ export type Database = {
           google_review_url: string | null
           hold_minutes: number
           iban: string | null
+          message_topics: Json | null
           owner_notification_email: string | null
           payment_due_hours: number
           portal_commission_bp: number
@@ -2890,6 +2891,7 @@ export type Database = {
           google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
+          message_topics?: Json | null
           owner_notification_email?: string | null
           payment_due_hours?: number
           portal_commission_bp?: number
@@ -2919,6 +2921,7 @@ export type Database = {
           google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
+          message_topics?: Json | null
           owner_notification_email?: string | null
           payment_due_hours?: number
           portal_commission_bp?: number
@@ -3425,6 +3428,10 @@ export type Database = {
         Returns: Json
       }
       guest_checkin_view: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: Json
+      }
+      guest_messages: {
         Args: { p_reservation_id: string; p_token?: string }
         Returns: Json
       }

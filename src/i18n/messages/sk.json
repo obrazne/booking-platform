@@ -567,6 +567,46 @@
             "body": "Dobrý deň, ako vám môžem pomôcť?"
           }
         }
+      },
+      "guest": {
+        "kicker": "Správy",
+        "title": "Píšte priamo — {name} odpovie.",
+        "emergency": "V núdzi počas pobytu volajte",
+        "about": "Správy k tomuto pobytu",
+        "alsoEmail": "Odpovede aj e-mailom",
+        "log": "Správy s {name}",
+        "empty": "Zatiaľ žiadne správy. Napíšte, ak čokoľvek potrebujete.",
+        "today": "Dnes",
+        "confirmed": "Rezervácia potvrdená · {date}",
+        "read": "prečítané",
+        "sent": "odoslané",
+        "field": "Správa pre {name}",
+        "placeholder": "Napíšte správu…",
+        "send": "Odoslať",
+        "hint": "{name} dostane upozornenie hneď. Odpoveď vám príde aj e-mailom.",
+        "closed": "Konverzácia je uzavretá — napíšte na {contact}.",
+        "newFrom": "Nová správa od {name}",
+        "newCount": "{count, plural, one {1 nová} few {# nové} other {# nových}}",
+        "start": "Napíšte správu",
+        "contactTitle": "Kontakt — {name}",
+        "write": "Napísať správu",
+        "phoneLabel": "Telefón",
+        "phoneNote": "— pre veci, ktoré nepočkajú (počas pobytu).",
+        "backToStay": "Späť na pobyt",
+        "call": "Zavolať {phone}",
+        "topics": {
+          "arrival": "Ako sa k vám dostaneme?",
+          "late": "Prídeme neskôr, asi o",
+          "broken": "Niečo nefunguje:"
+        },
+        "topicsSetting": "Rýchle témy pre hostí (každá na nový riadok, najviac 3)",
+        "topicsHint": "Hosť ich ťukne a vloží sa mu začiatok vety. Prázdne = predvolené.",
+        "errors": {
+          "closed": "Konverzácia je už uzavretá.",
+          "rate_limited": "Poslali ste veľa správ naraz. Skúste to o chvíľu.",
+          "generic": "Správu sa nepodarilo odoslať. Skúste to znova."
+        },
+        "newMark": "{day} · nová správa"
       }
     },
     "checkin": {
@@ -1771,11 +1811,14 @@
     "guest_message": {
       "subject": "{owner} vám napísal(a) k pobytu {stay}",
       "button": "Odpovedať",
-      "replyHint": "Odpovedať môžete aj priamo na tento e-mail — príde k {owner}."
+      "replyHint": "Tlačidlo vás rovno prihlási k pobytu — bez hesla. Ak odpoviete priamo na tento e-mail, správa príde {owner} do schránky.",
+      "greeting": "Dobrý deň, {name}, {owner} vám napísal(a)."
     },
     "owner_message": {
       "subject": "Nová správa od hosťa — {guest} · {number}",
-      "button": "Odpovedať v administrácii"
+      "button": "Odpovedať v administrácii",
+      "waiting": "{guest} čaká na odpoveď.",
+      "note": "Otvorí rezerváciu na karte Správy. Rovnaké upozornenie vidíte aj v zvončeku a v telefóne (push)."
     },
     "owner_new": {
       "subject": "Nová rezervácia {number} — {guest}",

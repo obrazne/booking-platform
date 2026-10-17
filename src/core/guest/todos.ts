@@ -55,7 +55,10 @@ export const stayTodos = cache(async (stayId: string): Promise<GuestTodo[]> => {
     }
   }
   const fromModules = await moduleGuestTodos(tenant.id, stay.id, locale);
-  return [...todos, ...fromModules.filter((x) => !past || x.key === "review")];
+  return [
+    ...todos,
+    ...fromModules.filter((x) => !past || x.key === "review" || x.key === "message"),
+  ];
 });
 
 /** Number of things the guest should do across their stays — the badge on "Pobyty". */

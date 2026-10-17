@@ -53,6 +53,12 @@ export async function GET() {
       )
       .eq("tenant_id", tenant.id),
   ]);
+  // Messages with the owner (Z47) — the guest's own conversations (RLS).
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("sender, body, created_at, reservation:reservations(number)")
+    .eq("tenant_id", tenant.id)
+    .order("created_at");
   const data = {
     exported_at: new Date().toISOString(),
     accommodation: tenant.name,
@@ -61,6 +67,12 @@ export async function GET() {
     consents: consents ?? [],
     reviews: reviews ?? [],
     orders: orders ?? [],
+    messages: (messages ?? []).map((m) => ({
+      from: m.sender === "guest" ? "guest" : "accommodation",
+      body: m.body,
+      created_at: m.created_at,
+      reservation: m.reservation?.number ?? null,
+    })),
     checkin_persons: (persons ?? []).map((p) => ({
       ...p,
       document_number: mask(p.document_number),
@@ -70,7 +82,7 @@ export async function GET() {
   const readme = [
     `Vaše údaje u ${tenant.name}`,
     "",
-    "udaje.json obsahuje váš profil, pobyty (rozpis ceny a platby), súhlasy, recenzie, objednávky a osoby z online check-inu.",
+    "udaje.json obsahuje váš profil, pobyty (rozpis ceny a platby), súhlasy, recenzie, objednávky, správy a osoby z online check-inu.",
     "Čísla dokladov a dátumy narodenia sú z bezpečnostných dôvodov skryté — celé ich vidí len ubytovateľ.",
   ].join("\n");
   const body = zip([

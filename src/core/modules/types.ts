@@ -25,7 +25,9 @@ export type SlotName =
   | "guest.stay.main"
   | "guest.stay.aside"
   /** Inside the stay's green "Účet pobytu" card in the account (Z44): lines a module adds (orders). */
-  | "guest.stay.account";
+  | "guest.stay.account"
+  /** Under the dates in the stay's header (e.g. "Nová správa od Jany ↓", Z47). */
+  | "guest.stay.header";
 
 export type SlotProps = {
   tenantId: string;
@@ -67,6 +69,8 @@ export type ModuleManifest = {
   navItems?: readonly ModuleNavItem[];
   slots?: Partial<Record<SlotName, ComponentType<SlotProps>>>;
   events?: Partial<Record<BookingEventName, (event: ModuleEvent) => Promise<void>>>;
+  /** The module shows the owner's contact in the stay (guest.stay.aside) — the core leaves its own card out (Z47). */
+  guestContact?: boolean;
   /** Points for the guest's stay card in the account (Z43): e.g. "Vyplňte online check-in". Signed-in guest only. */
   guestTodos?: (args: { reservationId: string; locale: string }) => Promise<GuestTodo[]>;
   /** Section types for the property page (B7), e.g. services on request. */

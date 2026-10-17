@@ -97,6 +97,14 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         .safeParse(String(form.get("google_review_url") ?? "").trim())
     : null;
   if (google && !google.success) return fail("invalid");
+  // Module messages: quick topics for guests, one per line (at most 3) — only when the form had them.
+  const topics = form.has("message_topics")
+    ? String(form.get("message_topics") ?? "")
+        .split(/\r?\n/)
+        .map((x) => x.trim().slice(0, 80))
+        .filter(Boolean)
+        .slice(0, 3)
+    : null;
   // Module checkin: tax for accommodation and retention — only when the form had them.
   let checkin = {};
   if (form.has("checkin_retention_days")) {
@@ -116,6 +124,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     tenant_id: tenant.id,
     ...settings,
     ...checkin,
+    ...(topics ? { message_topics: topics.length ? topics.map((sk) => ({ sk })) : null } : {}),
     ...(google?.success ? { google_review_url: google.data } : {}),
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     ...(upsell_offer_days === undefined ? {} : { upsell_offer_days }),
