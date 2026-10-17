@@ -74,7 +74,7 @@ function NavLink({
       aria-current={active ? "page" : undefined}
       title={expanded ? undefined : item.label}
       className={cn(
-        "relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors duration-150",
+        "nav-link relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors duration-150",
         "text-sidebar-foreground hover:bg-[#efeee9] dark:hover:bg-white/5",
         active && "bg-sidebar-accent text-sidebar-accent-foreground font-bold",
       )}
@@ -181,9 +181,18 @@ export function AdminShell({
   addHref,
   addLabel,
   roots = ["/admin", "/platform"],
+  variant = "admin",
+  tag,
+  banner,
   children,
 }: {
   brand: { icon: ReactNode; label: string };
+  /** "control" = the control center: graphite menu, so it is always clear where you are (v1.1). */
+  variant?: "admin" | "control";
+  /** Small line under the name ("Riadiace centrum · vidíš len ty"). */
+  tag?: string;
+  /** Bar above the content ("Prezeráš ako správca: …"). */
+  banner?: ReactNode;
   /** Accommodation picker (none in the control center); reads `useShellExpanded()`. */
   picker?: ReactNode;
   items: ShellNavItem[];
@@ -222,6 +231,7 @@ export function AdminShell({
           }}
           className={cn(
             "bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-40 flex flex-col gap-[18px] overflow-hidden border-r px-3.5 py-[18px]",
+            variant === "control" && "shell-control",
             "transition-[width,box-shadow] duration-200 ease-out",
             expanded ? "w-62" : "w-[68px]",
             hovered && !pinned && "shadow-xl",
@@ -231,11 +241,14 @@ export function AdminShell({
             <BrandMark icon={brand.icon} />
             <span
               className={cn(
-                "text-ink truncate text-[15px] font-extrabold tracking-tight transition-opacity duration-200",
+                "grid min-w-0 transition-opacity duration-200",
                 expanded ? "opacity-100" : "opacity-0",
               )}
             >
-              {brand.label}
+              <span className="text-ink truncate text-[15px] font-extrabold tracking-tight">
+                {brand.label}
+              </span>
+              {tag ? <span className="label-mono truncate">{tag}</span> : null}
             </span>
             <button
               type="button"
@@ -259,6 +272,7 @@ export function AdminShell({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
+        {banner}
         {/* Phone top bar (06): menu, accommodation, + manual reservation. */}
         <header className="bg-background border-line sticky top-0 z-30 flex h-14 items-center gap-2 border-b px-2 md:hidden">
           <button
@@ -293,7 +307,10 @@ export function AdminShell({
         <SheetContent
           side="left"
           showCloseButton={false}
-          className="bg-sidebar flex flex-col gap-[18px] rounded-none p-3.5 data-[side=left]:w-[316px] data-[side=left]:max-w-[90vw] data-[side=left]:sm:max-w-[316px]"
+          className={cn(
+            "bg-sidebar flex flex-col gap-[18px] rounded-none p-3.5 data-[side=left]:w-[316px] data-[side=left]:max-w-[90vw] data-[side=left]:sm:max-w-[316px]",
+            variant === "control" && "shell-control",
+          )}
         >
           <div className="flex items-center gap-2.5 px-1 py-1">
             <BrandMark icon={brand.icon} />

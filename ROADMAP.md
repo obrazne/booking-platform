@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** Z24 hotová, ďalej **Z25** (riadiace centrum, roly, vstup správcu) — Martinove pripomienky zo stagingu 17. 10.
+- **Ďalší krok pre Claude Code:** fronta je prázdna (Z24 a Z25 hotové) — čaká na ďalšie zadanie z Claude chatu.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
@@ -168,7 +168,7 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
    ale bez prázdnej čiarky).
 5. Playwright (počítač aj 390 px, axe) na prerobených obrazovkách; obnov snímky prehliadky (`npm run tour:screens`) a zvýš jej verziu.
 
-### Z25 — Riadiace centrum, roly a vstup správcu (pripomienky zo stagingu 17. 10.)
+### Z25 ✅ — Riadiace centrum, roly a vstup správcu (pripomienky zo stagingu 17. 10.)
 Čítaj `docs/vizual-administracia.md` → *Riadiace centrum, roly a vstup správcu (v1.1)*, `ARCHITEKTURA.md` A4 a rozhodnutie 17. 10.
 1. **Odlíšenie:** grafitové bočné menu riadiaceho centra + štítok „Riadiace centrum · vidíš len ty“. Menu: Klienti, Moduly, Stav systému,
    Audit ako **samostatné stránky** (presuň Moduly a Záznam zmien zo stránky Klienti; Stav systému = kontroly po klientoch). Položku
@@ -265,6 +265,19 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z25: **riadiace centrum, roly a vstup správcu.** Grafitové bočné menu so štítkom „Riadiace centrum · vidíš len ty“,
+  samostatné stránky Klienti / Moduly / Stav systému (kontroly po klientoch: kalendáre, neodoslané e-maily, posledná synchronizácia
+  a odoslanie) / Audit (preložené záznamy); „Do administrácie“ z menu preč. **Vstup správcu:** „Otvoriť administráciu“ v paneli klienta
+  otvorí novú kartu cez `/platform/enter/<id>` — overí správcu, zapíše `admin.entered` do auditu a nastaví cookie `admin_view_tenant`
+  (8 h); administrácia potom beží pre daného klienta **bez členstva**, s grafitovým pruhom „Prezeráš ako správca: … · Späť do riadiaceho
+  centra“ (`/platform/leave`). **RLS som nemenil** — všetky politiky už pustia správcu platformy (`or is_platform_admin()`), cookie
+  platí len spolu s touto rolou. Výber ubytovania len pri viac ako jednom (inak len názov). Panel klienta v jednom stĺpci: súhrn s verejnou
+  adresou ↗ (nikdy `*.localhost`), kontakt = majiteľ bez testovacích účtov, moduly ako riadky (stav, koniec skúšky na druhom riadku,
+  Uložiť pri riadku), ľudia (meno · e-mail, rola), prevádzka, vzhľad, posledné zmeny zbalené; Stránka pre hostí a Otvoriť administráciu
+  v novej karte. **Nový objekt** vidí a môže založiť len správca (formulár aj serverová akcia). Testovaciemu správcovi
+  qa-admin@booking-platform.test som odobral staré členstvo u STRÖMY (aby test overoval vstup bez členstva); členstvá info@obrazne.sk
+  nedotknuté. Playwright: vstup správcu (nová karta, pruh, audit, späť), majiteľ info+jana@ (bez výberu, bez riadiaceho centra a „Nový
+  objekt“), stránky riadiaceho centra. Prehliadka správcu: nové snímky a texty, verzia 2026-10-17.3. (Claude Code)
 - 2026-10-17 — Z24: **vzory administrácie v1.1.** Panel záznamu má **jeden stĺpec**: prilepená hlavička, súhrnná karta
   (`PanelSummary` — meno, kontakt, mriežka Príchod · Odchod · Noci · Hostia · Suma · Zdroj · Ubytovanie), hlavná akcia (platba),
   sekcie pod sebou, História a Súhlasy zbalené s počtom (`PanelCollapsible`), prilepená spodná lišta; dlhé mená, e-maily a slová sa

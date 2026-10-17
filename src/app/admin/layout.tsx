@@ -86,9 +86,28 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       picker={
         active ? (
           <TenantSwitcher
-            tenants={memberships.map((m) => ({ id: m.tenantId, name: m.tenantName }))}
+            tenants={
+              active.adminView
+                ? [{ id: active.tenantId, name: active.tenantName }]
+                : memberships.map((m) => ({ id: m.tenantId, name: m.tenantName }))
+            }
             activeId={active.tenantId}
           />
+        ) : undefined
+      }
+      banner={
+        active?.adminView ? (
+          // Platform admin inside a client's administration (A4): impossible to overlook.
+          <div
+            role="status"
+            className="sticky top-0 z-40 flex flex-wrap items-center gap-x-3 gap-y-1 bg-[#2b3036] px-5 py-2.5 text-sm text-white md:px-10"
+          >
+            <Shield className="size-4 shrink-0" />
+            <span>{t("adminV1.adminView.banner", { tenant: active.tenantName })}</span>
+            <a href="/platform/leave" className="font-bold underline underline-offset-4">
+              {t("adminV1.adminView.back")}
+            </a>
+          </div>
         ) : undefined
       }
       items={items}

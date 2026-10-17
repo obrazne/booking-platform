@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { switchTenant } from "@/app/admin/actions";
 
 export type FormState = {
   error: "invalidInput" | "slugTaken" | "error" | "trialNeedsDate" | null;
@@ -101,10 +100,4 @@ export async function setTenantStatus(_prev: FormState, formData: FormData): Pro
   revalidatePath(`/platform/tenants/${parsed.data.tenantId}`);
   revalidatePath("/platform");
   return { error: null, ok: true };
-}
-
-/** "Otvoriť administráciu" of a client — only when the admin is also a member of it (the cookie is checked again). */
-export async function openTenantAdmin(tenantId: string) {
-  await switchTenant(tenantId);
-  redirect("/admin");
 }

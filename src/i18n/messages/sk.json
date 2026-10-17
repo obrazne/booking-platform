@@ -1353,28 +1353,28 @@
         "body": "Zadáte názov, skratku a doménu. Klient dostane vlastnú rezervačnú stránku a administráciu, ktorú si potom doplní."
       },
       "detail": {
-        "title": "Detail klienta",
-        "body": "Domény, stav a všetko podstatné o jednom klientovi na jednej stránke. Odtiaľ sa dostanete ku každému nastaveniu."
+        "title": "Panel klienta",
+        "body": "Klik na klienta otvorí panel: moduly a skúšky, ľudia klienta, prevádzka a vzhľad. Mená a kontakty hostí tu nikdy nie sú, len počty."
       },
       "modules": {
         "title": "Moduly a skúšky",
-        "body": "Moduly ako Doplnkové služby zapínate klientovi natrvalo alebo na skúšku s dátumom konca. Po skúške sa modul sám vypne."
+        "body": "Na stránke Moduly vidíte, ktorý klient má modul zapnutý alebo na skúšku a dokedy. Zapína sa v paneli klienta; po skúške sa modul sám vypne."
       },
       "health": {
-        "title": "Zdravie klienta",
-        "body": "Posledná rezervácia, kalendáre s chybou a neodoslané e-maily. Keď niečo nefunguje, uvidíte to skôr ako klient."
+        "title": "Stav systému",
+        "body": "Kontroly po klientoch: kalendáre s chybou, neodoslané e-maily, posledná synchronizácia. Keď niečo nefunguje, uvidíte to skôr ako klient."
       },
       "theme": {
         "title": "Vzhľad podľa klienta",
         "body": "Farby, písmo a zaoblenie rezervačnej stránky podľa značky klienta. Náhľad ukáže, ako stránka bude vyzerať."
       },
       "audit": {
-        "title": "Záznam zmien",
-        "body": "Kto, kedy a čo zmenil — napríklad zapnutý modul alebo zmenený stav klienta. Pomôže pri otázkach aj pri hľadaní chyby."
+        "title": "Audit",
+        "body": "Kto, kedy a čo zmenil — zapnutý modul, zmenený stav klienta aj každý váš vstup do administrácie klienta."
       },
       "ownerView": {
         "title": "Pohľad majiteľa",
-        "body": "Z menu prejdete do administrácie klienta a vidíte ju presne ako majiteľ. Tak mu ľahko poradíte po telefóne."
+        "body": "V paneli klienta tlačidlo Otvoriť administráciu otvorí jeho administráciu v novej karte s pruhom „Prezeráš ako správca“. Členstvo u klienta netreba a vstup sa zapíše do auditu."
       }
     }
   },
@@ -1546,7 +1546,14 @@
       "contrastOk": "Kontrast overený",
       "contrastLow": "Nízky kontrast — skontrolovať",
       "defaultTheme": "Predvolená téma platformy",
-      "recent": "Posledné zmeny"
+      "recent": "Posledné zmeny",
+      "noOwner": "bez majiteľa",
+      "noPublicDomain": "Zatiaľ bez verejnej adresy",
+      "founded": "Založený",
+      "contact": "Kontakt (majiteľ)",
+      "noPeople": "Zatiaľ nikto.",
+      "until": "do {date}",
+      "noClientsWithModule": "Zatiaľ ho nemá žiadny klient."
     },
     "audit": {
       "tenantCreated": "Klient založený",
@@ -1565,6 +1572,28 @@
       "membershipCreated": "Pridaný človek do tímu",
       "adminEntered": "Správca otvoril administráciu",
       "other": "Iná zmena"
+    },
+    "adminView": {
+      "banner": "Prezeráš ako správca: {tenant}",
+      "back": "Späť do riadiaceho centra"
+    },
+    "control": {
+      "tag": "Riadiace centrum · vidíš len ty"
+    },
+    "status": {
+      "title": "Stav systému",
+      "ok": "V poriadku",
+      "check": "Pozrieť",
+      "sync": "Synchronizácia kalendárov",
+      "noChannels": "bez prepojených kalendárov",
+      "syncOk": "{count, plural, one {1 kalendár v poriadku} few {# kalendáre v poriadku} other {# kalendárov v poriadku}}",
+      "syncBad": "{count, plural, one {1 kalendár s chybou} few {# kalendáre s chybou} other {# kalendárov s chybou}}",
+      "last": "posledná {date}",
+      "emails": "E-maily",
+      "emailsOk": "bez neodoslaných",
+      "emailsFailed": "{count, plural, one {1 neodoslaný} few {# neodoslané} other {# neodoslaných}}",
+      "lastSent": "posledný odoslaný {date}",
+      "never": "zatiaľ nikdy"
     }
   }
 }

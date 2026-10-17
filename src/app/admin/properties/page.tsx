@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { requireTenant } from "@/core/admin/action";
+import { isPlatformAdmin } from "@/core/auth/session";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
 import { createClient } from "@/lib/supabase/server";
 import { createProperty } from "./actions";
@@ -20,7 +21,7 @@ type Status = "draft" | "published" | "archived";
 
 export default async function PropertiesPage() {
   const active = await requireTenant();
-  const t = await getTranslations("properties");
+  const [t, admin] = await Promise.all([getTranslations("properties"), isPlatformAdmin()]);
   const supabase = await createClient();
   const { data } = await supabase
     .from("properties")
@@ -81,22 +82,26 @@ export default async function PropertiesPage() {
         </Table>
       </div>
 
-      <Card className="max-w-xl">
-        <CardHeader>
-          <CardTitle>{t("new")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ActionForm action={createProperty}>
-            <Field label={t("fields.name")} htmlFor="name">
-              <Input id="name" name="name" required maxLength={120} />
-            </Field>
-            <Field label={t("fields.slug")} hint={t("fields.slugHint")} htmlFor="slug">
-              <Input id="slug" name="slug" required pattern="[a-z0-9]([a-z0-9-]*[a-z0-9])?" />
-            </Field>
-            <SubmitButton>{t("create")}</SubmitButton>
-          </ActionForm>
-        </CardContent>
-      </Card>
+      {/* New property: only the platform admin for now (v1.1 — an empty property would look bare on the web,
+          and the number of properties may belong to the package). */}
+      {admin ? (
+        <Card className="max-w-xl">
+          <CardHeader>
+            <CardTitle>{t("new")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ActionForm action={createProperty}>
+              <Field label={t("fields.name")} htmlFor="name">
+                <Input id="name" name="name" required maxLength={120} />
+              </Field>
+              <Field label={t("fields.slug")} hint={t("fields.slugHint")} htmlFor="slug">
+                <Input id="slug" name="slug" required pattern="[a-z0-9]([a-z0-9-]*[a-z0-9])?" />
+              </Field>
+              <SubmitButton>{t("create")}</SubmitButton>
+            </ActionForm>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

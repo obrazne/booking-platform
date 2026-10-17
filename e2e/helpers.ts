@@ -143,3 +143,14 @@ export async function openWhatsNew(page: Page, mobile: boolean) {
   else await page.locator("aside").hover();
   await page.getByRole("button", { name: "Čo je nové" }).filter({ visible: true }).click();
 }
+
+/** Signs in an existing test account through a one-time link (no e-mail is sent) — e.g. the STRÖMY test owner. */
+export async function loginAs(page: Page, base: string, email: string, next = "/admin") {
+  const db = service();
+  await markToursSeen(email);
+  const { data: link, error } = await db.auth.admin.generateLink({ type: "magiclink", email });
+  if (error) throw error;
+  await page.goto(
+    `${base}/auth/confirm?token_hash=${link.properties.hashed_token}&type=magiclink&next=${next}`,
+  );
+}

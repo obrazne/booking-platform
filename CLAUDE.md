@@ -122,7 +122,7 @@ Next.js 16 (App Router, strict TS) · Tailwind 4 + shadcn/ui (Radix) · next-int
 | `src/app/admin/*` | administrácia majiteľa: prehľad, tím (vzor zoznamu + bočného panela + CSV), stránky modulov |
 | `src/app/platform/*` | riadiace centrum: klienti, založenie, moduly, stav, téma, audit |
 | `src/core/auth` | prihlásený používateľ, členstvá, správca platformy |
-| `src/core/tenant` | klient podľa domény (`tenant_by_host`), aktívny klient v administrácii (cookie, overené členstvom) |
+| `src/core/tenant` | klient podľa domény (`tenant_by_host`), aktívny klient v administrácii (cookie, overené členstvom; správca platformy v režime „Prezeráš ako správca“ cez `admin_view_tenant`, vstup `/platform/enter/<id>`) |
 | `src/core/security` | ochrana formulárov hosťa: captcha Cloudflare Turnstile (`captcha.tsx` widget, `turnstile.ts` siteverify), limit podľa IP (`guard.ts` → `hit_request_limit`) |
 | `src/core/money`, `src/core/format` | peniaze v centoch, formátovanie súm a dátumov cez `Intl` |
 | `src/core/theme` | téma klienta → CSS premenné, kontrola kontrastu, ponuka písiem, svetlý/tmavý režim |

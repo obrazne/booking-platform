@@ -171,20 +171,21 @@ try {
   for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, shots[s.id]);
 
   console.log("Admin tour:");
+  // The platform admin is not a member of the client (v1.1) — it enters through "Otvoriť administráciu".
   const a = await session(browser, "qa-admin@booking-platform.test", {
-    owner: true,
+    owner: false,
     platformAdmin: true,
   });
   const detail = `/platform/tenants/${TENANT}`;
   const adminShots = {
     tenants: ["/platform"],
     newTenant: ["/platform/new"],
-    detail: [detail],
-    modules: [detail, { heading: "Moduly" }],
-    health: [detail, { heading: "Zdravie klienta" }],
+    detail: [`/platform?panel=tenant:${TENANT}`],
+    modules: ["/platform/modules"],
+    health: ["/platform/status"],
     theme: [detail, { heading: "Náhľad témy" }],
-    audit: [detail, { heading: "Záznam zmien" }],
-    ownerView: ["/admin"],
+    audit: ["/platform/audit"],
+    ownerView: [`/platform/enter/${TENANT}`],
   };
   for (const s of TOURS.admin.slides) await shoot(a, "admin", s.id, ...adminShots[s.id]);
 } finally {

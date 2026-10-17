@@ -275,6 +275,26 @@
   min-height: 2.5rem;
   padding-inline: 1rem;
 }
+/* Control center menu (v1.1): graphite, so the admin always knows it is not the client's administration. */
+.shell-control {
+  --sidebar: #2b3036;
+  --sidebar-foreground: rgb(255 255 255 / 0.82);
+  --sidebar-accent: rgb(255 255 255 / 0.14);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.14);
+  --muted-foreground: rgb(255 255 255 / 0.7);
+  --ink: #ffffff;
+  color: rgb(255 255 255 / 0.82);
+}
+.shell-control .label-mono {
+  color: rgb(255 255 255 / 0.66);
+}
+.shell-control .nav-link:not([aria-current]):hover {
+  background: rgb(255 255 255 / 0.08);
+}
+.shell-control .avatar {
+  background: rgb(255 255 255 / 0.16);
+}
 /* Login screens: 46 px fields and buttons. */
 :root:has([data-login-ui]) [data-slot="input"],
 :root:has([data-login-ui]) [data-slot="button"][data-size="lg"] {

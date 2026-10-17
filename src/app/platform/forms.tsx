@@ -85,36 +85,43 @@ export function ModuleSwitchForm({
   const [state, action, pending] = useActionState(setModule, initial);
   const [value, setValue] = useState(status);
   return (
-    <form action={action} className="grid gap-3 sm:grid-cols-[1fr_10rem_10rem_auto] sm:items-end">
+    // Module row (v1.1): name and state, the trial end on the second line, Save at the row.
+    <form action={action} className="surface grid gap-2.5 px-4 py-3">
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="moduleKey" value={moduleKey} />
       <input type="hidden" name="status" value={value} />
-      <span className="font-medium">{label}</span>
-      <Select value={value} onValueChange={(v) => setValue(v as typeof value)}>
-        <SelectTrigger aria-label={t("status")}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {(["trial", "active", "off"] as const).map((s) => (
-            <SelectItem key={s} value={s}>
-              {t(`moduleStatus.${s}`)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Input
-        type="date"
-        name="trialEndsAt"
-        aria-label={t("trialEndsAt")}
-        defaultValue={trialEndsAt ?? ""}
-        disabled={value !== "trial"}
-      />
-      <Button type="submit" variant="outline" disabled={pending}>
-        {tc("save")}
-      </Button>
-      <div className="sm:col-span-4">
-        <FormMessage state={state} />
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span className="text-ink min-w-0 flex-1 font-bold">{label}</span>
+        <Select value={value} onValueChange={(v) => setValue(v as typeof value)}>
+          <SelectTrigger aria-label={`${t("status")}: ${label}`} className="w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(["trial", "active", "off"] as const).map((s) => (
+              <SelectItem key={s} value={s}>
+                {t(`moduleStatus.${s}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {value === "trial" ? (
+          <label className="text-muted-foreground flex items-center gap-2 text-sm">
+            {t("trialEndsAt")}
+            <Input
+              type="date"
+              name="trialEndsAt"
+              defaultValue={trialEndsAt ?? ""}
+              className="w-44"
+            />
+          </label>
+        ) : null}
+        <Button type="submit" variant="outline" disabled={pending} className="ml-auto">
+          {tc("save")}
+        </Button>
+      </div>
+      <FormMessage state={state} />
     </form>
   );
 }

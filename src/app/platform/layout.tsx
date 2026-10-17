@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Activity, Building2, History, LayoutDashboard, Puzzle, Shield } from "lucide-react";
+import { Activity, Building2, History, Puzzle, Shield } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { UserMenu } from "@/core/admin/topbar";
@@ -31,19 +31,15 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
   return (
     <AdminShell
       brand={{ icon: <Shield />, label: platformBrand.name }}
+      variant="control"
+      tag={t("adminV1.control.tag")}
       items={
         admin
           ? [
               { href: "/platform", label: t("platform.tenants"), icon: <Building2 /> },
-              { href: "/platform#modules", label: t("platform.modulesNav"), icon: <Puzzle /> },
-              { href: "/platform#status", label: t("platform.statusNav"), icon: <Activity /> },
-              { href: "/platform#audit", label: t("platform.auditNav"), icon: <History /> },
-              {
-                href: "/admin",
-                label: t("platform.toAdmin"),
-                icon: <LayoutDashboard />,
-                group: "bottom",
-              },
+              { href: "/platform/modules", label: t("platform.modulesNav"), icon: <Puzzle /> },
+              { href: "/platform/status", label: t("platform.statusNav"), icon: <Activity /> },
+              { href: "/platform/audit", label: t("platform.auditNav"), icon: <History /> },
             ]
           : []
       }

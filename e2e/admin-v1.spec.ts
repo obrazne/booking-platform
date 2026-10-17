@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { ADMIN_URL, GUEST_URL } from "../playwright.config";
 import {
   freeStay,
+  loginAs,
   loginOwner,
   loginPlatformAdmin,
   markToursSeen,
@@ -231,4 +232,62 @@ test("v1.1 settings lists: compact rows expand in place, add form behind a butto
   await expect(first).toHaveAttribute("aria-expanded", "true");
   expect(await serious(page, "služby")).toEqual([]);
   await noHorizontalScroll(page);
+});
+
+test("Z25 admin entry: control center opens the client in a new tab, bar and audit", async ({
+  page,
+  context,
+}, info) => {
+  test.skip(info.project.name === "mobile", "covered on desktop");
+  const db = service();
+  const since = new Date().toISOString();
+  await loginPlatformAdmin(page, ADMIN_URL);
+  // Own pages of the control center, graphite menu without "Do administrácie".
+  for (const [href, title] of [
+    ["/platform/modules", "Moduly"],
+    ["/platform/status", "Stav systému"],
+    ["/platform/audit", "Záznam zmien"],
+  ] as const) {
+    await page.goto(`${ADMIN_URL}${href}`);
+    await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  }
+  await expect(page.locator("aside")).not.toContainText("Do administrácie");
+  await page.goto(`${ADMIN_URL}/platform?panel=tenant:${STROMY}`);
+  const panel = page.getByRole("dialog");
+  await expect(panel).not.toContainText("booking-platform.test");
+  await expect(panel).not.toContainText(".localhost");
+  const [tab] = await Promise.all([
+    context.waitForEvent("page"),
+    panel.getByRole("link", { name: /Otvoriť administráciu/ }).click(),
+  ]);
+  await tab.waitForURL(/\/admin$/);
+  await expect(tab.getByRole("status")).toContainText("Prezeráš ako správca: Chalet STRÖMY");
+  await expect(tab.getByRole("heading", { level: 1 })).toBeVisible();
+  const { data: entries } = await db
+    .from("audit_log")
+    .select("id")
+    .eq("tenant_id", STROMY)
+    .eq("action", "admin.entered")
+    .gte("created_at", since);
+  expect(entries?.length ?? 0).toBeGreaterThan(0);
+  await tab.getByRole("link", { name: "Späť do riadiaceho centra" }).click();
+  await tab.waitForURL(/\/platform$/);
+  await tab.goto(`${ADMIN_URL}/admin`);
+  await expect(tab.getByText("Prezeráš ako správca")).toHaveCount(0);
+});
+
+test("Z25 owner with one accommodation: no picker, no control center, no new property", async ({
+  page,
+}, info) => {
+  await loginAs(page, ADMIN_URL, "info+jana@obrazne.sk");
+  await page.waitForURL(/\/admin/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Prepnúť ubytovanie" })).toHaveCount(0);
+  if (info.project.name !== "mobile") {
+    await expect(page.locator("aside")).not.toContainText("Riadiace centrum");
+  }
+  await page.goto(`${ADMIN_URL}/admin/properties`);
+  await expect(page.getByText("Nový objekt")).toHaveCount(0);
+  await page.goto(`${ADMIN_URL}/platform`);
+  await expect(page.getByText("Riadiace centrum je len pre správcu platformy.")).toBeVisible();
 });

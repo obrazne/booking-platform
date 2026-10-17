@@ -53,7 +53,26 @@ export function TenantSwitcher({
     </span>
   );
 
-  if (!several) return box;
+  // One accommodation: only its name, no picker (v1.1).
+  if (!several) {
+    return (
+      <span
+        className={cn(
+          "flex min-h-10 items-center gap-2.5 px-1",
+          expanded ? "opacity-100" : "justify-center",
+        )}
+      >
+        {expanded ? (
+          <span className="flex min-w-0 flex-col gap-px">
+            <span className="label-mono">{t("accommodation")}</span>
+            <span className="text-ink truncate text-sm font-bold">{active?.name}</span>
+          </span>
+        ) : (
+          <Building2 className="text-ink size-[18px]" aria-label={active?.name} />
+        )}
+      </span>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -109,7 +128,7 @@ export function UserMenu({
     <div className="flex items-center gap-2.5 px-1 pt-1">
       <span
         title={label}
-        className="text-ink flex size-8 shrink-0 items-center justify-center rounded-full bg-[#e7e4dc] text-xs font-bold"
+        className="avatar text-ink flex size-8 shrink-0 items-center justify-center rounded-full bg-[#e7e4dc] text-xs font-bold"
       >
         {initials(label)}
       </span>

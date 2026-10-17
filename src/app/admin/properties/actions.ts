@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorKey, fail, ok, requireTenant } from "@/core/admin/action";
 import type { ActionResult } from "@/core/admin/form";
+import { isPlatformAdmin } from "@/core/auth/session";
 import { parseMinorUnits } from "@/core/format/format";
 import { localizedFromForm } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
@@ -55,6 +56,8 @@ export async function createProperty(_: ActionResult, form: FormData): Promise<A
     .object({ name: z.string().trim().min(1).max(120), slug })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("invalid");
+  // New properties are created by the platform admin for now (v1.1).
+  if (!(await isPlatformAdmin())) return fail("forbidden");
   const { tenant, supabase } = await context();
 
   const { data: property, error } = await supabase
