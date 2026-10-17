@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** fronta je prázdna (Z24 a Z25 hotové) — čaká na ďalšie zadanie z Claude chatu.
+- **Ďalší krok pre Claude Code:** **Z26** — rýchlosť bočného panela a dokumenty (pripomienky 13–15, 17. 10.).
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
@@ -185,6 +185,22 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 5. **Objekty:** formulár „Nový objekt“ ubytovateľovi skry; zakladať objekt môže správca (riadiace centrum alebo režim „Prezeráš ako správca“).
 6. Testy: Playwright pre vstup správcu (nová karta, pruh, audit), majiteľ s jedným ubytovaním (bez výberu), majiteľ nevidí riadiace
    centrum ani „Nový objekt“; pgTAP, ak sa mení databáza. Testovací majiteľ STRÖMY na stagingu: info+jana@obrazne.sk (založil Claude chat 17. 10.).
+
+### Z26 — Rýchlosť bočného panela a dokumenty (pripomienky 13–15, 17. 10.)
+1. **Rýchlosť (Martin: panel rezervácie sa otvára ~3 s, myslel, že klik nefunguje).** Najprv **zmeraj** (čas od kliku po zobrazenie panela
+   na stagingu, zvlášť server a sieť) a zapíš do Denníka. Potom:
+   - **Región funkcií Vercelu = Frankfurt (`fra1`)**, vedľa databázy (Supabase Frankfurt) — cez `vercel.json` alebo nastavenie projektu.
+     Ak by to na bezplatnom pláne nešlo alebo stálo peniaze, **zastav a opýtaj sa**.
+   - **Panel sa otvorí hneď po kliknutí** (kostra s hlavičkou a sivými riadkami), údaje sa doplnia, keď prídu (streaming / Suspense).
+   - **Pri otvorení alebo prepnutí panela sa znova nenačítava zoznam ani počty** — len detail; dotazy na detail paralelne, nie za sebou.
+   - **Prednačítanie detailu pri prejdení myšou** nad riadkom (a pri fokuse klávesnicou).
+   - Rovnako pre ostatné panely (klient v riadiacom centre…) a rozbaľovacie riadky. Cieľ: viditeľná odozva do ~0,3 s, plný detail do ~1 s.
+     Zmeraj znova a výsledok pred/po zapíš do Denníka a `docs/kontrola-mvp.md`.
+2. **Dokumenty pre hostí v paneli rezervácie:** veta „…odkaz platí 10 minút“ preč → „Hosť si ich stiahne vo svojom účte.“; formulár
+   nahrávania skry za „+ Nahrať dokument“ (pravidlo 7). V tej istej sekcii zobraz aj **dokumenty objektu, ktoré tento hosť dostane**
+   (podľa viditeľnosti vždy / po potvrdení a stavu rezervácie), napr. „Pre všetkých hostí objektu (2) · upraviť pri objekte →“ s odkazom
+   na záložku Dokumenty objektu. Pri objekte (záložka Dokumenty) krátka veta, že dokument pre jedného hosťa sa nahráva v jeho rezervácii.
+3. Playwright: otvorenie panela (kostra hneď, údaje potom), prepnutie záznamu, dokumenty objektu viditeľné v paneli; axe.
 
 ---
 
