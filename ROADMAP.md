@@ -185,7 +185,7 @@ sekcia podľa `Recenzie` (priemer, pruhy, overenie, filtre, odpovede, vybrané, 
 overená recenzia. **Štruktúrované dáta (schema.org AggregateRating) len z overených recenzií.** Modul → hotový. Playwright: odoslanie, zobrazenie
 po zverejnení, filter kritických.
 
-### Z39 [B] — Online check-in pre hostí (po Z36)
+### Z39 [B] 🔄 — Online check-in pre hostí (po Z36)
 Karta check-inu a zamknuté pokyny v detaile pobytu, stránka check-inu podľa `Checkin` (karty hostí, polia podľa pravidiel krajiny, čas príchodu,
 súhlas, hotovo), aj cez prístupový odkaz; pripomienky e-mailom (Z36). Citlivé polia sa po uložení hosťovi zobrazujú maskované.
 Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknutie pokynov podľa nastavenia, validácie.
