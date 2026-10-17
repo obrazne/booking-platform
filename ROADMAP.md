@@ -13,8 +13,8 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code:** **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
-- **Ďalší krok pre Martina:** pridať do Vercelu (Production aj Preview) premenné `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
-  `VAPID_SUBJECT` — hodnoty sú v `.env.local` — a nasadiť znova; potom v riadiacom centre → Upozornenia zapnúť push na mobile (Z33).
+- **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
+  na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
   Ďalej preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -254,7 +254,8 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
   - **Rozhranie:** Nastavenia → E-maily a upozornenia → „Upozornenia na tomto zariadení“ (zapnúť/vypnúť, druhy — predvolene nová
     rezervácia, kolízia, zlyhaná synchronizácia, žiadosť o storno — skúšobné upozornenie, moje zariadenia); modul vypnutý = veta
     o module; iPhone/iPad mimo plochy = návod v 3 krokoch. Riadiace centrum → **Upozornenia** (platformové, vždy). Modul v katalógu hotový.
-  - Kľúče VAPID: názvy v `.env.example`, hodnoty v `.env.local`; do Vercelu ich treba pridať (Martin). Testy: vitest (výber príjemcov),
+  - Kľúče VAPID: názvy v `.env.example`, hodnoty v `.env.local` a vo Verceli (Production aj Preview, pridané s Martinovým súhlasom);
+    staging znova nasadený, `/api/push/run` cez pg_net odpovedá 200. Testy: vitest (výber príjemcov),
     Playwright `push.spec.ts` (povolenie, uloženie, druhy, skúšobné, odobratie, platforma, axe) — celá sada 45 ok, známy flaky mobil
     „02 overview“ samostatne prejde.
 - 2026-10-17 — Z31: **história zmien a kôš** (A9, vrstvy 1 a 2).
