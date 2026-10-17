@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z27** (menu so skupinami, Štatistiky, zvonček s upozorneniami), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** **Z29** (košík pre 13″ notebook — prednostne), potom **Z27** (menu so skupinami, Štatistiky, zvonček s upozorneniami), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -206,6 +206,20 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 dosky `docs/navrhy/administracia/Sidebar.dc.html` a `Statistiky.dc.html` (klikateľné: rok, porovnanie, mesiac v grafe, zvonček, skupiny menu).
 Doska je **zámer, nie doslovná predloha**; platia pravidlá v1.1 (jeden stĺpec v paneli, pilulky, sivé karty, rozbaľovacie riadky, žiadne
 technické texty). Stále len staging, rovnaké pravidlá (`tenant_id` + RLS + pgTAP, centy, preklady, téma, A18). Režim: za sebou bez prerušenia.
+
+### Z29 — Košík v2.2 pre 13″ notebook (pripomienka 25, 17. 10.) — **robiť prednostne, pred Z27**
+Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-stranka-hosta.md` → **Košík v2.2**, doska
+`docs/navrhy/stranka-hosta/KosikNotebook.dc.html` (1440 × 800, klikacia: riadky služieb, Zmeniť, kroky). Zámer, nie pixelová predloha.
+1. **Súhrn vpravo (320 px)** sa na 1440 × 800 vojde celý bez posúvania: názov, termín + „Zmeniť“ (všetky kroky), dospelí + deti/zvieratá,
+   cena + Rozpis, Vaše doplnky, dole „← Späť“ (krok 2, 3), tlačidlo a jeden riadok istoty. Tri istoty, referenciu a Janu zo súhrnu vyber.
+2. **Krok 1:** bez pásu fotiek; termín vľavo neopakovať — s termínom začína službami, bez termínu / po „Zmeniť“ kalendár vľavo + „Hotovo“.
+   **Služby ako jednoriadkové riadky** (~54 px) s rozbalením na mieste (jeden naraz), pod nimi referencia na sivej karte.
+3. **Krok 2:** karta „Otázky pred rezerváciou? Odpovedá Jana.“ (WhatsApp, Zavolať — z údajov majiteľa, skryť, keď chýbajú).
+   **Krok 3:** tri istoty na sivej karte nad súhlasmi; texty istôt z podmienok objektu, nie natvrdo.
+4. **Lišta krokov 52 px** (čísla 22 px, hotový krok s fajkou a klikateľný späť).
+5. **Mobil:** košík bez fotiek, služby rovnako jednoriadkové (cenový model môže ísť pod názov); inak ako doteraz.
+6. Playwright: košík na **1440 × 800** — súhrn bez posúvania (tlačidlo aj riadok istoty viditeľné bez scrollu aj s 2 doplnkami),
+   rozbalenie služby, Zmeniť → kalendár → Hotovo, kroky 1–3; mobil 390 px; axe. Obnov snímku košíka v prehliadke „Čo je nové“, ak tam je.
 
 ### Z27 — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia (pripomienky 16–18, 24)
 1. **Bočné menu so skupinami** podľa dosky `Sidebar`: Prehľad · Rezervácie › Zoznam, Kalendár, Blokácie · Objekt › Údaje, Fotky,

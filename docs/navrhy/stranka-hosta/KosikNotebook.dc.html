@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Košík — notebook 13″</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+@keyframes tipIn{from{opacity:0}to{opacity:1}}
+.tip{animation:tipIn 140ms ease-out}
+@media (prefers-reduced-motion: reduce){.tip{animation:none}}
+.cta-dark{background:#2b3036;transition:background 160ms ease}
+.cta-dark:hover{background:#0c0e11}
+.row:hover{background:#fafaf8}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 800px; overflow: hidden; background: #ffffff;">
+
+<div aria-hidden="true" style="position: absolute; inset: 0; padding: 40px 60px; display: flex; flex-direction: column; gap: 28px; filter: blur(3px);">
+<div style="height: 46px; display: flex; justify-content: space-between; align-items: center;"><span style="width: 160px; height: 18px; border-radius: 4px; background: #e9e5db;"></span><span style="width: 320px; height: 14px; border-radius: 4px; background: #efece5;"></span></div>
+<div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; height: 360px;"><span style="border-radius: 12px; background: #e5e1d8;"></span><span style="border-radius: 12px; background: #ece8df;"></span><span style="border-radius: 12px; background: #e9e5db;"></span></div>
+<span style="width: 520px; height: 34px; border-radius: 6px; background: #e9e5db;"></span>
+<span style="width: 760px; height: 14px; border-radius: 4px; background: #efece5;"></span>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(17,33,47,0.38);"></div>
+
+<aside aria-label="Váš pobyt" style="position: absolute; top: 0; right: 0; bottom: 0; width: 1040px; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 80px -40px rgba(17,33,47,0.45); display: flex; flex-direction: column; overflow: hidden;">
+
+<div style="flex-shrink: 0; height: 52px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 16px 0 32px; border-bottom: 1px solid #e9e5db;">
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 6px;">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3"><li style="display: inline-flex; align-items: center; gap: 6px;"><button type="button" onClick="{{st.go}}" disabled="{{st.locked}}" aria-current="{{st.current}}" style="{{st.btnStyle}}"><span style="{{st.numStyle}}">{{st.n}}</span>{{st.label}}</button><sc-if value="{{st.sep}}" hint-placeholder-val="{{true}}"><span aria-hidden="true" style="width: 18px; height: 1px; background: #dcd9d1;"></span></sc-if></li></sc-for>
+</ol>
+<button type="button" aria-label="Zavrieť" style="width: 34px; height: 34px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+
+<div style="flex: 1 1 auto; min-height: 0; display: flex;">
+
+<div style="flex: 1 1 auto; min-width: 0; overflow-y: auto; padding: 28px 36px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px;">
+
+<sc-if value="{{showCal}}" hint-placeholder-val="{{false}}">
+<section class="tip" style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Váš termín. <span style="color: #a9aeb5;">Cenu vidíte hneď.</span></h2>
+<button type="button" onClick="{{calDone}}" disabled="{{noDates}}" style="{{calDoneStyle}}">Hotovo</button>
+</div>
+<div style="border: 1px solid #e9e5db; border-radius: 10px; padding: 18px 20px; display: flex; gap: 28px;">
+<sc-for list="{{months}}" as="mon" hint-placeholder-count="2">
+<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 14px; font-weight: 700; color: #11212f;">{{mon.title}}</span>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px;">
+<sc-for list="{{wd}}" as="w" hint-placeholder-count="7"><span class="mono" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; text-align: center;">{{w.t}}</span></sc-for>
+<sc-for list="{{mon.cells}}" as="c" hint-placeholder-count="35"><button type="button" onClick="{{c.pick}}" disabled="{{c.off}}" aria-label="{{c.aria}}" style="{{c.style}}">{{c.label}}</button></sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #5a6672;">{{calHint}}</span>
+</section>
+</sc-if>
+
+<sc-if value="{{showSvc}}" hint-placeholder-val="{{true}}">
+<section style="display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">K pobytu môžete pridať. <span style="color: #a9aeb5;">Nepovinné.</span></h2>
+<span style="font-size: 14px; color: #5a6672;">Klik na riadok ukáže podrobnosti. Doladíte ich s Janou e-mailom.</span>
+</div>
+<div style="border-top: 1px solid #e9e5db;">
+<sc-for list="{{svc}}" as="sv" hint-placeholder-count="4">
+<div style="{{sv.wrapStyle}}">
+<div class="row" style="display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 0 8px 0 4px;">
+<button type="button" onClick="{{sv.toggle}}" aria-pressed="{{sv.on}}" aria-label="{{sv.toggleAria}}" style="{{sv.checkStyle}}"><sc-if value="{{sv.on}}" hint-placeholder-val="{{false}}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5"></path></svg></sc-if></button>
+<button type="button" onClick="{{sv.expand}}" aria-expanded="{{sv.open}}" style="flex: 1 1 auto; min-width: 0; border: none; background: none; padding: 14px 0; text-align: left; display: flex; align-items: baseline; gap: 10px; cursor: pointer; white-space: nowrap; overflow: hidden;">
+<span style="font-size: 15px; font-weight: 500; color: #11212f;">{{sv.title}}</span>
+<span style="font-size: 13px; color: #8b929b; overflow: hidden; text-overflow: ellipsis;">{{sv.unit}}</span>
+</button>
+<span style="font-size: 14px; font-weight: 500; color: #11212f; white-space: nowrap;">{{sv.price}}</span>
+<button type="button" onClick="{{sv.expand}}" aria-expanded="{{sv.open}}" aria-label="Podrobnosti" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 9999px; border: none; background: transparent; color: #5a6672; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><span style="{{sv.chevStyle}}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg></span></button>
+</div>
+<sc-if value="{{sv.open}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; gap: 18px; padding: 2px 12px 18px 44px;">
+<div style="flex: 0 0 150px; height: 100px; border-radius: 8px; background: #f1eee6; display: flex; align-items: flex-end; padding: 10px; box-sizing: border-box;"><span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">{{sv.media}}</span></div>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px;">
+<sc-if value="{{sv.tag}}" hint-placeholder-val="{{false}}"><span class="mono" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent2}};">{{sv.tag}}</span></sc-if>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #5a6672;">{{sv.desc}}</p>
+<button type="button" onClick="{{sv.toggle}}" style="{{sv.addStyle}}">{{sv.addLabel}}</button>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+<figure style="margin: 0; padding: 18px 20px; border-radius: 10px; background: #fafaf8; border: 1px solid #ecebe6; display: flex; flex-direction: column; gap: 10px;">
+<blockquote style="margin: 0; font-size: 15px; line-height: 1.55; color: #11212f;">{{refQuote}}</blockquote>
+<figcaption style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{accent2}};">{{refName}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;">
+<button type="button" onClick="{{refPrev}}" aria-label="Predchádzajúca referencia" style="width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"></path></svg></button>
+<span class="mono" style="font-size: 11px; color: #8b929b;">{{refPos}}</span>
+<button type="button" onClick="{{refNext}}" aria-label="Ďalšia referencia" style="width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; color: #11212f; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"></path></svg></button>
+</span>
+</figcaption>
+</figure>
+</sc-if>
+
+<sc-if value="{{isStep2}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px;">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Kto prichádza? <span style="color: #a9aeb5;">Stačí kontakt na vás.</span></h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Meno a priezvisko</span><input type="text" autocomplete="name" value="Petra Nováková" style="height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 10px; border: 1px solid #e9e5db; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">E-mail</span><input type="email" autocomplete="email" value="petra@priklad.sk" style="height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 10px; border: 1px solid #e9e5db; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Telefón</span><input type="tel" autocomplete="tel" value="+421 900 000 000" style="height: 46px; box-sizing: border-box; padding: 0 14px; border-radius: 10px; border: 1px solid #e9e5db; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">Poznámka pre majiteľku <span style="font-weight: 400; color: #8b929b;">· nepovinné</span></span><textarea rows="3" placeholder="Čas príchodu, alergie, špeciálne želania" style="box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid #e9e5db; font-family: inherit; font-size: 15px; color: #11212f; resize: vertical;"></textarea></label>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 10px; background: #fafaf8; border: 1px solid #ecebe6;">
+<div style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 9999px; background: #e9e5db; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5a6672;">JH</div>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">Otázky pred rezerváciou? Odpovedá Jana.</span><span style="font-size: 13px; color: #5a6672;">Majiteľka chaletu</span></div>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; text-decoration: none;">WhatsApp</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; font-size: 13px; font-weight: 500; color: #11212f; text-decoration: none;">Zavolať</a>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isStep3}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 20px; max-width: 600px;">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Skontrolujte a potvrďte. <span style="color: #a9aeb5;">Platíte až potom.</span></h2>
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: 10px; background: #fafaf8; border: 1px solid #ecebe6;">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Termín vám podržíme 24 hodín, kým zaplatíte.</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní pred príchodom.</span>
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Platíte priamo majiteľke prevodom, bez poplatkov.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: #3b3d42;"><input type="checkbox" checked style="margin-top: 3px; accent-color: {{accent}};"><span>Súhlasím s <a href="#">obchodnými podmienkami</a> a <a href="#">stornopodmienkami</a>.</span></label>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; color: #3b3d42;"><input type="checkbox" style="margin-top: 3px; accent-color: {{accent}};"><span>Chcem občas dostať ponuku od Chalet STRÖMY. <span style="color: #8b929b;">Nepovinné.</span></span></label>
+</div>
+<span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Kliknutím na „Objednať s povinnosťou platby“ odošlete záväznú objednávku. Platobné údaje s QR kódom uvidíte hneď a príde vám ich aj e-mail.</span>
+</div>
+</sc-if>
+
+</div>
+
+<div style="width: 320px; flex-shrink: 0; background: {{accent}}; color: #ffffff; display: flex; flex-direction: column; min-height: 0;">
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; flex-direction: column; gap: 3px;">
+<span style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #f5c4a1;">Demänovská dolina</span>
+<span style="font-size: 19px; font-weight: 800; letter-spacing: -0.02em;">Chalet STRÖMY</span>
+</div>
+<div style="border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; background: rgba(255,255,255,0.1);">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px 11px 14px;">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 15px; font-weight: 700;">{{dateSummary}}</span><span style="font-size: 13px; color: rgba(255,255,255,0.75);">{{nightsSummary}}</span></div>
+<button type="button" onClick="{{openCal}}" style="flex-shrink: 0; min-height: 32px; padding: 0 12px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 13px; font-weight: 500; cursor: pointer;">Zmeniť</button>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px 8px 14px; border-top: 1px solid rgba(255,255,255,0.22);">
+<div style="display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 14px; color: rgba(255,255,255,0.9);">Dospelí</span><button type="button" style="align-self: flex-start; border: none; background: none; padding: 0; font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">+ deti, zvieratá</button></div>
+<div style="display: inline-flex; align-items: center; gap: 4px;"><button type="button" onClick="{{guestsDec}}" aria-label="Menej hostí" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 16px; cursor: pointer;">−</button><span style="min-width: 24px; text-align: center; font-size: 14px; font-weight: 500;">{{guests}}</span><button type="button" onClick="{{guestsInc}}" aria-label="Viac hostí" style="width: 30px; height: 30px; border-radius: 9999px; border: none; background: rgba(255,255,255,0.14); color: #ffffff; font-size: 16px; cursor: pointer;">+</button></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 5px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65);">{{heroLabel}}</span>
+<span style="font-size: 32px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;">{{heroPrice}}</span>
+<span style="font-size: 13px; color: rgba(255,255,255,0.75);">{{heroSub}}</span>
+<button type="button" onClick="{{toggleBreak}}" aria-expanded="{{showBreak}}" style="align-self: flex-start; border: none; background: none; padding: 2px 0; font-size: 13px; font-weight: 500; color: #ffffff; text-decoration: underline; text-underline-offset: 3px; cursor: pointer;">{{breakLabel}}</button>
+<sc-if value="{{showBreak}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 7px; padding-top: 10px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.22);">
+<sc-for list="{{lines}}" as="ln" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px;"><span style="color: rgba(255,255,255,0.75);">{{ln.label}}</span><span style="font-weight: 500;">{{ln.amount}}</span></div></sc-for>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{hasChosen}}" hint-placeholder-val="{{false}}">
+<div class="tip" style="display: flex; flex-direction: column; gap: 7px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.18);">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.65);">Vaše doplnky</span>
+<sc-for list="{{chosen}}" as="ch" hint-placeholder-count="1"><div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px;"><span style="color: rgba(255,255,255,0.9);">{{ch.title}}</span><span style="font-weight: 500;">{{ch.amount}}</span></div></sc-for>
+</div>
+</sc-if>
+</div>
+<div style="flex-shrink: 0; padding: 14px 24px 16px; border-top: 1px solid rgba(255,255,255,0.18); display: flex; flex-direction: column; gap: 10px;">
+<sc-if value="{{showBack}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{goBack}}" style="align-self: flex-start; border: none; background: none; padding: 0; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); cursor: pointer;">← {{backLabel}}</button></sc-if>
+<button type="button" class="cta-dark" onClick="{{cta}}" style="{{ctaStyle}}">{{ctaLabel}} <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h11"></path><path d="M8.5 1.5L12 5l-3.5 3.5"></path></svg></button>
+<span style="display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 12px; color: rgba(255,255,255,0.8);"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Storno zdarma do 30 dní · bez poplatkov</span>
+</div>
+</div>
+
+</div>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 1, start: '2026-10-21', end: '2026-10-24', guests: 2, cal: false, on: {}, open: 'breakfast', trips: 1, ref: 0, showBreak: false };
+  }
+  pad(n) { return n < 10 ? '0' + n : '' + n; }
+  nights() {
+    var s = this.state; if (!s.start || !s.end) return 0;
+    return Math.round((Date.parse(s.end) - Date.parse(s.start)) / 86400000);
+  }
+  eur(v) { return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €'; }
+  fmt(k) { return parseInt(k.slice(8, 10), 10) + '. ' + parseInt(k.slice(5, 7), 10) + '. ' + k.slice(0, 4); }
+  services(n, g) {
+    return [
+      { id: 'breakfast', title: 'Raňajky v chalete', unit: '15 € za osobu a noc', amount: 15 * g * n, tag: 'Pre skupiny', media: 'Raňajky na terase', desc: 'Čerstvé pečivo z miestnej pekárne, vajíčka, syry a domáca granola. Prinesieme ráno o 8:30 až k vám.' },
+      { id: 'chef', title: 'Privátny šéfkuchár — večera o 4 chodoch', unit: '65 € za osobu', amount: 65 * g, tag: 'Pre skupiny', media: 'Večera v chalete', desc: 'Kuchár uvarí priamo v chalete z regionálnych surovín. Menu doladíte vopred, upraceme po sebe.' },
+      { id: 'transfer', title: 'Transfer z letiska Poprad', unit: '260 € za cestu', amount: 260, tag: '', media: 'Transfer', desc: 'Vyzdvihneme vás na letisku aj s batožinou a lyžami. Do 8 osôb.' },
+      { id: 'pet', title: 'Pobyt so psom', unit: 'za pobyt', amount: 30, tag: '', media: 'Pes vítaný', desc: 'Pelech a misky pripravíme. Pes nesmie do spální ani do vírivky.' }
+    ];
+  }
+  month(y, m) {
+    var self = this, s = this.state;
+    var first = new Date(Date.UTC(y, m, 1)); var lead = (first.getUTCDay() + 6) % 7;
+    var days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    var booked = ['2026-10-29', '2026-10-30', '2026-10-31', '2026-11-13', '2026-11-14'];
+    var cells = [];
+    for (var i = 0; i < lead; i++) cells.push({ label: '', off: true, aria: '', style: 'height: 34px; border: none; background: none;', pick: function () {} });
+    for (var d = 1; d <= days; d++) {
+      (function (d) {
+        var k = y + '-' + self.pad(m + 1) + '-' + self.pad(d);
+        var past = k < '2026-10-18'; var b = booked.indexOf(k) >= 0;
+        var edge = k === s.start || k === s.end; var inR = s.start && s.end && k > s.start && k < s.end;
+        var bg = edge ? (self.props.accent ?? '#2f5d50') : (inR ? '#e6efeb' : '#ffffff');
+        var col = edge ? '#ffffff' : (past || b ? '#c3c7cc' : '#11212f');
+        cells.push({
+          label: '' + d, off: past || b, aria: d + '. ' + (m + 1) + '.',
+          style: 'height: 34px; border-radius: 8px; border: ' + (edge || inR ? 'none' : '1px solid #f0ede6') + '; background: ' + bg + '; color: ' + col + '; font-size: 13px; font-weight: ' + (edge ? '700' : '500') + '; cursor: ' + (past || b ? 'default' : 'pointer') + '; text-decoration: ' + (b ? 'line-through' : 'none') + ';',
+          pick: function () {
+            var st = self.state;
+            if (!st.start || st.end) self.setState({ start: k, end: null });
+            else if (k <= st.start) self.setState({ start: k });
+            else self.setState({ end: k });
+          }
+        });
+      })(d);
+    }
+    var names = ['Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún', 'Júl', 'August', 'September', 'Október', 'November', 'December'];
+    return { title: names[m] + ' ' + y, cells: cells };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var accent2 = this.props.accent2 ?? '#ad5a2b';
+    var n = this.nights(); var g = s.guests;
+    var stay = 350 * g * n;
+    var list = this.services(n || 3, g);
+    var chosen = [], extra = 0;
+    var svc = list.map(function (x) {
+      var on = !!s.on[x.id]; var open = s.open === x.id;
+      if (on) { chosen.push({ title: x.title.split(' — ')[0], amount: self.eur(x.amount) }); extra += x.amount; }
+      return {
+        title: x.title, unit: x.unit, price: (on ? '' : '+ ') + self.eur(x.amount), on: on, open: open, tag: x.tag, media: x.media, desc: x.desc,
+        toggleAria: on ? 'Odobrať z pobytu' : 'Pridať k pobytu',
+        wrapStyle: 'border-bottom: 1px solid #e9e5db; background: ' + (open ? '#fafaf8' : 'transparent') + ';',
+        checkStyle: 'width: 24px; height: 24px; flex-shrink: 0; border-radius: 9999px; border: 1.5px solid ' + (on ? accent : '#c9ccd1') + '; background: ' + (on ? accent : '#ffffff') + '; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;',
+        chevStyle: 'display: inline-flex; transition: transform 160ms ease; transform: rotate(' + (open ? '180' : '0') + 'deg);',
+        addStyle: 'align-self: flex-start; min-height: 38px; padding: 0 16px; border-radius: 9999px; border: 1px solid ' + accent + '; background: ' + (on ? '#ffffff' : accent) + '; color: ' + (on ? accent : '#ffffff') + '; font-size: 14px; font-weight: 500; cursor: pointer;',
+        addLabel: on ? 'Odobrať z pobytu' : 'Pridať k pobytu · ' + self.eur(x.amount),
+        toggle: function () { var o = Object.assign({}, self.state.on); o[x.id] = !o[x.id]; self.setState({ on: o }); },
+        expand: function () { self.setState({ open: self.state.open === x.id ? null : x.id }); }
+      };
+    });
+    var labels = ['Váš pobyt', 'Údaje', 'Platba'];
+    var steps = labels.map(function (l, i) {
+      var num = i + 1; var cur = s.step === num; var done = s.step > num;
+      return {
+        n: done ? '✓' : '' + num, label: l, sep: i < 2, current: cur ? 'step' : 'false', locked: num > s.step,
+        go: function () { if (num < self.state.step) self.setState({ step: num, cal: false }); },
+        btnStyle: 'display: inline-flex; align-items: center; gap: 8px; border: none; background: none; padding: 4px 2px; font-size: 13px; font-weight: ' + (cur ? '700' : '500') + '; color: ' + (cur ? '#11212f' : (done ? '#3b3d42' : '#8b929b')) + '; cursor: ' + (done ? 'pointer' : 'default') + ';',
+        numStyle: 'width: 22px; height: 22px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; background: ' + (cur ? accent : (done ? '#e6efeb' : '#f2f0eb')) + '; color: ' + (cur ? '#ffffff' : (done ? accent : '#8b929b')) + ';'
+      };
+    });
+    var refs = [
+      { q: '„Toto miesto… nádherné! Skvelá lokalita a služby na vysokej úrovni. Raňajky na terase s výhľadom na Chopok si budeme pamätať dlho.“', n: 'Zuzana · február 2026' },
+      { q: '„Ticho, les a vírivka pod hviezdami. Jana nám poradila aj trasy na skialp — vrátime sa.“', n: 'Tomáš · január 2026' },
+      { q: '„Chalet je ešte krajší ako na fotkách. Deti si najviac užili krb a sánkovačku pred domom.“', n: 'Lucia · december 2025' }
+    ];
+    var r = refs[s.ref];
+    var hasDates = !!(s.start && s.end);
+    var can = hasDates && !(s.step === 1 && s.cal);
+    var lines = [{ label: n + ' noci × ' + g + ' os. × 350 €', amount: this.eur(stay) }].concat(chosen.map(function (c) { return { label: c.title, amount: c.amount }; }));
+    return {
+      accent: accent, accent2: accent2, steps: steps, svc: svc,
+      showCal: s.step === 1 && (s.cal || !hasDates), showSvc: s.step === 1 && !(s.cal || !hasDates),
+      isStep2: s.step === 2, isStep3: s.step === 3,
+      wd: ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'].map(function (t) { return { t: t }; }),
+      months: [this.month(2026, 9), this.month(2026, 10)],
+      noDates: !hasDates,
+      calHint: hasDates ? 'Vybraté: ' + this.fmt(s.start) + ' – ' + this.fmt(s.end) + ' · ' + n + ' noci. Preškrtnuté dni sú obsadené.' : 'Kliknite na deň príchodu a potom na deň odchodu.',
+      calDone: function () { self.setState({ cal: false }); },
+      calDoneStyle: 'min-height: 36px; padding: 0 16px; border-radius: 9999px; border: none; background: ' + (hasDates ? accent : '#f2f0eb') + '; color: ' + (hasDates ? '#ffffff' : '#8b929b') + '; font-size: 13px; font-weight: 500; cursor: pointer;',
+      openCal: function () { self.setState({ step: 1, cal: true }); },
+      dateSummary: hasDates ? this.fmt(s.start) + ' – ' + this.fmt(s.end) : 'Vyberte termín',
+      nightsSummary: hasDates ? n + ' noci · ' + g + ' hostia' : g + ' hostia',
+      guests: g,
+      guestsDec: function () { self.setState({ guests: Math.max(1, self.state.guests - 1) }); },
+      guestsInc: function () { self.setState({ guests: Math.min(8, self.state.guests + 1) }); },
+      heroLabel: hasDates ? 'Spolu za ' + n + ' noci' : 'Cena',
+      heroPrice: hasDates ? this.eur(stay + extra) : 'od 350 €',
+      heroSub: hasDates ? '350 € na osobu a noc · daň v cene' : 'na osobu a noc',
+      showBreak: s.showBreak, lines: lines,
+      breakLabel: s.showBreak ? 'Skryť rozpis' : 'Rozpis ceny',
+      toggleBreak: function () { self.setState({ showBreak: !self.state.showBreak }); },
+      hasChosen: chosen.length > 0, chosen: chosen,
+      refQuote: r.q, refName: r.n, refPos: (s.ref + 1) + ' / ' + refs.length,
+      refPrev: function () { self.setState({ ref: (self.state.ref + refs.length - 1) % refs.length }); },
+      refNext: function () { self.setState({ ref: (self.state.ref + 1) % refs.length }); },
+      showBack: s.step > 1, backLabel: s.step === 2 ? 'Späť na pobyt' : 'Späť na údaje',
+      goBack: function () { self.setState({ step: self.state.step - 1, cal: false }); },
+      ctaLabel: s.step === 1 ? 'Pokračovať' : (s.step === 2 ? 'Skontrolovať a zaplatiť' : 'Objednať s povinnosťou platby'),
+      cta: function () { if (self.state.step < 3) self.setState({ step: self.state.step + 1, cal: false }); },
+      ctaStyle: 'display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; padding: 0 20px; border: 1px solid rgba(255,255,255,0.18); border-radius: 9999px; color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer; opacity: ' + (can ? '1' : '0.45') + '; pointer-events: ' + (can ? 'auto' : 'none') + ';'
+    };
+  }
+}
+</script>
+</body>
+</html>

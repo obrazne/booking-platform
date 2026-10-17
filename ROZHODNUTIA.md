@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Košík v2.2: všetko sa musí vojsť na 13″ notebook
+
+- Na 13″ MacBooku sa zelený súhrn nevošiel a posúvali sa oba stĺpce — „ak sú dva stĺpce plné a ešte sa posúvajú, nezvládli sme to“ (Martin).
+  **Vpravo len to, čo hosť kupuje a koľko; vľavo práca aktuálneho kroku.** Referencia ide do kroku 1 vľavo, kontakt na Janu do kroku 2,
+  tri istoty do kroku 3 k záväznému tlačidlu — tam, kde hosť váha. Vpravo ostáva jedna istota pod tlačidlom. (Martin + Claude)
+- **Bez fotiek v košíku** — panel je nad stránkou s fotkami, boli by dvakrát (Martin). **Termín len raz** (vpravo so „Zmeniť“) — vľavo
+  sa opakoval (Claude). **Služby jednoriadkové**, detail na rozklik (Martin). Lišta krokov kompaktnejšia (Martin).
+- **Jedno rozloženie pre všetky obrazovky**, nie zvláštna verzia pre malé — menej testovania a na veľkom monitore len viac vzduchu. (Claude)
+
 ## 2026-10-17 — Administrácia v1.2: menu so skupinami, štatistiky, upozornenia, riadiace centrum
 
 - **Menu so skupinami a podpoložkami** (Rezervácie, Objekt, Ponuka, Prepojenia, Nastavenia), položky **cez celú šírku bez zaoblenia**

@@ -1,8 +1,8 @@
-# Vizuál stránky hosťa — v2.1 (schválené 16. 10. 2026)
+# Vizuál stránky hosťa — v2.2 (v2.1 schválené 16. 10. 2026, košík v2.2 17. 10.)
 
 *Návrh vznikol v Claude chate s Martinom na plátne „Rezervačná stránka — návrh“ (Claude Design). **v2 schválená 16. 10. 2026.**
 Zdroj plátna: `docs/navrhy/stranka-hosta/` (ako ho čítať: `docs/navrhy/README.md`). Platné dosky: `Main.dc.html` (počítač, klikací),
-`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. `Mobil.dc.html` je z v1 — neplatí.
+`MobilDetailV2`, `MobilGaleria`, `MobilKosik`, `MobilKosikRozpis`, `MobilKalendar` (výber termínu), **v2.1:** `Potvrdenie` (klikací — stav hore), `MobilPotvrdenie`. **v2.2:** `KosikNotebook` (košík na 13″ notebooku, klikací) — platí pre košík na počítači namiesto košíka v `Main.dc.html`. `Mobil.dc.html` je z v1 — neplatí.
 Je to **zámer, nie pixelová predloha** — farby, písma a zaoblenia idú z témy klienta (A12), texty z prekladov a z dát objektu (sekcie B7).*
 
 ## Zmeny oproti v1
@@ -86,23 +86,32 @@ grafitové „Pozrieť pobyt“. Klik kamkoľvek otvorí košík; **bez termínu
   (+ upozornenie pod minimom); obsadené „Obsadené“; za obsadeným „Pobyt sa nedá predĺžiť cez obsadené dni.“
 - Bublina len v kalendári, ktorý sa práve používa. Pod kalendárom nápoveda (pri krátkom pobyte tehlová).
 
-## Košík v2 (bočný panel)
+## Košík v2.2 (bočný panel) — upravené 17. 10. podľa 13″ MacBooku
 
-- Sprava, **do 1040 px** (na menšom notebooku cez celú šírku), rovné rohy, tenká linka vľavo, stmavená stránka. Hore pás krokov
-  **1 Váš pobyt · 2 Údaje a želania · 3 Platba** (aktívny v akcente, hotový svetlý akcent) a krížik.
-- **Vľavo kroky, vpravo zelený súhrn (340 px)** — súhrn sa neposúva s obsahom, tlačidlo je v ňom vždy dole.
-- **Súhrn (akcent, biely text):** lokalita + názov; karta termínu (dátum, noci · hostia, „Zmeniť“ od 2. kroku) s počítadlom hostí;
-  cenový blok (pravidlo 4) + „Rozpis ceny“ (riadky vpravo); **„Vaše doplnky“** s cenami, keď nejaké sú. **Dole prilepené k tlačidlu**
-  a oddelené linkou: 3 istoty, referencia so šípkami, Jana (iniciály/fotka, WhatsApp, telefón). Tlačidlo grafitové
-  („Pokračovať“ / „K platbe“), stlmené bez platného termínu.
-- **Krok 1:** pás 3 väčších fotiek; „Váš termín. Cenu vidíte hneď.“; **zbalený termín** (dátum, noci a hostia, „Zmeniť termín“), ak hosť
-  prišiel s termínom — inak **otvorený kalendár s dvoma mesiacmi** a „Hotovo, skryť kalendár“; **„K pobytu môžete pridať. Nepovinné.“** —
-  doplnky ako **riadky**: krúžok na pridanie, malá fotka, (štítok „Pre skupiny“ / „Pre váš termín“), názov, cenový model, suma pre pobyt,
-  šípka; šípka **rozbalí riadok na mieste** (väčšia fotka, popis, čo zahŕňa, počet ciest pri transfere, „Pridať k pobytu · +520 €“ /
-  „Odobrať z pobytu“). Viac ako 6 služieb → prvých 5 + „Zobraziť ďalšie (N)“.
-- **Krok 2:** „Späť na termín a doplnky“, „Kto prichádza? Stačí kontakt na vás.“, meno (celá šírka), e-mail | telefón, poznámka;
-  „Vaše doplnky“ + „Upraviť doplnky“.
-- **Krok 3:** súhrn, súhlasy (VOP a storno povinné, marketing nepovinný a nezaškrtnutý), **záväzné tlačidlo** jednoznačne o objednávke
+**Princíp:** na notebooku 1440 × ~800 sa musí **zelený súhrn vojsť celý bez posúvania** a krok 1 bez posúvania aspoň po prvé služby.
+Vpravo len to, **čo kupujem a koľko**; vľavo **práca aktuálneho kroku**. Ostatné ide do kroku, kde to hosť potrebuje.
+Rovnaké rozloženie na všetkých veľkostiach (žiadna zvláštna verzia pre malé obrazovky).
+
+- Sprava, **do 1040 px** (na menšom notebooku cez celú šírku), rovné rohy, tenká linka vľavo, stmavená stránka.
+- **Lišta krokov 52 px:** čísla 22 px, text 13 px, **1 Váš pobyt — 2 Údaje — 3 Platba** spojené krátkou čiarkou; hotový krok má fajku
+  a dá sa naň kliknúť späť; krížik 34 px.
+- **Vľavo kroky, vpravo zelený súhrn (320 px)** — súhrn sa neposúva s obsahom, tlačidlo je v ňom vždy dole.
+- **Súhrn (akcent, biely text):** lokalita + názov; karta termínu (dátum, noci · hostia, **„Zmeniť“ vo všetkých krokoch** — otvorí
+  kalendár vľavo v kroku 1) a pod ňou riadok Dospelí s počítadlom + „+ deti, zvieratá“; cenový blok (pravidlo 4) + „Rozpis ceny“;
+  **„Vaše doplnky“** s cenami, keď nejaké sú. **Dole** linka, v kroku 2 a 3 „← Späť na …“, grafitové tlačidlo
+  („Pokračovať“ / „Skontrolovať a zaplatiť“ / záväzné „Objednať s povinnosťou platby“ — presné znenie s právnymi textami),
+  pod ním **jeden riadok** „✓ Storno zdarma do 30 dní · bez poplatkov“ (z podmienok objektu). Tlačidlo stlmené bez platného termínu.
+- **Zo súhrnu preč:** tri istoty (→ krok 3), referencia (→ krok 1 vľavo), Jana s WhatsApp a telefónom (→ krok 2).
+- **Krok 1:** **bez fotiek** (hosť ich má na stránke pod panelom). Termín sa vľavo **neopakuje** — ak hosť prišiel s termínom, krok začína
+  rovno „**K pobytu môžete pridať.** Nepovinné.“; bez termínu alebo po „Zmeniť“ je vľavo **kalendár s dvoma mesiacmi** a „Hotovo“
+  (vtedy služby skryté, tlačidlo Pokračovať stlmené, kým kalendár nie je zatvorený s platným termínom).
+  **Doplnky = jednoriadkové riadky (~54 px):** krúžok na pridanie, názov, sivo cenový model („15 € za osobu a noc“), vpravo suma pre pobyt
+  („+ 90 €“, po pridaní bez „+“), šípka. Klik na riadok alebo šípku **rozbalí detail na mieste** (jemne sivý podklad): fotka 150 × 100,
+  štítok („Pre skupiny“ / „Pre váš termín“), popis, čo zahŕňa, počet ciest pri transfere, „Pridať k pobytu · 90 €“ / „Odobrať z pobytu“.
+  Naraz otvorený jeden. Viac ako 6 služieb → prvých 5 + „Zobraziť ďalšie (N)“. Pod službami **referencia** na sivej karte so šípkami.
+- **Krok 2:** „Kto prichádza? Stačí kontakt na vás.“, meno (celá šírka), e-mail | telefón, poznámka (nepovinné); pod tým sivá karta
+  **„Otázky pred rezerváciou? Odpovedá Jana.“** s WhatsApp a Zavolať (údaje majiteľa objektu, len ak sú vyplnené). Doplnky sú vidieť vpravo.
+- **Krok 3:** „Skontrolujte a potvrďte.“, sivá karta s **tromi istotami** (podržanie termínu, storno, platba priamo — z podmienok objektu), súhlasy (VOP a storno povinné, marketing nepovinný a nezaškrtnutý), **záväzné tlačidlo** jednoznačne o objednávke
   s povinnosťou platby (presné znenie s právnymi textami) → platobné údaje s QR.
 
 ## Mobil
@@ -114,8 +123,8 @@ grafitové „Pozrieť pobyt“. Klik kamkoľvek otvorí košík; **bez termínu
 - **Zelený panel nahrádza pevný zelený pás dole:** termín a hostia (mono), suma (alebo „od 700 € / noc“), grafitové „Pozrieť pobyt“.
 - **Galéria** (`MobilGaleria`): cez celú obrazovku — prepínač **Fotky · N | Referencie · N**, albumy ako vodorovné pilulky, mriežka po 2;
   ťuk → fotka cez celú obrazovku, posun prstom, pás náhľadov; zatvorenie krížikom aj gestom späť. Dole zelený pás.
-- **Košík** (`MobilKosik`, `MobilKosikRozpis`): cez celú obrazovku, hore „Krok 1 z 3 · Váš pobyt“ + tri čiarky postupu; fotky posúvateľné,
-  zbalený termín s hostiami, doplnky ako riadky, referencia; **zelený pás dole** (suma + „Rozpis a podmienky ▴“ | grafitové Pokračovať);
+- **Košík** (`MobilKosik`, `MobilKosikRozpis`): cez celú obrazovku, hore „Krok 1 z 3 · Váš pobyt“ + tri čiarky postupu; **bez fotiek (v2.2)**,
+  zbalený termín s hostiami, doplnky ako jednoriadkové riadky (cenový model môže ísť pod názov, ak sa nevojde), referencia; **zelený pás dole** (suma + „Rozpis a podmienky ▴“ | grafitové Pokračovať);
   ťuk na sumu vysunie zospodu rozpis, istoty a Janu (horné rohy zaoblené).
 - **Výber termínu** (`MobilKalendar`): spodné okno cez celú obrazovku, mesiace pod sebou, „Potvrdiť termín“.
 

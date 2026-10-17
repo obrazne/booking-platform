@@ -69,6 +69,14 @@
       "w": 390,
       "h": 2700,
       "title": "09 Mobil — potvrdenie rezervácie"
+    },
+    "KosikNotebook.dc.html": {
+      "x": 4340,
+      "y": 0,
+      "w": 1440,
+      "h": 800,
+      "title": "10 Košík v2.2 — notebook 13″ (1440 × 800, klikací: riadky služieb, Zmeniť, kroky)",
+      "is_interactive": true
     }
   },
   "createdOnFiles": {
@@ -129,6 +137,13 @@
       "w": 380,
       "fill": "orange",
       "text": "Potvrdenie na mobile: QR kód sa nedá naskenovať tým istým telefónom — preto sú hore údaje s tlačidlom Kopírovať a QR je druhá možnosť (z počítača, iného telefónu alebo uložený obrázok v bankovej aplikácii)."
+    },
+    "kosik22": {
+      "x": 4340,
+      "y": -200,
+      "w": 720,
+      "fill": "teal",
+      "text": "Košík v2.2 (pripomienka 25, 17. 10.): na 13″ MacBooku sa súhrn nevošiel a oba stĺpce sa posúvali. Princíp: vpravo len to, čo kupujem a koľko (termín, hostia, cena, doplnky, tlačidlo + jedna istota), vľavo práca aktuálneho kroku. Bez fotiek (hosť ich má na stránke pod panelom), termín len raz (vpravo „Zmeniť“ otvorí kalendár vľavo), služby jednoriadkové, referencia vľavo pod službami, kontakt na Janu v kroku 2, tri istoty v kroku 3 pri záväznom tlačidle. Lišta krokov 52 px. Rovnaké rozloženie na všetkých obrazovkách."
     }
   },
   "order": [
@@ -140,7 +155,8 @@
     "MobilDetailV2.dc.html",
     "MobilGaleria.dc.html",
     "Potvrdenie.dc.html",
-    "MobilPotvrdenie.dc.html"
+    "MobilPotvrdenie.dc.html",
+    "KosikNotebook.dc.html"
   ],
   "pages": [],
   "title": "Rezervačná stránka — návrh"
