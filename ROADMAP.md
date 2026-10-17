@@ -305,6 +305,13 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z41 oprava rozsahu (Martin): upratanie STRÖMY malo byť **len ukážkové iCal kanály** „Booking.com (ukážka)“ a
+  „Airbnb (ukážka)“ s udalosťami. Pokyn prišiel až po vykonaní plného upratania (podľa predchádzajúceho súhlasu). **Vrátené:** moduly
+  recenzie, upsell a check-in na STRÖMY znova zapnuté (`active`), upsell Janiných služieb ako predtým (Raňajky, Šéfkuchár s potvrdením,
+  Transfer; uzávierka 48 h). **Nevratne zmazané** (záznamy mazania som z histórie vynechal, takže obnova z `record_history` nejde):
+  52 rezervácií (48 „DEMO“ + 2026-0001/0002/0003/0040), blokácia „(DEMO)“, 2 ukážkové dokumenty, 50 ukážkových/testovacích hostí,
+  5 ukážkových upozornení. Ukážkové rezervácie sa dajú vytvoriť znova len skriptom `demo-data` pre STRÖMY (dnes zablokovaný kvôli
+  ostrému kalendáru) — čaká na rozhodnutie Martina. „Ostrý kalendár chaletu na Bookingu“ nedotknutý.
 - 2026-10-17 — Z41 (časť — bez upratania STRÖMY): **ukážkové dáta a testy preč zo STRÖMY.**
   - `demo-data`: cieľ **Ukážkový klient** (Chalet Pod Smrekom), STRÖMY len `--tenant stromy --force` a **nikdy s aktívnym skutočným
     iCal kanálom** (overené: skript skončí „STOP … nothing was changed“); `--remove` len zmaže. Ukážkový klient má celú ukážku
