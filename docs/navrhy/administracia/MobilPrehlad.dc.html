@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Prehľad — mobil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+@keyframes menuIn{from{transform:translateX(-100%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.menu{animation:menuIn 240ms cubic-bezier(.2,.8,.2,1)}
+.scrim{animation:fadeIn 200ms ease}
+@media (prefers-reduced-motion: reduce){.menu,.scrim{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42; display: flex; flex-direction: column;">
+
+<header style="flex-shrink: 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; border-bottom: 1px solid #e9e5db; background: #ffffff;">
+<button type="button" onClick="{{openMenu}}" aria-label="Menu" style="width: 44px; height: 44px; border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11212f" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg></button>
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Chalet STRÖMY</span>
+<span style="display: flex;">
+<button type="button" aria-label="Hľadať" style="width: 44px; height: 44px; border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#11212f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button>
+<button type="button" aria-label="Ručná rezervácia" style="width: 44px; height: 44px; border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><span style="width: 32px; height: 32px; border-radius: 9999px; background: {{accent}}; display: inline-flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></span></button>
+</span>
+</header>
+
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 24px 16px 32px; display: flex; flex-direction: column; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Piatok 16. októbra</span>
+<h1 style="margin: 0; font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: #11212f;">Dobrý večer, Jana. <span style="color: #8b929b;">Jedna vec čaká na vás.</span></h1>
+</div>
+
+<section style="border-radius: 10px; border: 1px solid #ecd9c4; background: #fcf6ef; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+<span style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">Čaká na platbu · 2 940 €</span><span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Katarína Horváthová · 12.–15. 2. 2027 · splatné zajtra 14:00</span></span>
+<span style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"><button type="button" style="min-height: 44px; border-radius: 9999px; border: 1px solid #e3d3c0; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Otvoriť</button><button type="button" style="min-height: 44px; border: none; border-radius: 9999px; background: {{accent}}; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;">Platba prijatá</button></span>
+</section>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #e9e5db; border-radius: 10px;">
+<div style="padding: 14px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #e9e5db;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Priame 2026</span><span style="font-size: 24px; font-weight: 800; color: #11212f;">3</span></div>
+<div style="padding: 14px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #e9e5db; border-left: 1px solid #e9e5db;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Tržby priamo</span><span style="font-size: 24px; font-weight: 800; color: #11212f;">6 550 €</span></div>
+<div style="padding: 14px; display: flex; flex-direction: column; gap: 4px; background: {{accentSoft}}; border-bottom-left-radius: 10px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: {{accent}};">Ušetrené</span><span style="font-size: 24px; font-weight: 800; color: #11212f;">≈ 980 €</span></div>
+<div style="padding: 14px; display: flex; flex-direction: column; gap: 4px; border-left: 1px solid #e9e5db;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Obsadené 90 dní</span><span style="font-size: 24px; font-weight: 800; color: #11212f;">16 %</span></div>
+</div>
+
+<section style="display: flex; flex-direction: column;">
+<span style="display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 10px; border-bottom: 1px solid #e9e5db;"><span style="font-size: 17px; font-weight: 700; color: #11212f;">Najbližšie pobyty</span><a href="#" style="font-size: 13px; font-weight: 500; color: {{accent}}; text-decoration: none;">Všetky</a></span>
+<sc-for list="{{stays}}" as="s" hint-placeholder-count="3"><a href="#" style="display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e9e5db; text-decoration: none;"><span style="display: flex; flex-direction: column; align-items: center; padding: 6px 0; border-radius: 8px; background: #f7f6f2;"><span style="font-size: 18px; font-weight: 800; line-height: 1; color: #11212f;">{{s.d}}</span><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #8b929b; margin-top: 3px;">{{s.m}}</span></span><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 15px; font-weight: 700; color: #11212f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{s.name}}</span><span style="font-size: 13px; color: #8b929b;">{{s.meta}}</span></span><span style="{{s.pill}}">{{s.status}}</span></a></sc-for>
+</section>
+
+<a href="#" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 10px; background: #f7f6f2; text-decoration: none;"><span style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><span style="width: 8px; height: 8px; border-radius: 9999px; background: #3f8f5a;"></span>Booking a Airbnb · pred 4 min</span><span style="font-size: 13px; font-weight: 500; color: #11212f;">Kalendár ›</span></a>
+</div>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+<div class="scrim" onClick="{{closeMenu}}" style="position: absolute; inset: 0; background: rgba(17,33,47,0.38);"></div>
+<nav class="menu" aria-label="Hlavné menu" style="position: absolute; top: 0; bottom: 0; left: 0; width: 316px; background: #f7f6f2; display: flex; flex-direction: column; gap: 16px; padding: 12px 12px 20px; box-sizing: border-box; box-shadow: 30px 0 60px -40px rgba(17,33,47,0.5);">
+<div style="display: flex; align-items: center; justify-content: space-between; padding-left: 8px;"><span style="font-size: 15px; font-weight: 800; color: #11212f;">[Názov platformy]</span><button type="button" onClick="{{closeMenu}}" aria-label="Zavrieť menu" style="width: 44px; height: 44px; border: none; background: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#11212f" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><sc-for list="{{nav}}" as="n" hint-placeholder-count="6"><a href="#" style="{{n.style}}">{{n.label}}<span style="{{n.badgeStyle}}">{{n.badge}}</span></a></sc-for></div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 2px; padding-top: 12px; border-top: 1px solid #e9e5db;"><sc-for list="{{nav2}}" as="n" hint-placeholder-count="3"><a href="#" style="{{n.style}}">{{n.label}}</a></sc-for>
+<span style="padding: 10px 12px 0; font-size: 13px; color: #8b929b;">Jana Hladká · Odhlásiť</span></div>
+</nav>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { menu: false }; }
+  renderVals() {
+    var self = this; var a = this.props.accent ?? '#2f5d50';
+    var h = a.replace('#', ''); var rgb = [0, 2, 4].map(function (i) { return parseInt(h.slice(i, i + 2), 16); });
+    var soft = 'rgba(' + rgb.join(',') + ',0.09)';
+    var pill = function (k) {
+      if (k === 'pending') return 'display: inline-flex; padding: 4px 9px; border-radius: 9999px; background: #f6ecdf; color: #8a4a22; font-size: 11px; font-weight: 700; white-space: nowrap;';
+      if (k === 'paid') return 'display: inline-flex; padding: 4px 9px; border-radius: 9999px; background: ' + a + '; color: #ffffff; font-size: 11px; font-weight: 700; white-space: nowrap;';
+      return 'display: inline-flex; padding: 4px 9px; border-radius: 9999px; background: #eef0f3; color: #3b4652; font-size: 11px; font-weight: 700; white-space: nowrap;';
+    };
+    var stays = [
+      { d: '24', m: 'dec', name: 'Tomáš Kováč', meta: '4 noci · 4 hostia', status: 'Zaplatená', pill: pill('paid') },
+      { d: '2', m: 'jan', name: 'Hosť z Bookingu', meta: '4 noci · Booking.com', status: 'Portál', pill: pill('ota') },
+      { d: '12', m: 'feb', name: 'Katarína Horváthová', meta: '3 noci · 6 hostí', status: 'Čaká', pill: pill('pending') }
+    ];
+    var item = function (label, on) { return 'display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 12px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: ' + (on ? '700' : '500') + '; color: ' + (on ? a : '#3b3d42') + '; background: ' + (on ? 'rgba(' + rgb.join(',') + ',0.10)' : 'transparent') + ';'; };
+    var nav = ['Prehľad', 'Rezervácie', 'Kalendár', 'Objekt a stránka', 'Služby', 'Referencie', 'Blokácie', 'Booking a Airbnb'].map(function (l, i) {
+      return { label: l, style: item(l, i === 0), badge: l === 'Rezervácie' ? '1' : '', badgeStyle: l === 'Rezervácie' ? 'margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 9999px; background: #f6ecdf; color: #8a4a22; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;' : 'display: none;' };
+    });
+    var nav2 = ['Tím', 'Nastavenia', 'Čo je nové'].map(function (l) { return { label: l, style: item(l, false) }; });
+    return { accent: a, accent2: this.props.accent2 ?? '#ad5a2b', accentSoft: soft, stays: stays, nav: nav, nav2: nav2, menuOpen: this.state.menu,
+      openMenu: function () { self.setState({ menu: true }); }, closeMenu: function () { self.setState({ menu: false }); } };
+  }
+}
+</script>
+</body>
+</html>

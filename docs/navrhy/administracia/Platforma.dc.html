@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Riadiace centrum — klienti</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+.row-b{transition:background 140ms ease}
+.row-b:hover{background:#fbfaf7}
+@keyframes panelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.panel{animation:panelIn 220ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.panel{animation:none}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="platforma" userName="Martin Olša" hint-size="248px,1000px"></dc-import></div>
+<main onClick="{{outside}}" style="flex: 999 1 560px; min-width: 0; position: relative; display: flex; flex-direction: column;">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 32px 40px 20px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"></path></svg>Riadiace centrum</span>
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Klienti</h1>
+</div>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Založiť klienta</a>
+</header>
+
+<nav aria-label="Riadiace centrum" style="display: flex; gap: 4px; padding: 0 40px; border-bottom: 1px solid #e9e5db;">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><a href="#" style="{{t.style}}">{{t.label}}</a></sc-for>
+</nav>
+
+<div style="padding: 28px 40px 0;">
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid #e9e5db; border-radius: 10px;">
+<div style="padding: 20px 22px; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Klienti</span><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">2</span><span style="font-size: 13px; color: #5a6672;">1 ukážkový · 1 sa pripravuje</span></div>
+<div style="padding: 20px 22px; border-left: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Rezervácie · 30 dní</span><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">3</span><span style="font-size: 13px; color: #5a6672;">naprieč klientmi</span></div>
+<div style="padding: 20px 22px; border-left: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Skúšobné moduly</span><span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">1</span><span style="font-size: 13px; color: #5a6672;">Služby · STRÖMY · do 15. 11.</span></div>
+<div style="padding: 20px 22px; border-left: 1px solid #e9e5db; display: flex; flex-direction: column; gap: 6px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Stav systému</span><span style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; color: #11212f; min-height: 36px;"><span style="width: 10px; height: 10px; border-radius: 9999px; background: #3f8f5a;"></span>Všetko beží</span><span style="font-size: 13px; color: #5a6672;">synchronizácia, e-maily, platby</span></div>
+</div>
+</div>
+
+<div style="padding: 24px 40px 56px; overflow-x: auto;">
+<div role="table" aria-label="Klienti" style="min-width: 760px;">
+<div role="row" style="display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.4fr) minmax(0, 1fr) 110px 140px; gap: 16px; padding: 14px 8px; border-bottom: 1px solid #e9e5db; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">
+<span role="columnheader">Klient</span><span role="columnheader">Adresa stránky</span><span role="columnheader">Balík a moduly</span><span role="columnheader" style="text-align: right;">Rez. 30 dní</span><span role="columnheader">Stav</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="2">
+<button type="button" role="row" class="row-b" onClick="{{r.open}}" aria-current="{{r.selected}}" style="{{r.rowStyle}}">
+<span role="cell" style="display: flex; align-items: center; gap: 12px; min-width: 0;"><span style="{{r.swatch}}"></span><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">{{r.name}}</span><span style="font-size: 13px; color: #8b929b;">{{r.owner}}</span></span></span>
+<span role="cell" style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #3b3d42; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{r.host}}</span>
+<span role="cell" style="font-size: 14px; color: #3b3d42;">{{r.modules}}</span>
+<span role="cell" style="font-size: 15px; font-weight: 700; color: #11212f; text-align: right;">{{r.res}}</span>
+<span role="cell"><span style="{{r.pill}}">{{r.status}}</span></span>
+</button>
+</sc-for>
+</div>
+<p style="margin: 16px 8px 0; font-size: 13px; color: #8b929b;">Riadiace centrum vidí len prevádzkové údaje klientov. Mená a kontakty hostí tu nie sú.</p>
+</div>
+
+<sc-if value="{{panelOpen}}" hint-placeholder-val="{{true}}">
+<aside class="panel" onClick="{{stop}}" aria-label="Detail klienta" style="position: absolute; top: 0; right: 0; bottom: 0; width: 680px; max-width: 100%; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 60px -40px rgba(17,33,47,0.35); display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 32px; border-bottom: 1px solid #e9e5db;">
+<span style="display: flex; align-items: center; gap: 10px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6672;">Klient</span><span style="{{p.pill}}">{{p.status}}</span></span>
+<button type="button" onClick="{{closePanel}}" aria-label="Zavrieť" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#11212f" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</div>
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 26px 32px 32px; display: flex; flex-direction: column; gap: 26px;">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+<span style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{p.name}}</span><span style="font-size: 14px; color: #5a6672;">{{p.sub}}</span></span>
+<span style="display: flex; gap: 8px; flex-shrink: 0;"><button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Stránka pre hostí ↗</button><button type="button" style="min-height: 40px; padding: 0 16px; border: none; border-radius: 9999px; background: #2b3036; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;">Otvoriť administráciu</button></span>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Balík a moduly</span>
+<div style="border-top: 1px solid #e9e5db;">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e9e5db;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">Balík</span><span style="font-size: 12px; color: #8b929b;">obsah balíkov sa ešte dopĺňa</span></span><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{p.plan}}</span></div>
+<sc-for list="{{p.mods}}" as="md" hint-placeholder-count="1"><div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e9e5db;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{md.name}}</span><span style="font-size: 12px; color: #8b929b;">{{md.note}}</span></span><button type="button" role="switch" aria-checked="{{md.on}}" aria-label="{{md.name}}" onClick="{{md.toggle}}" style="{{md.track}}"><span style="{{md.knob}}"></span></button></div></sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Ľudia klienta</span>
+<sc-for list="{{p.people}}" as="pp" hint-placeholder-count="1"><div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #e9e5db; border-radius: 10px;"><span style="width: 32px; height: 32px; border-radius: 9999px; background: #e7e4dc; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #3b3d42;">{{pp.ini}}</span><span style="flex: 1 1 auto; display: flex; flex-direction: column;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{pp.name}}</span><span style="font-size: 12px; color: #8b929b;">{{pp.meta}}</span></span></div></sc-for>
+<button type="button" style="align-self: flex-start; border: none; background: none; padding: 4px 0; font-family: inherit; font-size: 13px; font-weight: 500; color: {{accent}}; cursor: pointer;">+ Pozvať človeka</button>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Prevádzka</span>
+<div style="border-top: 1px solid #e9e5db;">
+<sc-for list="{{p.checks}}" as="ck" hint-placeholder-count="4"><div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #e9e5db; font-size: 14px;"><span style="color: #3b3d42;">{{ck.a}}</span><span style="display: inline-flex; align-items: center; gap: 8px; font-weight: 500; color: #11212f; text-align: right;"><span style="{{ck.dot}}"></span>{{ck.b}}</span></div></sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Vzhľad</span>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e9e5db; border-radius: 10px;"><span style="{{p.swatchBig}}"></span><span style="flex: 1 1 auto; display: flex; flex-direction: column;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{p.theme}}</span><span style="font-size: 12px; color: #8b929b;">kontrast tlačidiel overený</span></span><button type="button" style="border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 500; color: {{accent}}; cursor: pointer;">Upraviť</button></div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Posledné zmeny</span>
+<sc-for list="{{p.audit}}" as="au" hint-placeholder-count="3"><div style="display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 12px;"><span style="width: 8px; height: 8px; margin-top: 6px; border-radius: 9999px; background: #c9cdd2;"></span><span style="display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 14px; color: #11212f;">{{au.a}}</span><span style="font-size: 12px; color: #8b929b;">{{au.b}}</span></span></div></sc-for>
+</section>
+</div>
+</div>
+</div>
+</aside>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: 'stromy', mods: { stromy: { services: true }, ukazka: { services: true } } }; }
+  renderVals() {
+    var self = this; var s = this.state; var a = this.props.accent ?? '#2f5d50';
+    var h = a.replace('#', ''); var rgb = [0, 2, 4].map(function (i) { return parseInt(h.slice(i, i + 2), 16); });
+    var soft = 'rgba(' + rgb.join(',') + ',0.09)';
+    var tabs = ['Klienti', 'Moduly', 'Stav systému', 'Audit'].map(function (l, i) {
+      var on = i === 0;
+      return { label: l, style: 'display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; margin-bottom: -1px; border-bottom: 2px solid ' + (on ? '#11212f' : 'transparent') + '; font-size: 14px; font-weight: ' + (on ? '700' : '500') + '; color: ' + (on ? '#11212f' : '#5a6672') + '; text-decoration: none;' };
+    });
+    var skip = function () { self._skip = true; setTimeout(function () { self._skip = false; }, 0); };
+    var pill = function (k) {
+      if (k === 'prep') return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: #f6ecdf; color: #8a4a22; font-size: 12px; font-weight: 700;';
+      if (k === 'live') return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: ' + a + '; color: #ffffff; font-size: 12px; font-weight: 700;';
+      return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: #eef0f3; color: #3b4652; font-size: 12px; font-weight: 700;';
+    };
+    var dot = function (c) { return 'width: 8px; height: 8px; border-radius: 9999px; background: ' + c + ';'; };
+    var green = '#3f8f5a', warm = '#c98a3c', grey = '#b4bac1';
+    var T = [
+      { id: 'stromy', name: 'Chalet STRÖMY', owner: 'Jana Hladká', host: 'stromy.localhost · vlastná doména neskôr', res: '3', plan: 'bez balíka', statusKey: 'prep', status: 'Pripravuje sa', color: '#2f5d50', theme: 'Smrekovo zelená · Roboto',
+        sub: '1 objekt · 1 jednotka · založený 15. 10. 2026',
+        people: [{ ini: 'JH', name: 'Jana Hladká', meta: 'majiteľka · prístup zatiaľ nepozvaný' }, { ini: 'MO', name: 'Martin Olša', meta: 'správca platformy' }],
+        checks: [{ a: 'Vlastná doména', b: 'nenastavená', c: grey }, { a: 'Odosielanie e-mailov', b: 'cez platformu', c: green }, { a: 'Booking a Airbnb', b: 'pred 4 min · 2 kalendáre', c: green }, { a: 'Platby', b: 'bankový prevod', c: green }],
+        audit: [{ a: 'Ukážkové dáta nahraté', b: 'Martin Olša · 16. 10. 2026' }, { a: 'Modul Služby zapnutý na skúšku do 15. 11.', b: 'Martin Olša · 16. 10. 2026' }, { a: 'Klient založený', b: 'Martin Olša · 15. 10. 2026' }],
+        trial: 'skúška do 15. 11. 2026' },
+      { id: 'ukazka', name: 'Ukážkový klient', owner: 'na predvádzanie', host: 'booking-platform-obrazne.vercel.app', res: '0', plan: 'ukážka', statusKey: 'demo', status: 'Ukážka', color: '#2e5ea8', theme: 'Modrá · Roboto',
+        sub: '2 objekty · ukážkové dáta',
+        people: [{ ini: 'QA', name: 'qa@booking-platform.test', meta: 'testovací účet' }, { ini: 'MO', name: 'Martin Olša', meta: 'správca platformy' }],
+        checks: [{ a: 'Adresa', b: 'staging na Verceli', c: green }, { a: 'Odosielanie e-mailov', b: 'vypnuté (ukážka)', c: grey }, { a: 'Booking a Airbnb', b: 'nenapojené', c: grey }, { a: 'Platby', b: 'bankový prevod', c: green }],
+        audit: [{ a: 'Téma zmenená', b: 'Martin Olša · 16. 10. 2026' }, { a: 'Klient založený', b: 'Martin Olša · 14. 10. 2026' }],
+        trial: 'zapnutý natrvalo' }
+    ];
+    var rows = T.map(function (t) {
+      var sel = s.sel === t.id; var m = s.mods[t.id];
+      var on = m.services ? 'Služby' + (t.id === 'stromy' ? ' (skúška)' : '') : 'bez modulov';
+      return { name: t.name, owner: t.owner, host: t.host, res: t.res, status: t.status, pill: pill(t.statusKey), modules: t.plan + ' · ' + on, selected: sel ? 'true' : 'false',
+        swatch: 'width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: ' + t.color + ';',
+        open: function () { skip(); self.setState({ sel: t.id }); },
+        rowStyle: 'width: 100%; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.4fr) minmax(0, 1fr) 110px 140px; gap: 16px; align-items: center; padding: 16px 8px; border: none; border-bottom: 1px solid #e9e5db; background: ' + (sel ? soft : 'transparent') + '; font-family: inherit; text-align: left; cursor: pointer;' };
+    });
+    var cur = T.filter(function (t) { return t.id === s.sel; })[0];
+    var p = {};
+    if (cur) {
+      var mm = s.mods[cur.id];
+      var sw = function (k) {
+        var on = !!mm[k];
+        return { on: on ? 'true' : 'false',
+          toggle: function () { var all = JSON.parse(JSON.stringify(self.state.mods)); all[cur.id][k] = !all[cur.id][k]; self.setState({ mods: all }); },
+          track: 'position: relative; flex-shrink: 0; width: 44px; height: 26px; border: none; border-radius: 9999px; padding: 0; cursor: pointer; background: ' + (on ? a : '#d9d6ce') + '; transition: background 160ms ease;',
+          knob: 'position: absolute; top: 3px; left: ' + (on ? '21px' : '3px') + '; width: 20px; height: 20px; border-radius: 9999px; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: left 160ms ease;' };
+      };
+      p = Object.assign({}, cur, { pill: pill(cur.statusKey),
+        swatchBig: 'width: 36px; height: 36px; border-radius: 8px; background: ' + cur.color + ';',
+        mods: [Object.assign({ name: 'Služby', note: 'doplnky k pobytu · ' + cur.trial }, sw('services'))],
+        checks: cur.checks.map(function (c) { return { a: c.a, b: c.b, dot: dot(c.c) }; }) });
+    }
+    return { accent: a, accent2: this.props.accent2 ?? '#ad5a2b', tabs: tabs, rows: rows, p: p, panelOpen: !!cur,
+      outside: function () { if (self._skip) { self._skip = false; return; } if (self.state.sel) self.setState({ sel: null }); },
+      stop: function () { skip(); },
+      closePanel: function () { self.setState({ sel: null }); } };
+  }
+}
+</script>
+</body>
+</html>

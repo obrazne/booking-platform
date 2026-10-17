@@ -10,10 +10,10 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na zadanie z Claude chatu.
+- **Ďalší krok pre Claude Code:** **Z23 — administrácia a prihlásenia podľa vizuálu v1** (Martin schválil 17. 10.).
 - **Ďalší krok pre Martina:** preklikať staging s ukážkovými dátami (prehliadka sa otvorí po prihlásení) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
-- **Claude chat:** spracovať Martinove pripomienky, návrh administrácie majiteľa (kalendár, rezervácie) na plátne, obchodný model, príprava ukážky pre Janu.
+- **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
 
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
@@ -114,6 +114,38 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 3. Zobrazí sa raz po prihlásení pri novej verzii (verzia uložená pri používateľovi), znova z menu **„Čo je nové“**.
 4. **Snímky** robí skript `npm run tour:screens` (Playwright, ukážkové dáta zo Z21, počítač 1440 px, prípadne aj mobil) → uložené
    v repozitári; po zmene rozhrania stačí skript spustiť znova. Bez osobných údajov na snímkach.
+
+### Z23 — Administrácia a prihlásenia podľa vizuálu v1
+Martin schválil **vizuál administrácie v1 (17. 10.)**. Čítaj `docs/vizual-administracia.md` (najprv *Pravidlá vzhľadu administrácie*;
+platia aj pravidlá v2 z `docs/vizual-stranka-hosta.md`), zdroj plátna `docs/navrhy/administracia/` (tabuľka dosiek a ciest v kóde je
+v hlavičke popisu), rozhodnutie 17. 10. *Vizuál administrácie v1*, A18. **Je to prerobenie rozhrania** — logiku rezervácií, platieb, cien,
+iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako na doskách = ukážkové dáta zo Z21.
+1. **Spoločné komponenty:** `AdminShell` / bočné menu podľa dosky `Sidebar` (výber ubytovania hore, sekcia Obsadenosť, Tím / Nastavenia /
+   Riadiace centrum a používateľ dole, odznak počtu čakajúcich rezervácií; zbaľovanie a pripnutie ostáva). `RecordPanel` **680 px, dva stĺpce**
+   (pod ~1024 px jeden), hlavička s číslom a stavom, spodná lišta akcií, zatvára krížik / Esc / Späť / **klik vedľa**, klik na iný riadok
+   **prepne** záznam; na mobile cez celú obrazovku s lištou „‹ späť“ a prilepenými akciami dole. **Polia na jeden riadok ako pilulky
+   v rovnakej výške ako tlačidlá** (shadcn `Input`, `Select` a pod. v administrácii a pri prihláseniach; formuláre košíka hosťa nemeň).
+   Pilulky stavov a farby obsadenosti podľa pravidla 4 — jedno miesto v kóde pre obe obrazovky.
+2. **01 Prihlásenie** (`/login`): rozdelená obrazovka podľa dosky. **Prihlasovací odkaz na e-mail** ako druhá možnosť len pre existujúce
+   účty administrácie (registrácia ostáva vypnutá, odpoveď neprezradí, či účet existuje, limit podľa IP ako pri hosťovi). Názov platformy
+   a e-mail podpory z jedného nastavenia (značka sa rieši vo Fáze 5 — zatiaľ zástupný text).
+3. **02 Prehľad:** pozdrav, karta čakajúcich platieb s **Platba prijatá**, štyri čísla, najbližšie pobyty, mini obsadenosť 12 týždňov
+   so stavom synchronizácie. „Ušetrené na províziách“ = tržby priamo × provízia portálu; ak v nastaveniach provízia nie je, pridaj ju
+   (percento pri klientovi, predvolene 15 %, migrácia len pridáva) a v čísle ukáž „≈“.
+4. **03 Rezervácie:** filtre stavu ako pilulky s počtom, hľadanie, Export CSV, panel podľa dosky (platba čaká / zaplatené, **Predĺžiť
+   splatnosť** nad `payment_due_at`, rozpis, poznámka hosťa, dokumenty, interná poznámka z `reservation_notes`, história, Upraviť, Zrušiť).
+5. **04 Kalendár:** dva mesiace, pásy od poludnia do poludnia, **ceny vo voľných dňoch**, klik na pás → panel podľa typu, **výber dní** →
+   panel „Nový termín“ s cenou, minimom nocí a kolíziou z tej istej funkcie ako web; akcie predvyplnia ručnú rezerváciu alebo blokáciu.
+   Ovládanie klávesnicou (šípky po dňoch, Enter = príchod/odchod) a popisy pre čítačku.
+6. **05 Riadiace centrum:** **vlastné menu** (Klienti, Moduly, Stav systému, Audit, odkaz do administrácie) bez výberu ubytovania, čísla,
+   zoznam klientov s balíkom a modulmi, panel klienta podľa dosky. Žiadne údaje hostí v riadiacom centre (len počty). Balík zatiaľ „bez balíka“.
+7. **06–07 Mobil:** horná lišta s menu zo strany a **+**, prehľad pod sebou, detail rezervácie cez celú obrazovku (dosky `MobilPrehlad`,
+   `MobilRezervacia`). Ciele dotyku min. 44 px, žiadne vodorovné rolovanie na 390 px (kalendár na mobile jeden mesiac).
+8. **08 Prihlásenie hosťa** (`/ucet/prihlasenie`): v téme klienta podľa dosky — hlavná fotka objektu vľavo, 6 políčok na kód (vloženie
+   celého kódu, automatický posun), Zmeniť e-mail, Poslať znova s odpočtom; logiku zo Z17 a captchu nemeň.
+9. Texty cez preklady, farby z témy. Playwright: prihlásenie, prehľad, rezervácie s panelom (otvorenie, prepnutie, klik vedľa, Esc),
+   kalendár (výber dní, panel), riadiace centrum, prihlásenie hosťa — na počítači aj 390 px, prístupnosť (axe). Potom **obnov snímky
+   prehliadky** (`npm run tour:screens`) a zvýš jej verziu, nech Martin uvidí novinky.
 
 ---
 

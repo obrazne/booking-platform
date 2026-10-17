@@ -1,0 +1,25 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-16T21:45:00Z"},
+  "title": "Administrácia — návrh",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 1000, "title": "02 Prehľad (majiteľ)", "expand": "fill"},
+    "Rezervacie.dc.html": {"x": 1520, "y": 0, "w": 1440, "h": 1000, "title": "03 Rezervácie + bočný panel (klikateľné)", "expand": "fill", "is_interactive": true},
+    "Kalendar.dc.html": {"x": 3040, "y": 0, "w": 1440, "h": 1000, "title": "04 Kalendár obsadenosti (klikateľné: pobyt, výber dní)", "expand": "fill", "is_interactive": true},
+    "Platforma.dc.html": {"x": 4560, "y": 0, "w": 1440, "h": 1000, "title": "05 Riadiace centrum — klienti (správca platformy)", "expand": "fill", "is_interactive": true},
+    "Prihlasenie.dc.html": {"x": 0, "y": 1240, "w": 1440, "h": 900, "title": "01 Prihlásenie (majiteľ, správca)"},
+    "PrihlasenieHost.dc.html": {"x": 1520, "y": 1240, "w": 1440, "h": 820, "title": "08 Prihlásenie hosťa (téma klienta; klik Poslať kód → krok 2)", "is_interactive": true},
+    "MobilPrehlad.dc.html": {"x": 3040, "y": 1240, "w": 390, "h": 844, "title": "06 Mobil — prehľad (menu klikateľné)", "is_interactive": true},
+    "MobilRezervacia.dc.html": {"x": 3510, "y": 1240, "w": 390, "h": 844, "title": "07 Mobil — rezervácia (detail cez celú obrazovku)", "is_interactive": true},
+    "Sidebar.dc.html": {"x": 3980, "y": 1240, "w": 248, "h": 1000, "title": "00 Komponent — bočné menu"}
+  },
+  "order": ["Main.dc.html", "Rezervacie.dc.html", "Kalendar.dc.html", "Platforma.dc.html", "Prihlasenie.dc.html", "PrihlasenieHost.dc.html", "MobilPrehlad.dc.html", "MobilRezervacia.dc.html", "Sidebar.dc.html"],
+  "notes": {
+    "titul": {"x": 0, "y": -300, "text": "Administrácia — majiteľ, správca, prihlásenie", "kind": "title1", "maxW": 6000},
+    "jazyk": {"x": 0, "y": -180, "w": 560, "fill": "orange", "text": "Rovnaký vizuálny jazyk ako stránka hosťa v2: Roboto + mono štítky, zaoblenie 10, jeden akcent (téma platformy smrekovo zelená), medená len na štítky, grafitové tlačidlo na farebnej ploche. Údaje = ukážkové dáta STRÖMY zo stagingu (2026-0088 / 0089 / 0090)."},
+    "plan": {"x": 4300, "y": 1240, "w": 360, "fill": "teal", "text": "Všetky obrazovky hotové — čaká na pripomienky Martina.\n\nPravidlo: bočný panel s detailom má na počítači 680 px a obsah v dvoch stĺpcoch; na mobile ide cez celú obrazovku (07)."}
+  },
+  "designSystems": []
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Prihlásenie hosťa — zóna hosťa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#11212f}a:hover{color:#5a6672}
+.code-i:focus{outline:none;border-color:#11212f;box-shadow:0 0 0 3px rgba(17,33,47,0.08)}
+</style>
+</helmet>
+<div style="width: 1440px; min-height: 820px; display: flex; flex-direction: column; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42; background: #ffffff;">
+
+<header style="height: 72px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 max(40px, calc((100% - 1180px) / 2)); border-bottom: 1px solid #e9e5db;">
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: #11212f;">Chalet STRÖMY</span>
+<nav style="display: flex; align-items: center; gap: 28px; font-size: 15px; font-weight: 500;"><a href="#" style="text-decoration: none;">Ubytovanie</a><a href="#" style="text-decoration: none;">Kontakt</a><a href="#" aria-current="page" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #11212f; text-decoration: none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>Účet</a></nav>
+</header>
+
+<main style="flex: 1 1 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: linear-gradient(180deg, #f8f7f3, #f1f2ee);">
+<section style="position: relative; overflow: hidden; background: linear-gradient(160deg, #8d9a92 0%, #5f6f66 55%, #3f4c46 100%);">
+<div style="position: absolute; inset: 0; background: radial-gradient(120% 80% at 20% 10%, rgba(255,255,255,0.18), transparent 60%);"></div>
+<span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6);">[fotka objektu]</span>
+<div style="position: absolute; left: 48px; right: 48px; bottom: 44px; display: flex; flex-direction: column; gap: 14px; color: #ffffff;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.75);">V účte nájdete</span>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 16px;">
+<li style="display: flex; align-items: center; gap: 12px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Pokyny k príchodu a kontakt na hostiteľa</li>
+<li style="display: flex; align-items: center; gap: 12px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Stav platby a doklady na stiahnutie</li>
+<li style="display: flex; align-items: center; gap: 12px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Všetky vaše pobyty na jednom mieste</li>
+</ul>
+</div>
+</section>
+
+<section style="display: flex; align-items: center; justify-content: center; padding: 56px 48px;">
+<div style="width: 100%; max-width: 420px; padding: 36px; border-radius: 10px; background: #ffffff; border: 1px solid #e9e5db; box-shadow: 0 30px 60px -48px rgba(17,33,47,0.45); display: flex; flex-direction: column; gap: 22px;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Účet hosťa</span>
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; line-height: 1.12; letter-spacing: -0.03em; color: #11212f;">{{title}}</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #5a6672;">{{lead}}</p>
+</div>
+
+<sc-if value="{{stepEmail}}" hint-placeholder-val="{{true}}">
+<label style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #3b3d42;">E-mail z rezervácie</span><input type="email" autocomplete="email" value="demo-host@obrazne.sk" style="height: 46px; box-sizing: border-box; padding: 0 20px; border-radius: 9999px; border: 1px solid #dcd9d1; font-family: inherit; font-size: 15px; color: #11212f;"></label>
+<button type="button" onClick="{{sendCode}}" style="height: 46px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer;">Poslať kód</button>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: #8b929b;">Bez hesla. Ak e-mail nepoznáme, kód nepríde — skúste ten, ktorý ste zadali pri rezervácii.</p>
+</sc-if>
+
+<sc-if value="{{stepCode}}" hint-placeholder-val="{{false}}">
+<div role="group" aria-label="6-miestny kód" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{digits}}" as="d" hint-placeholder-count="6"><input class="code-i" type="text" inputmode="numeric" maxlength="1" value="{{d.v}}" aria-label="{{d.label}}" style="height: 52px; width: 100%; box-sizing: border-box; text-align: center; border-radius: 12px; border: 1px solid #dcd9d1; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 22px; font-weight: 500; color: #11212f; background: #ffffff;"></sc-for>
+</div>
+<button type="button" style="height: 46px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer;">Prihlásiť sa</button>
+<div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px;"><button type="button" onClick="{{back}}" style="border: none; background: none; padding: 0; font-family: inherit; font-size: 13px; font-weight: 500; color: #11212f; cursor: pointer;">‹ Zmeniť e-mail</button><span style="color: #8b929b;">Poslať znova o 0:45</span></div>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #3b3d42;"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: {{accent}};">Zostať prihlásený na tomto zariadení</label>
+</sc-if>
+
+<p style="margin: 0; padding-top: 18px; border-top: 1px solid #e9e5db; font-size: 13px; line-height: 1.6; color: #5a6672;">Ešte nemáte rezerváciu? <a href="#" style="font-weight: 500;">Pozrite si voľné termíny</a>.</p>
+</div>
+</section>
+</main>
+
+<footer style="flex-shrink: 0; display: flex; justify-content: space-between; padding: 18px max(40px, calc((100% - 1180px) / 2)); border-top: 1px solid #e9e5db; font-size: 13px; color: #8b929b;"><span>© Chalet STRÖMY</span><span>Obchodné podmienky · Ochrana osobných údajov</span></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":820}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { step: 'email' }; }
+  renderVals() {
+    var self = this; var code = this.state.step === 'code';
+    var v = ['4', '8', '2', '', '', ''];
+    return {
+      accent: this.props.accent ?? '#2f5d50', accent2: this.props.accent2 ?? '#ad5a2b',
+      stepEmail: !code, stepCode: code,
+      title: code ? 'Zadajte kód z e-mailu.' : 'Vaše pobyty na jednom mieste.',
+      lead: code ? 'Poslali sme ho na demo-host@obrazne.sk. Platí 1 hodinu.' : 'Pošleme vám 6-miestny kód na e-mail, ktorý ste uviedli pri rezervácii.',
+      digits: v.map(function (x, i) { return { v: x, label: 'Číslica ' + (i + 1) }; }),
+      sendCode: function () { self.setState({ step: 'code' }); },
+      back: function () { self.setState({ step: 'email' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

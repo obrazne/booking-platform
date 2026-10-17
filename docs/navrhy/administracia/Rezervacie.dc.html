@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Rezervácie — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#11212f}a:hover{color:#5a6672}
+.row-b{transition:background 140ms ease}
+.row-b:hover{background:#fbfaf7}
+@keyframes panelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.panel{animation:panelIn 220ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.panel{animation:none}}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #ffffff; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="rezervacie" hint-size="248px,1000px"></dc-import></div>
+<main onClick="{{outside}}" style="flex: 999 1 560px; min-width: 0; position: relative; display: flex; flex-direction: column;">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 32px 40px 20px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Chalet STRÖMY</span>
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Rezervácie</h1>
+</div>
+<div style="display: flex; gap: 10px;">
+<button type="button" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"></path><path d="M7 11l5 5 5-5"></path><path d="M5 20h14"></path></svg>Export CSV</button>
+<a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Ručná rezervácia</a>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 0 40px 18px; border-bottom: 1px solid #e9e5db;">
+<label style="flex: 0 1 300px; display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border-radius: 9999px; background: #f7f6f2; color: #8b929b;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" placeholder="Meno, e-mail, číslo…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 14px; color: #11212f; outline: none;"></label>
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="5"><button type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}} <span style="{{f.countStyle}}">{{f.count}}</span></button></sc-for>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 9999px; border: 1px solid #e3e1da; font-size: 13px; color: #3b3d42;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>Príchod: všetky termíny</span>
+</div>
+
+<div style="padding: 0 40px 56px; overflow-x: auto;">
+<div role="table" aria-label="Rezervácie" style="min-width: 760px;">
+<div role="row" style="display: grid; grid-template-columns: 110px minmax(0, 1.4fr) minmax(0, 1.2fr) 90px 110px 150px; gap: 16px; padding: 14px 8px; border-bottom: 1px solid #e9e5db; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">
+<span role="columnheader">Číslo</span><span role="columnheader">Hosť</span><span role="columnheader">Termín ↓</span><span role="columnheader">Hostia</span><span role="columnheader" style="text-align: right;">Suma</span><span role="columnheader">Stav</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<button type="button" role="row" class="row-b" onClick="{{r.open}}" aria-current="{{r.selected}}" style="{{r.rowStyle}}">
+<span role="cell" style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #11212f;">{{r.number}}</span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">{{r.guest}}</span><span style="font-size: 13px; color: #8b929b;">{{r.source}}</span></span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{r.dates}}</span><span style="font-size: 13px; color: #8b929b;">{{r.nights}}</span></span>
+<span role="cell" style="font-size: 14px; color: #3b3d42;">{{r.people}}</span>
+<span role="cell" style="font-size: 15px; font-weight: 700; color: #11212f; text-align: right;">{{r.total}}</span>
+<span role="cell"><span style="{{r.pill}}">{{r.statusLabel}}</span></span>
+</button>
+</sc-for>
+</div>
+<p style="margin: 16px 8px 0; font-size: 13px; color: #8b929b;">Rezervácie z Bookingu a Airbnb sú v kalendári ako obsadené dni — údaje hostí zostávajú na portáli.</p>
+</div>
+
+<sc-if value="{{panelOpen}}" hint-placeholder-val="{{true}}">
+<aside class="panel" onClick="{{stop}}" aria-label="Detail rezervácie" style="position: absolute; top: 0; right: 0; bottom: 0; width: 680px; max-width: 100%; background: #ffffff; border-left: 1px solid #e9e5db; box-shadow: -30px 0 60px -40px rgba(17,33,47,0.35); display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 32px; border-bottom: 1px solid #e9e5db;">
+<span style="display: flex; align-items: center; gap: 10px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; color: #11212f;">{{p.number}}</span><span style="{{p.pill}}">{{p.statusLabel}}</span></span>
+<span style="display: flex; gap: 6px;">
+<button type="button" aria-label="Ďalšie akcie" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#3b3d42" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></button>
+<button type="button" onClick="{{closePanel}}" aria-label="Zavrieť" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #e9e5db; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#11212f" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10"></path><path d="M12 2L2 12"></path></svg></button>
+</span>
+</div>
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 26px 32px 32px; display: flex; flex-direction: column; gap: 26px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{p.guest}}</span>
+<span style="font-size: 14px; color: #5a6672;">{{p.contact}}</span>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #e9e5db; border-radius: 10px;">
+<span style="padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; border-right: 1px solid #e9e5db;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Príchod</span><span style="font-size: 16px; font-weight: 700; color: #11212f;">{{p.in}}</span></span>
+<span style="padding: 12px 14px; display: flex; flex-direction: column; gap: 3px;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Odchod</span><span style="font-size: 16px; font-weight: 700; color: #11212f;">{{p.out}}</span></span>
+<span style="grid-column: span 2; padding: 10px 14px; border-top: 1px solid #e9e5db; font-size: 14px; color: #3b3d42;">{{p.summary}}</span>
+</div>
+
+<sc-if value="{{p.pending}}" hint-placeholder-val="{{true}}">
+<section style="border-radius: 10px; border: 1px solid #ecd9c4; background: #fcf6ef; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+<span style="display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">Čaká na platbu {{p.total}}</span><span style="font-size: 13px; color: #5a6672;">VS {{p.vs}} · splatné {{p.due}} · potom sa rezervácia sama zruší</span></span>
+<span style="display: flex; flex-wrap: wrap; gap: 8px;"><button type="button" onClick="{{markPaid}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border: none; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg>Platba prijatá</button><button type="button" style="min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #e3d3c0; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Predĺžiť splatnosť</button></span>
+</section>
+</sc-if>
+<sc-if value="{{p.paid}}" hint-placeholder-val="{{false}}">
+<section style="border-radius: 10px; background: {{accentSoft}}; padding: 14px 18px; display: flex; align-items: center; gap: 12px;"><span style="width: 32px; height: 32px; border-radius: 9999px; background: {{accent}}; display: inline-flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.3l2.8 2.8 6-6.3"></path></svg></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 700; color: #11212f;">Zaplatené {{p.total}}</span><span style="font-size: 13px; color: #5a6672;">{{p.paidNote}}</span></span></section>
+</sc-if>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Rozpis</span>
+<div style="border-top: 1px solid #e9e5db;"><sc-for list="{{p.lines}}" as="ln" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e9e5db; font-size: 14px;"><span style="color: #3b3d42;">{{ln.a}}</span><span style="font-weight: 500; color: #11212f;">{{ln.b}}</span></div></sc-for>
+<div style="display: flex; justify-content: space-between; padding: 12px 0 0; font-size: 16px; font-weight: 800; color: #11212f;"><span>Spolu</span><span>{{p.total}}</span></div></div>
+</section>
+</div>
+<div style="display: flex; flex-direction: column; gap: 24px; min-width: 0;">
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Poznámka hosťa</span>
+<p style="margin: 0; padding: 12px 14px; border-radius: 10px; background: #f7f6f2; font-size: 14px; line-height: 1.55; color: #3b3d42;">{{p.note}}</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Dokumenty pre hosťa</span><button type="button" style="border: none; background: none; padding: 0; font-family: inherit; font-size: 13px; font-weight: 500; color: {{accent}}; cursor: pointer;">+ Nahrať</button></span>
+<sc-for list="{{p.docs}}" as="d" hint-placeholder-count="1"><div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #e9e5db; border-radius: 10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a6672" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"></path><path d="M14 3v4h4"></path></svg><span style="flex: 1 1 auto; display: flex; flex-direction: column;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{d.name}}</span><span style="font-size: 12px; color: #8b929b;">{{d.meta}}</span></span></div></sc-for>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">Interná poznámka</span>
+<textarea rows="2" placeholder="Vidíte len vy a váš tím" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid #dcd9d1; font-family: inherit; font-size: 14px; color: #11212f; resize: vertical;"></textarea>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #8b929b;">História</span>
+<sc-for list="{{p.history}}" as="h" hint-placeholder-count="3"><div style="display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 12px;"><span style="width: 8px; height: 8px; margin-top: 6px; border-radius: 9999px; background: #c9cdd2;"></span><span style="display: flex; flex-direction: column; gap: 1px;"><span style="font-size: 14px; color: #11212f;">{{h.a}}</span><span style="font-size: 12px; color: #8b929b;">{{h.b}}</span></span></div></sc-for>
+</section>
+</div>
+</div>
+</div>
+<div style="flex-shrink: 0; display: flex; justify-content: space-between; gap: 10px; padding: 14px 32px; border-top: 1px solid #e9e5db;">
+<button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #e3e1da; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Upraviť</button>
+<button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #efd6d0; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #a8432f; cursor: pointer;">Zrušiť rezerváciu</button>
+</div>
+</aside>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: '2026-0088', filter: 'all', paid: {} }; }
+  renderVals() {
+    var self = this; var s = this.state; var a = this.props.accent ?? '#2f5d50';
+    var h = a.replace('#', ''); var rgb = [0, 2, 4].map(function (i) { return parseInt(h.slice(i, i + 2), 16); });
+    var soft = 'rgba(' + rgb.join(',') + ',0.09)';
+    var DATA = [
+      { number: '2026-0089', guest: 'Tomáš Kováč', source: 'priama · web', dates: '24. 12. – 28. 12. 2026', in: 'st 24. 12. 2026', out: 'ne 28. 12. 2026', nights: '4 noci', people: '4 dospelí', total: '4 450 €', status: 'confirmed', vs: '20260089', contact: 'tomas.kovac@stromy-demo.invalid · +421 900 000 089',
+        lines: [{ a: '1 × noc · zimná sezóna (27. 12.)', b: '850 €' }, { a: '3 × noc · Vianoce', b: '3 600 €' }, { a: 'Daň za ubytovanie', b: 'v cene' }],
+        note: 'Prídeme okolo 17:00, prosíme o detskú postieľku. (DEMO)', docs: [{ name: 'Pokyny k parkovaniu.pdf', meta: 'pre túto rezerváciu · viditeľné po potvrdení' }],
+        history: [{ a: 'Platba prijatá — Jana Hladká', b: '16. 10. 2026, 21:12' }, { a: 'Vytvorená z webu', b: '16. 10. 2026, 20:58' }], paidNote: 'prevodom 16. 10. 2026 · potvrdenie odoslané hosťovi' },
+      { number: '2026-0088', guest: 'Katarína Horváthová', source: 'priama · web', dates: '12. 2. – 15. 2. 2027', in: 'pi 12. 2. 2027', out: 'po 15. 2. 2027', nights: '3 noci', people: '4 + 2 deti', total: '2 940 €', status: 'pending', vs: '20260088', due: '17. 10. 2026, 14:00', contact: 'katarina.horvathova@stromy-demo.invalid · +421 900 000 088',
+        lines: [{ a: '3 × noc · zimná sezóna', b: '2 550 €' }, { a: 'Večera so šéfkuchárom · 6 os.', b: '390 €' }, { a: 'Daň za ubytovanie', b: 'v cene' }],
+        note: 'Jedno dieťa má alergiu na orechy — prosíme zohľadniť pri večeri. (DEMO)', docs: [],
+        history: [{ a: 'Pripomienka platby odoslaná', b: 'dnes 08:00' }, { a: 'Vytvorená z webu', b: '16. 10. 2026, 20:58' }], paidNote: '' },
+      { number: '2026-0090', guest: 'Martina Šimková', source: 'priama · web', dates: '7. 8. – 10. 8. 2026', in: 'pi 7. 8. 2026', out: 'po 10. 8. 2026', nights: '3 noci', people: '2 dospelí', total: '2 100 €', status: 'completed', vs: '20260090', contact: 'martina.simkova@stromy-demo.invalid',
+        lines: [{ a: '3 × noc · celoročne', b: '2 100 €' }, { a: 'Daň za ubytovanie', b: 'v cene' }],
+        note: 'Bez poznámky.', docs: [],
+        history: [{ a: 'Pobyt ukončený', b: '10. 8. 2026' }, { a: 'Platba prijatá', b: '2. 8. 2026' }, { a: 'Vytvorená z webu', b: '28. 7. 2026' }], paidNote: 'prevodom 2. 8. 2026' }
+    ];
+    var skip = function () { self._skip = true; setTimeout(function () { self._skip = false; }, 0); };
+    var LABEL = { pending: 'Čaká na platbu', confirmed: 'Zaplatená', completed: 'Ukončená' };
+    var pill = function (st) {
+      if (st === 'pending') return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: #f6ecdf; color: #8a4a22; font-size: 12px; font-weight: 700;';
+      if (st === 'confirmed') return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: ' + a + '; color: #ffffff; font-size: 12px; font-weight: 700;';
+      return 'display: inline-flex; padding: 4px 10px; border-radius: 9999px; background: #eef0f3; color: #3b4652; font-size: 12px; font-weight: 700;';
+    };
+    var data = DATA.map(function (d) { var st = s.paid[d.number] ? 'confirmed' : d.status; return Object.assign({}, d, { status: st }); });
+    var F = [['all', 'Všetky'], ['pending', 'Čaká na platbu'], ['confirmed', 'Zaplatené'], ['completed', 'Ukončené'], ['cancelled', 'Zrušené']];
+    var filters = F.map(function (f) {
+      var on = s.filter === f[0];
+      var count = f[0] === 'all' ? data.length : data.filter(function (d) { return d.status === f[0]; }).length;
+      return { label: f[1], count: String(count), on: on, pick: function () { self.setState({ filter: f[0] }); },
+        style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 9999px; border: 1px solid ' + (on ? '#11212f' : '#e3e1da') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#3b3d42') + '; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer;',
+        countStyle: 'font-family: JetBrains Mono, ui-monospace, monospace; font-size: 11px; color: ' + (on ? 'rgba(255,255,255,0.7)' : '#8b929b') + ';' };
+    });
+    var rows = data.filter(function (d) { return s.filter === 'all' || d.status === s.filter; }).map(function (d) {
+      var sel = s.sel === d.number;
+      return Object.assign({}, d, { statusLabel: LABEL[d.status], pill: pill(d.status), selected: sel ? 'true' : 'false',
+        open: function () { skip(); self.setState({ sel: d.number }); },
+        rowStyle: 'width: 100%; display: grid; grid-template-columns: 110px minmax(0, 1.4fr) minmax(0, 1.2fr) 90px 110px 150px; gap: 16px; align-items: center; padding: 16px 8px; border: none; border-bottom: 1px solid #e9e5db; background: ' + (sel ? soft : 'transparent') + '; font-family: inherit; text-align: left; cursor: pointer;' });
+    });
+    var cur = data.filter(function (d) { return d.number === s.sel; })[0];
+    var p = cur ? Object.assign({}, cur, { statusLabel: LABEL[cur.status], pill: pill(cur.status), pending: cur.status === 'pending', paid: cur.status === 'confirmed' || cur.status === 'completed',
+      paidNote: cur.paidNote || 'prevodom dnes · potvrdenie odoslané hosťovi', summary: cur.nights + ' · ' + cur.people + ' · ' + cur.source }) : null;
+    return {
+      accent: a, accent2: this.props.accent2 ?? '#ad5a2b', accentSoft: soft, filters: filters, rows: rows, p: p || {}, panelOpen: !!cur,
+      outside: function () { if (self._skip) { self._skip = false; return; } if (self.state.sel) self.setState({ sel: null }); },
+      stop: function () { skip(); },
+      closePanel: function () { self.setState({ sel: null }); },
+      markPaid: function () { var o = Object.assign({}, self.state.paid); o[self.state.sel] = true; self.setState({ paid: o }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

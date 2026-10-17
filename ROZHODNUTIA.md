@@ -2,6 +2,17 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Vizuál administrácie v1
+
+- Administrácia, riadiace centrum a všetky prihlásenia majú **rovnaký vizuálny jazyk ako stránka hosťa v2** (Martin: „nech to všetko ladí“) —
+  `docs/vizual-administracia.md`, `docs/navrhy/administracia/`.
+- **Bočné panely so záznamom široké (680 px, dva stĺpce)**, nie úzke pásiky — majiteľ vidí celú rezerváciu takmer bez rolovania a naľavo
+  stále číslo a meno, takže preskakuje medzi riadkami bez zatvárania. Zatvára ich aj **klik vedľa** (Martin 17. 10.).
+- **Polia formulárov ako pilulky** v rovnakej výške ako tlačidlo — formulár pôsobí ako jeden celok (Martin 17. 10.).
+- **Kalendár ukazuje ceny vo voľných dňoch** a výber dní rovno počíta cenu a kontroluje minimum nocí aj kolízie — majiteľ pri telefonickej
+  rezervácii nemusí otvárať cenník. Výpočet je ten istý ako na webe.
+- **Riadiace centrum má vlastné menu bez výberu ubytovania** — je to Martinovo prostredie naprieč klientmi; menu majiteľa by mátlo. (Claude)
+
 ## 2026-10-16 — Ukážkové dáta a prehliadka „Čo je nové“
 
 - Martin si chce celý systém preklikať ako majiteľ aj ako správca → **ukážkové dáta pre STRÖMY na stagingu** (pár rezervácií v rôznych
