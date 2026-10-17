@@ -40,9 +40,11 @@ test("guest account: login with a code, stays, payment, consent, cancellation, b
   await page.waitForURL(/\/ucet\/prihlasenie/);
   await page.getByLabel("E-mail").fill(email);
   await page.getByRole("button", { name: "Poslať kód" }).click();
-  await expect(page.getByLabel("Kód z e-mailu")).toBeVisible();
+  // Code boxes (08): pasting the whole code into the first box fills all of them.
+  const firstDigit = page.getByLabel(/^Číslica 1 z/);
+  await expect(firstDigit).toBeVisible();
   const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email });
-  await page.getByLabel("Kód z e-mailu").fill(link.properties!.email_otp);
+  await firstDigit.fill(link.properties!.email_otp);
   await page.getByRole("button", { name: "Prihlásiť sa" }).click();
   await page.waitForURL(/\/ucet$/);
 

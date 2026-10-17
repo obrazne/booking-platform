@@ -11,8 +11,18 @@ import { isModuleEnabled } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { createManualReservation } from "../actions";
 
-export default async function ManualReservationPage() {
+/** Manual reservation; the calendar pre-fills the unit and dates (`?unit=&check_in=&check_out=`). */
+export default async function ManualReservationPage({
+  searchParams,
+}: PageProps<"/admin/reservations/new">) {
   const active = await requireTenant();
+  const sp = await searchParams;
+  const pre = (key: string, re: RegExp) => {
+    const v = sp[key];
+    return typeof v === "string" && re.test(v) ? v : undefined;
+  };
+  const isoDate = /^\d{4}-\d{2}-\d{2}$/;
+  const uuid = /^[0-9a-f-]{36}$/;
   const [t, tb, tp, locale] = await Promise.all([
     getTranslations("reservations"),
     getTranslations("guest.booking"),
@@ -49,7 +59,13 @@ export default async function ManualReservationPage() {
         <ActionForm action={createManualReservation}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("manual.unit")} htmlFor="unit_id" className="sm:col-span-2">
-              <select id="unit_id" name="unit_id" required className={selectClass}>
+              <select
+                id="unit_id"
+                name="unit_id"
+                required
+                defaultValue={pre("unit", uuid)}
+                className={selectClass}
+              >
                 {(units ?? []).map((u) => (
                   <option key={u.id} value={u.id}>
                     {u.property?.booking_mode === "units"
@@ -60,10 +76,22 @@ export default async function ManualReservationPage() {
               </select>
             </Field>
             <Field label={t("manual.checkIn")} htmlFor="check_in">
-              <Input id="check_in" name="check_in" type="date" required />
+              <Input
+                id="check_in"
+                name="check_in"
+                type="date"
+                required
+                defaultValue={pre("check_in", isoDate)}
+              />
             </Field>
             <Field label={t("manual.checkOut")} htmlFor="check_out">
-              <Input id="check_out" name="check_out" type="date" required />
+              <Input
+                id="check_out"
+                name="check_out"
+                type="date"
+                required
+                defaultValue={pre("check_out", isoDate)}
+              />
             </Field>
             <Field label={tb("adults")} htmlFor="adults">
               <Input id="adults" name="adults" type="number" min={1} defaultValue={2} />

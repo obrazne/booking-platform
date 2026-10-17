@@ -1,211 +1,290 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { AlertTriangle, Plus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, CircleCheck, Download, Mail, Phone, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { requireTenant } from "@/core/admin/action";
-import { DataListToolbar, Pagination, SortHeader } from "@/core/admin/data-list";
+import {
+  DateRangePill,
+  FilterPills,
+  ListSearch,
+  Pagination,
+  SortHeader,
+} from "@/core/admin/data-list";
+import { DocumentsManager } from "@/core/admin/documents";
+import { PageHeader } from "@/core/admin/page-header";
 import { parsePanel } from "@/core/admin/panel-param";
-import { PanelLink, RecordPanel } from "@/core/admin/record-panel";
+import { PanelColumns, PanelLink, PanelSection, RecordPanel } from "@/core/admin/record-panel";
+import { StatusPill } from "@/core/admin/status";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
+import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
 import { diffDays } from "@/core/pricing/dates";
 import { getTenantInfo } from "@/core/tenant/info";
-import { DocumentsManager } from "@/core/admin/documents";
-import { tr } from "@/core/i18n/localized";
 import { createClient } from "@/lib/supabase/server";
-import { NoteForm, ReservationActions } from "./panel-actions";
+import { CancelReservationButton, NoteForm, ReservationActions } from "./panel-actions";
 import {
   getReservationDetail,
   queryReservations,
   reservationListParams,
   SOURCES,
-  STATUSES,
+  statusCounts,
   type ReservationStatus,
 } from "./query";
+import { ExtendDueButton, MarkPaidButton } from "./quick-actions";
 
-const STATUS_VARIANT: Record<
-  ReservationStatus,
-  "default" | "secondary" | "outline" | "destructive"
-> = {
-  pending_payment: "secondary",
-  confirmed: "default",
-  in_progress: "default",
-  completed: "outline",
-  cancelled: "destructive",
-};
+const PILL_STATUSES = ["pending_payment", "confirmed", "completed", "cancelled"] as const;
 
+/** 03 Reservations (vizuál administrácie v1): state pills with counts, list, panel in two columns. */
 export default async function ReservationsPage({ searchParams }: PageProps<"/admin/reservations">) {
   const active = await requireTenant();
-  const [t, tc, locale, sp, tenant] = await Promise.all([
+  const [t, tc, tv, td, locale, sp, tenant] = await Promise.all([
     getTranslations("reservations"),
     getTranslations("common"),
+    getTranslations("adminV1.reservations"),
+    getTranslations("documents"),
     getLocale(),
     searchParams,
     getTenantInfo(active.tenantId),
   ]);
   const params = reservationListParams(sp);
-  const { rows, total } = await queryReservations(active.tenantId, params);
+  const [{ rows, total }, counts] = await Promise.all([
+    queryReservations(active.tenantId, params),
+    statusCounts(active.tenantId, params),
+  ]);
   const panel = parsePanel(sp.panel);
   const detail =
     panel?.type === "reservation" ? await getReservationDetail(active.tenantId, panel.id) : null;
-  const [documents, td] = await Promise.all([
-    detail
-      ? (await createClient())
+  const documents = detail
+    ? ((
+        await (
+          await createClient()
+        )
           .from("documents")
           .select("id, title, visible_when")
           .eq("reservation_id", detail.id)
           .order("created_at")
-          .then((r) => r.data ?? [])
-      : Promise.resolve([]),
-    getTranslations("documents"),
-  ]);
+      ).data ?? [])
+    : [];
   const fmt = (cents: number, currency = tenant.currency) =>
     formatMoney(money(cents, currency), locale);
   const when = (iso: string) => formatDateTime(iso, locale, tenant.timezone, "short");
+  const statusLabel = (s: string) => t(`statuses.${s as ReservationStatus}`);
+  const sourceLabel = (s: string) => t(`sources.${s as (typeof SOURCES)[number]}`);
+  const people = (r: { adults: number; children: number }) =>
+    r.children
+      ? tv("peopleWithChildren", { adults: r.adults, children: r.children })
+      : t("panel.adults", { count: r.adults });
+  const all = Object.values(counts).reduce((s, n) => s + n, 0);
+  const exportQs = new URLSearchParams(
+    Object.entries(sp).flatMap(([k, v]) =>
+      typeof v === "string" && k !== "panel" ? [[k, v]] : [],
+    ),
+  ).toString();
 
   return (
-    <div className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <Button asChild>
-          <Link href="/admin/reservations/new">
-            <Plus /> {t("new")}
-          </Link>
-        </Button>
-      </div>
-      <DataListToolbar
-        filters={[
-          {
-            param: "status",
-            label: t("status"),
-            options: STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
-          },
-          {
-            param: "source",
-            label: t("source"),
-            options: SOURCES.map((s) => ({ value: s, label: t(`sources.${s}`) })),
-          },
-        ]}
-        exportHref="/admin/reservations/export"
+    <div data-bleed>
+      <PageHeader
+        kicker={tenant.name}
+        title={t("title")}
+        actions={
+          <>
+            <Button asChild variant="outline">
+              <a href={`/admin/reservations/export${exportQs ? `?${exportQs}` : ""}`} download>
+                <Download /> {tc("exportCsv")}
+              </a>
+            </Button>
+            <Button asChild className="font-bold">
+              <Link href="/admin/reservations/new">
+                <Plus /> {t("new")}
+              </Link>
+            </Button>
+          </>
+        }
       />
-      <form className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
-        {Object.entries(sp).map(([k, v]) =>
-          typeof v === "string" && !["from", "to", "page", "panel"].includes(k) ? (
-            <input key={k} type="hidden" name={k} value={v} />
-          ) : null,
-        )}
-        <label className="inline-flex items-center gap-2">
-          {t("filters.from")}{" "}
-          <Input type="date" name="from" defaultValue={params.from ?? ""} className="w-40" />
-        </label>
-        <label className="inline-flex items-center gap-2">
-          {t("filters.to")}{" "}
-          <Input type="date" name="to" defaultValue={params.to ?? ""} className="w-40" />
-        </label>
-        <Button type="submit" variant="outline" size="sm">
-          {tc("search")}
-        </Button>
-      </form>
+      <div className="border-line flex flex-wrap items-center gap-2.5 border-b px-5 pb-[18px] md:px-10">
+        <ListSearch placeholder={tv("search")} className="w-full sm:w-72" />
+        <FilterPills
+          param="status"
+          label={t("status")}
+          options={[
+            { value: "", label: tc("all"), count: all },
+            ...PILL_STATUSES.map((s) => ({
+              value: s,
+              label: tv(`filters.${s}`),
+              count: counts[s] ?? 0,
+            })),
+          ]}
+        />
+        <DateRangePill
+          label={tv("arrival")}
+          allLabel={tv("allDates")}
+          fromLabel={t("filters.from")}
+          toLabel={t("filters.to")}
+          applyLabel={tv("apply")}
+          clearLabel={tv("clear")}
+        />
+      </div>
 
-      <div className="border-border overflow-x-auto rounded-xl border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
+      <div className="px-5 pb-14 md:px-10">
+        <div className="overflow-x-auto">
+          <div role="table" aria-label={t("title")} className="min-w-[760px]">
+            <div
+              role="row"
+              className="border-line label-mono grid grid-cols-[110px_minmax(0,1.4fr)_minmax(0,1.2fr)_110px_110px_150px] gap-4 border-b px-2 py-3"
+            >
+              <span role="columnheader">
                 <SortHeader column="number">{t("number")}</SortHeader>
-              </TableHead>
-              <TableHead>{t("guest")}</TableHead>
-              <TableHead>{t("stay")}</TableHead>
-              <TableHead>{t("status")}</TableHead>
-              <TableHead>{t("source")}</TableHead>
-              <TableHead className="text-right">
-                <SortHeader column="total_cents">{t("total")}</SortHeader>
-              </TableHead>
-              <TableHead>
-                <SortHeader column="created_at">{t("created")}</SortHeader>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+              </span>
+              <span role="columnheader">{t("guest")}</span>
+              <span role="columnheader">{tv("dates")}</span>
+              <span role="columnheader">{tv("people")}</span>
+              <span role="columnheader" className="text-right">
+                <SortHeader column="total_cents">{tv("amount")}</SortHeader>
+              </span>
+              <span role="columnheader">{t("status")}</span>
+            </div>
             {rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-muted-foreground py-8 text-center">
-                  {tc("noResults")}
-                </TableCell>
-              </TableRow>
+              <p className="text-muted-foreground py-10 text-center text-sm">{tc("noResults")}</p>
             ) : (
               rows.map((r) => {
                 const item = r.items[0];
                 return (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      <PanelLink
-                        type="reservation"
-                        id={r.id}
-                        className="font-mono font-medium hover:underline"
-                      >
-                        {r.number}
-                      </PanelLink>
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1">
+                  <PanelLink
+                    key={r.id}
+                    type="reservation"
+                    id={r.id}
+                    role="row"
+                    className="border-line grid grid-cols-[110px_minmax(0,1.4fr)_minmax(0,1.2fr)_110px_110px_150px] items-center gap-4 border-b px-2 py-4 transition-colors hover:bg-[#fbfaf7]"
+                  >
+                    <span role="cell" className="text-ink font-mono text-[13px]">
+                      {r.number}
+                    </span>
+                    <span role="cell" className="grid min-w-0 gap-0.5">
+                      <span className="text-ink inline-flex items-center gap-1.5 truncate text-[15px] font-bold">
                         {r.cancellation_requested_at ? (
-                          <AlertTriangle className="size-4 text-amber-600" />
+                          <AlertTriangle
+                            className="size-4 shrink-0 text-[#c07a3e]"
+                            aria-label={t("panel.cancelRequest")}
+                          />
                         ) : null}
                         {r.guest_name}
                       </span>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap">
-                      {item
-                        ? `${formatDate(item.check_in, locale, "short")} – ${formatDate(item.check_out, locale, "short")}`
-                        : ""}
-                      <span className="text-muted-foreground block text-xs">
-                        {r.property?.name}
+                      <span className="text-[13px] text-[#5a6672]">{sourceLabel(r.source)}</span>
+                    </span>
+                    <span role="cell" className="grid gap-0.5">
+                      <span className="text-ink text-sm font-medium">
+                        {item
+                          ? `${formatDate(item.check_in, locale, "short")} – ${formatDate(item.check_out, locale, "short")}`
+                          : ""}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={STATUS_VARIANT[r.status as ReservationStatus]}>
-                        {t(`statuses.${r.status as ReservationStatus}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {t(`sources.${r.source as (typeof SOURCES)[number]}`)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
+                      <span className="text-[13px] text-[#5a6672]">
+                        {item
+                          ? t("nights", { count: diffDays(item.check_in, item.check_out) })
+                          : ""}
+                      </span>
+                    </span>
+                    <span role="cell" className="text-sm font-normal">
+                      {people(r)}
+                    </span>
+                    <span
+                      role="cell"
+                      className="text-ink text-right text-[15px] font-bold tabular-nums"
+                    >
                       {fmt(r.total_cents, r.currency)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground whitespace-nowrap">
-                      {when(r.created_at)}
-                    </TableCell>
-                  </TableRow>
+                    </span>
+                    <span role="cell">
+                      <StatusPill status={r.status} label={statusLabel(r.status)} />
+                    </span>
+                  </PanelLink>
                 );
               })
             )}
-          </TableBody>
-        </Table>
+          </div>
+        </div>
+        <p className="mx-2 mt-4 text-[13px] text-[#5a6672]">{tv("portalNote")}</p>
+        <div className="mt-6">
+          <Pagination page={params.page} pageSize={params.pageSize} total={total} />
+        </div>
       </div>
-      <Pagination page={params.page} pageSize={params.pageSize} total={total} />
 
       {panel ? (
         <RecordPanel
-          title={detail ? `${detail.number} · ${detail.guest_name}` : tc("detail")}
-          description={detail ? t(`statuses.${detail.status as ReservationStatus}`) : undefined}
+          backLabel={t("title")}
+          header={
+            detail ? (
+              <>
+                <span className="text-ink font-mono text-[13px] font-medium">{detail.number}</span>
+                <StatusPill status={detail.status} label={statusLabel(detail.status)} />
+              </>
+            ) : null
+          }
+          title={
+            detail ? (
+              <>
+                {detail.guest_name}
+                <p className="text-muted-foreground mt-1 text-sm font-light tracking-normal">
+                  <a href={`mailto:${detail.guest_email}`} className="hover:underline">
+                    {detail.guest_email}
+                  </a>
+                  {detail.guest_phone ? (
+                    <>
+                      {" · "}
+                      <a href={`tel:${detail.guest_phone}`} className="hover:underline">
+                        {detail.guest_phone}
+                      </a>
+                    </>
+                  ) : null}
+                </p>
+                {/* Phone (07): call and e-mail as big buttons. */}
+                <span className="mt-4 flex gap-2.5 text-sm tracking-normal md:hidden">
+                  {detail.guest_phone ? (
+                    <Button asChild variant="outline" className="min-h-11 flex-1">
+                      <a href={`tel:${detail.guest_phone}`}>
+                        <Phone /> {tv("call")}
+                      </a>
+                    </Button>
+                  ) : null}
+                  <Button asChild variant="outline" className="min-h-11 flex-1">
+                    <a href={`mailto:${detail.guest_email}`}>
+                      <Mail /> {tv("email")}
+                    </a>
+                  </Button>
+                </span>
+              </>
+            ) : (
+              tc("detail")
+            )
+          }
+          actions={
+            detail && ["pending_payment", "confirmed", "in_progress"].includes(detail.status) ? (
+              <>
+                {detail.status === "pending_payment" ? (
+                  // Phone (07): the payment actions stick to the bottom while it waits for payment.
+                  <span className="flex w-full gap-2.5 md:hidden">
+                    <ExtendDueButton id={detail.id} className="min-h-11 flex-1" />
+                    <MarkPaidButton
+                      id={detail.id}
+                      amountLabel={fmt(detail.total_cents, detail.currency)}
+                      className="min-h-11 flex-1 font-bold"
+                    />
+                  </span>
+                ) : null}
+                <ReservationActions
+                  id={detail.id}
+                  status={detail.status}
+                  hasRequest={Boolean(detail.cancellation_requested_at)}
+                />
+                <span className="ml-auto" />
+                <CancelReservationButton id={detail.id} label={detail.number} />
+              </>
+            ) : undefined
+          }
         >
           {detail ? (
-            <div className="grid gap-6 text-sm">
+            <div className="grid gap-6 text-sm font-normal">
               {detail.cancellation_requested_at ? (
-                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3">
-                  <p className="font-medium">{t("panel.cancelRequest")}</p>
+                <div className="card-warm rounded-[10px] px-[18px] py-3.5 text-[#5b3a1f]">
+                  <p className="font-bold">{t("panel.cancelRequest")}</p>
                   {detail.cancellation_request_note ? (
                     <p>
                       {t("panel.cancelRequestNote", { note: detail.cancellation_request_note })}
@@ -213,170 +292,201 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
                   ) : null}
                 </div>
               ) : null}
-
-              <ReservationActions
-                id={detail.id}
-                status={detail.status}
-                amountLabel={fmt(detail.total_cents, detail.currency)}
-                hasRequest={Boolean(detail.cancellation_requested_at)}
-              />
-
-              <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2">
-                <dt className="text-muted-foreground">{t("stay")}</dt>
-                <dd>
-                  {detail.items.map((i) => (
-                    <span key={i.check_in}>
-                      {formatDate(i.check_in, locale)} – {formatDate(i.check_out, locale)} ·{" "}
-                      {t("nights", { count: diffDays(i.check_in, i.check_out) })}
-                      <span className="text-muted-foreground block">
-                        {detail.property?.name}
-                        {i.unit && detail.items.length ? ` · ${i.unit.name}` : ""}
-                      </span>
-                    </span>
-                  ))}
-                </dd>
-                <dt className="text-muted-foreground">{t("panel.guest")}</dt>
-                <dd>{detail.guest_name}</dd>
-                <dt className="text-muted-foreground">{t("panel.contact")}</dt>
-                <dd>
-                  <a
-                    href={`mailto:${detail.guest_email}`}
-                    className="underline-offset-4 hover:underline"
-                  >
-                    {detail.guest_email}
-                  </a>
-                  {detail.guest_phone ? <span className="block">{detail.guest_phone}</span> : null}
-                </dd>
-                <dt className="text-muted-foreground">{t("panel.people")}</dt>
-                <dd>
-                  {[
-                    t("panel.adults", { count: detail.adults }),
-                    detail.children ? t("panel.children", { count: detail.children }) : null,
-                    detail.infants ? t("panel.infants", { count: detail.infants }) : null,
-                    detail.pets ? t("panel.pets", { count: detail.pets }) : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </dd>
-                <dt className="text-muted-foreground">{t("source")}</dt>
-                <dd>{t(`sources.${detail.source as (typeof SOURCES)[number]}`)}</dd>
-                {detail.promo_code ? (
+              <PanelColumns
+                left={
                   <>
-                    <dt className="text-muted-foreground">{t("panel.promo")}</dt>
-                    <dd className="font-mono">{detail.promo_code}</dd>
-                  </>
-                ) : null}
-                {detail.guest_note ? (
-                  <>
-                    <dt className="text-muted-foreground">{t("panel.note")}</dt>
-                    <dd className="whitespace-pre-line">{detail.guest_note}</dd>
-                  </>
-                ) : null}
-              </dl>
-
-              <section className="grid gap-2">
-                <h3 className="font-medium">{t("panel.lines")}</h3>
-                <dl className="grid gap-1.5">
-                  {[...detail.lines]
-                    .sort((a, b) => a.sort - b.sort)
-                    .map((l, i) => (
-                      <div key={i} className="flex justify-between gap-3">
-                        <dt className="text-muted-foreground">
-                          {l.label}
-                          {l.kind === "accommodation"
-                            ? ` · ${l.quantity} × ${fmt(l.unit_amount_cents, detail.currency)}`
-                            : ""}
-                        </dt>
-                        <dd className="tabular-nums">{fmt(l.amount_cents, detail.currency)}</dd>
+                    {detail.items.map((i) => (
+                      <div
+                        key={i.check_in}
+                        className="border-line grid grid-cols-2 overflow-hidden rounded-[10px] border"
+                      >
+                        <span className="border-line grid gap-0.5 border-r px-3.5 py-3">
+                          <span className="label-mono">{tv("checkIn")}</span>
+                          <span className="text-ink text-base font-bold">
+                            {formatDate(i.check_in, locale)}
+                          </span>
+                        </span>
+                        <span className="grid gap-0.5 px-3.5 py-3">
+                          <span className="label-mono">{tv("checkOut")}</span>
+                          <span className="text-ink text-base font-bold">
+                            {formatDate(i.check_out, locale)}
+                          </span>
+                        </span>
+                        <span className="border-line col-span-2 border-t px-3.5 py-2.5">
+                          {[
+                            t("nights", { count: diffDays(i.check_in, i.check_out) }),
+                            people(detail),
+                            detail.infants ? t("panel.infants", { count: detail.infants }) : null,
+                            detail.pets ? t("panel.pets", { count: detail.pets }) : null,
+                            sourceLabel(detail.source),
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                          <span className="text-muted-foreground block text-xs">
+                            {detail.property?.name}
+                            {i.unit ? ` · ${i.unit.name}` : ""}
+                          </span>
+                        </span>
                       </div>
                     ))}
-                  <div className="border-border flex justify-between border-t pt-1.5 font-medium">
-                    <dt>{t("total")}</dt>
-                    <dd className="tabular-nums">{fmt(detail.total_cents, detail.currency)}</dd>
-                  </div>
-                </dl>
-              </section>
 
-              <section className="grid gap-1">
-                <h3 className="font-medium">{t("panel.payment")}</h3>
-                {detail.payments.map((p, i) => (
-                  <p key={i} className="text-muted-foreground">
-                    {t("panel.vs")} <span className="font-mono">{p.variable_symbol}</span> ·{" "}
-                    {fmt(p.amount_cents, detail.currency)} ·{" "}
-                    {p.received_at
-                      ? `${t("panel.paidAt")} ${when(p.received_at)}`
-                      : detail.payment_due_at
-                        ? `${t("panel.due")} ${when(detail.payment_due_at)}`
-                        : p.status}
-                  </p>
-                ))}
-              </section>
+                    {detail.status === "pending_payment" ? (
+                      <section className="card-warm grid gap-3 rounded-[10px] px-[18px] py-4">
+                        <span className="grid gap-0.5">
+                          <span className="text-ink text-[15px] font-bold">
+                            {tv("waiting", { amount: fmt(detail.total_cents, detail.currency) })}
+                          </span>
+                          <span className="text-muted-foreground text-[13px]">
+                            {[
+                              detail.payments[0]
+                                ? `${t("panel.vs")} ${detail.payments[0].variable_symbol}`
+                                : null,
+                              detail.payment_due_at
+                                ? tv("dueAt", { date: when(detail.payment_due_at) })
+                                : null,
+                              tv("autoCancel"),
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        </span>
+                        <span className="flex flex-wrap gap-2">
+                          <MarkPaidButton
+                            id={detail.id}
+                            amountLabel={fmt(detail.total_cents, detail.currency)}
+                            className="font-bold"
+                          />
+                          <ExtendDueButton id={detail.id} />
+                        </span>
+                      </section>
+                    ) : detail.payments.some((p) => p.received_at) ? (
+                      <section className="bg-accent-soft flex items-center gap-3 rounded-[10px] px-[18px] py-3.5">
+                        <CircleCheck className="text-primary size-6 shrink-0" />
+                        <span className="grid gap-0.5">
+                          <span className="text-ink text-[15px] font-bold">
+                            {tv("paid", { amount: fmt(detail.total_cents, detail.currency) })}
+                          </span>
+                          <span className="text-muted-foreground text-[13px]">
+                            {detail.payments
+                              .filter((p) => p.received_at)
+                              .map((p) => tv("paidOn", { date: when(p.received_at!) }))
+                              .join(" · ")}
+                          </span>
+                        </span>
+                      </section>
+                    ) : null}
 
-              <section className="grid gap-2">
-                <h3 className="font-medium">{td("heading")}</h3>
-                <DocumentsManager
-                  tenantId={active.tenantId}
-                  reservationId={detail.id}
-                  documents={documents.map((d) => ({
-                    id: d.id,
-                    title: tr(d.title, locale),
-                    visibleWhen: d.visible_when,
-                  }))}
-                />
-              </section>
-
-              <section className="grid gap-2">
-                <h3 className="font-medium">{t("panel.notes")}</h3>
-                {[...detail.notes]
-                  .sort((a, b) => a.created_at.localeCompare(b.created_at))
-                  .map((n) => (
-                    <div key={n.id} className="bg-muted/50 rounded-lg p-2.5">
-                      <p className="whitespace-pre-line">{n.body}</p>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        {n.author?.full_name ?? n.author?.email} · {when(n.created_at)}
+                    <PanelSection label={t("panel.lines")}>
+                      <dl className="border-line border-t">
+                        {[...detail.lines]
+                          .sort((a, b) => a.sort - b.sort)
+                          .map((l, i) => (
+                            <div
+                              key={i}
+                              className="border-line flex justify-between gap-3 border-b py-2.5"
+                            >
+                              <dt>
+                                {l.kind === "accommodation" ? `${l.quantity} × ` : ""}
+                                {l.label}
+                              </dt>
+                              <dd className="text-ink font-medium tabular-nums">
+                                {fmt(l.amount_cents, detail.currency)}
+                              </dd>
+                            </div>
+                          ))}
+                        <div className="text-ink flex justify-between pt-3 text-base font-extrabold">
+                          <dt>{t("total")}</dt>
+                          <dd className="tabular-nums">
+                            {fmt(detail.total_cents, detail.currency)}
+                          </dd>
+                        </div>
+                      </dl>
+                      {detail.promo_code ? (
+                        <p className="text-muted-foreground text-xs">
+                          {t("panel.promo")}: <span className="font-mono">{detail.promo_code}</span>
+                        </p>
+                      ) : null}
+                    </PanelSection>
+                  </>
+                }
+                right={
+                  <>
+                    <PanelSection label={tv("guestNote")}>
+                      <p className="bg-muted rounded-[10px] px-3.5 py-3 leading-relaxed whitespace-pre-line">
+                        {detail.guest_note || tv("noNote")}
                       </p>
-                    </div>
-                  ))}
-                <NoteForm id={detail.id} />
-              </section>
+                    </PanelSection>
 
-              <section className="grid gap-1">
-                <h3 className="font-medium">{t("panel.history")}</h3>
-                <ul className="text-muted-foreground grid gap-1">
-                  {[...detail.history]
-                    .sort((a, b) => a.changed_at.localeCompare(b.changed_at))
-                    .map((h, i) => (
-                      <li key={i}>
-                        {when(h.changed_at)} ·{" "}
-                        {h.from_status
-                          ? `${t(`statuses.${h.from_status as ReservationStatus}`)} → `
-                          : ""}
-                        {t(`statuses.${h.to_status as ReservationStatus}`)} ·{" "}
-                        {h.actor?.email ?? t("panel.system")}
-                        {h.reason === "payment_deadline_expired"
-                          ? ` · ${t("panel.expired")}`
-                          : h.reason === "cancellation_request_declined"
-                            ? ` · ${t("panel.declined")}`
-                            : h.reason
-                              ? ` · ${h.reason}`
-                              : ""}
-                      </li>
-                    ))}
-                </ul>
-              </section>
+                    <PanelSection label={td("heading")}>
+                      <DocumentsManager
+                        tenantId={active.tenantId}
+                        reservationId={detail.id}
+                        documents={documents.map((d) => ({
+                          id: d.id,
+                          title: tr(d.title, locale),
+                          visibleWhen: d.visible_when,
+                        }))}
+                      />
+                    </PanelSection>
 
-              {detail.consents.length > 0 ? (
-                <section className="grid gap-1">
-                  <h3 className="font-medium">{t("panel.consents")}</h3>
-                  <ul className="text-muted-foreground grid gap-1">
-                    {detail.consents.map((c) => (
-                      <li key={c.kind}>
-                        {c.kind}: {c.granted ? t("panel.granted") : t("panel.notGranted")}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
+                    <PanelSection label={tv("internalNote")}>
+                      {[...detail.notes]
+                        .sort((a, b) => a.created_at.localeCompare(b.created_at))
+                        .map((n) => (
+                          <div key={n.id} className="bg-muted rounded-[10px] px-3.5 py-2.5">
+                            <p className="whitespace-pre-line">{n.body}</p>
+                            <p className="text-muted-foreground mt-1 text-xs">
+                              {n.author?.full_name ?? n.author?.email} · {when(n.created_at)}
+                            </p>
+                          </div>
+                        ))}
+                      <NoteForm id={detail.id} />
+                    </PanelSection>
+
+                    <PanelSection label={t("panel.history")}>
+                      <ul className="grid gap-2.5">
+                        {[...detail.history]
+                          .sort((a, b) => b.changed_at.localeCompare(a.changed_at))
+                          .map((h, i) => (
+                            <li key={i} className="grid grid-cols-[12px_minmax(0,1fr)] gap-3">
+                              <span className="mt-1.5 size-2 rounded-full bg-[#c9cdd2]" />
+                              <span className="grid gap-px">
+                                <span className="text-ink">
+                                  {h.from_status
+                                    ? `${statusLabel(h.from_status)} → ${statusLabel(h.to_status)}`
+                                    : tv("created", { status: statusLabel(h.to_status) })}
+                                  {h.actor
+                                    ? ` — ${h.actor.full_name ?? h.actor.email}`
+                                    : ` — ${t("panel.system")}`}
+                                  {h.reason === "payment_deadline_expired"
+                                    ? ` · ${t("panel.expired")}`
+                                    : h.reason === "cancellation_request_declined"
+                                      ? ` · ${t("panel.declined")}`
+                                      : h.reason
+                                        ? ` · ${h.reason}`
+                                        : ""}
+                                </span>
+                                <span className="text-xs text-[#5a6672]">{when(h.changed_at)}</span>
+                              </span>
+                            </li>
+                          ))}
+                      </ul>
+                    </PanelSection>
+
+                    {detail.consents.length > 0 ? (
+                      <PanelSection label={t("panel.consents")}>
+                        <ul className="text-muted-foreground grid gap-1">
+                          {detail.consents.map((c) => (
+                            <li key={c.kind}>
+                              {c.kind}: {c.granted ? t("panel.granted") : t("panel.notGranted")}
+                            </li>
+                          ))}
+                        </ul>
+                      </PanelSection>
+                    ) : null}
+                  </>
+                }
+              />
             </div>
           ) : (
             <p className="text-muted-foreground text-sm">{tc("noResults")}</p>

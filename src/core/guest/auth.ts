@@ -11,7 +11,7 @@ import { getTenantFromHost, type PublicTenant } from "@/core/tenant/current";
 import { getTenantTheme } from "@/core/theme/load";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { LOGIN_EMAIL_COOKIE } from "./constants";
+import { LOGIN_CODE_LENGTH_COOKIE, LOGIN_EMAIL_COOKIE } from "./constants";
 
 const CODES_PER_HOUR = 5;
 const TENANT_CODES_PER_HOUR = 200;
@@ -20,6 +20,9 @@ const FAILS_PER_HOUR = 8;
 export type LoginState = {
   step: "email" | "code";
   error: null | "invalid" | "limit" | "captcha" | "send" | "code";
+  /** E-mail the code went to and how many digits it has (the project setting decides; the boxes follow it). */
+  email?: string;
+  codeLength?: number;
 };
 
 const emailSchema = z.email().max(254);
@@ -41,20 +44,24 @@ async function attempts(tenantId: string, email: string | null, kind: string): P
  * Creates (if needed) the login identity and sends a one-time code through OUR e-mail in the tenant's colours —
  * not the shared Supabase e-mails (B10). The answer never reveals whether the e-mail has stays.
  */
-async function sendCode(tenant: PublicTenant, email: string): Promise<LoginState["error"]> {
+async function sendCode(
+  tenant: PublicTenant,
+  email: string,
+): Promise<{ error: LoginState["error"]; codeLength?: number }> {
   if (
     (await attempts(tenant.id, email, "code_sent")) >= CODES_PER_HOUR ||
     (await attempts(tenant.id, null, "code_sent")) >= TENANT_CODES_PER_HOUR
   )
-    return "limit";
+    return { error: "limit" };
   const admin = createAdminClient();
   let link = await admin.auth.admin.generateLink({ type: "magiclink", email });
   if (link.error) {
     const created = await admin.auth.admin.createUser({ email, email_confirm: false });
-    if (created.error) return "send";
+    if (created.error) return { error: "send" };
     link = await admin.auth.admin.generateLink({ type: "magiclink", email });
-    if (link.error) return "send";
+    if (link.error) return { error: "send" };
   }
+  const codeLength = link.data.properties.email_otp.length;
   // Staff and platform admins sign in with a password in the admin — a guest code must not open their account.
   const userId = link.data.user.id;
   const [{ count: memberships }, { count: admins }] = await Promise.all([
@@ -70,7 +77,7 @@ async function sendCode(tenant: PublicTenant, email: string): Promise<LoginState
   await admin
     .from("guest_auth_attempts")
     .insert({ tenant_id: tenant.id, email, kind: "code_sent" });
-  if ((memberships ?? 0) > 0 || (admins ?? 0) > 0) return null; // same answer as for anybody else
+  if ((memberships ?? 0) > 0 || (admins ?? 0) > 0) return { error: null, codeLength }; // same answer as for anybody else
   const code = link.data.properties.email_otp;
   const theme = await getTenantTheme(tenant.id);
   const mail = renderLoginCode(
@@ -79,17 +86,20 @@ async function sendCode(tenant: PublicTenant, email: string): Promise<LoginState
     code,
   );
   const sent = await sendEmail(mail);
-  return sent.ok ? null : "send";
+  return sent.ok ? { error: null, codeLength } : { error: "send" };
 }
 
-async function rememberEmail(email: string) {
-  (await cookies()).set(LOGIN_EMAIL_COOKIE, email, {
+async function rememberEmail(email: string, codeLength = 6) {
+  const options = {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     maxAge: 3600,
     path: "/ucet",
-  });
+  };
+  const jar = await cookies();
+  jar.set(LOGIN_EMAIL_COOKIE, email, options);
+  jar.set(LOGIN_CODE_LENGTH_COOKIE, String(codeLength), options);
 }
 
 export async function requestGuestCode(_: LoginState, form: FormData): Promise<LoginState> {
@@ -107,10 +117,10 @@ export async function requestGuestCode(_: LoginState, form: FormData): Promise<L
     String(form.get("captcha_token") ?? ""),
   );
   if (blocked) return { step: "email", error: blocked };
-  const error = await sendCode(tenant, parsed.data);
+  const { error, codeLength } = await sendCode(tenant, parsed.data);
   if (error) return { step: "email", error };
-  await rememberEmail(parsed.data);
-  return { step: "code", error: null };
+  await rememberEmail(parsed.data, codeLength);
+  return { step: "code", error: null, email: parsed.data, codeLength };
 }
 
 export async function verifyGuestCode(_: LoginState, form: FormData): Promise<LoginState> {
@@ -137,6 +147,7 @@ export async function verifyGuestCode(_: LoginState, form: FormData): Promise<Lo
   // Past bookings with the now verified e-mail appear in the zone (B10).
   await supabase.rpc("claim_guest_account", { p_tenant_id: tenant.id });
   (await cookies()).delete({ name: LOGIN_EMAIL_COOKIE, path: "/ucet" });
+  (await cookies()).delete({ name: LOGIN_CODE_LENGTH_COOKIE, path: "/ucet" });
   redirect("/ucet");
 }
 
@@ -164,7 +175,7 @@ export async function startAccountFromReservation(token: string) {
     .maybeSingle();
   if (!data || data.tenant_id !== tenant.id) redirect("/ucet/prihlasenie");
   const email = data.guest_email.toLowerCase();
-  const error = await sendCode(tenant, email);
-  if (!error) await rememberEmail(email);
+  const { error, codeLength } = await sendCode(tenant, email);
+  if (!error) await rememberEmail(email, codeLength);
   redirect("/ucet/prihlasenie");
 }

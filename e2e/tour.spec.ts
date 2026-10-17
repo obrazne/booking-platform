@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { ADMIN_URL } from "../playwright.config";
-import { loginOwner, service } from "./helpers";
+import { loginOwner, openWhatsNew, service } from "./helpers";
 
 test("what's new: opens once for a new version, Next / Back / Esc, again from the menu", async ({
   page,
@@ -59,8 +59,7 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
   await expect(dialog).toBeHidden();
 
   // Menu "What's new" opens it from the start; "Show me" goes to the page.
-  await page.getByRole("button", { name: "Účet" }).click();
-  await page.getByRole("menuitem", { name: "Čo je nové" }).click();
+  await openWhatsNew(page, info.project.name === "mobile");
   await expect(dialog.getByRole("heading")).toHaveText("Prehľad na jednom mieste");
   await dialog.getByRole("button", { name: "Ďalej" }).click();
   await dialog.getByRole("button", { name: "Ukázať mi to" }).click();

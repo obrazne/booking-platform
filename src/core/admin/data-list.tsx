@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, CalendarDays, Download, Search } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -174,5 +175,163 @@ export function Pagination({
         </Button>
       </div>
     </div>
+  );
+}
+
+/** Search field of a list (pill; state in `?q=`, debounced). */
+export function ListSearch({
+  placeholder,
+  className,
+}: {
+  placeholder: string;
+  className?: string;
+}) {
+  const { params, update, pending } = useUpdateParams();
+  const [q, setQ] = useState(params.get("q") ?? "");
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const id = window.setTimeout(() => update({ q }), 300);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce only on the typed value
+  }, [q]);
+  return (
+    <label
+      className={cn(
+        "bg-muted text-muted-foreground flex min-h-10 items-center gap-2.5 rounded-full px-3.5 text-sm",
+        pending && "opacity-70",
+        className,
+      )}
+    >
+      <Search className="size-4 shrink-0" />
+      <input
+        type="search"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        className="text-ink min-w-0 flex-1 bg-transparent outline-none"
+      />
+    </label>
+  );
+}
+
+/** Filter as pills with counts (e.g. reservation states); the selected one is graphite. */
+export function FilterPills({
+  param,
+  label,
+  options,
+}: {
+  param: string;
+  label: string;
+  /** First option with value "" = all. */
+  options: { value: string; label: string; count?: number }[];
+}) {
+  const { params, update } = useUpdateParams();
+  const current = params.get(param) ?? "";
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+      {options.map((o) => {
+        const on = current === o.value;
+        return (
+          <button
+            key={o.value || "all"}
+            type="button"
+            aria-pressed={on}
+            onClick={() => update({ [param]: o.value || null })}
+            className={cn(
+              "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
+              on
+                ? "border-ink bg-ink text-white"
+                : "border-input text-foreground bg-background hover:bg-muted",
+            )}
+          >
+            {o.label}
+            {o.count !== undefined ? (
+              <span
+                className={cn("font-mono text-[11px]", on ? "text-white/70" : "text-[#5a6672]")}
+              >
+                {o.count}
+              </span>
+            ) : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Date range filter as one pill with a small popover (e.g. "Príchod: všetky termíny"). */
+export function DateRangePill({
+  label,
+  allLabel,
+  fromLabel,
+  toLabel,
+  applyLabel,
+  clearLabel,
+}: {
+  label: string;
+  allLabel: string;
+  fromLabel: string;
+  toLabel: string;
+  applyLabel: string;
+  clearLabel: string;
+}) {
+  const { params, update } = useUpdateParams();
+  const [open, setOpen] = useState(false);
+  const from = params.get("from") ?? "";
+  const to = params.get("to") ?? "";
+  const [f, setF] = useState(from);
+  const [tt, setT] = useState(to);
+  const fmt = (v: string) => v.split("-").reverse().join(". ").replace(/^0/, "");
+  const value = from || to ? `${from ? fmt(from) : "…"} – ${to ? fmt(to) : "…"}` : allLabel;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        className={cn(
+          "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium",
+          from || to ? "border-ink text-ink" : "border-input text-foreground",
+        )}
+      >
+        <CalendarDays className="size-4" />
+        {label}: {value}
+      </PopoverTrigger>
+      <PopoverContent align="start" className="grid w-72 gap-3">
+        <label className="grid gap-1 text-sm">
+          {fromLabel}
+          <Input type="date" value={f} onChange={(e) => setF(e.target.value)} />
+        </label>
+        <label className="grid gap-1 text-sm">
+          {toLabel}
+          <Input type="date" value={tt} onChange={(e) => setT(e.target.value)} />
+        </label>
+        <div className="flex justify-between gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              setF("");
+              setT("");
+              update({ from: null, to: null });
+              setOpen(false);
+            }}
+          >
+            {clearLabel}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              update({ from: f || null, to: tt || null });
+              setOpen(false);
+            }}
+          >
+            {applyLabel}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

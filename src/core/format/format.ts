@@ -34,10 +34,19 @@ export function parseMinorUnits(input: string, currency: string): number | null 
 export type DateStyle = "short" | "medium" | "long";
 
 /** Calendar date (YYYY-MM-DD, no time) formatted for the locale — stays the same day in every timezone. */
-export function formatDate(isoDate: string, locale: string, style: DateStyle = "medium"): string {
+export function formatDate(
+  isoDate: string,
+  locale: string,
+  style: DateStyle | "dayMonth" = "medium",
+): string {
   const [y, m, d] = isoDate.split("-").map(Number);
   const date = new Date(Date.UTC(y!, m! - 1, d!));
-  return new Intl.DateTimeFormat(locale, { dateStyle: style, timeZone: "UTC" }).format(date);
+  // "dayMonth": day and month without the year (week labels in the occupancy overview).
+  const options: Intl.DateTimeFormatOptions =
+    style === "dayMonth"
+      ? { day: "numeric", month: "numeric", timeZone: "UTC" }
+      : { dateStyle: style, timeZone: "UTC" };
+  return new Intl.DateTimeFormat(locale, options).format(date);
 }
 
 /** Point in time formatted in the tenant's timezone. */

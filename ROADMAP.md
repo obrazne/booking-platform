@@ -6,12 +6,12 @@
 ☐ otvorené · ☑ hotové
 
 ## Aktuálne
-- **Kde sme (16. 10. večer):** fronta Z1–Z22 hotová na stagingu — MVP pre Chalet STRÖMY + showroom, stránka hosťa podľa vizuálu v2/v2.1
+- **Kde sme (17. 10.):** fronta Z1–Z23 hotová na stagingu — MVP pre Chalet STRÖMY + showroom, stránka hosťa podľa vizuálu v2/v2.1
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
-  a **prehliadka „Čo je nové“** pre majiteľa aj správcu. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
+  a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z23 — administrácia a prihlásenia podľa vizuálu v1** (Martin schválil 17. 10.).
-- **Ďalší krok pre Martina:** preklikať staging s ukážkovými dátami (prehliadka sa otvorí po prihlásení) a spísať pripomienky;
+- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie z Claude chatu.
+- **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
 
@@ -115,7 +115,7 @@ Podľa `ARCHITEKTURA.md` A15 a rozhodnutia 16. 10.:
 4. **Snímky** robí skript `npm run tour:screens` (Playwright, ukážkové dáta zo Z21, počítač 1440 px, prípadne aj mobil) → uložené
    v repozitári; po zmene rozhrania stačí skript spustiť znova. Bez osobných údajov na snímkach.
 
-### Z23 — Administrácia a prihlásenia podľa vizuálu v1
+### Z23 ✅ — Administrácia a prihlásenia podľa vizuálu v1
 Martin schválil **vizuál administrácie v1 (17. 10.)**. Čítaj `docs/vizual-administracia.md` (najprv *Pravidlá vzhľadu administrácie*;
 platia aj pravidlá v2 z `docs/vizual-stranka-hosta.md`), zdroj plátna `docs/navrhy/administracia/` (tabuľka dosiek a ciest v kóde je
 v hlavičke popisu), rozhodnutie 17. 10. *Vizuál administrácie v1*, A18. **Je to prerobenie rozhrania** — logiku rezervácií, platieb, cien,
@@ -194,6 +194,13 @@ iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako 
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Kód hosťa (Z23):** návrh má 6 políčok, ale staging posiela **8-miestny** kód (nastavenie Supabase Auth → Email OTP length).
+  Políčka sa riadia skutočnou dĺžkou kódu, takže to funguje. Ak chceš 6 ako na návrhu, treba prepnúť dĺžku v Supabase (staging aj neskôr produkcia).
+- **Z23 — čo som vynechal, lebo to v aplikácii zatiaľ nie je:** „Zostať prihlásený“ (prihlásenie ostáva ako doteraz), „Upraviť“
+  v paneli rezervácie (úprava rezervácie neexistuje — dá sa zrušiť a vytvoriť ručne), „+ Pozvať človeka“ v riadiacom centre (pozvánky
+  ešte nie sú), štítok „Ukážka“ pri klientovi (v databáze nie je príznak ukážkového klienta). „Zabudnuté heslo?“ pošle prihlasovací odkaz.
+  E-mail podpory na prihlasovacej obrazovke sa zobrazí, keď nastavíš `NEXT_PUBLIC_SUPPORT_EMAIL` (Vercel). Chceš niektoré z toho doplniť?
+- **Prístupnosť (Z23):** sivé štítky z návrhu (#8b929b) nesplnili kontrast AA, v administrácii sú preto tmavšie (#5a6672).
 - **Mapa (Z19):** zatiaľ dlaždice priamo z OpenStreetMap (zadarmo, mierne používanie). Pred ostrou prevádzkou s väčšou návštevnosťou
   odporúčam poskytovateľa dlaždíc s bezplatným limitom (MapTiler alebo Stadia — treba účet). Súhlasíš?
 - **STRÖMY (Z19):** miesta v okolí a popisy zvýrazneného vybavenia sú orientačné — nech ich Jana skontroluje v administrácii.
@@ -217,6 +224,25 @@ iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako 
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z23: **administrácia, riadiace centrum a prihlásenia podľa vizuálu v1.** Spoločné: bočné menu podľa dosky Sidebar
+  (výber ubytovania, Obsadenosť, Tím/Nastavenia/Riadiace centrum, používateľ s Čo je nové · Odhlásiť, odznak čakajúcich platieb;
+  zbaľovanie, pripnutie, rozbalenie aj klávesnicou), **`SidePanel`/`RecordPanel` 680 px, dva stĺpce od 1024 px**, nemodálny — klik na
+  iný riadok prepne záznam, klik vedľa / Esc / Späť / krížik zatvorí, na mobile cez celú obrazovku s „‹ späť“ a lištou dole; polia
+  ako pilulky (CSS cez `[data-admin-ui]`, košík hosťa nedotknutý); farby stavov a obsadenosti na jednom mieste (`src/core/admin/status.tsx`);
+  téma platformy (Roboto, smrekovo zelená) aj v administrácii. **01** `/login` rozdelená obrazovka + prihlasovací odkaz na e-mail len
+  pre existujúce účty administrácie (odpoveď neprezradí účet, limit podľa IP `staff_link`, odkaz z `APP_URL`, nie z hlavičky Host);
+  názov platformy a e-mail podpory v `src/core/admin/brand.ts`. **02** prehľad: pozdrav, teplé karty čakajúcich platieb (Platba prijatá)
+  aj žiadostí o storno, 4 čísla vrátane „Ušetrené na províziách ≈“ (nové `tenant_settings.portal_commission_bp`, predvolene 15 %,
+  v Nastaveniach), najbližšie pobyty, obsadenosť 12 týždňov, stav synchronizácie. **03** rezervácie: filtre stavu ako pilulky s počtom,
+  hľadanie, filter príchodu, panel podľa dosky vrátane **Predĺžiť splatnosť** (nová funkcia `extend_payment_due`, len personál, len
+  čakajúce, max 14 dní). **04** kalendár: 2 mesiace (mobil 1), pásy od poludnia do poludnia, ceny vo voľných dňoch, panel podľa typu
+  (rezervácia / portál / blokácia s úpravou dôvodu), výber dní → „Nový termín“ s cenou z toho istého výpočtu ako web, minimum nocí
+  a kolízia; šípky a Enter. Ručná rezervácia sa dá predvyplniť z kalendára a **personál ju môže vytvoriť aj mimo pravidiel pobytu**
+  (kratšie ako minimum — návrh: „hosť by si ho nevybral, ručne sa dá“), ceny rovnaké. **05** riadiace centrum: vlastné menu, čísla,
+  klienti s modulmi, panel klienta (moduly, ľudia, prevádzka, vzhľad, zmeny), len počty bez údajov hostí. **06–07** mobil.
+  **08** prihlásenie hosťa: fotka objektu, políčka na kód podľa skutočnej dĺžky kódu (vloženie celého kódu, posun), Zmeniť e-mail,
+  Poslať znova po 45 s s novou captchou. 3 migrácie na stagingu, pgTAP (`admin_v1` 6, `request_limits` +1), 2 unit testy, Playwright
+  `e2e/admin-v1.spec.ts` (PC aj 390 px, axe bez vážnych nálezov), snímky prehliadky obnovené a verzia zvýšená na 2026-10-17. (Claude Code)
 - 2026-10-16 — **Captcha Cloudflare Turnstile** (managed) v kroku Platba košíka (odoslanie rezervácie aj overenie promo kódu)
   a pri žiadosti o kód do zóny hosťa; token sa overuje na serveri cez siteverify popri HMAC tokene a honeypote (`src/core/security/`).
   Token platí raz → po kontrole promo kódu a po odmietnutom odoslaní sa widget obnoví. Overenie zlyhá „nakrátko“ (bez tokenu alebo

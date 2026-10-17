@@ -131,3 +131,14 @@ export function toPricingInput(
     accommodationVatBp: catalog.accommodationVatBp,
   };
 }
+
+/**
+ * Same input without the stay rules of the seasons (minimum / maximum nights, arrival days): staff may book
+ * a shorter stay by hand that a guest could not choose on the web (vizuál administrácie v1, 04). Prices stay the same.
+ */
+export function withoutStayRules(input: PricingInput): PricingInput {
+  return {
+    ...input,
+    seasons: input.seasons.map((s) => ({ ...s, minNights: 1, maxNights: null, arrivalDays: null })),
+  };
+}

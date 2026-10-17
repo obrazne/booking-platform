@@ -126,7 +126,9 @@ async function shoot(page, tour, slide, path, opts = {}) {
       });
   }
   await blurPrivate(page);
-  await page.mouse.move(0, 0);
+  // Mouse away from the side menu (hovering expands it) and wait until it has collapsed.
+  await page.mouse.move(page.viewportSize().width - 4, page.viewportSize().height - 4);
+  await page.waitForTimeout(400);
   mkdirSync(`${OUT}${tour}`, { recursive: true });
   await page.screenshot({ path: `${OUT}${tour}/${slide}.jpg`, type: "jpeg", quality: 78 });
   console.log(`  ${tour}/${slide}.jpg`);

@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 
-select plan(8);
+select plan(9);
 
 insert into public.tenants (id, slug, name) values ('10000000-0000-0000-0000-00000000000a', 'tenant-a', 'Tenant A');
 
@@ -27,6 +27,8 @@ update public.request_attempts set created_at = now() - interval '2 hours' where
 set local role service_role;
 select is(public.hit_request_limit('10000000-0000-0000-0000-00000000000a', 'hash-of-ip-one-000', 'promo', 2, 3600), true,
   'attempts outside the window do not count');
+select is(public.hit_request_limit(null, 'hash-of-ip-one-000', 'staff_link', 2, 3600), true,
+  'admin sign-in link is limited without a tenant');
 reset role;
 
 set local role anon;

@@ -37,6 +37,12 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
       owner_notification_email: z.union([z.email(), z.literal("")]).transform((v) => v || null),
       arrival_email_days_before: z.coerce.number().int().min(0).max(30),
       vat_payer: z.preprocess((v) => v === "on", z.boolean()),
+      // Percent in the form, basis points in the database.
+      portal_commission_bp: z.coerce
+        .number()
+        .min(0)
+        .max(50)
+        .transform((v) => Math.round(v * 100)),
     })
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");

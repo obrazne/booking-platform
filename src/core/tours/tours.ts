@@ -16,7 +16,7 @@ export type Tour = { key: TourKey; version: string; slides: readonly TourSlide[]
 export const TOURS: Record<TourKey, Tour> = {
   owner: {
     key: "owner",
-    version: "2026-10-16",
+    version: "2026-10-17",
     slides: [
       { id: "dashboard", href: "/admin" },
       { id: "reservations", href: "/admin/reservations" },
@@ -33,7 +33,7 @@ export const TOURS: Record<TourKey, Tour> = {
   },
   admin: {
     key: "admin",
-    version: "2026-10-16",
+    version: "2026-10-17",
     slides: [
       { id: "tenants", href: "/platform" },
       { id: "newTenant", href: "/platform/new" },

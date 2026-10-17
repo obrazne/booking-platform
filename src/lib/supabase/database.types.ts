@@ -1282,21 +1282,21 @@ export type Database = {
           created_at: string
           id: string
           ip_hash: string
-          tenant_id: string
+          tenant_id: string | null
         }
         Insert: {
           action: string
           created_at?: string
           id?: string
           ip_hash: string
-          tenant_id: string
+          tenant_id?: string | null
         }
         Update: {
           action?: string
           created_at?: string
           id?: string
           ip_hash?: string
-          tenant_id?: string
+          tenant_id?: string | null
         }
         Relationships: [
           {
@@ -2008,6 +2008,7 @@ export type Database = {
           iban: string | null
           owner_notification_email: string | null
           payment_due_hours: number
+          portal_commission_bp: number
           privacy_url: string | null
           reviews_url: string | null
           tenant_id: string
@@ -2028,6 +2029,7 @@ export type Database = {
           iban?: string | null
           owner_notification_email?: string | null
           payment_due_hours?: number
+          portal_commission_bp?: number
           privacy_url?: string | null
           reviews_url?: string | null
           tenant_id: string
@@ -2048,6 +2050,7 @@ export type Database = {
           iban?: string | null
           owner_notification_email?: string | null
           payment_due_hours?: number
+          portal_commission_bp?: number
           privacy_url?: string | null
           reviews_url?: string | null
           tenant_id?: string
@@ -2439,6 +2442,10 @@ export type Database = {
       }
       enqueue_scheduled_emails: { Args: never; Returns: number }
       expire_pending_reservations: { Args: never; Returns: string[] }
+      extend_payment_due: {
+        Args: { p_hours?: number; p_reservation_id: string }
+        Returns: string
+      }
       finish_email_job: {
         Args: {
           p_error: string

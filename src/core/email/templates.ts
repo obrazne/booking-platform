@@ -361,3 +361,33 @@ export function renderLoginCode(
     ].join("\n\n"),
   };
 }
+
+/** Sign-in link for an existing admin account (owner, staff, platform admin) — in the platform's look. */
+export function renderStaffLoginLink(
+  platform: { name: string; accent: string },
+  to: string,
+  href: string,
+): OutgoingEmail {
+  const t = createTranslator({ locale: "sk", messages: MESSAGES.sk, namespace: "emails" });
+  return {
+    to,
+    subject: t("staff_login_link.subject", { platform: platform.name }),
+    fromName: platform.name,
+    html: layout(
+      platform.accent,
+      t("staff_login_link.title"),
+      [
+        p(t("staff_login_link.greeting")),
+        p(t("staff_login_link.intro")),
+        p(t("staff_login_link.note")),
+      ],
+      { href, label: t("staff_login_link.button") },
+    ),
+    text: [
+      t("staff_login_link.greeting"),
+      t("staff_login_link.intro"),
+      href,
+      t("staff_login_link.note"),
+    ].join("\n\n"),
+  };
+}

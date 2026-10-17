@@ -127,7 +127,7 @@ Next.js 16 (App Router, strict TS) · Tailwind 4 + shadcn/ui (Radix) · next-int
 | `src/core/money`, `src/core/format` | peniaze v centoch, formátovanie súm a dátumov cez `Intl` |
 | `src/core/theme` | téma klienta → CSS premenné, kontrola kontrastu, ponuka písiem, svetlý/tmavý režim |
 | `src/core/modules` | manifest modulu, register, sloty (`ModuleSlot`), udalosti (`emitBookingEvent`), vypínače |
-| `src/core/admin` | `AdminShell` (pás ikon, pripnutie, mobilné menu), `RecordPanel` (`?panel=typ:id`), `DataListToolbar`, `SortHeader`, `Pagination`, `list-params` |
+| `src/core/admin` | `AdminShell` (bočné menu podľa vizuálu v1, pripnutie, mobilná lišta), `SidePanel` / `RecordPanel` (680 px, `?panel=typ:id`, `PanelColumns`, `PanelSection`, `data-panel-switch` prepína záznam), `PageHeader`, `status.tsx` (farby stavov a obsadenosti), `occupancy.ts` (obsadenosť, synchronizácia), `brand.ts` (názov platformy, e-mail podpory), `ListSearch`, `FilterPills`, `DateRangePill`, `SortHeader`, `Pagination`, `list-params` |
 | `src/core/booking` | stránka hosťa: katalóg a detail (`catalog.ts`), košík a panely (`guest-booking.tsx`), kalendár, galéria, vytvorenie rezervácie |
 | `src/core/sections` | detail objektu zo sekcií (B7): typy = komponent + zod schéma (`core-sections.tsx`), register (`registry.ts`, + `sections` v manifeste modulu), `PropertySections`; predlohy v tabuľke `section_templates`; administrácia: záložka Stránka (`src/app/admin/properties/[id]/page`, formulár zo zod schémy `schema-form.tsx`) |
 | `src/modules/<kľúč>/` | moduly; zoznam v `src/modules/index.ts` (jediné miesto) — prvý: `services` |

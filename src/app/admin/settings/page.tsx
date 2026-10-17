@@ -67,6 +67,21 @@ export default async function SettingsPage() {
                 defaultValue={s?.hold_minutes ?? 30}
               />
             </Field>
+            <Field
+              label={t("portalCommission")}
+              htmlFor="portal_commission_bp"
+              hint={t("portalCommissionHint")}
+            >
+              <Input
+                id="portal_commission_bp"
+                name="portal_commission_bp"
+                type="number"
+                min={0}
+                max={50}
+                step={0.5}
+                defaultValue={(s?.portal_commission_bp ?? 1500) / 100}
+              />
+            </Field>
             <Label className="font-normal">
               <Checkbox name="vat_payer" defaultChecked={s?.vat_payer ?? false} /> {t("vatPayer")}
             </Label>

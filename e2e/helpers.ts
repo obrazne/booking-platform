@@ -102,3 +102,44 @@ export async function loginOwner(page: Page, base: string) {
   );
   await page.waitForURL(/\/admin/);
 }
+
+/** Marks the "What's new" tours as seen, so the window does not cover the page under test. */
+export async function markToursSeen(email: string) {
+  const { TOURS } = await import("../src/core/tours/tours");
+  const db = service();
+  const { data: list } = await db.auth.admin.listUsers({ perPage: 1000 });
+  const user = list.users.find((u) => u.email === email);
+  if (user)
+    await db
+      .from("profiles")
+      .update({ tours_seen: { owner: TOURS.owner.version, admin: TOURS.admin.version } })
+      .eq("id", user.id);
+}
+
+/** Signs in the QA platform admin (qa-admin@booking-platform.test) for the control center. */
+export async function loginPlatformAdmin(page: Page, base: string) {
+  const db = service();
+  const email = "qa-admin@booking-platform.test";
+  const { data: list } = await db.auth.admin.listUsers({ perPage: 1000 });
+  let user = list.users.find((u) => u.email === email);
+  if (!user) {
+    const { data, error } = await db.auth.admin.createUser({ email, email_confirm: true });
+    if (error) throw error;
+    user = data.user;
+  }
+  await db.from("platform_admins").upsert({ user_id: user.id }, { onConflict: "user_id" });
+  await markToursSeen(email);
+  const { data: link, error } = await db.auth.admin.generateLink({ type: "magiclink", email });
+  if (error) throw error;
+  await page.goto(
+    `${base}/auth/confirm?token_hash=${link.properties.hashed_token}&type=magiclink&next=/platform`,
+  );
+  await page.waitForURL(/\/platform/);
+}
+
+/** "Čo je nové" in the side menu (phones: in the menu from the side). */
+export async function openWhatsNew(page: Page, mobile: boolean) {
+  if (mobile) await page.getByRole("button", { name: "Menu" }).click();
+  else await page.locator("aside").hover();
+  await page.getByRole("button", { name: "Čo je nové" }).filter({ visible: true }).click();
+}

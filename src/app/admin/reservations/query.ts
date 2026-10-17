@@ -67,7 +67,7 @@ export async function getReservationDetail(tenantId: string, id: string) {
       `*, property:properties(name, slug), items:reservation_items(check_in, check_out, unit:units(name)),
        lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, sort),
        payments(status, amount_cents, variable_symbol, received_at),
-       history:reservation_status_history(from_status, to_status, reason, changed_at, actor:profiles(email)),
+       history:reservation_status_history(from_status, to_status, reason, changed_at, actor:profiles(email, full_name)),
        consents:reservation_consents(kind, granted, created_at),
        notes:reservation_notes(id, body, created_at, author:profiles(email, full_name))`,
     )
@@ -75,4 +75,27 @@ export async function getReservationDetail(tenantId: string, id: string) {
     .eq("id", id)
     .maybeSingle();
   return data;
+}
+
+/** Count of reservations per state with the other filters applied (counts on the state pills). */
+export async function statusCounts(
+  tenantId: string,
+  p: ReturnType<typeof reservationListParams>,
+): Promise<Record<string, number>> {
+  const supabase = await createClient();
+  let q = supabase
+    .from("reservations")
+    .select("status, items:reservation_items!inner(check_in)")
+    .eq("tenant_id", tenantId);
+  if (p.filters.source) q = q.eq("source", p.filters.source);
+  if (p.from) q = q.gte("items.check_in", p.from);
+  if (p.to) q = q.lte("items.check_in", p.to);
+  if (p.q) {
+    const pattern = likePattern(p.q);
+    q = q.or(`number.ilike.${pattern},guest_name.ilike.${pattern},guest_email.ilike.${pattern}`);
+  }
+  const { data } = await q;
+  const out: Record<string, number> = {};
+  for (const r of data ?? []) out[r.status] = (out[r.status] ?? 0) + 1;
+  return out;
 }

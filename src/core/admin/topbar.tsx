@@ -3,18 +3,7 @@
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import {
-  Building2,
-  Check,
-  ChevronsUpDown,
-  LogOut,
-  Monitor,
-  Moon,
-  Sparkles,
-  Sun,
-  UserRound,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2, Check, ChevronsUpDown, Monitor, Moon, MoreHorizontal, Sun } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +17,10 @@ import {
 import { switchTenant } from "@/app/admin/actions";
 import { signOut } from "@/app/(auth)/login/actions";
 import { openTour } from "@/core/tours/tour-dialog";
+import { cn } from "@/lib/utils";
+import { useShellExpanded } from "./admin-shell";
 
+/** Accommodation picker at the top of the side menu ("Ubytovanie / Chalet STRÖMY"). */
 export function TenantSwitcher({
   tenants,
   activeId,
@@ -37,21 +29,40 @@ export function TenantSwitcher({
   activeId: string;
 }) {
   const t = useTranslations("shell");
+  const expanded = useShellExpanded();
   const [pending, startTransition] = useTransition();
   const active = tenants.find((x) => x.id === activeId);
+  const several = tenants.length > 1;
 
-  if (tenants.length < 2) {
-    return <span className="mr-auto truncate text-sm font-medium">{active?.name}</span>;
-  }
+  const box = (
+    <span
+      className={cn(
+        "border-input bg-background flex min-h-12 w-full items-center gap-2.5 rounded-[10px] border text-left",
+        expanded ? "px-3 py-2" : "justify-center px-0",
+      )}
+    >
+      {expanded ? (
+        <span className="flex min-w-0 flex-1 flex-col gap-px">
+          <span className="label-mono">{t("accommodation")}</span>
+          <span className="text-ink truncate text-sm font-bold">{active?.name}</span>
+        </span>
+      ) : (
+        <Building2 className="text-ink size-[18px]" aria-label={active?.name} />
+      )}
+      {several && expanded ? <ChevronsUpDown className="text-muted-foreground size-3.5" /> : null}
+    </span>
+  );
+
+  if (!several) return box;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="mr-auto max-w-64 gap-2" disabled={pending}>
-          <Building2 />
-          <span className="truncate">{active?.name}</span>
-          <ChevronsUpDown className="opacity-50" />
-        </Button>
+      <DropdownMenuTrigger
+        disabled={pending}
+        aria-label={t("switchTenant")}
+        className="rounded-[10px]"
+      >
+        {box}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <DropdownMenuLabel>{t("switchTenant")}</DropdownMenuLabel>
@@ -69,52 +80,90 @@ export function TenantSwitcher({
   );
 }
 
+function initials(name: string): string {
+  return name
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .map((p) => p.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+/** User at the bottom of the side menu: name, "Čo je nové · Odhlásiť" and the colour mode in the ⋯ menu. */
 export function UserMenu({
+  name,
   email,
   whatsNew = false,
 }: {
+  name: string | null;
   email: string | null;
   whatsNew?: boolean;
 }) {
   const t = useTranslations();
+  const expanded = useShellExpanded();
   const { theme, setTheme } = useTheme();
+  const label = name || email || "";
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("shell.account")}>
-          <UserRound />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-60">
-        {email ? (
-          <DropdownMenuLabel className="truncate font-normal">{email}</DropdownMenuLabel>
-        ) : null}
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-muted-foreground text-xs">
-          {t("shell.colorMode")}
-        </DropdownMenuLabel>
-        <DropdownMenuRadioGroup value={theme ?? "system"} onValueChange={setTheme}>
-          <DropdownMenuRadioItem value="light">
-            <Sun /> {t("shell.light")}
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark">
-            <Moon /> {t("shell.dark")}
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system">
-            <Monitor /> {t("shell.system")}
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-        <DropdownMenuSeparator />
-        {whatsNew ? (
-          <DropdownMenuItem onSelect={openTour}>
-            <Sparkles /> {t("tours.menu")}
-          </DropdownMenuItem>
-        ) : null}
-        <DropdownMenuItem onSelect={() => void signOut()}>
-          <LogOut /> {t("common.signOut")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2.5 px-1 pt-1">
+      <span
+        title={label}
+        className="text-ink flex size-8 shrink-0 items-center justify-center rounded-full bg-[#e7e4dc] text-xs font-bold"
+      >
+        {initials(label)}
+      </span>
+      <span
+        className={cn(
+          "flex min-w-0 flex-1 flex-col transition-opacity",
+          expanded ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+      >
+        <span className="text-ink truncate text-[13px] font-medium">{label}</span>
+        <span className="text-muted-foreground flex gap-1 text-xs">
+          {whatsNew ? (
+            <>
+              <button type="button" onClick={openTour} data-closes-menu className="hover:text-ink">
+                {t("tours.menu")}
+              </button>
+              <span aria-hidden="true">·</span>
+            </>
+          ) : null}
+          <button type="button" onClick={() => void signOut()} className="hover:text-ink">
+            {t("common.signOut")}
+          </button>
+        </span>
+      </span>
+      {expanded ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label={t("shell.account")}
+            className="text-muted-foreground hover:text-ink inline-flex size-8 items-center justify-center rounded-full"
+          >
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side="top" className="w-60">
+            {email ? (
+              <DropdownMenuLabel className="truncate font-normal">{email}</DropdownMenuLabel>
+            ) : null}
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
+              {t("shell.colorMode")}
+            </DropdownMenuLabel>
+            <DropdownMenuRadioGroup value={theme ?? "system"} onValueChange={setTheme}>
+              <DropdownMenuRadioItem value="light">
+                <Sun /> {t("shell.light")}
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="dark">
+                <Moon /> {t("shell.dark")}
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="system">
+                <Monitor /> {t("shell.system")}
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+    </div>
   );
 }

@@ -222,3 +222,68 @@
   max-width: none !important;
   max-height: none !important;
 }
+
+/* Administration, control center and staff login (vizuál administrácie v1): same language as the guest page v2.
+   Applied while a [data-admin-ui] element is on the page, so overlays rendered outside the tree (panels, menus) match. */
+:root:has([data-admin-ui]):not(.dark) {
+  --sidebar: #f7f6f2;
+  --sidebar-border: var(--line);
+  --sidebar-foreground: #3b3d42;
+  --sidebar-accent: color-mix(in oklab, var(--primary) 10%, transparent);
+  --sidebar-accent-foreground: var(--primary);
+  --border: var(--line);
+  --input: #e3e1da;
+  --foreground: #3b3d42;
+  --muted-foreground: #5a6672;
+  --muted: #f7f6f2;
+}
+/* One-line fields are pills of the same height as the button next to them; multi-line fields keep radius 10. */
+:root:has([data-admin-ui]) [data-slot="input"],
+:root:has([data-admin-ui]) [data-slot="select-trigger"] {
+  border-radius: 9999px;
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+}
+:root:has([data-admin-ui]) [data-slot="button"] {
+  border-radius: 9999px;
+}
+:root:has([data-admin-ui]) [data-slot="button"][data-size="default"] {
+  height: 2.5rem;
+  padding-inline: 1rem;
+}
+:root:has([data-admin-ui]) [data-slot="button"][data-size="icon"] {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+:root:has([data-admin-ui]) [data-slot="textarea"] {
+  border-radius: 10px;
+}
+/* Login screens: 46 px fields and buttons. */
+:root:has([data-login-ui]) [data-slot="input"],
+:root:has([data-login-ui]) [data-slot="button"][data-size="lg"] {
+  min-height: 2.875rem;
+  border-radius: 9999px;
+}
+
+@layer utilities {
+  /* Section label in panels and cards (rule 3): mono 10 px, capitals, grey. */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5a6672;
+  }
+  .bg-accent-soft {
+    background: color-mix(in oklab, var(--primary) 9%, transparent);
+  }
+  /* Something waiting for the owner (unpaid reservation): warm, not red (rule 5). */
+  .card-warm {
+    background: #fcf6ef;
+    border: 1px solid #ecd9c4;
+  }
+  .hatch-block {
+    background: repeating-linear-gradient(45deg, #d6d3cb 0 3px, #f2f0eb 3px 6px);
+  }
+}

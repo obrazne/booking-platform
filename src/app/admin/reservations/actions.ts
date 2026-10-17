@@ -16,7 +16,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 import { priceContributorsFor } from "@/modules/price-contributors";
-import { toPricingInput } from "@/core/booking/pricing-input";
+import { toPricingInput, withoutStayRules } from "@/core/booking/pricing-input";
 import { flushEmails, notifyReservationCreated } from "@/core/booking/notify";
 
 function refresh(id?: string) {
@@ -30,6 +30,18 @@ function refresh(id?: string) {
 export async function confirmPayment(id: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.rpc("confirm_payment", { p_reservation_id: id });
+  if (error) return fail(dbErrorKey(error));
+  refresh(id);
+  return ok();
+}
+
+/** "Predĺžiť splatnosť": moves the payment deadline of a reservation waiting for payment (default one day). */
+export async function extendPaymentDue(id: string, hours = 24): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("extend_payment_due", {
+    p_reservation_id: id,
+    p_hours: hours,
+  });
   if (error) return fail(dbErrorKey(error));
   refresh(id);
   return ok();
@@ -132,18 +144,21 @@ export async function createManualReservation(
       selectedServices[key.slice(8)] = n;
   }
   const modules = (await getEnabledModules(active.tenantId)).map((m) => m.key);
+  // Staff may book outside the guest stay rules (shorter than the minimum, other arrival day) — same prices.
   const price = calculatePrice(
-    toPricingInput(staff.catalog, {
-      checkIn: v.check_in,
-      checkOut: v.check_out,
-      adults: v.adults,
-      children: v.children,
-      pets: v.pets,
-      selectedServices,
-      selectedFees: {},
-      promoCode: null,
-      bookedOn: todayIso(),
-    }),
+    withoutStayRules(
+      toPricingInput(staff.catalog, {
+        checkIn: v.check_in,
+        checkOut: v.check_out,
+        adults: v.adults,
+        children: v.children,
+        pets: v.pets,
+        selectedServices,
+        selectedFees: {},
+        promoCode: null,
+        bookedOn: todayIso(),
+      }),
+    ),
     priceContributorsFor(modules),
   );
   if (!price.ok) return fail("invalid");

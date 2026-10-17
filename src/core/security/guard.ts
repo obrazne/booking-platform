@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyTurnstile } from "./turnstile";
 
 /** Guest form actions limited per IP address. */
-export type GuardedAction = "reservation" | "promo" | "login_code" | "login_verify";
+export type GuardedAction = "reservation" | "promo" | "login_code" | "login_verify" | "staff_link";
 
 /** Most attempts per IP and hour (generous for a family behind one router, tight for a script). */
 export const REQUEST_LIMITS: Record<GuardedAction, number> = {
@@ -13,6 +13,7 @@ export const REQUEST_LIMITS: Record<GuardedAction, number> = {
   promo: 30,
   login_code: 10,
   login_verify: 30,
+  staff_link: 10,
 };
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
@@ -38,13 +39,13 @@ export async function clientIp(): Promise<string | null> {
  * (local server, Playwright) are not limited. A database failure does not block guests — the captcha still applies.
  */
 export async function withinRequestLimit(
-  tenantId: string,
+  tenantId: string | null,
   action: GuardedAction,
   ip: string | null,
 ): Promise<boolean> {
   if (!ip || LOOPBACK.has(ip)) return true;
   const { data, error } = await createAdminClient().rpc("hit_request_limit", {
-    p_tenant_id: tenantId,
+    p_tenant_id: tenantId as string, // null for actions outside a tenant (admin sign-in link)
     p_ip_hash: hashIp(ip),
     p_action: action,
     p_max: REQUEST_LIMITS[action],
@@ -58,7 +59,7 @@ export async function withinRequestLimit(
  * Returns null when the action may continue.
  */
 export async function guardGuestAction(
-  tenantId: string,
+  tenantId: string | null,
   action: GuardedAction,
   token: string | null | undefined,
   { captcha = true }: { captcha?: boolean } = {},
