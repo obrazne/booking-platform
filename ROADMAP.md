@@ -186,6 +186,8 @@ Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy
 
 ### Z44 [B] 🔄 — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
 Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišta účtu a drobčeky robí Z43 — nezasahuj do nich (len vlož komponent, ak už existuje).
+> **Pre linku A (Z43, linka B 17. 10.):** detail pobytu je rozdelený — `ucet/pobyt/[id]/page.tsx` je tenký (sem patrí lišta účtu),
+> obsah a stavy sú v `stay-detail.tsx` (`StayDetail`, mení linka B); drobčeky odovzdaj cez prop `crumbs` (nahradí „Späť na moje pobyty“).
 1. **Čaká na platbu:** navrchu karta s QR (PAY by square), sumou, IBAN, VS, lehotou a vetou o automatickom zrušení; doobjednávanie skryté s vetou „po zaplatení“.
 2. **Počas pobytu:** odomknuté pokyny ako dlaždice (kód od dverí, Wi-Fi, príchod, odchod — z údajov objektu, nič natvrdo), text pokynov, „Navigovať v Google Mapách“,
    „Niečo nefunguje? Napíšte …“ (WhatsApp/telefón majiteľa); upsell „Na zajtra si môžete objednať“.
