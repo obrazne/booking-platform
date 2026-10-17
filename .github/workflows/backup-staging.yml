@@ -32,7 +32,7 @@ jobs:
       SOURCE: ${{ github.event.inputs.source || 'staging' }}
       # Not a secret: the public URL of the staging project (CLAUDE.md).
       SUPABASE_URL: https://uzsuwokyiprkzfirvrmb.supabase.co
-      RESTORED_DB: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      RESTORED_DB: postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres
     steps:
       - name: Secrets present
         id: secrets
