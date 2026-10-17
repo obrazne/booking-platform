@@ -103,8 +103,15 @@ Rovnaké rozloženie na všetkých veľkostiach (žiadna zvláštna verzia pre m
   pod ním **jeden riadok** „✓ Storno zdarma do 30 dní · bez poplatkov“ (z podmienok objektu). Tlačidlo stlmené bez platného termínu.
 - **Zo súhrnu preč:** tri istoty (→ krok 3), referencia (→ krok 1 vľavo), Jana s WhatsApp a telefónom (→ krok 2).
 - **Krok 1:** **bez fotiek** (hosť ich má na stránke pod panelom). Termín sa vľavo **neopakuje** — ak hosť prišiel s termínom, krok začína
-  rovno „**K pobytu môžete pridať.** Nepovinné.“; bez termínu alebo po „Zmeniť“ je vľavo **kalendár s dvoma mesiacmi** a „Hotovo“
-  (vtedy služby skryté, tlačidlo Pokračovať stlmené, kým kalendár nie je zatvorený s platným termínom).
+  rovno „**K pobytu môžete pridať.** Nepovinné.“; bez termínu alebo po „Zmeniť“ je vľavo **kalendár s dvoma mesiacmi** a pod ním
+  „**Potvrdiť termín**“ (vtedy služby skryté). **Úprava 17. 10. (pripomienka 28):** keď je vybraný platný termín, **„Pokračovať“ vpravo je
+  hneď aktívne** a robí to isté ako „Potvrdiť termín“ — zavrie kalendár a ukáže doplnky (krok 1 ostáva). Bez platného termínu je
+  „Pokračovať“ stlmené a **nad ním je vždy viditeľná krátka veta prečo**: „Vyberte deň príchodu“ → „Vyberte deň odchodu“ →
+  „V tomto termíne je minimum 3 noci“ (z pravidiel ceny). Klik na stlmené tlačidlo (`aria-disabled`, nie `disabled`) vetu zvýrazní
+  a posunie kalendár do pohľadu. Kým je kalendár otvorený, „Zmeniť“ v súhrne sa neukazuje.
+  Termín v súhrne krátko, aby sa nezalamoval: `24. – 26. 11. 2026` (rovnaký mesiac), `29. 11. – 2. 12. 2026`, cez rok celé dátumy.
+  Riadok istoty pod tlačidlom sa **nesmie orezať** — krátke znenie z podmienok objektu (napr. „Storno zdarma do 30 dní · bez poplatkov“),
+  pri dlhšom sa zalomí na dva riadky.
   **Doplnky = jednoriadkové riadky (~54 px):** krúžok na pridanie, názov, sivo cenový model („15 € za osobu a noc“), vpravo suma pre pobyt
   („+ 90 €“, po pridaní bez „+“), šípka. Klik na riadok alebo šípku **rozbalí detail na mieste** (jemne sivý podklad): fotka 150 × 100,
   štítok („Pre skupiny“ / „Pre váš termín“), popis, čo zahŕňa, počet ciest pri transfere, „Pridať k pobytu · 90 €“ / „Odobrať z pobytu“.

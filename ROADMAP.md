@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** **Z30** (košík: Pokračovať hneď po výbere termínu — malá), potom **Z28** (riadiace centrum v1.2) — návrh v1.2 v `docs/vizual-administracia.md`.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -259,6 +259,17 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
 6. Playwright (PC + mobil 390 px): menu (otvorenie skupiny, aktívna položka, zbalený režim), štatistiky (prepnutie roka, porovnanie,
    klik na mesiac), zvonček (odznak, prečítanie, prechod na cieľ); axe. Obnov snímky prehliadky „Čo je nové“ a zvýš `version`
    (nové: menu so skupinami, Štatistiky, zvonček).
+
+### Z30 — Košík: Pokračovať hneď po výbere termínu (pripomienka 28, 17. 10.) — **malá, robiť pred Z28**
+Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.). Martin nevidel „Hotovo“ a nevedel, prečo nejde pokračovať.
+1. Platný termín vybraný → **„Pokračovať“ aktívne**, klik = potvrdenie termínu (kalendár sa zbalí, ukážu sa doplnky, krok 1 ostáva).
+   „Hotovo“ premenovať na „Potvrdiť termín“ (robí to isté).
+2. Bez platného termínu: Pokračovať stlmené s `aria-disabled` (nie `disabled`) a **nad ním vždy viditeľná veta prečo** (príchod → odchod →
+   minimum nocí z pravidiel ceny; `aria-describedby`); klik na stlmené tlačidlo vetu zvýrazní a posunie kalendár do pohľadu.
+3. Kým je kalendár otvorený, „Zmeniť“ v súhrne skryť. Termín v súhrne krátko (`24. – 26. 11. 2026`), aby sa nezalamoval — formát cez `Intl`.
+4. Riadok istoty pod tlačidlom sa nesmie orezať (dnes je na 1440 × 900 odrezaný) — krátke znenie, inak zalomenie.
+5. Mobil: to isté v zelenom páse dole (aktívne pri platnom termíne, inak veta nad pásom).
+6. Playwright: bez termínu → veta „Vyberte deň príchodu“, po výbere odchodu Pokračovať aktívne a ukáže doplnky; minimum nocí → veta; axe.
 
 ### Z28 — Riadiace centrum v1.2 (pripomienky 19–23 + drobnosti)
 1. **Tmavé menu:** položky cez celú šírku bez zaoblenia, hover biela 6 %, aktívna biela 10 % + 3 px čiara vľavo, text vždy svetlý

@@ -2,6 +2,12 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Košík: Pokračovať hneď po výbere termínu
+
+- Martin si nevšimol „Hotovo“ pod kalendárom a nevedel, prečo je Pokračovať neaktívne. Namiesto správy „najprv kliknite Hotovo“ krok
+  navyše **rušíme**: platný termín = Pokračovať je aktívne (zavrie kalendár a ukáže doplnky). Neaktívne je len bez platného termínu
+  a vtedy je dôvod napísaný priamo nad tlačidlom, nie až po kliknutí. (Martin + Claude)
+
 ## 2026-10-17 — Košík v2.2: všetko sa musí vojsť na 13″ notebook
 
 - Na 13″ MacBooku sa zelený súhrn nevošiel a posúvali sa oba stĺpce — „ak sú dva stĺpce plné a ešte sa posúvajú, nezvládli sme to“ (Martin).
