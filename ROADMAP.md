@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha — hotová, čaká na tajné hodnoty od Martina)** → ~~Z46 (Správy: administrácia)~~ ✅ → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha — hotová, čaká na tajné hodnoty od Martina)** → ~~Z46 (Správy: administrácia)~~ ✅ → ~~Z49 (prístupový odkaz ako detail pobytu)~~ ✅ — fronta linky B prázdna (Z50 čaká na Martina).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina (Z50, ~10 min):** pridať do GitHubu tri tajné hodnoty pre nočnú zálohu stagingu podľa
   `docs/prevadzka/zaloha-a-obnova.md` → *Jednorazové nastavenie* (kľúč `age-keygen`, súkromný kľúč do správcu hesiel), potom spustiť
@@ -260,7 +260,7 @@ Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišt
 Pri klientovi voliteľné pásma „zrušenie aspoň N dní pred príchodom → vrátiť P % ceny“ (Nastavenia → Storno podmienky). Hosť v okne
 žiadosti o zrušenie vidí presnú vrátenú sumu a poplatok, majiteľ v paneli rezervácie návrh podľa dňa žiadosti. Bez pásiem ako doteraz.
 
-### Z49 [B] 🔄 — Prístupový odkaz `/r/<kód>` ako detail pobytu v účte (v2.4; rozhodol Claude Code 17. 10. podľa „urob ako uznáš“)
+### Z49 [B] ✅ — Prístupový odkaz `/r/<kód>` ako detail pobytu v účte (v2.4; rozhodol Claude Code 17. 10. podľa „urob ako uznáš“)
 Podľa v2.4 majú byť stránky cez prístupový odkaz rovnaké ako v účte (bez lišty kariet, s ponukou „Uložiť do účtu“). Dnes je `/r/<kód>`
 potvrdenie rezervácie v2.1 (platba, kroky, moduly). Navrhovaný postup: hneď po rezervácii a kým čaká na platbu ostáva potvrdenie v2.1
 (schválený vizuál, nadväzuje na košík); od zaplatenia `/r/<kód>` vykreslí `StayDetail` s prístupom cez kód (stavy zo Z44 — dlaždice
@@ -433,6 +433,16 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z49 [linka B]: **prístupový odkaz `/r/<kód>` ako detail pobytu** (v2.4). (Claude Code)
+  - Do zaplatenia ostáva potvrdenie v2.1 (platba, kroky); **od zaplatenia** (alebo potvrdenia) `/r/<kód>` vykreslí ten istý
+    `StayDetail` ako účet — stavy zo Z44 (dlaždice počas pobytu, Účet pobytu s rozpisom, žiadosť o zrušenie s pásmami) a navrchu
+    riadok **„Uložiť do účtu“**. Zrušenie cez odkaz ide s kódom (`request_cancellation`), moduly dostávajú `accessToken`.
+  - `StayDetail` odpojený od `requireGuest`: `src/core/guest/stay-access.ts` (`loadStay` — účtom, alebo kódom overeným v DB a potom
+    serverovým kľúčom; dokumenty podľa rovnakého pravidla ako RLS). `listStays` zdieľa tvarovanie cez `toStays`.
+  - Upsell: zelená karta „Účet pobytu“ v pravom stĺpci odkazu (Z37) vypadla — detail pobytu má vlastnú (objednávky v nej cez slot).
+  - **Pre linku A:** `e2e/confirm.spec.ts` po zaplatení čaká detail pobytu (nie zelený pás v2.1); `ucet/pobyt/[id]/page.tsx` bez zmeny.
+  - Testy: `stay-states.spec.ts` (+ odkaz: počas pobytu bez prihlásenia, pred platbou v2.1, žiadosť o zrušenie cez odkaz),
+    `confirm`, `upsell-guest`, `checkin-guest` — prešli (počítač aj mobil).
 - 2026-10-17 — Z46 [linka B]: **modul Správy — administrácia** (vizuál v1.3). (Claude Code)
   - Menu: skupina **Správy** za Rezerváciami (Schránka s počítadlom čakajúcich konverzácií, Automatické správy) — len so zapnutým modulom;
     modul je teraz `ready` (Z46 + Z47 hotové) → v riadiacom centre sa dá zapnúť.

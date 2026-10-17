@@ -1625,6 +1625,10 @@
         "hideBreakdown": "Skryť rozpis",
         "toPay": "Na zaplatenie",
         "returned": "Vrátime"
+      },
+      "saveToAccount": {
+        "text": "Pobyt máte otvorený cez odkaz z e-mailu. V účte nájdete všetky pobyty na jednom mieste — bez hesla, prihlásite sa kódom z e-mailu.",
+        "cta": "Uložiť do účtu"
       }
     },
     "v2": {

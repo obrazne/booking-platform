@@ -1,18 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronLeft, FileText, Lock, MessageCircle, Phone } from "lucide-react";
 import { CopyButton } from "@/app/(guest)/r/[token]/confirm-ui";
 import { cancellationOutcome, parseBands } from "@/core/booking/cancellation";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
-import {
-  arrivalNavigation,
-  bankDetails,
-  listStays,
-  requireGuest,
-  stayDocuments,
-} from "@/core/guest/zone";
+import { loadStay } from "@/core/guest/stay-access";
+import { arrivalNavigation, bankDetails } from "@/core/guest/zone";
 import { tr } from "@/core/i18n/localized";
 import { ModuleSlot } from "@/core/modules/module-slot";
 import { guestContactByModule } from "@/core/modules/registry";
@@ -31,23 +25,33 @@ import { stayPhase, stayStateOf, type StayPhase } from "./stay-state";
  * instructions as tiles), after departure, cancelled (when and what is returned, no modules). On the right the green
  * "Účet pobytu" with the price breakdown and what modules add (slot guest.stay.account), and the contact.
  */
-export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNode }) {
-  const { tenant, supabase } = await requireGuest();
-  const stay = (await listStays()).find((s) => s.id === id);
-  if (!stay) notFound();
+export async function StayDetail({
+  id,
+  token,
+  crumbs,
+}: {
+  /** Through the account (`/ucet/pobyt/<id>`) … */
+  id?: string;
+  /** … or through the access link `/r/<code>` after payment (Z49): no account tabs, modules get the code. */
+  token?: string;
+  crumbs?: ReactNode;
+}) {
+  const {
+    tenant,
+    stay,
+    docs,
+    state: rawState,
+  } = await loadStay(token ? { token } : { id: id ?? "" });
   const today = todayIso();
   const phase = stayPhase(stay.status, stay.checkIn, stay.checkOut, today);
   // A module may show the owner's contact itself (e.g. messages, Z47) — then the core card stays out.
   const contactByModule = await guestContactByModule(tenant.id);
-  const [t, tg, ts, locale, docs, state, { data: settings }] = await Promise.all([
+  const state = stayStateOf(rawState);
+  const [t, tg, ts, locale, { data: settings }] = await Promise.all([
     getTranslations("guest.account"),
     getTranslations("guest"),
     getTranslations("guest.stay"),
     getLocale(),
-    stayDocuments(stay),
-    supabase
-      .rpc("guest_stay_state", { p_reservation_id: stay.id })
-      .then(({ data }) => stayStateOf(data)),
     createAdminClient()
       .from("tenant_settings")
       .select(
@@ -147,6 +151,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
                 tenantId={tenant.id}
                 locale={locale}
                 reservationId={stay.id}
+                accessToken={token}
               />
             ) : null}
             {rebook && phase === "after" ? (
@@ -281,6 +286,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               tenantId={tenant.id}
               locale={locale}
               reservationId={stay.id}
+              accessToken={token}
             />
           ) : null}
 
@@ -404,6 +410,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               tenantId={tenant.id}
               locale={locale}
               reservationId={stay.id}
+              accessToken={token}
             />
           ) : null}
 
@@ -452,6 +459,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
                   </p>
                   <CancelDialog
                     reservationId={stay.id}
+                    token={token}
                     daysToArrival={daysToArrival}
                     policy={policy}
                     ownerName={ownerFirst}
@@ -519,6 +527,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
                 tenantId={tenant.id}
                 locale={locale}
                 reservationId={stay.id}
+                accessToken={token}
               />
             ) : null}
             {phase === "pending" || phase === "cancelled" ? (

@@ -32,18 +32,31 @@ export const requireGuest = cache(async () => {
   return { tenant, supabase, guest };
 });
 
+/** Columns of a stay (account list, Z44 detail, access link Z49). */
+export const STAY_COLUMNS =
+  "id, number, status, adults, children, infants, pets, currency, total_cents, payment_due_at, cancellation_requested_at, property_id, items:reservation_items(check_in, check_out, unit_id), lines:reservation_lines(kind, ref_id, label, quantity, unit_amount_cents, amount_cents, meta, sort), payments(status, variable_symbol, amount_cents)";
+
 /** The guest's stays at this tenant (RLS: only own reservations), newest arrival first. */
 export const listStays = cache(async () => {
   const { tenant, supabase, guest } = await requireGuest();
   const { data } = await supabase
     .from("reservations")
-    .select(
-      "id, number, status, adults, children, infants, pets, currency, total_cents, payment_due_at, cancellation_requested_at, property_id, items:reservation_items(check_in, check_out, unit_id), lines:reservation_lines(kind, ref_id, label, quantity, unit_amount_cents, amount_cents, meta, sort), payments(status, variable_symbol, amount_cents)",
-    )
+    .select(STAY_COLUMNS)
     .eq("tenant_id", tenant.id)
     .eq("guest_id", guest.id)
     .eq("payments.purpose", "reservation");
-  const rows = data ?? [];
+  return toStays(data ?? [], tenant.id);
+});
+
+/** Reservation rows (`STAY_COLUMNS`) as stays: dates, sorted lines, payment, property name and photo. */
+export async function toStays<
+  R extends {
+    property_id: string;
+    items: { check_in: string; check_out: string; unit_id: string }[];
+    lines: { sort: number }[];
+    payments: unknown[];
+  },
+>(rows: R[], tenantId: string) {
   // Property names and photos (also of properties no longer published) through the server.
   const ids = [...new Set(rows.map((r) => r.property_id))];
   const { data: props } = ids.length
@@ -51,7 +64,7 @@ export const listStays = cache(async () => {
         .from("properties")
         .select("id, slug, name, status, photos(storage_path, alt, sort)")
         .in("id", ids)
-        .eq("tenant_id", tenant.id)
+        .eq("tenant_id", tenantId)
     : { data: [] };
   return rows
     .map((r) => {
@@ -63,8 +76,8 @@ export const listStays = cache(async () => {
         checkIn: item?.check_in ?? "",
         checkOut: item?.check_out ?? "",
         unitId: item?.unit_id ?? null,
-        lines: [...r.lines].sort((a, b) => a.sort - b.sort),
-        payment: r.payments[0] ?? null,
+        lines: [...r.lines].sort((a, b) => a.sort - b.sort) as R["lines"],
+        payment: (r.payments[0] ?? null) as R["payments"][number] | null,
         property: prop
           ? {
               slug: prop.slug,
@@ -76,7 +89,7 @@ export const listStays = cache(async () => {
       };
     })
     .sort((a, b) => b.checkIn.localeCompare(a.checkIn));
-});
+}
 
 /** Bank details for paying a stay (tenant settings are not readable by guests directly). */
 export async function bankDetails(tenantId: string) {

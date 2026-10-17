@@ -130,6 +130,8 @@ DB funkcie s `p_token`). Upsell pre hosťa: `src/modules/upsell/guest/`, viac dn
 maskované cez `guest_checkin_view`.
 **Detail pobytu (Z44):** `ucet/pobyt/[id]/stay-detail.tsx` podľa fázy (`stay-state.ts`), stav z DB `guest_stay_state` (odomknutie pokynov,
 kód a Wi-Fi z `property_private`, zrušenie); moduly vkladajú riadky do karty Účet pobytu slotom `guest.stay.account`.
+Cez prístupový odkaz (Z49): `/r/<kód>` je potvrdenie v2.1 do zaplatenia, potom ten istý `StayDetail` s `token` (načítanie
+`src/core/guest/stay-access.ts` — účtom alebo kódom; moduly dostanú `accessToken`), navrchu „Uložiť do účtu“.
 **Správy (Z45, modul `messages`):** tabuľky `messages`, `message_threads`, `message_rules`, `message_overrides`, `quick_replies`; zápis len
 cez `send_message` (aj `p_token`), automatika `messages_tick` (cron 5 min). Moduly môžu pridať blok do e-mailu hosťa (`emailBlocks`) a nastavenia
 pri zapnutí (`onEnable`) — háčiky manifestu. Pri novom druhu e-mailu/upozornenia ber zoznam z poslednej migrácie (teraz `…290000`).

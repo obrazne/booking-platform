@@ -105,33 +105,9 @@ async function accountParts({ locale, reservationId, accessToken }: SlotProps) {
 }
 
 /**
- * Green "Účet pobytu" card on the access-link page (Z37, slot guest.stay.aside): the stay and the orders. In the
- * account the stay page has its own card and gets only the orders (guest.stay.account, Z44).
+ * Orders inside the stay's own "Účet pobytu" card (Z44, slot guest.stay.account) — in the account and, since Z49, through
+ * the access link too (the same stay detail).
  */
-export async function GuestStayAccountCard(props: SlotProps) {
-  if (!props.accessToken) return null;
-  const parts = await accountParts(props);
-  if (!parts) return null;
-  const card = (
-    <section
-      aria-label={parts.t("account.title")}
-      className="bg-surface-accent grid gap-3.5 rounded-lg px-6 py-[22px] text-white"
-    >
-      {parts.head}
-      {parts.lines}
-    </section>
-  );
-  return (
-    <>
-      <div className="hidden lg:block">{card}</div>
-      <AccountStrip label={parts.label} amount={parts.amount} open={parts.t("account.title")}>
-        {card}
-      </AccountStrip>
-    </>
-  );
-}
-
-/** Orders inside the stay's own "Účet pobytu" card in the account (Z44, slot guest.stay.account). */
 export async function GuestStayAccountLines(props: SlotProps) {
   const parts = await accountParts(props);
   if (!parts) return null;

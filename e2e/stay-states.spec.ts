@@ -4,7 +4,7 @@ import { GUEST_URL } from "../playwright.config";
 import { service, TENANT, TEST_DOMAIN } from "./helpers";
 
 // States of the stay page in the guest account (Z44, linka B): waiting for payment, before arrival with a request to
-// cancel, during the stay (unlocked tiles), cancelled. Ukážkový klient only (never STRÖMY), e-mails "+b".
+// cancel, during the stay (unlocked tiles), cancelled; the same detail through the access link after payment (Z49). Ukážkový klient only (never STRÖMY), e-mails "+b".
 
 const PROPERTY = "b0000000-0000-4000-8000-000000000006"; // Glamping Lúka
 const UNITS = [
@@ -21,7 +21,7 @@ async function stay(
   email: string,
   status: "pending_payment" | "confirmed",
   offsets: number[],
-): Promise<{ id: string; number: string }> {
+): Promise<{ id: string; number: string; token: string }> {
   for (const offset of offsets)
     for (const unit of UNITS) {
       const d = new Date();
@@ -55,9 +55,9 @@ async function stay(
         })
         .single();
       if (!error) {
-        const id = (data as { id: string }).id;
+        const { id, access_token: token } = data as { id: string; access_token: string };
         const { data: r } = await db.from("reservations").select("number").eq("id", id).single();
-        return { id, number: r!.number };
+        return { id, number: r!.number, token };
       }
       if (!/overlap|23P01|unavailable/i.test(`${error.code} ${error.message}`)) throw error;
     }
@@ -138,7 +138,8 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
     const before = await stay(email, "confirmed", later);
     const during = await stay(email, "confirmed", [0, -1]);
     const cancelled = await stay(email, "confirmed", later);
-    ids.push(pending.id, before.id, during.id, cancelled.id);
+    const byLink = await stay(email, "confirmed", later);
+    ids.push(pending.id, before.id, during.id, cancelled.id, byLink.id);
     const { error: cancelError } = await db.rpc("change_reservation_status", {
       p_reservation_id: cancelled.id,
       p_to: "cancelled",
@@ -150,7 +151,7 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
     await db
       .from("payments")
       .update({ status: "received", received_at: new Date().toISOString() })
-      .eq("reservation_id", before.id)
+      .in("reservation_id", [before.id, byLink.id])
       .eq("purpose", "reservation");
     await login(page, email);
 
@@ -208,6 +209,31 @@ test("stay page follows its state; the guest asks to cancel before arrival", asy
       .single();
     expect(requested?.cancellation_request_note).toBe("Choroba v rodine.");
     expect(requested?.status).toBe("confirmed");
+
+    // Access link (Z49): without the account the same detail of a paid stay, "Uložiť do účtu" on top; before the
+    // payment still the confirmation v2.1. The request to cancel goes with the code.
+    await page.context().clearCookies();
+    await page.goto(`${UKAZKA_URL}/r/${during.token}`);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Vitajte.");
+    await expect(page.getByText("4719#")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Uložiť do účtu" })).toBeVisible();
+    await axe(page);
+    await page.goto(`${UKAZKA_URL}/r/${pending.token}`);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Ďakujeme");
+    await expect(page.getByRole("button", { name: "Uložiť do účtu" })).toHaveCount(0);
+    await page.goto(`${UKAZKA_URL}/r/${byLink.token}`);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Tešíme sa na vás.");
+    await page.getByRole("button", { name: "Požiadať o zrušenie pobytu" }).click();
+    await expect(dialog).toContainText("vrátime 300,00 € (100 % ceny)");
+    await dialog.getByLabel(/Dôvod/).fill("Zmena plánov.");
+    await dialog.getByRole("button", { name: "Odoslať žiadosť" }).click();
+    await expect(page.getByText(/Žiadosť o zrušenie ste poslali/)).toBeVisible();
+    const { data: requestedByLink } = await db
+      .from("reservations")
+      .select("cancellation_request_note")
+      .eq("id", byLink.id)
+      .single();
+    expect(requestedByLink?.cancellation_request_note).toBe("Zmena plánov.");
   } finally {
     if (ids.length) {
       await db.from("email_outbox").delete().in("reservation_id", ids);

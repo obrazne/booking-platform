@@ -86,16 +86,16 @@ test("confirmation page v2.1: waiting for payment, then confirmed; calendar file
   expect(body).toContain(`DTSTART;VALUE=DATE:${stay.checkIn.replaceAll("-", "")}`);
   expect(body).not.toContain("Do doliny");
 
-  // Payment received → confirmed: thanks with the name, green strip, no QR.
+  // Payment received → confirmed: since Z49 the link shows the stay detail of the account (no QR, "Uložiť do účtu").
   await db
     .from("payments")
     .update({ status: "received", received_at: new Date().toISOString() })
     .eq("reservation_id", row.id);
   await db.from("reservations").update({ status: "confirmed" }).eq("id", row.id);
   await page.reload();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Tešíme sa na vás, Peter.");
-  await expect(page.getByText(/Platba .* prijatá/)).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Tešíme sa na vás.");
+  await expect(page.getByRole("button", { name: "Uložiť do účtu" })).toBeVisible();
   await expect(page.getByRole("img", { name: /PAY by square/ })).toHaveCount(0);
-  await expect(page.locator("ol li[aria-current='step']")).toContainText("Pokyny k príchodu");
+  await expect(page.getByRole("region", { name: "Účet pobytu" })).toBeVisible();
   await noSeriousA11y(page);
 });

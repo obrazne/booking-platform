@@ -10,12 +10,15 @@ import { requestCancellation } from "@/core/guest/stay-actions";
  */
 export function CancelDialog({
   reservationId,
+  token,
   daysToArrival,
   policy,
   ownerName,
   outcome,
 }: {
   reservationId: string;
+  /** The stay opened through the access link (Z49): the request goes with its code. */
+  token?: string;
   daysToArrival: number;
   policy: string;
   ownerName: string | null;
@@ -105,7 +108,7 @@ export function CancelDialog({
               onClick={() =>
                 start(async () => {
                   setError(false);
-                  const r = await requestCancellation(reservationId, note);
+                  const r = await requestCancellation(reservationId, note, token);
                   if (r.ok) ref.current?.close();
                   else setError(true);
                 })

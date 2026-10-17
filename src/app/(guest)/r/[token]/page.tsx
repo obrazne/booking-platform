@@ -26,11 +26,16 @@ import {
   tenantPublicHost,
 } from "@/core/booking/reservation-view";
 import { cn } from "@/lib/utils";
+import { StayDetail } from "../../ucet/pobyt/[id]/stay-detail";
 import { CancelToggle, CopyButton } from "./confirm-ui";
+import { SaveToAccount } from "./save-to-account";
 
 const TZ = "Europe/Bratislava";
 
-/** Guest's reservation behind the secret link (no account needed) — confirmation page v2.1. */
+/**
+ * Guest's reservation behind the secret link (no account needed): confirmation page v2.1 until it is paid, then the
+ * stay detail of the account (Z49).
+ */
 export default async function ReservationPage({ params }: PageProps<"/r/[token]">) {
   const { token } = await params;
   const [t, tg, locale, tenant, host] = await Promise.all([
@@ -59,6 +64,11 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
   }
 
   const x = await reservationExtras(r);
+  // Paid (Z49, v2.4): the same stay detail as in the account (states, tiles, Účet pobytu, cancellation with the bands)
+  // with "Uložiť do účtu" on top. Until the payment the confirmation v2.1 stays (payment, steps — follows the cart).
+  if (x.paidAt || ["confirmed", "in_progress", "completed"].includes(r.status)) {
+    return <StayDetail token={token} crumbs={<SaveToAccount token={token} />} />;
+  }
   const fmt = (cents: number) => formatMoney(money(cents, r.currency), locale);
   const whole = (cents: number) =>
     cents % 100 === 0
