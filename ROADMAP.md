@@ -39,6 +39,8 @@ Pravidlá spolupráce (platia pre obe):
 - **Migrácie:** názov s aktuálnym časom tesne pred vytvorením (po `git pull`); ak `db push` hlási poradie, použi `npx supabase db push --include-all`.
 - **Testy proti stagingu:** každá linka púšťa len testy svojej úlohy; testovacie e-maily s označením linky (`…+a@booking-platform.test` /
   `…+b@…`) a upratuje len svoje. **Celú sadu e2e a snímky prehliadky „Čo je nové“ spúšťa linka A až na konci fronty.**
+- **Hosť pre zónu hosťa (Martin 17. 10.):** schránka `demo-host@obrazne.sk` **neexistuje** — Martin používa `info+host@obrazne.sk`
+  (na STRÖMY už priradený k pobytom 2026-0648 a 2026-0688). V ukážkových dátach a v CLAUDE.md nahraď `demo-host@obrazne.sk` touto adresou.
 - Nečakaj na CI medzi úlohami — výsledok CI skontroluj na konci a oprav, ak niečo spadlo.
 
 *Hotové Z1–Z30 (analýza, kostra platformy, MVP Chalet STRÖMY, stránka hosťa a košík podľa vizuálu v2–v2.2, potvrdenie rezervácie,
