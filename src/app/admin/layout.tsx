@@ -2,21 +2,20 @@ import { getTranslations } from "next-intl/server";
 import {
   BookOpenCheck,
   CalendarCheck,
-  CalendarOff,
-  CalendarRange,
+  ChartLine,
+  Gift,
   House,
   LayoutDashboard,
-  MessageSquareQuote,
   RefreshCw,
   Settings,
   Shield,
-  Users,
 } from "lucide-react";
 import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
 import { getEnabledModules } from "@/core/modules/registry";
+import type { NavGroupKey } from "@/core/modules/types";
 import { getActiveMembership } from "@/core/tenant/active";
 import { DEFAULT_THEME } from "@/core/theme/theme";
 import { ThemeStyle } from "@/core/theme/theme-style";
@@ -46,37 +45,89 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       : Promise.resolve({ count: 0 }),
   ]);
 
+  // Side menu v1.2: groups with sub-items; modules join a group through their manifest.
   const items: ShellNavItem[] = [];
   if (active) {
+    const { data: properties } = await supabase
+      .from("properties")
+      .select("id")
+      .eq("tenant_id", active.tenantId)
+      .order("sort")
+      .limit(2);
+    const extra: Record<NavGroupKey, ShellNavItem[]> = {
+      reservations: [],
+      property: [],
+      offer: [],
+      connections: [],
+      settings: [],
+    };
+    for (const m of await getEnabledModules(active.tenantId)) {
+      for (const nav of m.navItems ?? []) {
+        // Module labels live in the module's own namespace; key is checked when the module is written.
+        const label = t(`${m.messages}.${nav.labelKey}` as Parameters<typeof t>[0]);
+        extra[nav.group].push({ href: nav.href, label });
+      }
+    }
+    const single = properties?.length === 1 ? `/admin/properties/${properties[0]!.id}` : null;
     items.push(
       { href: "/admin", label: t("nav.dashboard"), icon: <LayoutDashboard /> },
       {
-        href: "/admin/reservations",
         label: t("nav.reservations"),
         icon: <BookOpenCheck />,
         badge: waiting ?? 0,
+        children: [
+          { href: "/admin/reservations", label: t("nav.list"), badge: waiting ?? 0 },
+          { href: "/admin/calendar", label: t("nav.calendar") },
+          { href: "/admin/blocks", label: t("nav.blocks") },
+          ...extra.reservations,
+        ],
       },
-      { href: "/admin/calendar", label: t("nav.calendar"), icon: <CalendarRange /> },
-      { href: "/admin/properties", label: t("nav.properties"), icon: <House /> },
-    );
-    for (const m of await getEnabledModules(active.tenantId)) {
-      for (const nav of m.navItems ?? []) {
-        const Icon = nav.icon;
-        // Module labels live in the module's own namespace; key is checked when the module is written.
-        const label = t(`${m.messages}.${nav.labelKey}` as Parameters<typeof t>[0]);
-        items.push({ href: nav.href, label, icon: <Icon /> });
-      }
-    }
-    items.push(
-      { href: "/admin/testimonials", label: t("nav.testimonials"), icon: <MessageSquareQuote /> },
-      { href: "/admin/blocks", label: t("nav.blocks"), icon: <CalendarOff />, group: "occupancy" },
-      { href: "/admin/ical", label: t("nav.ical"), icon: <RefreshCw />, group: "occupancy" },
-      { href: "/admin/team", label: t("nav.team"), icon: <Users />, group: "bottom" },
-      { href: "/admin/settings", label: t("nav.settings"), icon: <Settings />, group: "bottom" },
+      // One property: straight to its tabs. Several: the list first, the tabs are on each property.
+      single
+        ? {
+            label: t("nav.property"),
+            icon: <House />,
+            children: [
+              { href: single, label: t("nav.propertyData") },
+              { href: `${single}/photos`, label: t("nav.photos") },
+              { href: `${single}/pricing`, label: t("nav.pricing") },
+              { href: `${single}/page`, label: t("nav.page") },
+              { href: `${single}/documents`, label: t("nav.documents") },
+              ...extra.property,
+            ],
+          }
+        : { href: "/admin/properties", label: t("nav.properties"), icon: <House /> },
+      {
+        label: t("nav.offer"),
+        icon: <Gift />,
+        children: [...extra.offer, { href: "/admin/testimonials", label: t("nav.testimonials") }],
+      },
+      { href: "/admin/statistics", label: t("nav.statistics"), icon: <ChartLine /> },
+      {
+        label: t("nav.connections"),
+        icon: <RefreshCw />,
+        children: [{ href: "/admin/ical", label: t("nav.ical") }, ...extra.connections],
+      },
+      {
+        label: t("nav.settings"),
+        icon: <Settings />,
+        section: "bottom",
+        children: [
+          { href: "/admin/settings", label: t("nav.general") },
+          { href: "/admin/team", label: t("nav.team") },
+          { href: "/admin/settings/notifications", label: t("nav.notifications") },
+          ...extra.settings,
+        ],
+      },
     );
   }
   if (admin) {
-    items.push({ href: "/platform", label: t("nav.platform"), icon: <Shield />, group: "bottom" });
+    items.push({
+      href: "/platform",
+      label: t("nav.platform"),
+      icon: <Shield />,
+      section: "bottom",
+    });
   }
   const tourNew = active ? await tourIsNewForUser("owner") : false;
 

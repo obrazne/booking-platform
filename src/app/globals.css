@@ -275,8 +275,28 @@
   min-height: 2.5rem;
   padding-inline: 1rem;
 }
+/* Side menu v1.2: full-width rows, active = soft accent + 3 px line on the left, hairline between main entries. */
+:root:has([data-admin-ui]) {
+  --nav-hover: #efede7;
+  --nav-active: color-mix(in srgb, var(--primary) 10%, transparent);
+  --nav-active-fg: var(--primary);
+  --nav-line-active: var(--primary);
+  --nav-sep: #e7e4dc;
+}
+:root.dark:has([data-admin-ui]) {
+  --nav-hover: rgb(255 255 255 / 0.05);
+  --nav-active: rgb(255 255 255 / 0.08);
+  --nav-active-fg: #ffffff;
+  --nav-sep: rgb(255 255 255 / 0.08);
+}
 /* Control center menu (v1.1): graphite, so the admin always knows it is not the client's administration. */
 .shell-control {
+  /* v1.2: text always light — hover white 6 %, active white 10 % with a lighter accent line. */
+  --nav-hover: rgb(255 255 255 / 0.06);
+  --nav-active: rgb(255 255 255 / 0.1);
+  --nav-active-fg: #ffffff;
+  --nav-line-active: color-mix(in srgb, var(--primary) 45%, white);
+  --nav-sep: rgb(255 255 255 / 0.1);
   --sidebar: #2b3036;
   --sidebar-foreground: rgb(255 255 255 / 0.82);
   --sidebar-accent: rgb(255 255 255 / 0.14);
@@ -288,9 +308,6 @@
 }
 .shell-control .label-mono {
   color: rgb(255 255 255 / 0.66);
-}
-.shell-control .nav-link:not([aria-current]):hover {
-  background: rgb(255 255 255 / 0.08);
 }
 .shell-control .avatar {
   background: rgb(255 255 255 / 0.16);

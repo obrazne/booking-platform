@@ -8,6 +8,9 @@ import { OCCUPANCY_CLASS, StatusPill } from "@/core/admin/status";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { money } from "@/core/money/money";
 import { ModuleSlot } from "@/core/modules/module-slot";
+import { periodMonths } from "@/core/stats/compute";
+import { loadMonthlyStats } from "@/core/stats/load";
+import { MiniRevenueChart } from "@/core/stats/mini-chart";
 import { addDays, diffDays, isoWeekday, todayIso } from "@/core/pricing/dates";
 import { getActiveMembership } from "@/core/tenant/active";
 import { getGuestSiteUrl, getTenantInfo } from "@/core/tenant/info";
@@ -16,7 +19,6 @@ import { cn } from "@/lib/utils";
 import { MarkPaidButton } from "./reservations/quick-actions";
 
 const OPEN = ["pending_payment", "confirmed", "in_progress"];
-const PAID = ["confirmed", "in_progress", "completed"];
 
 function hourIn(timeZone: string): number {
   return Number(
@@ -59,6 +61,8 @@ export default async function AdminDashboard() {
     events,
     horizonEvents,
     sync,
+    lastMonths,
+    yearMonths,
   ] = await Promise.all([
     user
       ? supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle()
@@ -106,6 +110,12 @@ export default async function AdminDashboard() {
     loadOccupancy(tenant.id, weekStart, mapEnd),
     loadOccupancy(tenant.id, today, horizon),
     loadSyncState(tenant.id),
+    (() => {
+      const { from, to } = periodMonths({ kind: "12m" }, today);
+      return loadMonthlyStats(tenant.id, from, to);
+    })(),
+    // Revenue of the year by date of stay — the same numbers as Statistics.
+    loadMonthlyStats(tenant.id, `${year}-01-01`, `${year}-12-01`),
   ]);
 
   const first = (profile.data?.full_name ?? "").split(" ")[0] || null;
@@ -114,9 +124,7 @@ export default async function AdminDashboard() {
   const pending = waiting.data ?? [];
   const asks = requests.data ?? [];
   const rows = yearRows.data ?? [];
-  const revenue = rows
-    .filter((r) => PAID.includes(r.status))
-    .reduce((s, r) => s + r.total_cents, 0);
+  const revenue = yearMonths.reduce((sum, m) => sum + m.revenueCents, 0);
   const bp = settings.data?.portal_commission_bp ?? 1500;
   const saved = Math.round((revenue * bp) / 10000);
   const nightsTotal = 90 * Math.max(1, units.count ?? 1);
@@ -296,6 +304,13 @@ export default async function AdminDashboard() {
             className="border-line border-t border-l lg:border-t-0"
           />
         </section>
+
+        <MiniRevenueChart
+          rows={lastMonths}
+          today={today}
+          locale={locale}
+          currency={tenant.currency}
+        />
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
           <section className="grid gap-3.5">

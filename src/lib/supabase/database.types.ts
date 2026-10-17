@@ -2596,6 +2596,18 @@ export type Database = {
           slug: string
         }[]
       }
+      tenant_monthly_stats: {
+        Args: { p_from: string; p_tenant_id: string; p_to: string }
+        Returns: {
+          available_nights: number
+          future_cents: number
+          month: string
+          nights_sold: number
+          occupied_nights: number
+          reservations: number
+          revenue_cents: number
+        }[]
+      }
       tenant_public_contact: {
         Args: { p_tenant_id: string }
         Returns: {

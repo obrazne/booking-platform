@@ -7,7 +7,7 @@ import { servicesSection } from "./section";
 export const servicesModule: ModuleManifest = {
   key: "services",
   messages: "modules.services",
-  navItems: [{ href: "/admin/services", labelKey: "nav", icon: ConciergeBell }],
+  navItems: [{ href: "/admin/services", group: "offer", labelKey: "nav", icon: ConciergeBell }],
   slots: { "admin.dashboard.cards": ServicesDashboardCard },
   sections: [servicesSection],
 };

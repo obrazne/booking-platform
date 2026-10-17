@@ -17,9 +17,14 @@ export type SlotName = "admin.dashboard.cards" | "booking.form.sections" | "book
 
 export type SlotProps = { tenantId: string; locale: string };
 
+/** Groups of the side menu (v1.2) a module item can join; an empty group is not shown. */
+export type NavGroupKey = "reservations" | "property" | "offer" | "connections" | "settings";
+
 export type ModuleNavItem = {
   /** Path under /admin, e.g. "/admin/services". */
   href: string;
+  /** Menu group the item belongs to (v1.2). */
+  group: NavGroupKey;
   /** Translation key inside the module's message namespace. */
   labelKey: string;
   icon: LucideIcon;
