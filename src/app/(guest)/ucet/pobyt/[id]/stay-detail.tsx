@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ChevronLeft, Clock, FileText, KeyRound, MessageCircle, Phone } from "lucide-react";
+import { ChevronLeft, FileText, Lock, MessageCircle, Phone } from "lucide-react";
+import { CopyButton } from "@/app/(guest)/r/[token]/confirm-ui";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import {
-  arrivalInstructions,
   arrivalNavigation,
   bankDetails,
   listStays,
@@ -20,28 +20,40 @@ import { diffDays, todayIso } from "@/core/pricing/dates";
 import { Container } from "@/core/sections/ui";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rebookHref, StatusBadge } from "../../stay-ui";
-import { CancelStayForm } from "../../zone-forms";
+import { CancelDialog } from "./cancel-dialog";
+import { stayPhase, stayStateOf, type StayPhase } from "./stay-state";
 
 /**
- * One stay in the guest zone (B10, design v2.3 `UcetPobyt`): intro, then the content (payment, arrival instructions,
- * modules, documents, breakdown, cancellation) and on the right what modules add (stay account) with the contact.
+ * One stay in the guest zone (B10, designs v2.3 `UcetPobyt` and v2.4 `StavyPobytu`). The page follows the state:
+ * waiting for payment (payment card on top, ordering after payment), before arrival, during the stay (unlocked
+ * instructions as tiles), after departure, cancelled (when and what is returned, no modules). On the right the green
+ * "Účet pobytu" with the price breakdown and what modules add (slot guest.stay.account), and the contact.
  */
 export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNode }) {
-  const { tenant } = await requireGuest();
+  const { tenant, supabase } = await requireGuest();
   const stay = (await listStays()).find((s) => s.id === id);
   if (!stay) notFound();
-  const [t, tg, locale, docs, instructions] = await Promise.all([
+  const today = todayIso();
+  const phase = stayPhase(stay.status, stay.checkIn, stay.checkOut, today);
+  const [t, tg, ts, locale, docs, state, { data: settings }] = await Promise.all([
     getTranslations("guest.account"),
     getTranslations("guest"),
+    getTranslations("guest.stay"),
     getLocale(),
     stayDocuments(stay),
-    arrivalInstructions(stay.id),
+    supabase
+      .rpc("guest_stay_state", { p_reservation_id: stay.id })
+      .then(({ data }) => stayStateOf(data)),
+    createAdminClient()
+      .from("tenant_settings")
+      .select("contact_name, contact_phone, whatsapp_phone, cancellation_policy")
+      .eq("tenant_id", tenant.id)
+      .maybeSingle(),
   ]);
   const fmt = (cents: number) => formatMoney(money(cents, stay.currency), locale);
-  const pending = stay.status === "pending_payment";
-  const bank = pending ? await bankDetails(tenant.id) : null;
+  const bank = phase === "pending" ? await bankDetails(tenant.id) : null;
   const qr =
-    pending && bank?.iban && stay.payment
+    phase === "pending" && bank?.iban && stay.payment
       ? await payBySquareSvg({
           iban: bank.iban,
           bic: bank.bic ?? undefined,
@@ -52,33 +64,41 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
           note: `${stay.property?.name ?? ""} ${stay.number}`.trim(),
         }).catch(() => null)
       : null;
-  const { data: settings } = await createAdminClient()
-    .from("tenant_settings")
-    .select("arrival_email_days_before, contact_name, contact_phone, whatsapp_phone")
-    .eq("tenant_id", tenant.id)
-    .maybeSingle();
+  const arrival = state?.arrival ?? null;
+  const navigation = arrival?.visible ? await arrivalNavigation(stay.property_id) : null;
   const rebook = rebookHref(stay);
-  const navigation = instructions ? await arrivalNavigation(stay.property_id) : null;
-  const active = stay.status !== "cancelled" && stay.status !== "completed";
-  const daysToArrival = diffDays(todayIso(), stay.checkIn);
-  const hero =
-    stay.status === "cancelled"
-      ? t("hero.cancelled")
-      : stay.status === "completed"
-        ? t("hero.completed")
-        : stay.status === "in_progress"
-          ? t("hero.inProgress")
-          : t("hero.upcoming");
+  const daysToArrival = diffDays(today, stay.checkIn);
   const contactName = settings?.contact_name?.trim() || null;
+  const ownerFirst = contactName?.split(/\s+/)[0] ?? null;
   const initials = (contactName ?? stay.property?.name ?? tenant.name)
     .split(/\s+/)
+    .filter((w) => /^\p{L}/u.test(w))
     .map((w) => w[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const policy = tr(settings?.cancellation_policy, locale);
+  const policyFirst = policy ? policy.split(/(?<=\.)\s/)[0]! : "";
+  const contactHref = settings?.whatsapp_phone
+    ? `https://wa.me/${settings.whatsapp_phone.replace(/\D/g, "")}`
+    : settings?.contact_phone
+      ? `tel:${settings.contact_phone.replace(/\s/g, "")}`
+      : null;
+  const iban = bank?.iban?.replace(/\s/g, "") ?? "";
+  const vs = stay.payment?.variable_symbol ?? "";
+  const hero: Record<StayPhase, [string, string]> = {
+    pending: [ts("hero.pending"), ts("hero.pending2")],
+    before: [t("hero.upcoming"), stay.property?.name ?? ""],
+    during: [ts("hero.during"), ts("hero.during2")],
+    after: [t("hero.completed"), stay.property?.name ?? ""],
+    cancelled: [ts("hero.cancelled"), ts("hero.cancelled2")],
+  };
+  const modules = phase !== "cancelled";
+  const canRequestCancel =
+    (stay.status === "pending_payment" || stay.status === "confirmed") && daysToArrival > 0;
 
   return (
-    <>
+    <main>
       <section className="border-b border-[#e3e6e2] bg-[linear-gradient(165deg,#f9f8f5_0%,#f2f3f0_50%,#e9eeeb_100%)]">
         <Container className="flex flex-wrap items-end justify-between gap-5 py-9 sm:py-10">
           <div className="grid gap-3">
@@ -97,7 +117,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               <StatusBadge status={stay.status} />
             </div>
             <h1 className="font-heading text-ink text-[32px] leading-[1.08] font-extrabold tracking-tight text-balance sm:text-[40px]">
-              {hero} <span className="text-ink-soft">{stay.property?.name ?? ""}</span>
+              {hero[phase][0]} <span className="text-ink-soft">{hero[phase][1]}</span>
             </h1>
             <p className="text-ink text-[17px]">
               {formatDate(stay.checkIn, locale)} – {formatDate(stay.checkOut, locale)} ·{" "}
@@ -105,7 +125,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               {tg("cart.guestsCount", { count: stay.adults + stay.children })}
               {stay.infants ? ` + ${stay.infants}` : ""}
             </p>
-            {rebook && !active ? (
+            {rebook && phase === "after" ? (
               <Link
                 href={rebook}
                 className="border-line text-ink inline-flex min-h-11 items-center justify-self-start rounded-full border bg-white px-5 text-sm font-medium"
@@ -114,7 +134,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               </Link>
             ) : null}
           </div>
-          {active && daysToArrival > 0 ? (
+          {(phase === "before" || phase === "pending") && daysToArrival > 0 ? (
             <span className="font-mono text-xs tracking-[0.08em] text-[#5a6672] uppercase">
               {t("arrivesIn", { count: daysToArrival })}
             </span>
@@ -124,87 +144,246 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
 
       <Container className="grid items-start gap-10 pt-10 pb-16 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
         <div className="grid min-w-0 gap-10">
-          {pending && stay.payment ? (
-            <section className="bg-card border-line grid gap-6 rounded-lg border p-6 sm:grid-cols-[1fr_200px]">
-              <div className="grid content-start gap-3">
-                <h2 className="font-heading text-xl font-bold">{tg("reservation.payTitle")}</h2>
-                {stay.payment_due_at ? (
-                  <p className="inline-flex items-center gap-2 text-sm">
-                    <Clock className="size-4" />
-                    {t("payBy", {
-                      date: formatDateTime(stay.payment_due_at, locale, "Europe/Bratislava"),
-                    })}
-                  </p>
-                ) : null}
-                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-                  <dt className="text-muted-foreground">{tg("reservation.amount")}</dt>
-                  <dd className="text-base font-semibold tabular-nums">{fmt(stay.total_cents)}</dd>
-                  <dt className="text-muted-foreground">{tg("reservation.iban")}</dt>
-                  <dd className="font-mono">{bank?.iban?.replace(/(.{4})/g, "$1 ").trim()}</dd>
-                  <dt className="text-muted-foreground">{tg("reservation.holder")}</dt>
-                  <dd>{bank?.account_holder}</dd>
-                  <dt className="text-muted-foreground">{tg("reservation.vs")}</dt>
-                  <dd className="font-mono">{stay.payment.variable_symbol}</dd>
-                </dl>
-              </div>
+          {/* Waiting for payment: the payment card on top (design v2.4). */}
+          {phase === "pending" && stay.payment ? (
+            <section
+              aria-labelledby="pay-title"
+              className="grid overflow-hidden rounded-lg border border-[#ecd9c4] bg-[#fdf7f0] sm:grid-cols-[220px_minmax(0,1fr)]"
+            >
               {qr ? (
-                <div className="grid content-start justify-items-center gap-2">
+                <div className="order-2 grid content-start justify-items-center gap-2 border-t border-[#ecd9c4] bg-white p-5 sm:order-1 sm:border-t-0 sm:border-r">
                   <div
                     role="img"
                     aria-label={tg("reservation.qrHint")}
-                    className="w-full max-w-[200px] rounded-xl bg-white p-2"
+                    className="w-full max-w-[180px]"
                     dangerouslySetInnerHTML={{ __html: qr }}
                   />
-                  <p className="text-muted-foreground text-center text-xs">
-                    {tg("reservation.qrHint")}
-                  </p>
+                  <span className="text-ink font-mono text-[11px] tracking-widest uppercase">
+                    PAY by square
+                  </span>
                 </div>
+              ) : null}
+              <div className="order-1 grid content-start gap-3 p-5 sm:order-2 sm:p-6">
+                <span className="text-xs font-medium tracking-[0.16em] text-[#8a4a1c] uppercase">
+                  {ts("pay.kicker")}
+                </span>
+                <h2 id="pay-title" className="text-ink text-[22px] font-extrabold tracking-tight">
+                  {stay.payment_due_at
+                    ? ts("pay.until", {
+                        date: formatDateTime(stay.payment_due_at, locale, "Europe/Bratislava"),
+                      })
+                    : ts("pay.title")}{" "}
+                  <span className="text-ink-soft">{ts("pay.held")}</span>
+                </h2>
+                <dl className="grid gap-1">
+                  {[
+                    {
+                      k: tg("reservation.amount"),
+                      v: fmt(stay.total_cents),
+                      copy: (stay.total_cents / 100).toFixed(2).replace(".", ","),
+                      big: true,
+                    },
+                    {
+                      k: tg("reservation.iban"),
+                      v: iban.replace(/(.{4})/g, "$1 ").trim(),
+                      copy: iban,
+                    },
+                    { k: tg("reservation.vs"), v: vs, copy: vs },
+                  ].map((row) => (
+                    <div
+                      key={row.k}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 border-b border-[#ecd9c4] py-2 last:border-b-0"
+                    >
+                      <dt className="font-mono text-[11px] tracking-[0.1em] text-[#5a6672] uppercase">
+                        {row.k}
+                      </dt>
+                      <dd
+                        className={
+                          row.big
+                            ? "text-ink col-start-1 text-xl font-extrabold tabular-nums"
+                            : "text-ink col-start-1 font-mono text-[15px] break-all"
+                        }
+                      >
+                        {row.v}
+                      </dd>
+                      {row.copy ? (
+                        <dd className="col-start-2 row-span-2 row-start-1">
+                          <CopyButton value={row.copy} label={row.k} />
+                        </dd>
+                      ) : null}
+                    </div>
+                  ))}
+                </dl>
+                <p className="text-sm text-[#5b3a1f]">{ts("pay.autoCancel")}</p>
+              </div>
+            </section>
+          ) : null}
+
+          {/* Cancelled: when, why and what is returned (design v2.4). */}
+          {phase === "cancelled" ? (
+            <section className="grid gap-3 rounded-lg border border-[#e3e1db] bg-[#f6f5f2] p-6">
+              <h2 className="text-ink text-[22px] font-extrabold tracking-tight">
+                {ts("cancelled.title")}
+              </h2>
+              <p className="text-[15px] leading-relaxed text-[#3b3d42]">
+                {state?.cancelledAt
+                  ? ts("cancelled.when", {
+                      date: formatDate(state.cancelledAt.slice(0, 10), locale),
+                    })
+                  : ts("cancelled.whenUnknown")}
+                {state?.cancelledReason
+                  ? ` ${ts("cancelled.reason", { reason: state.cancelledReason })}`
+                  : ""}{" "}
+                {state && state.refundedCents > 0
+                  ? ts("cancelled.refunded", { amount: fmt(state.refundedCents) })
+                  : stay.payment?.status === "received"
+                    ? ts("cancelled.refundByPolicy", { name: ownerFirst ?? "none" })
+                    : ""}
+              </p>
+              {rebook ? (
+                <Link
+                  href={rebook}
+                  className="inline-flex min-h-11 items-center justify-self-start rounded-full bg-[#2b3036] px-5 text-sm font-bold text-white hover:bg-[#0c0e11]"
+                >
+                  {ts("cancelled.newDates")}
+                </Link>
               ) : null}
             </section>
           ) : null}
 
-          <ModuleSlot
-            name="guest.stay.top"
-            tenantId={tenant.id}
-            locale={locale}
-            reservationId={stay.id}
-          />
+          {modules ? (
+            <ModuleSlot
+              name="guest.stay.top"
+              tenantId={tenant.id}
+              locale={locale}
+              reservationId={stay.id}
+            />
+          ) : null}
 
-          {active ? (
-            <section className="bg-surface border-line grid gap-3 rounded-lg border p-6">
-              <h2 className="font-heading inline-flex items-center gap-2 text-xl font-bold">
-                <KeyRound className="text-primary size-5" /> {t("arrival")}
-              </h2>
-              {instructions ? (
-                <>
-                  <p className="leading-relaxed whitespace-pre-line">{tr(instructions, locale)}</p>
+          {/* Arrival instructions: unlocked as tiles, or when and why they unlock. */}
+          {arrival && (phase === "before" || phase === "during" || phase === "pending") ? (
+            arrival.visible ? (
+              <section
+                aria-labelledby="arrival-title"
+                className="bg-surface border-line grid gap-4 rounded-lg border p-6"
+              >
+                <div className="grid gap-1">
+                  <span className="text-accent-2 text-xs font-medium tracking-[0.16em] uppercase">
+                    {ts("arrival.kicker")}
+                  </span>
+                  <h2
+                    id="arrival-title"
+                    className="text-ink text-[22px] font-extrabold tracking-tight"
+                  >
+                    {ts("arrival.title")}
+                  </h2>
+                </div>
+                <dl className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  {[
+                    arrival.doorCode
+                      ? {
+                          k: ts("arrival.doorCode"),
+                          v: arrival.doorCode,
+                          n: arrival.checkInFrom
+                            ? ts("arrival.doorFrom", { time: arrival.checkInFrom })
+                            : "",
+                        }
+                      : null,
+                    arrival.wifiName
+                      ? {
+                          k: ts("arrival.wifi"),
+                          v: arrival.wifiName,
+                          n: arrival.wifiPassword
+                            ? ts("arrival.wifiPassword", { password: arrival.wifiPassword })
+                            : "",
+                        }
+                      : null,
+                    arrival.checkInFrom
+                      ? {
+                          k: ts("arrival.checkIn"),
+                          v: ts("arrival.from", { time: arrival.checkInFrom }),
+                          n: "",
+                        }
+                      : null,
+                    arrival.checkOutUntil
+                      ? {
+                          k: ts("arrival.checkOut"),
+                          v: ts("arrival.until", { time: arrival.checkOutUntil }),
+                          n: "",
+                        }
+                      : null,
+                  ]
+                    .filter((x): x is { k: string; v: string; n: string } => Boolean(x))
+                    .map((f) => (
+                      <div
+                        key={f.k}
+                        className="grid content-start gap-1 rounded-[10px] border border-[#e9e5db] bg-white px-4 py-3"
+                      >
+                        <dt className="font-mono text-[11px] tracking-[0.1em] text-[#5a6672] uppercase">
+                          {f.k}
+                        </dt>
+                        <dd className="text-ink text-lg font-extrabold tracking-tight [overflow-wrap:anywhere]">
+                          {f.v}
+                        </dd>
+                        {f.n ? <dd className="text-xs text-[#5a6672]">{f.n}</dd> : null}
+                      </div>
+                    ))}
+                </dl>
+                {arrival.instructions ? (
+                  <p className="leading-relaxed whitespace-pre-line">
+                    {tr(arrival.instructions, locale)}
+                  </p>
+                ) : null}
+                <div className="flex flex-wrap gap-2.5">
                   {navigation ? (
                     <a
                       href={navigation}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-ink border-line inline-flex min-h-10 items-center gap-2 self-start rounded-full border px-4 text-sm font-medium hover:bg-black/5"
+                      className="text-ink border-line inline-flex min-h-10 items-center gap-2 rounded-full border bg-white px-4 text-sm font-medium hover:bg-black/5"
                     >
                       {tg("v2.navigate")} <span aria-hidden>↗</span>
                     </a>
                   ) : null}
-                </>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t("arrivalLater", { days: settings?.arrival_email_days_before ?? 3 })}
-                </p>
-              )}
-            </section>
+                  {contactHref ? (
+                    <a
+                      href={contactHref}
+                      className="text-ink border-line inline-flex min-h-10 items-center gap-2 rounded-full border bg-white px-4 text-sm font-medium hover:bg-black/5"
+                    >
+                      <MessageCircle className="size-4" /> {ts("arrival.problem")}
+                    </a>
+                  ) : null}
+                </div>
+              </section>
+            ) : (
+              <section className="border-line flex items-center gap-3.5 rounded-[10px] border px-[22px] py-4">
+                <Lock className="size-5 shrink-0 text-[#8b929b]" aria-hidden />
+                <span className="grid gap-0.5">
+                  <span className="text-ink text-[15px] font-medium">{ts("arrival.locked")}</span>
+                  <span className="text-[13px] text-[#5a6672]">
+                    {arrival.needsPayment
+                      ? ts("arrival.afterPayment", { date: formatDate(arrival.from, locale) })
+                      : arrival.needsCheckin
+                        ? arrival.from <= today
+                          ? ts("arrival.afterCheckinNow")
+                          : ts("arrival.afterCheckin", { date: formatDate(arrival.from, locale) })
+                        : ts("arrival.on", { date: formatDate(arrival.from, locale) })}
+                  </span>
+                </span>
+              </section>
+            )
           ) : null}
 
-          <ModuleSlot
-            name="guest.stay.main"
-            tenantId={tenant.id}
-            locale={locale}
-            reservationId={stay.id}
-          />
+          {modules ? (
+            <ModuleSlot
+              name="guest.stay.main"
+              tenantId={tenant.id}
+              locale={locale}
+              reservationId={stay.id}
+            />
+          ) : null}
 
-          {docs.length > 0 ? (
+          {docs.length > 0 && phase !== "cancelled" ? (
             <section className="grid gap-3">
               <h2 className="font-heading text-xl font-bold">{t("documents")}</h2>
               <ul className="border-line divide-line grid divide-y border-y">
@@ -230,46 +409,102 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
             </section>
           ) : null}
 
-          <section className="grid gap-3">
-            <h2 className="font-heading text-xl font-bold">{tg("reservation.breakdown")}</h2>
-            <dl className="grid gap-2 text-sm">
-              {stay.lines.map((l, i) => (
-                <div key={i} className="flex justify-between gap-3">
-                  <dt className="text-muted-foreground">
-                    {l.label}
-                    {l.kind === "accommodation"
-                      ? ` · ${l.quantity} × ${fmt(l.unit_amount_cents)}`
-                      : ""}
-                  </dt>
-                  <dd className="tabular-nums">{fmt(l.amount_cents)}</dd>
-                </div>
-              ))}
-              <div className="border-line flex justify-between border-t pt-2 text-base font-semibold">
-                <dt>{tg("booking.total")}</dt>
-                <dd className="tabular-nums">{fmt(stay.total_cents)}</dd>
-              </div>
-            </dl>
-          </section>
-
-          {stay.status === "pending_payment" || stay.status === "confirmed" ? (
-            <section className="grid gap-3">
-              <h2 className="font-heading text-xl font-bold">{tg("reservation.cancelTitle")}</h2>
+          {/* Change or cancellation: a short block and the window (only before the stay). */}
+          {canRequestCancel ? (
+            <section className="border-line grid gap-2 border-t pt-6 text-[15px]">
+              <h2 className="text-ink font-bold">{ts("change.title")}</h2>
               {stay.cancellation_requested_at ? (
-                <p className="text-sm">{tg("reservation.cancelRequested")}</p>
+                <p className="text-[#5a6672]">
+                  {ts("change.requested", {
+                    date: formatDate(stay.cancellation_requested_at.slice(0, 10), locale),
+                    name: ownerFirst ?? "none",
+                  })}
+                </p>
               ) : (
-                <CancelStayForm reservationId={stay.id} />
+                <>
+                  <p className="text-[#5a6672]">
+                    {policyFirst ? `${policyFirst} ` : ""}
+                    {ts("change.text")}
+                  </p>
+                  <CancelDialog
+                    reservationId={stay.id}
+                    daysToArrival={daysToArrival}
+                    policy={policy}
+                    ownerName={ownerFirst}
+                  />
+                </>
               )}
             </section>
           ) : null}
         </div>
 
         <aside className="grid content-start gap-4 lg:sticky lg:top-6">
-          <ModuleSlot
-            name="guest.stay.aside"
-            tenantId={tenant.id}
-            locale={locale}
-            reservationId={stay.id}
-          />
+          {/* Účet pobytu: the stay, its price breakdown, what modules add (orders), what is to pay or returned. */}
+          <section
+            aria-label={ts("account.title")}
+            className="bg-surface-accent grid gap-3.5 rounded-lg px-6 py-[22px] text-white"
+          >
+            <div className="flex items-baseline justify-between">
+              <span className="font-mono text-[11px] font-medium tracking-[0.12em] uppercase">
+                {ts("account.title")}
+              </span>
+              <span className="font-mono text-[11px]">{stay.number}</span>
+            </div>
+            <div className="flex justify-between gap-3 text-sm">
+              <span>
+                {ts("account.stay", {
+                  nights: tg("booking.nights", { count: diffDays(stay.checkIn, stay.checkOut) }),
+                })}
+              </span>
+              <span className="font-medium whitespace-nowrap tabular-nums">
+                {fmt(stay.total_cents)}
+                {phase !== "pending" && phase !== "cancelled" ? " ✓" : ""}
+              </span>
+            </div>
+            <details className="group">
+              <summary className="cursor-pointer list-none text-[13px] font-medium underline underline-offset-[3px] [&::-webkit-details-marker]:hidden">
+                <span className="group-open:hidden">{ts("account.breakdown")}</span>
+                <span className="hidden group-open:inline">{ts("account.hideBreakdown")}</span>
+              </summary>
+              <dl className="mt-2.5 grid gap-1.5 border-l border-white/40 pl-3 text-[13px]">
+                {stay.lines.map((l, i) => (
+                  <div key={i} className="flex justify-between gap-3">
+                    <dt>
+                      {l.label}
+                      {l.kind === "accommodation"
+                        ? ` · ${l.quantity} × ${fmt(l.unit_amount_cents)}`
+                        : ""}
+                    </dt>
+                    <dd className="whitespace-nowrap tabular-nums">{fmt(l.amount_cents)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+            {modules ? (
+              <ModuleSlot
+                name="guest.stay.account"
+                tenantId={tenant.id}
+                locale={locale}
+                reservationId={stay.id}
+              />
+            ) : null}
+            {phase === "pending" || phase === "cancelled" ? (
+              <div className="grid gap-1 border-t border-white/25 pt-3">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-sm">
+                    {phase === "pending" ? ts("account.toPay") : ts("account.returned")}
+                  </span>
+                  <span className="text-[26px] font-extrabold tracking-tight tabular-nums">
+                    {phase === "pending"
+                      ? fmt(stay.total_cents)
+                      : state && state.refundedCents > 0
+                        ? fmt(state.refundedCents)
+                        : "—"}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+          </section>
           {settings?.contact_phone || settings?.whatsapp_phone ? (
             <div className="bg-surface border-line flex items-center gap-3 rounded-lg border px-[18px] py-4">
               <span className="inline-flex size-[38px] shrink-0 items-center justify-center rounded-full bg-[#e9e5db] text-[13px] font-bold text-[#5a6672]">
@@ -277,9 +512,7 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
               </span>
               <span className="grid min-w-0 flex-1 gap-px">
                 <span className="text-ink text-sm font-medium">
-                  {contactName
-                    ? t("contactAsk", { name: contactName.split(/\s+/)[0] ?? contactName })
-                    : tg("v2.questions")}
+                  {ownerFirst ? t("contactAsk", { name: ownerFirst }) : tg("v2.questions")}
                 </span>
                 <span className="text-xs text-[#5a6672]">
                   {settings.contact_phone ?? settings.whatsapp_phone}
@@ -307,6 +540,6 @@ export async function StayDetail({ id, crumbs }: { id: string; crumbs?: ReactNod
           ) : null}
         </aside>
       </Container>
-    </>
+    </main>
   );
 }

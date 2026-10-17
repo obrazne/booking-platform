@@ -175,6 +175,8 @@ export const loadGuestUpsell = cache(
         totalCents: r.total_cents,
         nights: nights.length,
         paid: reservationPaid,
+        // From the day of arrival: "Na zajtra si môžete objednať" (design v2.4).
+        during: orderable && todayIso(timeZone) >= checkIn,
         variableSymbol: payment?.variable_symbol ?? r.number.replace(/\D/g, ""),
       },
       tenantName: tenant?.name ?? "",
@@ -184,6 +186,9 @@ export const loadGuestUpsell = cache(
         ? { iban: settings.iban, bic: settings.bic, holder: settings.account_holder }
         : null,
       limitCents: account.limit_cents,
+      /** Services offered after the reservation for this property (also while it waits for payment). */
+      available: (services ?? []).filter((s) => !s.property_id || s.property_id === r.property_id)
+        .length,
       orderable,
       offers,
       orders,

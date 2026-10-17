@@ -13,9 +13,24 @@ import { UpsellOffers } from "./offers";
 export async function GuestStayOffers({ locale, reservationId, accessToken }: SlotProps) {
   if (!reservationId) return null;
   const data = await loadGuestUpsell(reservationId, locale, accessToken);
-  if (!data || (!data.orderable && data.orders.length === 0) || data.offers.length === 0)
-    return null;
+  if (!data) return null;
   const t = await getTranslations("modules.upsell.guest");
+  // Waiting for payment (Z44): what will be possible, ordering after the payment.
+  if (data.reservation.status === "pending_payment") {
+    if (!data.available) return null;
+    return (
+      <section className="grid gap-1" aria-labelledby="upsell-title">
+        <h2
+          id="upsell-title"
+          className="font-heading text-ink text-[26px] leading-tight font-extrabold tracking-tight"
+        >
+          {t("title")} <span className="text-ink-soft">{t("title2")}</span>
+        </h2>
+        <p className="text-sm text-[#5a6672]">{t("afterPayment")}</p>
+      </section>
+    );
+  }
+  if ((!data.orderable && data.orders.length === 0) || data.offers.length === 0) return null;
   const tg = await getTranslations("guest.reservation");
   const { reservation: r } = data;
   // Ordered with "Zaplatiť teraz" and confirmed (an order the owner still has to confirm is not paid yet).
@@ -48,6 +63,7 @@ export async function GuestStayOffers({ locale, reservationId, accessToken }: Sl
         ownerName={data.ownerName}
         offers={data.offers}
         orders={data.orders}
+        during={data.reservation.during}
       />
       {toPay > 0 && data.bank ? (
         <section

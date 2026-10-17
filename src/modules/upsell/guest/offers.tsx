@@ -21,6 +21,8 @@ type Props = {
   ownerName: string | null;
   offers: GuestOffer[];
   orders: GuestOrder[];
+  /** During the stay the section offers what can still be ordered (design v2.4). */
+  during?: boolean;
 };
 
 const MOBILE = "(max-width: 639px)";
@@ -63,9 +65,17 @@ export function UpsellOffers(props: Props) {
           id="upsell-title"
           className="font-heading text-ink text-[26px] leading-tight font-extrabold tracking-tight"
         >
-          {t("title")} <span className="text-ink-soft">{t("title2")}</span>
+          {props.during ? (
+            t("titleDuring")
+          ) : (
+            <>
+              {t("title")} <span className="text-ink-soft">{t("title2")}</span>
+            </>
+          )}
         </h2>
-        <p className="text-sm text-[#5a6672]">{t("subtitle")}</p>
+        <p className="text-sm text-[#5a6672]">
+          {props.during ? t("subtitleDuring") : t("subtitle")}
+        </p>
       </div>
       <ul className="border-line border-t">
         {props.offers.map((offer) => {

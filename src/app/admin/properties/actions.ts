@@ -155,6 +155,14 @@ export async function updatePropertyTexts(_: ActionResult, form: FormData): Prom
   return done(id.data);
 }
 
+/** Short optional text of a form field (trimmed, cut to the limit; empty = null). */
+function text(value: FormDataEntryValue | null, max: number): string | null {
+  const v = String(value ?? "")
+    .trim()
+    .slice(0, max);
+  return v || null;
+}
+
 export async function updateArrival(_: ActionResult, form: FormData): Promise<ActionResult> {
   const { tenant, supabase } = await context();
   const id = z.uuid().safeParse(form.get("id"));
@@ -163,6 +171,10 @@ export async function updateArrival(_: ActionResult, form: FormData): Promise<Ac
     property_id: id.data,
     tenant_id: tenant.id,
     arrival_instructions: localizedFromForm(form, "arrival", tenant.locales),
+    // Z44: shown to the guest as tiles once the instructions unlock.
+    door_code: text(form.get("door_code"), 40),
+    wifi_name: text(form.get("wifi_name"), 60),
+    wifi_password: text(form.get("wifi_password"), 60),
   });
   if (error) return fail(dbErrorKey(error));
   // Module checkin (Z36): settings of online check-in of the property, when the form had them.

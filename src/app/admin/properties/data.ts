@@ -13,7 +13,7 @@ export const getPropertyForEdit = cache(async (id: string) => {
   const { data: property } = await supabase
     .from("properties")
     .select(
-      "*, units(*), seasons(*, season_ranges(*)), rates:units(rates(*)), fees(*), photos(*), property_terms(term_id), property_private(arrival_instructions)",
+      "*, units(*), seasons(*, season_ranges(*)), rates:units(rates(*)), fees(*), photos(*), property_terms(term_id), property_private(arrival_instructions, door_code, wifi_name, wifi_password)",
     )
     .eq("id", id)
     .eq("tenant_id", tenant.id)
@@ -38,6 +38,7 @@ export const getPropertyForEdit = cache(async (id: string) => {
     photos: [...property.photos].sort((a, b) => a.sort - b.sort),
     termIds: new Set(property.property_terms.map((t) => t.term_id)),
     arrival: property.property_private?.arrival_instructions ?? {},
+    arrivalPrivate: property.property_private ?? null,
     discounts: discounts ?? [],
   };
 });

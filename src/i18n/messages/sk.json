@@ -449,6 +449,9 @@
         "title": "K pobytu si môžete doobjednať.",
         "title2": "Kedykoľvek.",
         "subtitle": "Jedným ťuknutím, záväzne. Zaplatíte pri odchode, alebo hneď prevodom.",
+        "titleDuring": "Na zajtra si môžete objednať.",
+        "subtitleDuring": "Jedným ťuknutím, záväzne — do uzávierky pri každej službe. Zaplatíte pri odchode.",
+        "afterPayment": "Objednávať môžete hneď po zaplatení pobytu.",
         "from": "od {price}",
         "details": "Podrobnosti — {name}",
         "close": "Zavrieť",
@@ -785,6 +788,9 @@
       "included": "V cene",
       "arrival": "Pokyny k príchodu",
       "arrivalHint": "Neverejné. Pošlú sa hosťovi e-mailom pred príchodom (kódy, Wi-Fi). Nikdy sa nezobrazia na stránke.",
+      "doorCode": "Kód od dverí / schránky na kľúče",
+      "wifiName": "Wi-Fi — názov siete",
+      "wifiPassword": "Wi-Fi — heslo",
       "latitude": "Zemepisná šírka",
       "longitude": "Zemepisná dĺžka"
     },
@@ -1286,6 +1292,77 @@
       },
       "arrivesIn": "Príchod {count, plural, one {zajtra} few {o # dni} other {o # dní}}",
       "contactAsk": "Otázky? Odpovedá {name}."
+    },
+    "stay": {
+      "hero": {
+        "pending": "Ešte jeden krok.",
+        "pending2": "Zaplaťte a termín je váš.",
+        "during": "Vitajte.",
+        "during2": "Užite si to.",
+        "cancelled": "Mrzí nás to.",
+        "cancelled2": "Snáď nabudúce."
+      },
+      "pay": {
+        "kicker": "Čaká na platbu",
+        "until": "Zaplaťte do {date}.",
+        "title": "Zaplaťte prevodom.",
+        "held": "Termín vám držíme.",
+        "autoCancel": "Ak platba nepríde včas, rezervácia sa sama zruší a termín uvoľní."
+      },
+      "cancelled": {
+        "title": "Pobyt je zrušený.",
+        "when": "Zrušené {date}.",
+        "whenUnknown": "Pobyt bol zrušený.",
+        "reason": "Dôvod: {reason}",
+        "refunded": "Vrátili sme vám {amount} na účet, z ktorého ste platili.",
+        "refundByPolicy": "O vrátení platby podľa storno podmienok vás bude informovať {name, select, none {hostiteľ} other {{name}}}.",
+        "newDates": "Vybrať nový termín"
+      },
+      "arrival": {
+        "kicker": "Pokyny k príchodu · odomknuté",
+        "title": "Všetko pre príchod na jednom mieste.",
+        "doorCode": "Kód od dverí",
+        "doorFrom": "platí od {time} v deň príchodu",
+        "wifi": "Wi-Fi",
+        "wifiPassword": "heslo: {password}",
+        "checkIn": "Príchod",
+        "checkOut": "Odchod",
+        "from": "od {time}",
+        "until": "do {time}",
+        "problem": "Niečo nefunguje? Napíšte nám",
+        "locked": "Pokyny k príchodu a kód od dverí",
+        "afterPayment": "Odomknú sa {date}, keď bude pobyt zaplatený.",
+        "afterCheckin": "Odomknú sa {date} po dokončení online check-inu.",
+        "afterCheckinNow": "Odomknú sa hneď po dokončení online check-inu.",
+        "on": "Odomknú sa {date}. Pošleme vám ich aj e-mailom."
+      },
+      "change": {
+        "title": "Zmena alebo zrušenie",
+        "text": "Termín zmeníte po dohode s hostiteľom.",
+        "requested": "Žiadosť o zrušenie ste poslali {date}. {name, select, none {Hostiteľ} other {{name}}} ju potvrdí, dovtedy pobyt platí."
+      },
+      "cancel": {
+        "open": "Požiadať o zrušenie pobytu",
+        "title": "Požiadať o zrušenie?",
+        "daysLeft": "Do príchodu {count, plural, one {ostáva <b># deň</b>} few {ostávajú <b># dni</b>} other {ostáva <b># dní</b>}}.",
+        "policy": "Storno podmienky: {policy}",
+        "amount": "Koľko vám vrátime podľa týchto podmienok, potvrdí {name, select, none {hostiteľ} other {{name}}} v odpovedi na žiadosť.",
+        "reason": "Dôvod",
+        "optional": "nepovinné",
+        "confirmBy": "{name, select, none {Hostiteľ} other {{name}}} žiadosť potvrdí, zvyčajne do 24 hodín. Dovtedy pobyt platí.",
+        "keep": "Ponechať pobyt",
+        "send": "Odoslať žiadosť",
+        "sending": "Odosielame…",
+        "error": "Žiadosť sa nepodarilo odoslať. Skúste to znova."
+      },
+      "account": {
+        "title": "Účet pobytu",
+        "stay": "Pobyt · {nights}",
+        "breakdown": "Rozpis ceny",
+        "hideBreakdown": "Skryť rozpis",
+        "toPay": "Na zaplatenie",
+        "returned": "Vrátime"
+      }
     },
     "v2": {
       "yourDates": "Váš termín",

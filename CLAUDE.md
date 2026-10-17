@@ -128,6 +128,8 @@ dotazy na platbu rezervácie musia filtrovať `purpose = 'reservation'`. Panel r
 DB funkcie s `p_token`). Upsell pre hosťa: `src/modules/upsell/guest/`, viac dní naraz `place_orders`, ponuky e-mailom `upsell_tick`
 (dni v `tenant_settings.upsell_offer_days`). Check-in pre hosťa: `src/modules/checkin/guest/`, stránky `…/checkin`, citlivé polia len
 maskované cez `guest_checkin_view`.
+**Detail pobytu (Z44):** `ucet/pobyt/[id]/stay-detail.tsx` podľa fázy (`stay-state.ts`), stav z DB `guest_stay_state` (odomknutie pokynov,
+kód a Wi-Fi z `property_private`, zrušenie); moduly vkladajú riadky do karty Účet pobytu slotom `guest.stay.account`.
 **Kolízie kalendárov (Z42):** iCal udalosť cez obsadený termín = `occupancy.conflict` (nie blokuje); vyriešenie `resolve_conflict`,
 zoznam a panel `/admin/collisions` (`src/core/admin/collisions.ts`), stav kanála `ical_channel_status` (len nevyriešené).
 **Online check-in (Z36, modul `checkin`):** pravidlá krajiny v `checkin_rules` (DB) a `src/modules/checkin/rules.ts` — meniť spolu.

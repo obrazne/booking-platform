@@ -1281,21 +1281,30 @@ export type Database = {
       property_private: {
         Row: {
           arrival_instructions: Json
+          door_code: string | null
           property_id: string
           tenant_id: string
           updated_at: string
+          wifi_name: string | null
+          wifi_password: string | null
         }
         Insert: {
           arrival_instructions?: Json
+          door_code?: string | null
           property_id: string
           tenant_id: string
           updated_at?: string
+          wifi_name?: string | null
+          wifi_password?: string | null
         }
         Update: {
           arrival_instructions?: Json
+          door_code?: string | null
           property_id?: string
           tenant_id?: string
           updated_at?: string
+          wifi_name?: string | null
+          wifi_password?: string | null
         }
         Relationships: [
           {
@@ -3172,6 +3181,10 @@ export type Database = {
       guest_set_marketing: {
         Args: { p_granted: boolean; p_tenant_id: string }
         Returns: boolean
+      }
+      guest_stay_state: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: Json
       }
       history_columns: { Args: { p_table: string }; Returns: string }
       history_current: { Args: { p_pk: Json; p_table: string }; Returns: Json }

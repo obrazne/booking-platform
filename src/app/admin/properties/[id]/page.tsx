@@ -47,7 +47,7 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
     getTranslations("modules.checkin.settings"),
     getLocale(),
   ]);
-  const { tenant, property, termIds, arrival } = await getPropertyForEdit(id);
+  const { tenant, property, termIds, arrival, arrivalPrivate } = await getPropertyForEdit(id);
   const checkin = await isModuleEnabled(tenant.id, "checkin");
   const supabase = await createClient();
   const { data: terms } = await supabase
@@ -275,6 +275,36 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
                 multiline
                 rows={6}
               />
+              {/* Z44: tiles of the guest's stay once the instructions unlock (private, never on the page). */}
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Field label={t("fields.doorCode")} htmlFor="door_code">
+                  <Input
+                    id="door_code"
+                    name="door_code"
+                    maxLength={40}
+                    autoComplete="off"
+                    defaultValue={arrivalPrivate?.door_code ?? ""}
+                  />
+                </Field>
+                <Field label={t("fields.wifiName")} htmlFor="wifi_name">
+                  <Input
+                    id="wifi_name"
+                    name="wifi_name"
+                    maxLength={60}
+                    autoComplete="off"
+                    defaultValue={arrivalPrivate?.wifi_name ?? ""}
+                  />
+                </Field>
+                <Field label={t("fields.wifiPassword")} htmlFor="wifi_password">
+                  <Input
+                    id="wifi_password"
+                    name="wifi_password"
+                    maxLength={60}
+                    autoComplete="off"
+                    defaultValue={arrivalPrivate?.wifi_password ?? ""}
+                  />
+                </Field>
+              </div>
               {checkin ? (
                 // Module checkin (Z36): when check-in opens, reminders, instructions only after check-in.
                 <fieldset className="border-line grid gap-3 rounded-[10px] border p-4">

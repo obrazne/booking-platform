@@ -9,11 +9,14 @@ export function AccountStrip({
   label,
   amount,
   open: openLabel,
+  spacer = true,
   children,
 }: {
   label: string;
   amount: string;
   open: string;
+  /** Room at the end of the page so the strip never covers it (off inside a card). */
+  spacer?: boolean;
   children: React.ReactNode;
 }) {
   const t = useTranslations("modules.upsell.guest");
@@ -29,7 +32,7 @@ export function AccountStrip({
   return (
     <div className="lg:hidden">
       {/* Room for the strip so it never covers the end of the page. */}
-      <div aria-hidden className="h-16" />
+      {spacer ? <div aria-hidden className="h-16" /> : null}
       <div className="bg-surface-accent fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-white shadow-[0_-8px_24px_rgba(17,33,47,0.18)]">
         <span className="grid leading-tight">
           <span className="font-mono text-[10px] tracking-[0.1em] text-white uppercase">

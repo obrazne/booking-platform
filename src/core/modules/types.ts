@@ -23,7 +23,9 @@ export type SlotName =
    */
   | "guest.stay.top"
   | "guest.stay.main"
-  | "guest.stay.aside";
+  | "guest.stay.aside"
+  /** Inside the stay's green "Účet pobytu" card in the account (Z44): lines a module adds (orders). */
+  | "guest.stay.account";
 
 export type SlotProps = {
   tenantId: string;

@@ -7,11 +7,10 @@ import { AccountStrip } from "./account-strip";
 import { loadGuestUpsell } from "./load";
 
 /**
- * Green "Účet pobytu" card (Z37, slot guest.stay.aside): the stay, ordered services with their state and how they
- * are paid, and what is open on the stay account (settled at departure). Phones show a green strip at the bottom
- * that opens the same card.
+ * Orders of the stay account (Z37): ordered services with their state and how they are paid, and what is open on the
+ * stay account (settled at departure). Null when there is nothing to show.
  */
-export async function GuestStayAccountCard({ locale, reservationId, accessToken }: SlotProps) {
+async function accountParts({ locale, reservationId, accessToken }: SlotProps) {
   if (!reservationId) return null;
   const data = await loadGuestUpsell(reservationId, locale, accessToken);
   if (!data) return null;
@@ -37,25 +36,8 @@ export async function GuestStayAccountCard({ locale, reservationId, accessToken 
         .at(-1)!
     : null;
 
-  const card = (
-    <section
-      aria-label={t("account.title")}
-      className="bg-surface-accent grid gap-3.5 rounded-lg px-6 py-[22px] text-white"
-    >
-      <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[11px] font-medium tracking-[0.12em] text-white uppercase">
-          {t("account.title")}
-        </span>
-        <span className="font-mono text-[11px] text-white">{r.number}</span>
-      </div>
-      <div className="flex justify-between gap-3 text-sm">
-        <span className="text-white">
-          {t("account.stay", { nights: tb("nights", { count: r.nights }) })}
-        </span>
-        <span className="font-medium whitespace-nowrap tabular-nums">
-          {fmt(r.totalCents)} {r.paid ? <span className="text-white">✓</span> : null}
-        </span>
-      </div>
+  const lines = (
+    <>
       {active.map((o) => (
         <div key={o.id} className="flex justify-between gap-3 text-sm">
           <span className="text-white">
@@ -92,18 +74,82 @@ export async function GuestStayAccountCard({ locale, reservationId, accessToken 
             : t("account.note", { limit: fmt(data.limitCents) })}
         </span>
       </div>
+    </>
+  );
+  const head = (
+    <>
+      <div className="flex items-baseline justify-between">
+        <span className="font-mono text-[11px] font-medium tracking-[0.12em] text-white uppercase">
+          {t("account.title")}
+        </span>
+        <span className="font-mono text-[11px] text-white">{r.number}</span>
+      </div>
+      <div className="flex justify-between gap-3 text-sm">
+        <span className="text-white">
+          {t("account.stay", { nights: tb("nights", { count: r.nights }) })}
+        </span>
+        <span className="font-medium whitespace-nowrap tabular-nums">
+          {fmt(r.totalCents)} {r.paid ? <span className="text-white">✓</span> : null}
+        </span>
+      </div>
+    </>
+  );
+  return {
+    t,
+    r,
+    lines,
+    head,
+    label: settled ? t("account.settled") : t("account.open"),
+    amount: settled ? "✓" : fmt(open),
+  };
+}
+
+/**
+ * Green "Účet pobytu" card on the access-link page (Z37, slot guest.stay.aside): the stay and the orders. In the
+ * account the stay page has its own card and gets only the orders (guest.stay.account, Z44).
+ */
+export async function GuestStayAccountCard(props: SlotProps) {
+  if (!props.accessToken) return null;
+  const parts = await accountParts(props);
+  if (!parts) return null;
+  const card = (
+    <section
+      aria-label={parts.t("account.title")}
+      className="bg-surface-accent grid gap-3.5 rounded-lg px-6 py-[22px] text-white"
+    >
+      {parts.head}
+      {parts.lines}
     </section>
   );
-
   return (
     <>
       <div className="hidden lg:block">{card}</div>
-      <AccountStrip
-        label={settled ? t("account.settled") : t("account.open")}
-        amount={settled ? "✓" : fmt(open)}
-        open={t("account.title")}
-      >
+      <AccountStrip label={parts.label} amount={parts.amount} open={parts.t("account.title")}>
         {card}
+      </AccountStrip>
+    </>
+  );
+}
+
+/** Orders inside the stay's own "Účet pobytu" card in the account (Z44, slot guest.stay.account). */
+export async function GuestStayAccountLines(props: SlotProps) {
+  const parts = await accountParts(props);
+  if (!parts) return null;
+  return (
+    <>
+      {parts.lines}
+      <AccountStrip
+        label={parts.label}
+        amount={parts.amount}
+        open={parts.t("account.title")}
+        spacer={false}
+      >
+        <section
+          aria-label={parts.t("account.title")}
+          className="bg-surface-accent grid gap-3.5 rounded-lg px-6 py-[22px] text-white"
+        >
+          {parts.lines}
+        </section>
       </AccountStrip>
     </>
   );

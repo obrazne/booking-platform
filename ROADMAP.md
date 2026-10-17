@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje) — *zabratá linkou A*; **B:** Z44 (detail pobytu: stavy, zrušenie).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje) — *zabratá linkou A*; **B:** ~~Z44 (detail pobytu: stavy, zrušenie)~~ ✅ — linka B má frontu prázdnu.
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -184,7 +184,7 @@ Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy
    Právne formulácie pri zrušení účtu zapíš do Otázok pre Martina na kontrolu.
 4. Playwright (Ukážkový klient, PC + mobil): prechod prehľad → pobyt → späť drobčekmi, karta Moje údaje, stiahnutie údajov; axe.
 
-### Z44 [B] 🔄 — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
+### Z44 [B] ✅ — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
 Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišta účtu a drobčeky robí Z43 — nezasahuj do nich (len vlož komponent, ak už existuje).
 > **Pre linku A (Z43, linka B 17. 10.):** detail pobytu je rozdelený — `ucet/pobyt/[id]/page.tsx` je tenký (sem patrí lišta účtu),
 > obsah a stavy sú v `stay-detail.tsx` (`StayDetail`, mení linka B); drobčeky odovzdaj cez prop `crumbs` (nahradí „Späť na moje pobyty“).
@@ -303,6 +303,12 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Zrušenie pobytu (Z44) — storno pásma:** okno žiadosti ukazuje dni do príchodu a znenie storno podmienok klienta, ale **sumu
+  nevypočíta** — podmienky sú len text (Nastavenia), štruktúrované pásma v systéme nie sú. Navrhujem pri klientovi pásma (napr.
+  „30+ dní 100 %, 14–29 dní 50 %, menej 0 %“) — potom okno ukáže presnú vrátenú sumu a majiteľ dostane návrh storno poplatku (B5).
+  Je to súčasť storno podmienok (právny text klienta) — chceš to tak, a kto pásma pre STRÖMY zadá?
+- **Prístupový odkaz `/r/<kód>` (v2.4: „rovnaké stránky aj cez prístupový odkaz“):** stavy zo Z44 sú v účte hosťa; stránka cez odkaz
+  ostáva potvrdenie v2.1 (platba, kroky, moduly). Zjednotiť ju s detailom v účte (bez lišty kariet) ako samostatnú úlohu?
 - **Online check-in pre hostí (Z39):** (1) Hosť **môže údaje upraviť aj po dokončení, až do dňa príchodu** (tak to hovorí návrh);
   úprava check-in znova otvorí a hosť ho dokončí znova — majiteľka sa pri tom znova neupozorní (rovnaký kľúč upozornenia). Ak už
   cudzinca nahlásila, záznam o nahlásení ostáva. Stačí tak? (2) Veta z návrhu „Dieťa bez dokladu: stačí meno, dátum narodenia a adresa“
@@ -350,6 +356,29 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z44 [linka B]: **detail pobytu podľa stavu** (návrh v2.4 `StavyPobytu`). (Claude Code)
+  - `ucet/pobyt/[id]/page.tsx` je tenký (lišta účtu a drobčeky — Z43 cez prop `crumbs`), obsah v `stay-detail.tsx`; fáza pobytu
+    `stay-state.ts` (čaká na platbu / pred príchodom / počas — od dňa príchodu / po odchode / zrušený; vitest).
+  - **Čaká na platbu:** teplá karta navrchu s QR (PAY by square), sumou, IBAN a VS s Kopírovať, lehotou a vetou o automatickom zrušení;
+    upsell len nadpis a „Objednávať môžete hneď po zaplatení pobytu“. **Počas pobytu:** odomknuté pokyny ako dlaždice (kód od dverí,
+    Wi-Fi, príchod, odchod), text pokynov, Navigovať v Google Mapách, „Niečo nefunguje? Napíšte nám“ (WhatsApp/telefón); upsell
+    „Na zajtra si môžete objednať“. **Zrušený:** kedy (z histórie stavov), dôvod, vrátená suma (platby označené ako vrátené) alebo veta,
+    že o vrátení podľa storna informuje hostiteľ, „Vybrať nový termín“; moduly skryté.
+  - **Kód od dverí a Wi-Fi** sú nové neverejné polia objektu (`property_private.door_code / wifi_name / wifi_password`, formulár pri
+    pokynoch k príchodu); hosťovi ich vráti len `guest_stay_state`, keď sú pokyny odomknuté (rovnaké pravidlo ako doteraz).
+  - **Účet pobytu** je teraz karta jadra (pobyt ✓, **Rozpis ceny** ako rozbaľovací odkaz, na zaplatenie / vrátime); objednávky upsellu
+    sa do nej vkladajú novým slotom `guest.stay.account` (na prístupovom odkaze ostáva karta modulu v `guest.stay.aside`). Samostatná
+    sekcia rozpisu na konci zrušená.
+  - **Zmena alebo zrušenie:** krátky blok (prvá veta storno podmienok) + okno: dni do príchodu, podmienky, nepovinný dôvod, Ponechať
+    pobyt / Odoslať žiadosť = existujúca žiadosť o storno (majiteľ dostane e-mail a upozornenie). Len pred príchodom. Sumu okno
+    nepočíta — štruktúrované storno pásma nie sú (Otázky).
+  - **Pokyny k príchodu:** konkrétny dátum odomknutia podľa stavu („Odomknú sa 20. 12. 2027, keď bude pobyt zaplatený“ / „po dokončení
+    online check-inu“ / „Odomknú sa … Pošleme vám ich aj e-mailom“) z `guest_stay_state` (migrácia `20261017261000_stay_states.sql`).
+  - Playwright `e2e/stay-states.spec.ts` na **Ukážkovom klientovi** (PC aj mobil, prihlásenie kódom): čaká na platbu (QR, rozpis v karte),
+    počas pobytu (dlaždice z údajov objektu), zrušený, žiadosť o zrušenie cez okno (zapíše sa s dôvodom, pobyt ostane potvrdený); axe.
+    Pustené aj ostatné testy linky B (upsell, check-in, kolízie) — zelené.
+  - **Oprava po Z39:** test check-inu pri dvoch vypršaniach času nevrátil nastavenie Glamping Lúka (pokyny až po check-ine + testové
+    pokyny) — na stagingu vrátené; test stavov si nastavenie objektu teraz ukladá a vracia v `finally`.
 - 2026-10-17 — Z42 [linka B]: **kolízia termínov — panel, zoznam, odkazy** (pripomienka 29). (Claude Code)
   - **Rezervácie › Kolízie** (`/admin/collisions`) — samostatná stránka namiesto filtra v kalendári: kolízie sú zriedkavé a rozhádzané
     po mesiacoch, kalendár ukazuje dva mesiace jednej jednotky. Otvorené a vyriešené, v menu položka (keď klient mal aspoň jednu
