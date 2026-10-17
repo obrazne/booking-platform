@@ -31,25 +31,7 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 **Dve linky naraz (Martin 17. 10. — zrýchlenie).** Úlohy majú v nadpise linku **[A]** alebo **[B]**. Každá linka beží v **samostatnom
 termináli a vlastnom priečinku** (git worktree): `/dalej A` berie len úlohy [A], `/dalej B` len [B]. Bez písmena = A.
 Pravidlá spolupráce (platia pre obe):
-- **Zabratie:** pred začatím úlohy pridaj do nadpisu `🔄` (napr. `### Z42 [B] — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
-Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku
-Prepojenia (zoznam kalendárov) — tam nič o kolízii nie je. Majiteľ potrebuje vidieť **čo s čím koliduje a čo s tým spraviť**.
-1. **Panel kolízie** (vzor A18, `?panel=collision:<occupancy id>`): termín, odkiaľ udalosť prišla („Zavreté na Bookingu · Ostrý kalendár…“),
-   s čím sa prekrýva (rezervácia s číslom, menom, stavom a odkazom na jej panel / blokácia), koľko nocí sa prekrýva, kedy sa to zistilo.
-   Krátka rada podľa situácie: „Na Bookingu je termín zavretý, u vás je rezervácia 2026-0615 — skontrolujte, či nejde o dvojitú rezerváciu;
-   ak je rezervácia v poriadku, termín na Bookingu je zavretý správne.“ / „Zrušte rezerváciu alebo kontaktujte hosťa“ atď. — texty cez preklady.
-   Akcie: **Otvoriť rezerváciu**, **Zobraziť v kalendári** (kalendár na danom mesiaci, kolízia zvýraznená), **Označiť ako vyriešené**
-   (kolízia ostane v histórii, upozornenie zmizne, znovu sa ozve len pri zmene termínu).
-2. **Odkazy:** riadok synchronizácie pri kolíziách → zoznam kolízií (ak je jedna, rovno jej panel); upozornenie v zvončeku a e-mail
-   o kolízii → panel kolízie; v kalendári klik na kolíznu udalosť → panel kolízie. Pri chybe synchronizácie (nie kolízii) ostáva odkaz
-   na Prepojenia, ale s vetou o chybe pri danom kalendári navrchu.
-3. **Zoznam kolízií** (Rezervácie › Kolízie alebo filter v kalendári — vyber jednoduchšie, zapíš prečo): otvorené a vyriešené, počet v menu
-   ako odznak, kým sú otvorené.
-4. Dáta: stav vyriešenia v DB (napr. `occupancy.conflict_resolved_at/by`), RLS a audit; pgTAP. Udalosti iCal sa pri ďalšej synchronizácii
-   nesmú vyriešenie zrušiť, ak sa termín nezmenil.
-5. Testy na Ukážkovom klientovi (nie STRÖMY): kolízia z ukážkového kanála → panel → otvoriť rezerváciu → označiť ako vyriešené; axe.
-
-### Z37 [B] 🔄 — …`), commit + push hneď; po dokončení `🔄` → `✅`.
+- **Zabratie:** pred začatím úlohy pridaj do nadpisu `🔄` (napr. `### Z37 [B] 🔄 — …`), commit + push hneď; po dokončení `🔄` → `✅`.
 - **Často sťahuj a posielaj:** `git pull --rebase` pred každým commitom; konflikty v `ROADMAP.md` (Denník), `sk.json` a `CLAUDE.md` vyrieš
   tak, že **ponecháš obe strany** (sú to len pridané riadky). Pri inom konflikte zastav a povedz Martinovi.
 - **Spoločné súbory meň čo najmenej:** nové časti ako samostatné komponenty (napr. `stay-upsell.tsx`, `stay-review.tsx`, `stay-checkin.tsx`)
@@ -188,6 +170,24 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    `https://www.google.com/maps/dir/?api=1&destination=<lat>,<lng>` — bez kľúča a bez načítania Google na stránke. Pri približnej
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
+
+### Z42 [B] — Kolízia termínov: kam vedie „Pozrieť“ (pripomienka 29, Martin 17. 10.)
+Dnes klik na kolíziu (riadok synchronizácie na Prehľade/Kalendári „… kolízia · Pozrieť“, upozornenie v zvončeku) vedie na stránku
+Prepojenia (zoznam kalendárov) — tam nič o kolízii nie je. Majiteľ potrebuje vidieť **čo s čím koliduje a čo s tým spraviť**.
+1. **Panel kolízie** (vzor A18, `?panel=collision:<occupancy id>`): termín, odkiaľ udalosť prišla („Zavreté na Bookingu · Ostrý kalendár…“),
+   s čím sa prekrýva (rezervácia s číslom, menom, stavom a odkazom na jej panel / blokácia), koľko nocí sa prekrýva, kedy sa to zistilo.
+   Krátka rada podľa situácie: „Na Bookingu je termín zavretý, u vás je rezervácia 2026-0615 — skontrolujte, či nejde o dvojitú rezerváciu;
+   ak je rezervácia v poriadku, termín na Bookingu je zavretý správne.“ / „Zrušte rezerváciu alebo kontaktujte hosťa“ atď. — texty cez preklady.
+   Akcie: **Otvoriť rezerváciu**, **Zobraziť v kalendári** (kalendár na danom mesiaci, kolízia zvýraznená), **Označiť ako vyriešené**
+   (kolízia ostane v histórii, upozornenie zmizne, znovu sa ozve len pri zmene termínu).
+2. **Odkazy:** riadok synchronizácie pri kolíziách → zoznam kolízií (ak je jedna, rovno jej panel); upozornenie v zvončeku a e-mail
+   o kolízii → panel kolízie; v kalendári klik na kolíznu udalosť → panel kolízie. Pri chybe synchronizácie (nie kolízii) ostáva odkaz
+   na Prepojenia, ale s vetou o chybe pri danom kalendári navrchu.
+3. **Zoznam kolízií** (Rezervácie › Kolízie alebo filter v kalendári — vyber jednoduchšie, zapíš prečo): otvorené a vyriešené, počet v menu
+   ako odznak, kým sú otvorené.
+4. Dáta: stav vyriešenia v DB (napr. `occupancy.conflict_resolved_at/by`), RLS a audit; pgTAP. Udalosti iCal sa pri ďalšej synchronizácii
+   nesmú vyriešenie zrušiť, ak sa termín nezmenil.
+5. Testy na Ukážkovom klientovi (nie STRÖMY): kolízia z ukážkového kanála → panel → otvoriť rezerváciu → označiť ako vyriešené; axe.
 
 ### Z37 [B] ✅ — Upsell pre hostí (po Z35)
 Detail pobytu v účte hosťa podľa `UcetPobyt` (aj cez prístupový odkaz `/r/<kód>`): sekcia „K pobytu si môžete doobjednať“ s rozbalením,
