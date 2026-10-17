@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Bell, Mail } from "lucide-react";
 import { requireTenant } from "@/core/admin/action";
+import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { TENANT_KINDS } from "@/core/notifications/types";
 import { createClient } from "@/lib/supabase/server";
@@ -18,7 +19,10 @@ export default async function NotificationSettingsPage() {
 
   return (
     <div data-bleed>
-      <PageHeader kicker={active.tenantName} title={t("title")} />
+      <PageHeader
+        breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
+        title={t("title")}
+      />
       <PageBody className="grid max-w-[880px] gap-5">
         <p className="text-muted-foreground max-w-prose">{t("intro")}</p>
         <div className="bg-card overflow-x-auto rounded-[10px] border">

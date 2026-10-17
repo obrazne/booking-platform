@@ -28,10 +28,11 @@ test("menu: readable on hover, hierarchy, the client's group and breadcrumbs", a
   if (mobile) await page.getByRole("button", { name: "Menu" }).click();
   else await page.locator("aside").hover();
   const menu = page.getByRole("navigation", { name: "Hlavné menu" }).filter({ visible: true });
-  await expect(menu.getByRole("button", { name: /^Klienti/ })).toBeVisible();
-  await expect(menu.getByRole("button", { name: /^Moduly/ })).toBeVisible();
+  // Groups lead to their first page: Klienti → Všetci klienti, Moduly → Katalóg.
+  await expect(menu.locator('a[aria-expanded][href="/platform"]')).toContainText("Klienti");
+  await expect(menu.locator('a[aria-expanded][href="/platform/modules"]')).toContainText("Moduly");
   // The client's own group is open on its pages, with the current tab marked.
-  const group = menu.getByRole("button", { name: /^Chalet STRÖMY/ });
+  const group = menu.getByRole("link", { name: /^Chalet STRÖMY/ });
   await expect(group).toHaveAttribute("aria-expanded", "true");
   const current = menu.getByRole("link", { name: "Vzhľad" });
   await expect(current).toHaveAttribute("aria-current", "page");

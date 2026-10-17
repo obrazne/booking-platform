@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Breadcrumbs } from "@/core/admin/breadcrumbs";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
 import { isPlatformAdmin } from "@/core/auth/session";
@@ -31,12 +30,7 @@ export default async function PlatformTrials() {
   return (
     <div data-bleed>
       <PageHeader
-        kicker={
-          <Breadcrumbs
-            label={tn("breadcrumbs")}
-            items={[{ label: tn("modules"), href: "/platform/modules" }, { label: tn("trials") }]}
-          />
-        }
+        breadcrumbs={[{ label: tn("modules"), href: "/platform/modules" }, { label: tn("trials") }]}
         title={t("title")}
       />
       <PageBody className="grid max-w-[980px] gap-4">

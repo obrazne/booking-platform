@@ -129,10 +129,7 @@ async function shoot(page, tour, slide, path, opts = {}) {
   if (opts.menu) {
     // The menu itself: expanded rail with the Reservations and Property groups open.
     await page.locator("aside").hover();
-    for (const name of [/^Rezervácie/, /^Objekt/]) {
-      const group = page.locator("aside").getByRole("button", { name });
-      if ((await group.getAttribute("aria-expanded")) === "false") await group.click();
-    }
+    // Only the active page's group is open (v1.2) — the calendar page shows Rezervácie expanded.
     await page.waitForTimeout(400);
   } else {
     // Mouse away from the side menu (hovering expands it) and wait until it has collapsed.

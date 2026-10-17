@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { Breadcrumbs } from "@/core/admin/breadcrumbs";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { NewTenantForm } from "../forms";
@@ -11,12 +10,7 @@ export default async function NewTenantPage() {
   return (
     <div data-bleed>
       <PageHeader
-        kicker={
-          <Breadcrumbs
-            label={tn("breadcrumbs")}
-            items={[{ label: tn("clients"), href: "/platform" }, { label: tn("newClient") }]}
-          />
-        }
+        breadcrumbs={[{ label: tn("clients"), href: "/platform" }, { label: tn("newClient") }]}
         title={t("newTenant")}
       />
       <PageBody>

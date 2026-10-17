@@ -176,14 +176,15 @@ function NavGroup({
 }) {
   const id = useId();
   const containsActive = item.children!.some((c) => c.href === current);
-  const [choice, setChoice] = useState<boolean | null>(null);
-  // The group of the active page is open until the person closes it.
-  const open = choice ?? containsActive;
+  // v1.2 rule: the group opens its first visible sub-page and only the active page's group is expanded
+  // (like WordPress); the chevron is just a sign of the sub-menu.
+  const open = containsActive;
+  const first = item.children![0]!;
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => setChoice(!open)}
+      <Link
+        href={first.href!}
+        onClick={onNavigate}
         aria-expanded={open}
         aria-controls={id}
         title={expanded ? undefined : item.label}
@@ -211,7 +212,7 @@ function NavGroup({
             expanded ? "opacity-100" : "opacity-0",
           )}
         />
-      </button>
+      </Link>
       {/* The collapsed rail shows icons only; hover or focus expands it, then the open group shows its items. */}
       <div id={id} hidden={!open || !expanded} className="grid gap-px pb-1">
         {item.children!.map((child) => (
@@ -271,7 +272,16 @@ function NavTree({
       : roots,
   );
   const entry = (item: ShellNavItem) =>
-    item.children ? (
+    // A group with a single visible sub-page is an ordinary item without the chevron (v1.2).
+    item.children?.length === 1 ? (
+      <NavLink
+        key={item.label}
+        item={{ ...item, href: item.children[0]!.href, children: undefined }}
+        expanded={expanded}
+        active={item.children[0]!.href === current}
+        onNavigate={onNavigate}
+      />
+    ) : item.children ? (
       item.children.length ? (
         <NavGroup
           key={item.label}

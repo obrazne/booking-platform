@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExpandableList, RowState } from "@/core/admin/expandable-list";
+import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
 import { formatDate } from "@/core/format/format";
 import { getActiveMembership } from "@/core/tenant/active";
@@ -23,7 +24,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
   return (
     <div data-bleed>
       <PageHeader
-        kicker={active.tenantName}
+        breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
         title={t("title")}
         actions={
           <Button asChild variant="outline">

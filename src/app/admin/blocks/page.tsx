@@ -4,20 +4,16 @@ import { requireTenant } from "@/core/admin/action";
 import { DeleteButton } from "@/core/admin/delete-button";
 import { ExpandableList } from "@/core/admin/expandable-list";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
+import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
 import { formatDate } from "@/core/format/format";
-import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { createBlock, deleteBlock } from "./actions";
 
 /** Owner blocks (personal use, maintenance) as compact rows (vizuál administrácie v1.1, rule 7). */
 export default async function BlocksPage() {
   const active = await requireTenant();
-  const [t, locale, tenant] = await Promise.all([
-    getTranslations("blocks"),
-    getLocale(),
-    getTenantInfo(active.tenantId),
-  ]);
+  const [t, locale] = await Promise.all([getTranslations("blocks"), getLocale()]);
   const supabase = await createClient();
   const [{ data: blocks }, { data: units }] = await Promise.all([
     supabase
@@ -48,7 +44,10 @@ export default async function BlocksPage() {
 
   return (
     <div data-bleed>
-      <PageHeader kicker={tenant.name} title={t("title")} />
+      <PageHeader
+        breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
+        title={t("title")}
+      />
       <div className="px-5 pb-14 md:px-10">
         <ExpandableList
           description={t("hint")}

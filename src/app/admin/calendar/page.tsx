@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { requireTenant } from "@/core/admin/action";
 import { loadOccupancy, loadSyncState } from "@/core/admin/occupancy";
 import { OccupancyLegend, SyncLine } from "@/core/admin/occupancy-ui";
+import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
 import { getStaffCatalog } from "@/core/booking/staff-catalog";
 import { seasonFor } from "@/core/pricing/calculate";
@@ -85,7 +86,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/admin/c
   return (
     <div data-bleed>
       <PageHeader
-        kicker={tenant.name}
+        breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
         actions={
           <>

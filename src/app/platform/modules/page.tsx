@@ -1,5 +1,4 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { Breadcrumbs } from "@/core/admin/breadcrumbs";
 import { ExpandableList } from "@/core/admin/expandable-list";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
@@ -40,12 +39,10 @@ export default async function PlatformModules() {
   return (
     <div data-bleed>
       <PageHeader
-        kicker={
-          <Breadcrumbs
-            label={tn("breadcrumbs")}
-            items={[{ label: tn("modules"), href: "/platform/modules" }, { label: tn("catalog") }]}
-          />
-        }
+        breadcrumbs={[
+          { label: tn("modules"), href: "/platform/modules" },
+          { label: tn("catalog") },
+        ]}
         title={tc("title")}
       />
       <PageBody className="grid max-w-[980px] gap-4">

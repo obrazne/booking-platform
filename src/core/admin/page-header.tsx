@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Breadcrumbs, type Crumb } from "./breadcrumbs";
 
 /**
  * Page header of the administration (rule 3): copper kicker (accommodation or "Riadiace centrum") + H1 32 px,
@@ -6,17 +7,24 @@ import type { ReactNode } from "react";
  */
 export function PageHeader({
   kicker,
+  breadcrumbs,
   title,
   actions,
 }: {
   kicker?: ReactNode;
+  /** Second-level pages (common rule v1.2): shown instead of the kicker. */
+  breadcrumbs?: Crumb[];
   title: ReactNode;
   actions?: ReactNode;
 }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-4 px-5 pt-6 pb-5 md:px-10 md:pt-8">
       <div className="grid gap-1.5">
-        {kicker ? <span className="kicker text-brand-secondary">{kicker}</span> : null}
+        {breadcrumbs?.length ? (
+          <Breadcrumbs items={breadcrumbs} />
+        ) : kicker ? (
+          <span className="kicker text-brand-secondary">{kicker}</span>
+        ) : null}
         <h1 className="text-ink text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[32px]">
           {title}
         </h1>

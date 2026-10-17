@@ -16,38 +16,73 @@ test.beforeEach(async ({ page }) => {
   await loginOwner(page, ADMIN_URL);
 });
 
-test("menu with groups: group opens, the active page's group is open, collapsed rail", async ({
+test("menu with groups: a group opens its first page, only the active group is open", async ({
   page,
 }, info) => {
   const mobile = info.project.name === "mobile";
+  const openMenu = async () => {
+    if (mobile) await page.getByRole("button", { name: "Menu" }).click();
+    else await page.locator("aside").hover();
+    return page.getByRole("navigation", { name: "Hlavné menu" }).filter({ visible: true });
+  };
   await page.goto(`${ADMIN_URL}/admin`);
-  if (mobile) await page.getByRole("button", { name: "Menu" }).click();
-  const menu = page.getByRole("navigation", { name: "Hlavné menu" }).filter({ visible: true });
   if (!mobile) {
     // Collapsed rail: icons only, sub-items hidden until it expands on hover.
-    await expect(menu.getByRole("link", { name: "Kalendár" })).toHaveCount(0);
-    await page.locator("aside").hover();
+    await expect(
+      page.getByRole("navigation", { name: "Hlavné menu" }).getByRole("link", { name: "Kalendár" }),
+    ).toHaveCount(0);
   }
-  const group = menu.getByRole("button", { name: /Rezervácie/ });
+  let menu = await openMenu();
+  const group = menu.getByRole("link", { name: /^Rezervácie/ });
   await expect(group).toHaveAttribute("aria-expanded", "false");
+  // Prepojenia has one sub-page: an ordinary item without the chevron.
+  const connections = menu.getByRole("link", { name: "Prepojenia" });
+  await expect(connections).toHaveAttribute("href", "/admin/ical");
+  await expect(connections).not.toHaveAttribute("aria-expanded", /.*/);
+  // Click on the group = its first page (Zoznam), the group expands.
   await group.click();
-  await expect(group).toHaveAttribute("aria-expanded", "true");
-  await menu.getByRole("link", { name: "Kalendár" }).click();
-  await page.waitForURL(/\/admin\/calendar/);
-
-  if (mobile) await page.getByRole("button", { name: "Menu" }).click();
-  else await page.locator("aside").hover();
-  const again = page.getByRole("navigation", { name: "Hlavné menu" }).filter({ visible: true });
-  await expect(again.getByRole("button", { name: /Rezervácie/ })).toHaveAttribute(
+  await page.waitForURL(/\/admin\/reservations$/);
+  menu = await openMenu();
+  await expect(menu.getByRole("link", { name: /^Rezervácie/ })).toHaveAttribute(
     "aria-expanded",
     "true",
   );
-  await expect(again.getByRole("link", { name: "Kalendár" })).toHaveAttribute(
+  await expect(menu.getByRole("link", { name: /^Objekt/ })).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await menu.getByRole("link", { name: "Kalendár" }).click();
+  await page.waitForURL(/\/admin\/calendar/);
+  menu = await openMenu();
+  await expect(menu.getByRole("link", { name: "Kalendár" })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await expect(again.getByRole("link", { name: "Štatistiky" })).toBeVisible();
-  await expect(again.getByRole("button", { name: /Nastavenia/ })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Štatistiky" })).toBeVisible();
+});
+
+test("breadcrumbs: only from the second level, the parent on a phone", async ({ page }, info) => {
+  const mobile = info.project.name === "mobile";
+  await page.goto(`${ADMIN_URL}/admin/statistics`);
+  await expect(page.getByRole("navigation", { name: "Drobčeková navigácia" })).toHaveCount(0);
+  await page.goto(`${ADMIN_URL}/admin/settings/notifications`);
+  const crumbs = page.getByRole("navigation", { name: "Drobčeková navigácia" });
+  if (mobile) {
+    await expect(crumbs.getByRole("link", { name: "Späť na Nastavenia" })).toBeVisible();
+  } else {
+    await expect(crumbs.getByRole("link", { name: "Nastavenia" })).toHaveAttribute(
+      "href",
+      "/admin/settings",
+    );
+    await expect(crumbs.getByText("E-maily a upozornenia")).toHaveAttribute("aria-current", "page");
+    await page.goto(`${ADMIN_URL}/admin/properties/b0000000-0000-4000-8000-000000000100/pricing`);
+    const property = page.getByRole("navigation", { name: "Drobčeková navigácia" });
+    await expect(property.getByRole("link", { name: "Objekt" })).toBeVisible();
+    await expect(property.getByRole("link", { name: "Chalet STRÖMY" })).toBeVisible();
+    await expect(property.locator('[aria-current="page"]').filter({ visible: true })).toContainText(
+      /ceny/i,
+    );
+  }
 });
 
 test("statistics: year, comparison, click on a month", async ({ page }) => {

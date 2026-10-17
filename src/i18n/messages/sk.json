@@ -60,7 +60,9 @@
     "mainMenu": "Hlavné menu",
     "occupancy": "Obsadenosť",
     "accommodation": "Ubytovanie",
-    "closeMenu": "Zavrieť menu"
+    "closeMenu": "Zavrieť menu",
+    "breadcrumbs": "Drobčeková navigácia",
+    "backTo": "Späť na {name}"
   },
   "nav": {
     "dashboard": "Prehľad",
@@ -1132,7 +1134,8 @@
       "paid": "Už zaplatené",
       "create": "Vytvoriť rezerváciu",
       "price": "Cena podľa cenníka",
-      "created": "Rezervácia vytvorená."
+      "created": "Rezervácia vytvorená.",
+      "crumb": "Ručná rezervácia"
     },
     "dashboard": {
       "arrivals": "Dnes prichádzajú",
@@ -1474,7 +1477,7 @@
     "owner": {
       "menu": {
         "title": "Menu v skupinách",
-        "body": "Rezervácie, objekt, ponuka a prepojenia majú vlastné skupiny. Kliknutím ich rozbalíte; skupina stránky, na ktorej práve ste, je otvorená sama."
+        "body": "Rezervácie, objekt, ponuka a nastavenia majú vlastné skupiny. Klik na skupinu otvorí jej prvú stránku; podstránky vidíte pod ňou."
       },
       "statistics": {
         "title": "Štatistiky",

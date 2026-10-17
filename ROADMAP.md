@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z28** — dokončiť doplnené časti (drobčeky podľa spoločného pravidla aj u majiteľa, klik na skupinu v menu) — návrh v1.2 v `docs/vizual-administracia.md`.
+- **Ďalší krok pre Claude Code:** fronta hotová (Z1–Z30) — čaká na ďalšie zadanie z Claude chatu.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -271,7 +271,7 @@ Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.)
 5. Mobil: to isté v zelenom páse dole (aktívne pri platnom termíne, inak veta nad pásom).
 6. Playwright: bez termínu → veta „Vyberte deň príchodu“, po výbere odchodu Pokračovať aktívne a ukáže doplnky; minimum nocí → veta; axe.
 
-### Z28 — Riadiace centrum v1.2 (pripomienky 19–23 + drobnosti)
+### Z28 ✅ — Riadiace centrum v1.2 (pripomienky 19–23 + drobnosti)
 1. **Tmavé menu:** položky cez celú šírku bez zaoblenia, hover biela 6 %, aktívna biela 10 % + 3 px čiara vľavo, text vždy svetlý
    (dnes biely text na bielom podklade). Kontrast skontroluj axe.
 2. **Hierarchia menu:** Klienti › Všetci klienti, Založiť klienta, a v detaile klienta pod tým jeho názov › Prehľad, Moduly, Vzhľad,
@@ -378,6 +378,14 @@ Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.)
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z28 (2. časť, dokončenie): **klik na skupinu v menu** (majiteľ aj riadiace centrum) vedie na prvú viditeľnú podstránku
+  a skupinu rozbalí; rozbalená je len skupina aktívnej stránky; šípka je len znak; skupina s jedinou podstránkou je obyčajná položka
+  (Prepojenia → Booking a Airbnb). **Drobčeky podľa spoločného pravidla:** `PageHeader` má `breadcrumbs` (malým písmom nad nadpisom,
+  namiesto štítku), len od druhej úrovne — Rezervácie › Kalendár / Blokácie / Ručná rezervácia, Ponuka › Referencie, Nastavenia › Tím /
+  E-maily a upozornenia, Objekt › <názov> › <záložka>, Klienti › <klient> › <záložka>, Moduly › Katalóg / Skúšobné doby, Klienti › Založiť
+  klienta; na mobile len „‹ Späť na <rodič>“. Prehliadka majiteľa: text snímky menu a verzia. Playwright (klik na Rezervácie → Zoznam,
+  Prepojenia bez šípky, drobčeky PC aj mobil). Celá sada 46/46. Pozor pri lokálnych testoch: server musí bežať s testovacími kľúčmi
+  Turnstile (`npm run e2e:server`), inak padne rezervácia a prihlásenie hosťa. (Claude Code)
 - 2026-10-17 — Z30: **košík — Pokračovať hneď po výbere termínu.** Platný termín → Pokračovať aktívne (pri otvorenom kalendári
   ho zbalí a ukáže doplnky, krok 1 ostáva); „Hotovo“ → „Potvrdiť termín“. Bez platného termínu je Pokračovať stlmené cez `aria-disabled`
   a nad ním je vždy veta prečo („Vyberte deň príchodu“ → „Vyberte deň odchodu“ → pravidlo ceny, napr. „V tomto termíne je minimum 3 noci.“;

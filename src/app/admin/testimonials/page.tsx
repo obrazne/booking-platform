@@ -7,9 +7,9 @@ import { requireTenant } from "@/core/admin/action";
 import { DeleteButton } from "@/core/admin/delete-button";
 import { ExpandableList, RowState } from "@/core/admin/expandable-list";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
+import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
 import { tr } from "@/core/i18n/localized";
-import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { deleteTestimonial, saveTestimonial } from "./actions";
 
@@ -18,11 +18,10 @@ const SOURCES = ["google", "booking", "airbnb", "email", "other"] as const;
 /** Testimonials of the tenant (B1) as compact rows that expand in place (vizuál administrácie v1.1, rule 7). */
 export default async function TestimonialsPage() {
   const active = await requireTenant();
-  const [t, tf, locale, tenant] = await Promise.all([
+  const [t, tf, locale] = await Promise.all([
     getTranslations("testimonials"),
     getTranslations("forms"),
     getLocale(),
-    getTenantInfo(active.tenantId),
   ]);
   const supabase = await createClient();
   const [{ data: rows }, { data: properties }] = await Promise.all([
@@ -132,7 +131,10 @@ export default async function TestimonialsPage() {
 
   return (
     <div data-bleed>
-      <PageHeader kicker={tenant.name} title={t("title")} />
+      <PageHeader
+        breadcrumbs={await groupCrumbs("offer", t("title"), active.tenantId)}
+        title={t("title")}
+      />
       <div className="px-5 pb-14 md:px-10">
         <ExpandableList
           description={t("lead")}
