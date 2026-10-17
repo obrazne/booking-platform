@@ -4,26 +4,14 @@ import { Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
-import { PanelLink, UrlPanel } from "@/core/admin/record-panel";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { formatDate } from "@/core/format/format";
 import { listModules } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
-import { loadTenantPanel } from "./panel-loader";
+import { TenantRows } from "./tenant-rows";
 
 type TenantStatus = "onboarding" | "active" | "suspended";
-
-const STATUS_PILL: Record<TenantStatus, string> = {
-  onboarding: "bg-[#f6ecdf] text-[#8a4a22]",
-  active: "bg-primary text-primary-foreground",
-  suspended: "bg-[#eef0f3] text-[#3b4652]",
-};
-
-/** Changes with every server render — tells the open panel to load its detail again after a change. */
-function renderVersion(): string {
-  return String(Date.now());
-}
 
 /** Point in time n days back (the 30-day reservation count). */
 function daysAgo(n: number): string {
@@ -121,89 +109,31 @@ export default async function PlatformTenants() {
         </section>
 
         <section className="grid gap-3">
-          <div className="overflow-x-auto">
-            <div role="table" aria-label={t("tenants")} className="min-w-[760px]">
-              <div
-                role="row"
-                className="border-line label-mono grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1.4fr)_100px_130px] gap-4 border-b px-2 py-3"
-              >
-                <span role="columnheader">{tm("client")}</span>
-                <span role="columnheader">{tm("address")}</span>
-                <span role="columnheader">{tm("package")}</span>
-                <span role="columnheader" className="text-right">
-                  {tm("res30")}
-                </span>
-                <span role="columnheader">{t("status")}</span>
-              </div>
-              {list.map((x) => {
-                const on = x.tenant_modules.filter((m) => m.status !== "off");
-                return (
-                  <PanelLink
-                    key={x.id}
-                    type="tenant"
-                    id={x.id}
-                    role="row"
-                    className="border-line grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1.4fr)_100px_130px] items-center gap-4 border-b px-2 py-4 transition-colors hover:bg-[#fbfaf7]"
-                  >
-                    <span role="cell" className="flex min-w-0 items-center gap-3">
-                      <span
-                        className="size-7 shrink-0 rounded-lg"
-                        style={{ background: x.tenant_themes?.primary_color ?? "#2f5d50" }}
-                      />
-                      <span className="grid min-w-0 gap-0.5">
-                        <span className="text-ink truncate text-[15px] font-bold">{x.name}</span>
-                        <span className="truncate text-[13px] text-[#5a6672]">
-                          {x.owner ? (x.owner.full_name ?? x.owner.email) : tm("noOwner")}
-                        </span>
-                      </span>
-                    </span>
-                    <span role="cell" className="text-ink truncate font-mono text-[13px]">
-                      {x.domain ?? "—"}
-                    </span>
-                    <span role="cell" className="grid gap-0.5 text-sm">
-                      <span className="text-ink font-medium">{tm("noPackage")}</span>
-                      <span className="truncate text-[13px] text-[#5a6672]">
-                        {on.length
-                          ? on
-                              .map(
-                                (m) =>
-                                  `${moduleLabel(m.module_key)}${m.status === "trial" ? ` (${t("moduleStatus.trial").toLowerCase()})` : ""}`,
-                              )
-                              .join(", ")
-                          : tm("noModules")}
-                      </span>
-                    </span>
-                    <span
-                      role="cell"
-                      className="text-ink text-right text-[15px] font-bold tabular-nums"
-                    >
-                      {perTenant.get(x.id) ?? 0}
-                    </span>
-                    <span role="cell">
-                      <span
-                        className={cn(
-                          "inline-flex rounded-full px-2.5 py-1 text-xs font-bold",
-                          STATUS_PILL[x.status as TenantStatus],
-                        )}
-                      >
-                        {t(`statuses.${x.status as TenantStatus}`)}
-                      </span>
-                    </span>
-                  </PanelLink>
-                );
-              })}
-            </div>
-          </div>
+          <TenantRows
+            rows={list.map((x) => {
+              const on = x.tenant_modules.filter((m) => m.status !== "off");
+              return {
+                id: x.id,
+                name: x.name,
+                color: x.tenant_themes?.primary_color ?? "#2f5d50",
+                owner: x.owner ? (x.owner.full_name ?? x.owner.email) : null,
+                domain: x.domain,
+                modules: on.length
+                  ? on
+                      .map(
+                        (m) =>
+                          `${moduleLabel(m.module_key)}${m.status === "trial" ? ` (${t("moduleStatus.trial").toLowerCase()})` : ""}`,
+                      )
+                      .join(", ")
+                  : tm("noModules"),
+                reservations30: perTenant.get(x.id) ?? 0,
+                status: x.status as TenantStatus,
+              };
+            })}
+          />
           <p className="mx-2 text-[13px] text-[#5a6672]">{tm("privacyNote")}</p>
         </section>
       </div>
-
-      <UrlPanel
-        type="tenant"
-        load={loadTenantPanel}
-        version={renderVersion()}
-        backLabel={t("tenants")}
-      />
     </div>
   );
 }

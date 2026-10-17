@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Activity, Building2, History, Puzzle, Shield } from "lucide-react";
+import { Activity, Building2, History, Puzzle, Shield, Store } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { UserMenu } from "@/core/admin/topbar";
@@ -21,6 +21,9 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
   const [user, admin] = await Promise.all([getCurrentUser(), isPlatformAdmin()]);
   const tourNew = admin ? await tourIsNewForUser("admin") : false;
   const bell = admin ? await loadBell("platform") : null;
+  const { data: tenants } = admin
+    ? await (await createClient()).from("tenants").select("id, name").order("name")
+    : { data: null };
   const { data: profile } = user
     ? await (
         await createClient()
@@ -39,12 +42,44 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
       items={
         admin
           ? [
-              { href: "/platform", label: t("platform.tenants"), icon: <Building2 /> },
-              { href: "/platform/modules", label: t("platform.modulesNav"), icon: <Puzzle /> },
-              { href: "/platform/status", label: t("platform.statusNav"), icon: <Activity /> },
-              { href: "/platform/audit", label: t("platform.auditNav"), icon: <History /> },
+              {
+                label: t("platform.nav.clients"),
+                icon: <Building2 />,
+                children: [
+                  { href: "/platform", label: t("platform.nav.allClients") },
+                  { href: "/platform/new", label: t("platform.nav.newClient") },
+                ],
+              },
+              {
+                label: t("platform.nav.modules"),
+                icon: <Puzzle />,
+                children: [
+                  { href: "/platform/modules", label: t("platform.nav.catalog") },
+                  { href: "/platform/modules/trials", label: t("platform.nav.trials") },
+                ],
+              },
+              { href: "/platform/status", label: t("platform.nav.status"), icon: <Activity /> },
+              { href: "/platform/audit", label: t("platform.nav.audit"), icon: <History /> },
             ]
           : []
+      }
+      contextGroup={
+        admin
+          ? {
+              prefix: "/platform/tenants/",
+              names: Object.fromEntries((tenants ?? []).map((x) => [x.id, x.name])),
+              tabs: [
+                { path: "", label: t("platform.tabs.overview") },
+                { path: "/modules", label: t("platform.tabs.modules") },
+                { path: "/theme", label: t("platform.tabs.theme") },
+                { path: "/domains", label: t("platform.tabs.domains") },
+                { path: "/people", label: t("platform.tabs.people") },
+                { path: "/audit", label: t("platform.tabs.audit") },
+              ],
+              icon: <Store />,
+              after: 0,
+            }
+          : undefined
       }
       user={
         <UserMenu name={profile?.full_name ?? null} email={user?.email ?? null} whatsNew={admin} />

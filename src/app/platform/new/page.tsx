@@ -1,14 +1,27 @@
 import { getTranslations } from "next-intl/server";
+import { Breadcrumbs } from "@/core/admin/breadcrumbs";
+import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { NewTenantForm } from "../forms";
 
+/** Control center — Klienti › Založiť klienta. */
 export default async function NewTenantPage() {
   if (!(await isPlatformAdmin())) return null;
-  const t = await getTranslations("platform");
+  const [t, tn] = await Promise.all([getTranslations("platform"), getTranslations("platform.nav")]);
   return (
-    <div className="grid gap-6">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("newTenant")}</h1>
-      <NewTenantForm />
+    <div data-bleed>
+      <PageHeader
+        kicker={
+          <Breadcrumbs
+            label={tn("breadcrumbs")}
+            items={[{ label: tn("clients"), href: "/platform" }, { label: tn("newClient") }]}
+          />
+        }
+        title={t("newTenant")}
+      />
+      <PageBody>
+        <NewTenantForm />
+      </PageBody>
     </div>
   );
 }

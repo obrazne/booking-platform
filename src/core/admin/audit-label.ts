@@ -26,6 +26,10 @@ export function auditLabel(
       return t("membershipCreated");
     case "admin.entered":
       return t("adminEntered");
+    case "auth.signed_in":
+      return t("signedIn", {
+        method: t(`methods.${data.method === "password" ? "password" : "link"}`),
+      });
     default:
       return t("other");
   }

@@ -13,7 +13,11 @@ export async function GET(request: NextRequest) {
   if (tokenHash && type) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    if (!error) {
+      // Audit (Z28): staff sign-in through a link (guests have no profile and are skipped in the database).
+      await supabase.rpc("audit_sign_in", { p_method: "link" });
+      return NextResponse.redirect(`${origin}${next}`);
+    }
   }
   return NextResponse.redirect(`${origin}/login`);
 }

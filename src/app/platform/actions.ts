@@ -78,7 +78,8 @@ export async function setModule(_prev: FormState, formData: FormData): Promise<F
     p_trial_ends_at: v.status === "trial" ? v.trialEndsAt : undefined,
   });
   if (error) return { error: "error" };
-  revalidatePath(`/platform/tenants/${v.tenantId}`);
+  // The module is shown in the catalog, trials, the client list and the client's detail.
+  revalidatePath("/platform", "layout");
   return { error: null, ok: true };
 }
 

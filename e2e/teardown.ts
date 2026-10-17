@@ -45,6 +45,8 @@ export default async function teardown() {
     .eq("tenant_id", STROMY)
     .like("email", `%@${TEST_DOMAIN}`);
   await db.from("notifications").delete().like("dedupe_key", "e2e:%");
+  // Clients created by the control center tests.
+  await db.from("tenants").delete().like("slug", "e2e-%");
   // Holds from carts that reached step 3 without booking (at most 3 per unit — tests would block each other).
   await db.from("occupancy").delete().eq("tenant_id", STROMY).eq("kind", "hold");
   console.log(`[e2e] cleanup: ${ids.length} reservations, ${testUsers.length} guest logins`);

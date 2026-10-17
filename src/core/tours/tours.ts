@@ -35,7 +35,7 @@ export const TOURS: Record<TourKey, Tour> = {
   },
   admin: {
     key: "admin",
-    version: "2026-10-17.3",
+    version: "2026-10-17.5",
     slides: [
       { id: "tenants", href: "/platform" },
       { id: "newTenant", href: "/platform/new" },

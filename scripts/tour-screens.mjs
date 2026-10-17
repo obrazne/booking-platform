@@ -199,10 +199,10 @@ try {
   const adminShots = {
     tenants: ["/platform"],
     newTenant: ["/platform/new"],
-    detail: [`/platform?panel=tenant:${TENANT}`],
+    detail: [detail],
     modules: ["/platform/modules"],
     health: ["/platform/status"],
-    theme: [detail, { heading: "Náhľad témy" }],
+    theme: [`${detail}/theme`],
     audit: ["/platform/audit"],
     ownerView: [`/platform/enter/${TENANT}`],
   };

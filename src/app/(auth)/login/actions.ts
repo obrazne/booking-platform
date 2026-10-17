@@ -41,6 +41,8 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: "invalidCredentials" };
+  // Audit (Z28): who signed in and how — never the password or the typed e-mail.
+  await supabase.rpc("audit_sign_in", { p_method: "password" });
 
   redirect(safeNext(formData.get("next")));
 }

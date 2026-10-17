@@ -15,6 +15,22 @@ import { ChevronRight, Menu, Pin, PinOff, Plus, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+/**
+ * Group that exists only inside one record (control center v1.2: in a client's detail, its name › Prehľad, Moduly …).
+ * Built in the browser from the path, so the server layout does not need to know the current page.
+ */
+export type ShellContextGroup = {
+  /** Path prefix followed by the record id, e.g. "/platform/tenants/". */
+  prefix: string;
+  /** Record id → label of the group. */
+  names: Record<string, string>;
+  /** Sub-pages; "" is the record's first page. */
+  tabs: { path: string; label: string }[];
+  icon?: ReactNode;
+  /** Index of the main item the group follows. */
+  after: number;
+};
+
 export type ShellNavItem = {
   /** Link target; a group (with `children`) has none — it only opens and closes. */
   href?: string;
@@ -213,20 +229,47 @@ function NavGroup({
   );
 }
 
+function withContext(items: ShellNavItem[], pathname: string, group?: ShellContextGroup) {
+  if (!group || !pathname.startsWith(group.prefix)) return items;
+  const id = pathname.slice(group.prefix.length).split("/")[0] ?? "";
+  const name = group.names[id];
+  if (!name) return items;
+  const base = `${group.prefix}${id}`;
+  const entry: ShellNavItem = {
+    label: name,
+    icon: group.icon,
+    children: group.tabs.map((tab) => ({ href: `${base}${tab.path}`, label: tab.label })),
+  };
+  return [...items.slice(0, group.after + 1), entry, ...items.slice(group.after + 1)];
+}
+
 function NavTree({
-  items,
+  items: baseItems,
   expanded,
   roots,
+  contextGroup,
   onNavigate,
 }: {
   items: ShellNavItem[];
   expanded: boolean;
   roots: string[];
+  contextGroup?: ShellContextGroup;
   onNavigate?: () => void;
 }) {
   const t = useTranslations("shell");
   const pathname = usePathname();
-  const current = activeHref(items, pathname, roots);
+  const items = withContext(baseItems, pathname, contextGroup);
+  // A record's first page ("Prehľad") is active only on its exact path, not on its sub-pages.
+  const current = activeHref(
+    items,
+    pathname,
+    contextGroup && pathname.startsWith(contextGroup.prefix)
+      ? [
+          ...roots,
+          `${contextGroup.prefix}${pathname.slice(contextGroup.prefix.length).split("/")[0]}`,
+        ]
+      : roots,
+  );
   const entry = (item: ShellNavItem) =>
     item.children ? (
       item.children.length ? (
@@ -288,6 +331,7 @@ export function AdminShell({
   addHref,
   addLabel,
   roots = ["/admin", "/platform"],
+  contextGroup,
   variant = "admin",
   tag,
   banner,
@@ -315,6 +359,8 @@ export function AdminShell({
   /** "+" in the phone top bar (manual reservation). */
   addHref?: string;
   addLabel?: string;
+  /** Group shown only inside one record (client detail in the control center). */
+  contextGroup?: ShellContextGroup;
   /** Items that are active only on their exact path. */
   roots?: string[];
   children: ReactNode;
@@ -378,7 +424,7 @@ export function AdminShell({
           </div>
           <ExpandedContext.Provider value={expanded}>
             {picker}
-            <NavTree items={items} expanded={expanded} roots={roots} />
+            <NavTree items={items} expanded={expanded} roots={roots} contextGroup={contextGroup} />
             {user}
           </ExpandedContext.Provider>
         </aside>
@@ -446,7 +492,13 @@ export function AdminShell({
             </button>
           </div>
           {picker}
-          <NavTree items={items} expanded roots={roots} onNavigate={() => setMobileOpen(false)} />
+          <NavTree
+            items={items}
+            expanded
+            roots={roots}
+            contextGroup={contextGroup}
+            onNavigate={() => setMobileOpen(false)}
+          />
           {/* "Čo je nové" opens its own window — the menu closes first. */}
           <div
             onClick={(e) => {

@@ -151,7 +151,156 @@
     "modulesNav": "Moduly",
     "statusNav": "Stav systému",
     "auditNav": "Audit",
-    "toAdmin": "Do administrácie"
+    "toAdmin": "Do administrácie",
+    "nav": {
+      "clients": "Klienti",
+      "allClients": "Všetci klienti",
+      "newClient": "Založiť klienta",
+      "modules": "Moduly",
+      "catalog": "Katalóg",
+      "trials": "Skúšobné doby",
+      "status": "Stav systému",
+      "audit": "Audit",
+      "breadcrumbs": "Drobčeková navigácia"
+    },
+    "tabs": {
+      "overview": "Prehľad",
+      "modules": "Moduly",
+      "theme": "Vzhľad",
+      "domains": "Domény",
+      "people": "Ľudia",
+      "audit": "Záznam zmien"
+    },
+    "snapshot": {
+      "revenueThisMonth": "Tržby priamo tento mesiac",
+      "revenueLastMonth": "Minulý mesiac",
+      "reservations30": "Rezervácie za 30 dní",
+      "lastReservation": "posledná {number} · {date}",
+      "noReservation": "zatiaľ žiadna",
+      "occupancy90": "Obsadenosť 90 dní",
+      "occupancyNote": "aj s Bookingom a Airbnb",
+      "health": "Zdravie",
+      "syncOk": "{count, plural, one {Kalendár} other {Kalendáre}} v poriadku",
+      "syncFailing": "{count, plural, one {Kalendár hlási chybu} few {# kalendáre hlásia chybu} other {# kalendárov hlási chybu}}",
+      "syncNone": "Bez prepojených kalendárov",
+      "demoCalendars": "ukážkové kalendáre sa nesynchronizujú",
+      "emailsOk": "E-maily odchádzajú",
+      "emailsFailed": "{count, plural, one {1 neodoslaný e-mail} few {# neodoslané e-maily} other {# neodoslaných e-mailov}}",
+      "modules": "Moduly",
+      "noModules": "Žiadne zapnuté moduly",
+      "trial": "skúška",
+      "trialUntil": "skúška do {date}",
+      "active": "aktívny",
+      "owner": "Majiteľ",
+      "noOwner": "Bez majiteľa",
+      "lastSignIn": "naposledy prihlásený {date}",
+      "neverSignedIn": "zatiaľ sa neprihlásil",
+      "openDetail": "Otvoriť detail",
+      "openAdmin": "Otvoriť administráciu",
+      "guestPage": "Stránka pre hostí"
+    },
+    "detail": {
+      "primaryDomain": "hlavná",
+      "devOnly": "len vývoj",
+      "domainsNote": "Adresy *.localhost slúžia len na vývoj na počítači — hostia ich nevidia.",
+      "lastSignIn": "naposledy prihlásený {date}",
+      "memberSince": "v tíme od {date}, zatiaľ bez prihlásenia",
+      "noPeople": "Klient zatiaľ nemá nikoho v tíme.",
+      "colorPrimary": "Hlavná farba",
+      "colorSecondary": "Doplnková farba",
+      "colorBackground": "Pozadie",
+      "fontsRadius": "Písmo a zaoblenie",
+      "radius": "zaoblenie {px} px",
+      "contrastOk": "kontrast tlačidiel v poriadku",
+      "contrastLow": "nízky kontrast tlačidiel",
+      "preview": "Náhľad",
+      "modulesIntro": "Zapnutý modul vidí majiteľ v administrácii aj hostia na stránke. Po vypnutí sa len skryje, nič sa nezmaže.",
+      "inPreparation": "V príprave — zatiaľ sa nedá zapnúť."
+    },
+    "assign": {
+      "title": "Priradiť klientovi — {module}",
+      "client": "Klient",
+      "submit": "Priradiť"
+    },
+    "catalog": {
+      "title": "Katalóg modulov",
+      "intro": "Hotové moduly zapínate klientom natrvalo alebo na skúšku. Moduly v príprave sú tu, aby bolo vidieť, čo pribudne. Každá zmena sa zapíše do auditu.",
+      "ready": "Hotový",
+      "planned": "V príprave",
+      "clients": "{count, plural, =0 {žiadny klient} one {1 klient} few {# klienti} other {# klientov}}",
+      "dependsOn": "potrebuje {modules}",
+      "noClients": "Modul zatiaľ nemá žiadny klient.",
+      "services": {
+        "name": "Doplnkové služby",
+        "desc": "Šéfkuchár, raňajky, transfer — hosť si ich pridá v košíku, cena sa pripočíta."
+      },
+      "reviews": {
+        "name": "Recenzie",
+        "desc": "Po pobyte požiada hosťa o hodnotenie a dobré pošle na Google."
+      },
+      "messages": {
+        "name": "Správy s hosťom",
+        "desc": "Konverzácia s hosťom pri rezervácii namiesto e-mailov a telefonátov."
+      },
+      "push": {
+        "name": "Push notifikácie",
+        "desc": "Upozornenia majiteľovi do mobilu bez otvárania administrácie."
+      },
+      "sms": {
+        "name": "SMS",
+        "desc": "Krátke správy hosťom — pokyny k príchodu, pripomenutie platby."
+      },
+      "checkin": {
+        "name": "Online check-in",
+        "desc": "Hosť vyplní údaje pre knihu hostí ešte pred príchodom."
+      },
+      "upsell": {
+        "name": "Upsell",
+        "desc": "Ponuka doplnkov hosťom po rezervácii a pred príchodom."
+      }
+    },
+    "trials": {
+      "title": "Skúšobné doby",
+      "intro": "Moduly na skúšku zoradené podľa konca. Po skončení sa modul klientovi len skryje.",
+      "client": "Klient",
+      "module": "Modul",
+      "ends": "Koniec skúšky",
+      "left": "Zostáva",
+      "daysLeft": "{count, plural, =0 {končí dnes} one {1 deň} few {# dni} other {# dní}}",
+      "ended": "skončila",
+      "none": "Žiadny modul nie je na skúške."
+    },
+    "auditPage": {
+      "title": "Audit",
+      "intro": "Kto, kedy a čo zmenil. Heslá ani zadané e-maily sa nikdy nezapisujú.",
+      "from": "Od",
+      "to": "Do",
+      "category": "Kategória",
+      "client": "Klient",
+      "person": "Osoba",
+      "search": "Hľadať",
+      "all": "Všetko",
+      "allClients": "Všetci klienti",
+      "allPeople": "Všetci",
+      "filter": "Filtrovať",
+      "reset": "Zrušiť filtre",
+      "csv": "Export CSV",
+      "categories": {
+        "signin": "Prihlásenie",
+        "admin": "Vstup správcu",
+        "modules": "Moduly a skúšky",
+        "team": "Tím a prístupy",
+        "settings": "Nastavenia",
+        "clients": "Klienti"
+      },
+      "count": "{count, plural, =0 {Žiadny záznam} one {1 záznam} few {# záznamy} other {# záznamov}}",
+      "page": "Strana {page} z {pages}",
+      "previous": "Predchádzajúca",
+      "next": "Ďalšia",
+      "noClient": "bez klienta",
+      "system": "systém",
+      "csvHeader": "Čas;Klient;Osoba;Udalosť"
+    }
   },
   "modules": {
     "services": {
@@ -1597,7 +1746,12 @@
       },
       "membershipCreated": "Pridaný človek do tímu",
       "adminEntered": "Správca otvoril administráciu",
-      "other": "Iná zmena"
+      "other": "Iná zmena",
+      "signedIn": "Prihlásenie ({method})",
+      "methods": {
+        "password": "heslom",
+        "link": "odkazom z e-mailu"
+      }
     },
     "adminView": {
       "banner": "Prezeráš ako správca: {tenant}",
@@ -1619,7 +1773,8 @@
       "emailsOk": "bez neodoslaných",
       "emailsFailed": "{count, plural, one {1 neodoslaný} few {# neodoslané} other {# neodoslaných}}",
       "lastSent": "posledný odoslaný {date}",
-      "never": "zatiaľ nikdy"
+      "never": "zatiaľ nikdy",
+      "demoChannels": "{count, plural, one {1 ukážkový kalendár} few {# ukážkové kalendáre} other {# ukážkových kalendárov}} (nesynchronizuje sa)"
     }
   },
   "stats": {

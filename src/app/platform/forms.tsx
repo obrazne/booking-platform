@@ -160,3 +160,64 @@ export function TenantStatusForm({
     </form>
   );
 }
+
+/** "Priradiť klientovi" (v1.2): a module for a client that does not have it yet — on trial with an end date, or active. */
+export function AssignModuleForm({
+  moduleKey,
+  label,
+  tenants,
+}: {
+  moduleKey: string;
+  label: string;
+  tenants: { id: string; name: string }[];
+}) {
+  const t = useTranslations("platform");
+  const [state, action, pending] = useActionState(setModule, initial);
+  const [tenantId, setTenantId] = useState("");
+  const [value, setValue] = useState<"trial" | "active">("trial");
+  if (tenants.length === 0) return null;
+  return (
+    <form action={action} className="grid gap-2.5 rounded-lg bg-[#f4f3ef] px-4 py-3">
+      <input type="hidden" name="tenantId" value={tenantId} />
+      <input type="hidden" name="moduleKey" value={moduleKey} />
+      <input type="hidden" name="status" value={value} />
+      <span className="text-ink text-sm font-bold">{t("assign.title", { module: label })}</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={tenantId} onValueChange={setTenantId}>
+          <SelectTrigger aria-label={t("assign.client")} className="w-56">
+            <SelectValue placeholder={t("assign.client")} />
+          </SelectTrigger>
+          <SelectContent>
+            {tenants.map((x) => (
+              <SelectItem key={x.id} value={x.id}>
+                {x.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={value} onValueChange={(v) => setValue(v as typeof value)}>
+          <SelectTrigger aria-label={`${t("status")}: ${label}`} className="w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(["trial", "active"] as const).map((s) => (
+              <SelectItem key={s} value={s}>
+                {t(`moduleStatus.${s}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {value === "trial" ? (
+          <label className="text-muted-foreground flex items-center gap-2 text-sm">
+            {t("trialEndsAt")}
+            <Input type="date" name="trialEndsAt" className="w-44" />
+          </label>
+        ) : null}
+        <Button type="submit" disabled={pending || !tenantId} className="font-bold">
+          {t("assign.submit")}
+        </Button>
+      </div>
+      <FormMessage state={state} />
+    </form>
+  );
+}

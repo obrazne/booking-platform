@@ -131,12 +131,14 @@ test("05 control center: own menu, clients, client panel without guest data", as
     // Own menu: no accommodation picker.
     await expect(page.locator("aside")).not.toContainText("Ubytovanie");
   }
+  // v1.2: the client opens as an expandable row (no side panel).
   await page
-    .locator(`a[href*="panel=tenant%3A${STROMY}"], a[href*="panel=tenant:${STROMY}"]`)
+    .getByRole("button", { name: /Chalet STRÖMY/ })
+    .first()
     .click();
-  const panel = page.getByRole("dialog");
-  await expect(panel).toContainText("Chalet STRÖMY");
-  await expect(panel).toContainText("Balík a moduly");
+  const panel = page.getByRole("region", { name: "Chalet STRÖMY" });
+  await expect(panel).toContainText("Tržby priamo tento mesiac");
+  await expect(panel).toContainText("Moduly");
   await expect(page.getByText("Riadiace centrum nevidí mená ani kontakty hostí")).toBeVisible();
   expect.soft(await serious(page, "riadiace centrum")).toEqual([]);
   await noHorizontalScroll(page);
@@ -255,16 +257,21 @@ test("Z25 admin entry: control center opens the client in a new tab, bar and aud
   await loginPlatformAdmin(page, ADMIN_URL);
   // Own pages of the control center, graphite menu without "Do administrácie".
   for (const [href, title] of [
-    ["/platform/modules", "Moduly"],
+    ["/platform/modules", "Katalóg modulov"],
     ["/platform/status", "Stav systému"],
-    ["/platform/audit", "Záznam zmien"],
+    ["/platform/audit", "Audit"],
   ] as const) {
     await page.goto(`${ADMIN_URL}${href}`);
     await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
   }
   await expect(page.locator("aside")).not.toContainText("Do administrácie");
-  await page.goto(`${ADMIN_URL}/platform?panel=tenant:${STROMY}`);
-  const panel = page.getByRole("dialog");
+  await page.goto(`${ADMIN_URL}/platform`);
+  await page
+    .getByRole("button", { name: /Chalet STRÖMY/ })
+    .first()
+    .click();
+  const panel = page.getByRole("region", { name: "Chalet STRÖMY" });
+  await expect(panel.getByRole("link", { name: /Otvoriť administráciu/ })).toBeVisible();
   await expect(panel).not.toContainText("booking-platform.test");
   await expect(panel).not.toContainText(".localhost");
   const [tab] = await Promise.all([

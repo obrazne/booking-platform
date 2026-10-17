@@ -53,8 +53,12 @@ test("guest books Chalet STRÖMY: calendar, 3-step cart, service, consents, paym
   await expect(cart.getByRole("checkbox", { name: /novinky/ })).not.toBeChecked();
   await cart.getByRole("checkbox", { name: /obchodnými podmienkami/ }).check();
   await cart.getByRole("checkbox", { name: /storno podmienky/ }).check();
-  await page.waitForTimeout(3200); // the form refuses submissions faster than a human (bot protection)
-  await cart.getByRole("button", { name: "Rezervovať s povinnosťou platby" }).click();
+  // The signed form token arrives with step 3 (the button is enabled then); the form refuses submissions
+  // faster than a human from that moment (bot protection), so count the 3 s from there.
+  const submit = cart.getByRole("button", { name: "Rezervovať s povinnosťou platby" });
+  await expect(submit).toBeEnabled();
+  await page.waitForTimeout(3200);
+  await submit.click();
 
   // Reservation page via the secret link: payment details with QR.
   await page.waitForURL(/\/r\/[A-Za-z0-9_-]+/);

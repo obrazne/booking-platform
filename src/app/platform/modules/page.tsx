@@ -1,73 +1,120 @@
-import { getTranslations } from "next-intl/server";
-import { Shield } from "lucide-react";
-import { PageHeader } from "@/core/admin/page-header";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Breadcrumbs } from "@/core/admin/breadcrumbs";
+import { ExpandableList } from "@/core/admin/expandable-list";
+import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
 import { isPlatformAdmin } from "@/core/auth/session";
-import { listModules } from "@/core/modules/registry";
+import { formatDate } from "@/core/format/format";
+import { moduleCatalog } from "@/core/modules/catalog";
+import { AssignModuleForm, ModuleSwitchForm } from "../forms";
 
-/** Control center — Moduly: each module with the clients that have it on or on trial (A3). */
+type ModuleStatus = "trial" | "active" | "off";
+
+/**
+ * Control center — Moduly › Katalóg (v1.2): each module as an expandable row (description, dependencies, number of
+ * clients, finished / in preparation); a finished one lists its clients with the switch and "Priradiť klientovi".
+ */
 export default async function PlatformModules() {
   if (!(await isPlatformAdmin())) return null;
-  const [t, tm, tAll, list] = await Promise.all([
+  const [t, tc, tn, locale, list] = await Promise.all([
     getTranslations("platform"),
-    getTranslations("adminV1.platform"),
-    getTranslations(),
+    getTranslations("platform.catalog"),
+    getTranslations("platform.nav"),
+    getLocale(),
     loadTenants(),
   ]);
+  const catalog = moduleCatalog();
+  const name = (key: string) => tc(`${key}.name` as Parameters<typeof tc>[0]);
+  const pill = (ready: boolean) => (
+    <span
+      className={
+        ready
+          ? "bg-primary/12 text-primary rounded-full px-2 py-0.5 text-xs font-bold"
+          : "rounded-full bg-[#eef0f3] px-2 py-0.5 text-xs font-bold text-[#3b4652]"
+      }
+    >
+      {ready ? tc("ready") : tc("planned")}
+    </span>
+  );
+
   return (
     <div data-bleed>
       <PageHeader
         kicker={
-          <span className="inline-flex items-center gap-1.5">
-            <Shield className="size-3.5" /> {t("title")}
-          </span>
+          <Breadcrumbs
+            label={tn("breadcrumbs")}
+            items={[{ label: tn("modules"), href: "/platform/modules" }, { label: tn("catalog") }]}
+          />
         }
-        title={t("modules")}
+        title={tc("title")}
       />
-      <div className="grid gap-4 px-5 pb-14 md:px-10">
-        {listModules().map((m) => {
-          const rows = list.flatMap((x) =>
-            x.tenant_modules
-              .filter((r) => r.module_key === m.key && r.status !== "off")
-              .map((r) => ({ tenant: x.name, ...r })),
-          );
-          return (
-            <section key={m.key} className="surface grid gap-3 p-5">
-              <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <h2 className="text-ink text-lg font-extrabold">
-                  {tAll(`${m.messages}.title` as Parameters<typeof tAll>[0])}
-                </h2>
-                <span className="text-muted-foreground text-sm">
-                  {tm("moduleCounts", {
-                    active: rows.filter((r) => r.status === "active").length,
-                    trial: rows.filter((r) => r.status === "trial").length,
-                  })}
-                </span>
-              </div>
-              {rows.length ? (
-                <ul className="border-hair border-t text-sm">
-                  {rows.map((r) => (
-                    <li
-                      key={r.tenant}
-                      className="border-hair flex justify-between gap-3 border-b py-2.5"
-                    >
-                      <span className="text-ink">{r.tenant}</span>
-                      <span className="text-muted-foreground">
-                        {t(`moduleStatus.${r.status as "trial"}`)}
-                        {r.status === "trial" && r.trial_ends_at
-                          ? ` · ${tm("until", { date: r.trial_ends_at.slice(0, 10) })}`
-                          : ""}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground text-sm">{tm("noClientsWithModule")}</p>
-              )}
-            </section>
-          );
-        })}
-      </div>
+      <PageBody className="grid max-w-[980px] gap-4">
+        <p className="text-muted-foreground max-w-prose text-sm">{tc("intro")}</p>
+        <ExpandableList
+          rows={catalog.map((m) => {
+            const users = list.flatMap((x) =>
+              x.tenant_modules
+                .filter((r) => r.module_key === m.key && r.status !== "off")
+                .map((r) => ({ tenant: x, row: r })),
+            );
+            const without = list
+              .filter((x) => !users.some((u) => u.tenant.id === x.id))
+              .map((x) => ({ id: x.id, name: x.name }));
+            return {
+              id: m.key,
+              title: name(m.key),
+              meta: [
+                m.ready ? tc("clients", { count: users.length }) : null,
+                m.dependsOn.length
+                  ? tc("dependsOn", { modules: m.dependsOn.map(name).join(", ") })
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · "),
+              status: pill(m.ready),
+              content: (
+                <div className="grid gap-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {tc(`${m.key}.desc` as Parameters<typeof tc>[0])}
+                  </p>
+                  {m.ready ? (
+                    <>
+                      {users.length ? (
+                        users.map(({ tenant, row }) => (
+                          <ModuleSwitchForm
+                            key={tenant.id}
+                            tenantId={tenant.id}
+                            moduleKey={m.key}
+                            label={tenant.name}
+                            status={row.status as ModuleStatus}
+                            trialEndsAt={row.trial_ends_at}
+                          />
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground">{tc("noClients")}</p>
+                      )}
+                      <AssignModuleForm moduleKey={m.key} label={name(m.key)} tenants={without} />
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">{t("detail.inPreparation")}</p>
+                  )}
+                  {users.some((u) => u.row.status === "trial" && u.row.trial_ends_at) ? (
+                    <p className="text-muted-foreground text-[13px]">
+                      {users
+                        .filter((u) => u.row.status === "trial" && u.row.trial_ends_at)
+                        .map(
+                          (u) =>
+                            `${u.tenant.name}: ${formatDate(u.row.trial_ends_at!.slice(0, 10), locale)}`,
+                        )
+                        .join(" · ")}
+                    </p>
+                  ) : null}
+                </div>
+              ),
+            };
+          })}
+        />
+      </PageBody>
     </div>
   );
 }

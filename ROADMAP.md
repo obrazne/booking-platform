@@ -378,6 +378,29 @@ Podľa `docs/vizual-stranka-hosta.md` → Košík v2.2, krok 1 (úprava 17. 10.)
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z28 (1. časť): **riadiace centrum v1.2.** Zostáva z doplneného zadania: drobčeky podľa spoločného pravidla aj v administrácii
+  majiteľa (+ mobil „‹ Späť na …“, `PageHeader` s `breadcrumbs`) a klik na skupinu v menu → prvá podstránka.
+  - **Menu:** tmavé, položky cez celú šírku (hover biela 6 %, aktívna 10 % + 3 px čiara, text vždy svetlý — rovnaké premenné ako v Z27).
+    Klienti › Všetci klienti, Založiť klienta · v detaile klienta jeho názov › Prehľad, Moduly, Vzhľad, Domény, Ľudia, Záznam zmien ·
+    Moduly › Katalóg, Skúšobné doby · Stav systému · Audit. Skupina klienta sa skladá v prehliadači podľa adresy. **Drobčeky** na podstránkach.
+  - **Detail klienta so záložkami** `/platform/tenants/[id]/(modules|theme|domains|people|audit)`: hlavička so stavom, Stránka pre hostí ↗,
+    Otvoriť administráciu ↗. Domény `*.localhost` so štítkom „len vývoj“; Vzhľad = farby, písmo, zaoblenie a náhľad s menom klienta
+    a skutočnými textami (bez zástupného textu); Ľudia s posledným prihlásením (testovacie účty sa neukazujú).
+  - **Zoznam klientov = rozbaľovacie riadky** (bočný panel klienta odstránený): tržby tento/minulý mesiac (`tenant_monthly_stats`),
+    rezervácie 30 dní a posledná, obsadenosť 90 dní (rovnaký výpočet ako Prehľad majiteľa), zdravie, moduly s koncom skúšky, majiteľ
+    (meno, e-mail, telefón, posledné prihlásenie); Otvoriť detail / administráciu ↗ / Stránka pre hostí ↗. Načíta sa pri rozbalení,
+    s prednačítaním pri prejdení myšou a fokuse.
+  - **Moduly:** katalóg ako rozbaľovacie riadky (popis, závislosti, počet klientov, hotový / v príprave — recenzie, správy s hosťom,
+    push, SMS, online check-in, upsell len ako riadky), klienti s prepínačom a **Priradiť klientovi**; to isté v záložke Moduly;
+    **Skúšobné doby** zoradené podľa konca. Každá zmena ide do auditu (`platform_set_module`).
+  - **Audit:** filtre od–do, kategória (Prihlásenie, Vstup správcu, Moduly a skúšky, Tím a prístupy, Nastavenia, Klienti), klient, osoba,
+    hľadanie; 50 na stranu, **CSV** (bodkočiarky, UTF-8 s BOM). **Úspešné prihlásenia** sa zapisujú (`audit_sign_in`: heslom / odkazom,
+    nikdy heslo ani zadaný e-mail; pri jednom klientovi patria jemu) + pgTAP. Neúspešné pokusy ostávajú len v limite podľa IP
+    (`request_attempts`), v audite sa neukazujú — jednoduchší spôsob nebol.
+  - **Drobnosti:** ukážkové kalendáre (`example.invalid`) sa v Stave systému a v zdraví klienta nehlásia ako chyba (štítok „ukážkový“).
+  - Playwright `platform-v12.spec.ts` (menu a hover, drobčeky, rozbalenie klienta, priradenie modulu na dočasnom klientovi, filtre auditu
+    a CSV; axe), staré testy na panel upravené. Prehliadka správcu: nové snímky a verzia. Celá sada 37/37 (test „02 overview“ na mobile
+    občas prekročí čas pri plnej sade, samostatne prechádza — sledovať). (Claude Code)
 - 2026-10-17 — Z29: **košík v2.2 pre 13″ notebook.** Zelený súhrn 320 px sa na 1440 × 800 vojde celý (názov, termín + „Zmeniť“
   vo všetkých krokoch, dospelí, cena + rozpis, Vaše doplnky; dole „← Späť na …“, tlačidlo a jeden riadok storna z podmienok objektu);
   istoty, referencia a Jana zo súhrnu presunuté do krokov. Krok 1 bez fotiek: s termínom začína doplnkami (jednoriadkové riadky ~54 px,

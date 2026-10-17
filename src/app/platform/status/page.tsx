@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Shield } from "lucide-react";
 import { PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
+import { isDemoCalendar } from "@/core/admin/tenant-snapshot";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { formatDateTime } from "@/core/format/format";
 import { createClient } from "@/lib/supabase/server";
@@ -18,7 +19,9 @@ export default async function PlatformStatus() {
   ]);
   const supabase = await createClient();
   const [{ data: channels }, { data: failed }, { data: sent }] = await Promise.all([
-    supabase.from("ical_channels").select("tenant_id, name, last_status, last_error, last_sync_at"),
+    supabase
+      .from("ical_channels")
+      .select("tenant_id, name, import_url, active, last_status, last_error, last_sync_at"),
     supabase.from("email_outbox").select("tenant_id").eq("status", "failed"),
     supabase
       .from("email_outbox")
@@ -42,8 +45,13 @@ export default async function PlatformStatus() {
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
         {list.map((x) => {
-          const own = (channels ?? []).filter((c) => c.tenant_id === x.id);
-          const bad = own.filter((c) => c.last_status === "error" || c.last_status === "conflict");
+          // Demo calendars (example.invalid) are never downloaded — not a failing synchronisation (v1.2).
+          const all = (channels ?? []).filter((c) => c.tenant_id === x.id);
+          const own = all.filter((c) => !isDemoCalendar(c.import_url));
+          const demo = all.length - own.length;
+          const bad = own.filter(
+            (c) => c.active && (c.last_status === "error" || c.last_status === "conflict"),
+          );
           const failedCount = (failed ?? []).filter((f) => f.tenant_id === x.id).length;
           const lastSync = own
             .map((c) => c.last_sync_at)
@@ -71,6 +79,7 @@ export default async function PlatformStatus() {
                         ? tm("syncBad", { count: bad.length })
                         : tm("syncOk", { count: own.length })}{" "}
                     · {tm("last", { date: when(lastSync) })}
+                    {demo ? ` · ${tm("demoChannels", { count: demo })}` : ""}
                   </dd>
                 </div>
                 <div className="grid gap-0.5">
