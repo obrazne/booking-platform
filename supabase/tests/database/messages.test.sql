@@ -103,6 +103,7 @@ select is((select count(*)::int from public.messages where sender = 'auto'), 1, 
 -- The guest's window closes 30 days after departure.
 update public.reservation_items set check_in = current_date - 40, check_out = current_date - 31
   where reservation_id = (select id from t);
+select set_config('request.jwt.claims', '', true);
 set local role anon;
 select throws_ok($$ select public.send_message((select id from t), 'Ešte otázka', (select token from t)) $$,
   'P0001', 'closed', '30 days after departure the guest only reads');

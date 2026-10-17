@@ -430,6 +430,8 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z45 oprava po CI: čas správy je `clock_timestamp()` (migrácia `20261017296000_messages_order.sql`) — správy z jednej
+  transakcie (beh automatiky) mali rovnaký čas a „posledná správa“ nebola jednoznačná; v pgTAP vyčistené prihlásenie pred anonymom. (Claude Code)
 - 2026-10-17 — Z45 [linka B]: **modul Správy — základ** (B11 Správy s hosťom, bez obrazoviek — tie sú Z46/Z47). (Claude Code)
   - Migrácia `20261017290000_messages.sql`: `messages` (hosť / tím / automatika, max. 4 000 znakov, `record_history`, mažú sa s rezerváciou),
     `message_threads` (spoločné „vybavené“ tímu, prečítanie hosťom), `message_rules` (kotva potvrdenie / príchod / odchod, posun dní,
