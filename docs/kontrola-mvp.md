@@ -105,3 +105,29 @@ Playwright lokálne proti stagingu, celá sada 12/12. `confirm.spec.ts`: stav �
 aj „potvrdená“ (zelený pruh, krok 2 hotový), súbor .ics stiahnutý v prehliadači, na mobile 390 px údaje pred QR a tlačidlo Uložiť QR;
 axe (WCAG 2.1 AA) bez nálezov v oboch stavoch. Odkaz `/r/<kód>` otvorený na cudzej alebo technickej adrese presmeruje na doménu klienta.
 Súbor .ics neobsahuje ulicu, ak objekt zobrazuje len približnú polohu.
+
+## Doplnok — rýchlosť bočného panela (Z26, 17. 10.)
+
+**Príčina pomalosti (Martin: ~3 s):** funkcie Vercelu bežali vo Washingtone — hlavička staging stránky
+`X-Vercel-Id: fra1::iad1::…` (okraj Frankfurt, funkcia iad1) — a databáza je vo Frankfurte. Každý dotaz letel cez Atlantik
+(~90 ms tam a späť) a otvorenie panela znamenalo celé nové vykreslenie stránky: rozloženie, zoznam, počty stavov aj detail,
+spolu približne 10–20 dotazov za sebou. Kým neprišlo všetko, na obrazovke sa nič nestalo.
+
+**Úpravy:**
+- `vercel.json` → `"regions": ["fra1"]` (funkcie vedľa databázy; na bezplatnom pláne povolený jeden región, nič to nestojí).
+- Klik na riadok len zmení adresu (`history.pushState`) — stránka ani zoznam sa znova nenačítavajú; panel sa otvorí hneď
+  s kostrou a detail príde zo samostatnej serverovej funkcie (`UrlPanel` + `loadReservationPanel` / `loadTenantPanel`), dotazy
+  na detail paralelne. Pri prejdení myšou alebo fokuse na riadku sa detail prednačíta; opätovné otvorenie je z pamäte.
+  Po zmene (napr. Platba prijatá) sa otvorený detail načíta znova. Rozbaľovacie riadky majú obsah už v stránke (okamžite).
+
+**Merania** (`node scripts/perf-panel.mjs`, produkčný build na Martinovom PC proti stagingovej databáze vo Frankfurte,
+klik na riadok rezervácie):
+
+| | Panel viditeľný | Plný detail |
+|---|---|---|
+| Pred (Z25) | ~850 ms (dovtedy nič) | ~850 ms |
+| Po (Z26), prvé otvorenie | ~45 ms (kostra) | ~320 ms |
+| Po (Z26), znova / po prednačítaní | ~45 ms | ~50 ms |
+
+Na stagingu bolo pred úpravou ~3 s (iad1 ↔ Frankfurt). Po nasadení s `fra1` je databáza bližšie ako z Martinovho PC,
+takže čísla na stagingu by mali byť ako v riadku „Po“ alebo lepšie.

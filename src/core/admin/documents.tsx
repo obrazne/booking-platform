@@ -20,8 +20,11 @@ export function DocumentsManager({
   propertyId = null,
   reservationId = null,
   documents,
+  collapsed = false,
 }: {
   tenantId: string;
+  /** Upload form hidden behind "+ Nahrať dokument" (rule 7) — used in the reservation panel. */
+  collapsed?: boolean;
   propertyId?: string | null;
   reservationId?: string | null;
   documents: DocumentRow[];
@@ -32,6 +35,7 @@ export function DocumentsManager({
   const [title, setTitle] = useState("");
   const [visibleWhen, setVisibleWhen] = useState<"always" | "confirmed">("confirmed");
   const [busy, setBusy] = useState(false);
+  const [formOpen, setFormOpen] = useState(!collapsed);
 
   async function upload() {
     const f = file.current?.files?.[0];
@@ -95,50 +99,63 @@ export function DocumentsManager({
           ))}
         </ul>
       )}
-      {/* One column (fits the 680 px panel); one button picks the file and uploads it right away. */}
-      <div className="grid gap-3">
-        <div className="grid gap-1.5">
-          <Label htmlFor={`doc-title-${propertyId ?? reservationId}`}>{t("title")}</Label>
-          <Input
-            id={`doc-title-${propertyId ?? reservationId}`}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={120}
-            placeholder={t("titlePlaceholder")}
-          />
-        </div>
-        <div className="grid gap-1.5">
-          <Label htmlFor={`doc-vis-${propertyId ?? reservationId}`}>{t("visibility")}</Label>
-          <select
-            id={`doc-vis-${propertyId ?? reservationId}`}
-            className="border-input bg-background h-10 rounded-full border px-4 text-sm"
-            value={visibleWhen}
-            onChange={(e) => setVisibleWhen(e.target.value as "always" | "confirmed")}
-          >
-            <option value="confirmed">{t("visible.confirmed")}</option>
-            <option value="always">{t("visible.always")}</option>
-          </select>
-        </div>
-        <input
-          ref={file}
-          type="file"
-          accept="application/pdf,image/jpeg,image/png"
-          aria-label={t("file")}
-          className="sr-only"
-          tabIndex={-1}
-          onChange={() => void upload()}
-        />
+      {formOpen ? (
+        <>
+          {/* One column (fits the 680 px panel); one button picks the file and uploads it right away. */}
+          <div className="grid gap-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor={`doc-title-${propertyId ?? reservationId}`}>{t("title")}</Label>
+              <Input
+                id={`doc-title-${propertyId ?? reservationId}`}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={120}
+                placeholder={t("titlePlaceholder")}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={`doc-vis-${propertyId ?? reservationId}`}>{t("visibility")}</Label>
+              <select
+                id={`doc-vis-${propertyId ?? reservationId}`}
+                className="border-input bg-background h-10 rounded-full border px-4 text-sm"
+                value={visibleWhen}
+                onChange={(e) => setVisibleWhen(e.target.value as "always" | "confirmed")}
+              >
+                <option value="confirmed">{t("visible.confirmed")}</option>
+                <option value="always">{t("visible.always")}</option>
+              </select>
+            </div>
+            <input
+              ref={file}
+              type="file"
+              accept="application/pdf,image/jpeg,image/png"
+              aria-label={t("file")}
+              className="sr-only"
+              tabIndex={-1}
+              onChange={() => void upload()}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => file.current?.click()}
+              disabled={busy}
+              className="justify-self-start"
+            >
+              <FilePlus /> {busy ? t("uploading") : t("uploadFile")}
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-xs">{t("hint")}</p>
+        </>
+      ) : (
         <Button
           type="button"
           variant="outline"
-          onClick={() => file.current?.click()}
-          disabled={busy}
+          onClick={() => setFormOpen(true)}
           className="justify-self-start"
         >
-          <FilePlus /> {busy ? t("uploading") : t("uploadFile")}
+          <FilePlus /> {t("addDocument")}
         </Button>
-      </div>
-      <p className="text-muted-foreground text-xs">{t("hint")}</p>
+      )}
     </div>
   );
 }

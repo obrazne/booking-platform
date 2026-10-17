@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z26** — rýchlosť bočného panela a dokumenty (pripomienky 13–15, 17. 10.).
+- **Ďalší krok pre Claude Code:** fronta je prázdna (Z26 hotová) — čaká na ďalšie zadanie z Claude chatu.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
@@ -186,7 +186,7 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 6. Testy: Playwright pre vstup správcu (nová karta, pruh, audit), majiteľ s jedným ubytovaním (bez výberu), majiteľ nevidí riadiace
    centrum ani „Nový objekt“; pgTAP, ak sa mení databáza. Testovací majiteľ STRÖMY na stagingu: info+jana@obrazne.sk (založil Claude chat 17. 10.).
 
-### Z26 — Rýchlosť bočného panela a dokumenty (pripomienky 13–15, 17. 10.)
+### Z26 ✅ — Rýchlosť bočného panela a dokumenty (pripomienky 13–15, 17. 10.)
 1. **Rýchlosť (Martin: panel rezervácie sa otvára ~3 s, myslel, že klik nefunguje).** Najprv **zmeraj** (čas od kliku po zobrazenie panela
    na stagingu, zvlášť server a sieť) a zapíš do Denníka. Potom:
    - **Región funkcií Vercelu = Frankfurt (`fra1`)**, vedľa databázy (Supabase Frankfurt) — cez `vercel.json` alebo nastavenie projektu.
@@ -281,6 +281,16 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z26: **rýchlosť bočného panela a dokumenty.** Meranie: funkcie Vercelu bežali v **iad1 (Washington)**
+  (`X-Vercel-Id: fra1::iad1`), databáza vo Frankfurte; panel = celé nové vykreslenie stránky (~10–20 dotazov za sebou) → ~3 s
+  na stagingu, ~850 ms lokálne bez akejkoľvek odozvy. Úpravy: `vercel.json` región **fra1** (bezplatný plán, jeden región);
+  panely rezervácie a klienta sa otvárajú **hneď** — klik len zmení adresu (`history.pushState`), zoznam ani počty sa znova
+  nenačítavajú, kostra panela hneď, detail zo samostatnej serverovej funkcie (`UrlPanel`, `loadReservationPanel`,
+  `loadTenantPanel`), prednačítanie pri prejdení myšou / fokuse, po zmene sa detail obnoví. Po: panel viditeľný ~45 ms,
+  plný detail ~320 ms (znova ~50 ms) — `docs/kontrola-mvp.md`, skript `scripts/perf-panel.mjs`. **Dokumenty v paneli:**
+  nahrávanie za „Nahrať dokument“, nová veta „Hosť si ich stiahne vo svojom účte.“, v sekcii aj dokumenty objektu, ktoré hosť
+  dostane (podľa viditeľnosti a stavu) s odkazom „upraviť pri objekte →“; pri objekte veta, že dokument pre jedného hosťa sa
+  nahráva v jeho rezervácii. Playwright: panel hneď po kliku bez nového načítania zoznamu, dokumenty objektu v paneli. (Claude Code)
 - 2026-10-17 — Z25: **riadiace centrum, roly a vstup správcu.** Grafitové bočné menu so štítkom „Riadiace centrum · vidíš len ty“,
   samostatné stránky Klienti / Moduly / Stav systému (kontroly po klientoch: kalendáre, neodoslané e-maily, posledná synchronizácia
   a odoslanie) / Audit (preložené záznamy); „Do administrácie“ z menu preč. **Vstup správcu:** „Otvoriť administráciu“ v paneli klienta

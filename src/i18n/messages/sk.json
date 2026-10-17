@@ -17,7 +17,8 @@
     "noResults": "Žiadne záznamy.",
     "detail": "Detail",
     "error": "Niečo sa nepodarilo. Skúste to znova.",
-    "back": "Späť"
+    "back": "Späť",
+    "loading": "Načítavam…"
   },
   "auth": {
     "title": "Prihlásenie",
@@ -1116,8 +1117,12 @@
     "uploaded": "Dokument nahraný.",
     "uploadFailed": "Dokument sa nepodarilo nahrať.",
     "tooLarge": "Súbor je väčší ako 10 MB.",
-    "hint": "PDF alebo obrázok do 10 MB. Hostia ich uvidia vo svojom účte (odkaz platí 10 minút).",
-    "uploadFile": "Nahrať súbor"
+    "hint": "PDF alebo obrázok do 10 MB. Hosť si ich stiahne vo svojom účte.",
+    "uploadFile": "Nahrať súbor",
+    "forAllGuests": "Pre všetkých hostí objektu ({count})",
+    "editAtProperty": "upraviť pri objekte",
+    "addDocument": "Nahrať dokument",
+    "propertyHint": "Tieto dokumenty dostanú všetci hostia objektu. Dokument pre jedného hosťa nahrajte v jeho rezervácii."
   },
   "sectionsAdmin": {
     "title": "Sekcie stránky objektu",

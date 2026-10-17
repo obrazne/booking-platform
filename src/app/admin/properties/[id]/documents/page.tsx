@@ -23,6 +23,7 @@ export default async function PropertyDocumentsPage({
   return (
     <div className="grid max-w-2xl gap-4">
       <h2 className="font-heading text-lg font-semibold">{t("heading")}</h2>
+      <p className="text-muted-foreground text-sm">{t("propertyHint")}</p>
       <DocumentsManager
         tenantId={tenant.id}
         propertyId={property.id}

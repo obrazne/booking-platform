@@ -66,9 +66,15 @@ test("02 overview, 03 reservations with the panel, 04 calendar", async ({ page }
   await expect(rows.nth(1)).toBeVisible();
   const firstNumber = (await rows.nth(0).locator('[role="cell"]').first().textContent())!.trim();
   const secondNumber = (await rows.nth(1).locator('[role="cell"]').first().textContent())!.trim();
+  // Z26: the panel opens right after the click (shell first), the detail follows; the list is not reloaded.
+  const before = await rows.count();
+  const clicked = Date.now();
   await rows.nth(0).click();
   const panel = page.getByRole("dialog");
+  await expect(panel).toBeVisible();
+  expect(Date.now() - clicked).toBeLessThan(1500);
   await expect(panel).toContainText(firstNumber);
+  expect(await rows.count()).toBe(before);
   await page.waitForTimeout(400); // slide-in animation (fading text would count as low contrast)
   expect.soft(await serious(page, "panel rezervácie", "[role=dialog]")).toEqual([]);
   if (!mobile) {
@@ -183,6 +189,11 @@ test("v1.1 panel: one column, long name, e-mail and note never overlap", async (
   );
   const panel = page.getByRole("dialog");
   await expect(panel).toContainText("Maximiliána");
+  // Z26: property documents the guest gets are listed too; the upload form waits behind a button.
+  await expect(panel).toContainText("Pre všetkých hostí objektu");
+  await expect(panel.getByRole("link", { name: /upraviť pri objekte/ })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Nahrať dokument" })).toBeVisible();
+  await expect(panel.getByLabel("Kedy ich hosť uvidí")).toHaveCount(0);
   await page.waitForTimeout(400);
   // Nothing sticks out of the panel and no two blocks of the summary overlap.
   const problems = await panel.evaluate((root) => {

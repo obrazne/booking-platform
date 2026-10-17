@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useId, useState, type ComponentProps, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronLeft, X } from "lucide-react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
-import { PANEL_PARAM, panelValue } from "./panel-param";
+import { PANEL_PARAM, panelValue, parsePanel } from "./panel-param";
 
 const OPENED_IN_APP_KEY = "record-panel-opened";
 /** Elements that switch the panel to another record instead of closing it (rows of the list, calendar bars). */
@@ -21,9 +21,51 @@ function hrefWithPanel(pathname: string, params: URLSearchParams, panel: string 
   return qs ? `${pathname}?${qs}` : pathname;
 }
 
+/** What a panel shows: built on the server (a Server Function returns it), rendered in the client panel. */
+export type PanelContent = {
+  header?: ReactNode;
+  body: ReactNode;
+  actions?: ReactNode;
+  /** Accessible name of the panel. */
+  label?: string;
+};
+
+type PanelLoader = (id: string) => Promise<PanelContent>;
+// Panels that open instantly on the client (registered by UrlPanel) and their loaded content.
+const loaders = new Map<string, PanelLoader>();
+const contents = new Map<string, Promise<PanelContent>>();
+
+function loadPanel(type: string, id: string, fresh = false): Promise<PanelContent> | null {
+  const loader = loaders.get(type);
+  if (!loader) return null;
+  const key = panelValue(type, id);
+  if (fresh) contents.delete(key);
+  let p = contents.get(key);
+  if (!p) {
+    p = loader(id).catch((e) => {
+      contents.delete(key);
+      throw e;
+    });
+    contents.set(key, p);
+  }
+  return p;
+}
+
+/** Changes the URL without asking the server for the page again (Next keeps useSearchParams in sync). */
+function setPanelInUrl(value: string | null, mode: "push" | "replace") {
+  const url = new URL(window.location.href);
+  if (value) url.searchParams.set(PANEL_PARAM, value);
+  else url.searchParams.delete(PANEL_PARAM);
+  const next = url.pathname + url.search + url.hash;
+  if (mode === "push") window.history.pushState(null, "", next);
+  else window.history.replaceState(null, "", next);
+}
+
 /**
  * Link that opens a record in the side panel, adding a history entry so Back closes it. While a panel is open,
  * clicking another such link switches the record (the panel stays); the selected row gets a soft accent background.
+ * When the list has an instant panel (UrlPanel), the click only changes the URL — the list is not loaded again —
+ * and hovering or focusing the row loads the detail ahead (Z26).
  */
 export function PanelLink({
   type,
@@ -36,6 +78,12 @@ export function PanelLink({
   const value = panelValue(type, id);
   const current = params.get(PANEL_PARAM);
   const selected = current === value;
+  const hoverTimer = useRef<number | null>(null);
+  const prefetch = () => {
+    if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
+    // A short delay: moving the mouse over the list does not load every row.
+    hoverTimer.current = window.setTimeout(() => void loadPanel(type, id)?.catch(() => {}), 120);
+  };
   return (
     <Link
       {...props}
@@ -46,6 +94,18 @@ export function PanelLink({
       replace={current !== null}
       href={hrefWithPanel(pathname, params, value)}
       scroll={false}
+      onMouseEnter={(e) => {
+        prefetch();
+        props.onMouseEnter?.(e);
+      }}
+      onMouseLeave={(e) => {
+        if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
+        props.onMouseLeave?.(e);
+      }}
+      onFocus={(e) => {
+        prefetch();
+        props.onFocus?.(e);
+      }}
       onClick={(e) => {
         try {
           if (current === null) window.sessionStorage.setItem(OPENED_IN_APP_KEY, "1");
@@ -53,8 +113,131 @@ export function PanelLink({
           // ignore
         }
         props.onClick?.(e);
+        const plain = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0;
+        if (plain && loaders.has(type)) {
+          e.preventDefault();
+          setPanelInUrl(value, current === null ? "push" : "replace");
+        }
       }}
     />
+  );
+}
+
+/**
+ * Panel of a list that opens instantly (Z26): the URL (?panel=type:id) says what is open, the shell with a skeleton
+ * appears right after the click and the detail comes from `load` (a Server Function — only the detail is loaded,
+ * not the list or the counts). `version` changes with every server render of the page (after a change), which
+ * loads the open detail again.
+ */
+export function UrlPanel({
+  type,
+  load,
+  version,
+  backLabel,
+}: {
+  type: string;
+  load: PanelLoader;
+  version: string;
+  backLabel?: string;
+}) {
+  const t = useTranslations("common");
+  const params = useSearchParams();
+  const open = parsePanel(params.get(PANEL_PARAM) ?? undefined);
+  const id = open?.type === type ? open.id : null;
+  const [loaded, setLoaded] = useState<{ key: string; content: PanelContent | null }>({
+    key: "",
+    content: null,
+  });
+  const [failed, setFailed] = useState<string | null>(null);
+  const seenVersion = useRef(version);
+
+  useEffect(() => {
+    loaders.set(type, load);
+    return () => {
+      loaders.delete(type);
+    };
+  }, [type, load]);
+
+  useEffect(() => {
+    // New server render (data changed): drop what was loaded before.
+    const fresh = seenVersion.current !== version;
+    if (fresh) {
+      seenVersion.current = version;
+      for (const k of contents.keys()) if (k.startsWith(`${type}:`)) contents.delete(k);
+    }
+    if (!id) return;
+    const key = panelValue(type, id);
+    let cancelled = false;
+    loadPanel(type, id, fresh)
+      ?.then((content) => {
+        if (!cancelled) {
+          setFailed(null);
+          setLoaded({ key, content });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(key);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [type, id, version]);
+
+  function close() {
+    let openedInApp = false;
+    try {
+      openedInApp = window.sessionStorage.getItem(OPENED_IN_APP_KEY) === "1";
+      window.sessionStorage.removeItem(OPENED_IN_APP_KEY);
+    } catch {
+      // ignore
+    }
+    if (openedInApp) window.history.back();
+    else setPanelInUrl(null, "replace");
+  }
+
+  const key = id ? panelValue(type, id) : "";
+  const content = loaded.key === key ? loaded.content : null;
+  return (
+    <SidePanel
+      open={id !== null}
+      onClose={close}
+      header={content?.header ?? <span className="bg-muted h-5 w-40 animate-pulse rounded-full" />}
+      label={content?.label}
+      actions={content?.actions}
+      backLabel={backLabel}
+    >
+      {content ? (
+        content.body
+      ) : failed === key ? (
+        <p className="text-muted-foreground text-sm">{t("error")}</p>
+      ) : (
+        <PanelSkeleton />
+      )}
+    </SidePanel>
+  );
+}
+
+/** Grey placeholder rows while the detail loads (the panel itself is already open). */
+export function PanelSkeleton() {
+  const t = useTranslations("common");
+  return (
+    <div className="grid gap-6" aria-busy="true" aria-label={t("loading")}>
+      <div className="surface grid gap-4 p-5">
+        <span className="bg-muted h-8 w-2/3 animate-pulse rounded-lg" />
+        <span className="bg-muted h-4 w-1/2 animate-pulse rounded-full" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {Array.from({ length: 4 }, (_, i) => (
+            <span key={i} className="bg-muted h-10 animate-pulse rounded-lg" />
+          ))}
+        </div>
+      </div>
+      {Array.from({ length: 3 }, (_, i) => (
+        <div key={i} className="grid gap-2">
+          <span className="bg-muted h-3 w-24 animate-pulse rounded-full" />
+          <span className="bg-muted h-16 animate-pulse rounded-[10px]" />
+        </div>
+      ))}
+    </div>
   );
 }
 
