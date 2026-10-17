@@ -24,8 +24,6 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 
-*Fronta je prázdna — čaká na ďalšie zadanie z Claude chatu.*
-
 ### Z31 — História zmien a kôš (vrátenie chyby jedného klienta, 17. 10.)
 Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1 a 2; vrstva 3 je úloha prípravy produkcie). Úpravy DB len pridávajú.
 1. **História zmien:** tabuľka napr. `record_history` (tenant_id, table_name, record_id, op insert/update/delete, old/new jsonb, changed_by,
