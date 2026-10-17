@@ -25,7 +25,8 @@ export default defineConfig({
     },
     {
       name: "mobile",
-      testMatch: /(guest|a11y|confirm|tour|admin-v1|admin-v12|cart|platform-v12)\.spec/,
+      testMatch:
+        /(guest|a11y|confirm|tour|admin-v1|admin-v12|cart|platform-v12|upsell-guest)\.spec/,
       use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } },
     },
   ],

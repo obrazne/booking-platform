@@ -59,7 +59,10 @@ export async function emitBookingEvent(name: BookingEventName, event: ModuleEven
 }
 
 export async function slotComponents(tenantId: string, slot: SlotName) {
-  const modules = await getEnabledModules(tenantId);
+  // Guests cannot read tenant_modules — their places check the switches through the database function.
+  const modules = slot.startsWith("guest.")
+    ? resolveEnabled(MODULES, new Set(await enabledModuleKeysPublic(tenantId)))
+    : await getEnabledModules(tenantId);
   return modules.flatMap((m) => {
     const Component = m.slots?.[slot];
     return Component ? [{ key: m.key, Component }] : [];

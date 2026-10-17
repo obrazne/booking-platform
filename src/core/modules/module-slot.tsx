@@ -7,17 +7,25 @@ export async function ModuleSlot({
   tenantId,
   locale,
   reservationId,
+  accessToken,
 }: {
   name: SlotName;
   tenantId: string;
   locale: string;
   reservationId?: string;
+  accessToken?: string;
 }) {
   const items = await slotComponents(tenantId, name);
   return (
     <>
       {items.map(({ key, Component }) => (
-        <Component key={key} tenantId={tenantId} locale={locale} reservationId={reservationId} />
+        <Component
+          key={key}
+          tenantId={tenantId}
+          locale={locale}
+          reservationId={reservationId}
+          accessToken={accessToken}
+        />
       ))}
     </>
   );

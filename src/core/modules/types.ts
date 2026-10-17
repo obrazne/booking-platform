@@ -13,13 +13,21 @@ export type BookingEventName =
 export type ModuleEvent = { name: BookingEventName; tenantId: string; bookingId: string };
 
 /** Named places in the UI where modules can render (A3, hook point 3). */
-export type SlotName = "admin.dashboard.cards" | "booking.form.sections" | "booking.detail.tabs";
+export type SlotName =
+  | "admin.dashboard.cards"
+  | "booking.form.sections"
+  | "booking.detail.tabs"
+  /** Guest's stay (account `/ucet/pobyt/<id>` and access link `/r/<code>`): main column and the right column. */
+  | "guest.stay.main"
+  | "guest.stay.aside";
 
 export type SlotProps = {
   tenantId: string;
   locale: string;
-  /** Set in the places of one reservation (booking.detail.tabs — the reservation panel). */
+  /** Set in the places of one reservation (booking.detail.tabs — the reservation panel, guest.stay.*). */
   reservationId?: string;
+  /** Guest's stay opened through the access link (guest.stay.*): the code that verifies access in the database. */
+  accessToken?: string;
 };
 
 /** Groups of the side menu (v1.2) a module item can join; an empty group is not shown. */

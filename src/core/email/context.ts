@@ -37,6 +37,8 @@ export async function loadEmailContext(reservationId: string) {
     settings,
     accent: theme?.primary_color ?? "#2f5d50",
     guestLink: token ? `${guestBase}/r/${token}` : null,
+    // The stay in the guest's account (sign-in by a code) — when there is no access link.
+    stayLink: `${guestBase}/ucet/pobyt/${r.id}`,
     // Review of the stay in the guest's account (Z34; the page itself comes with the guest screens).
     reviewLink: `${guestBase}/ucet/pobyt/${r.id}/hodnotenie`,
     // Online check-in of the stay in the guest's account (Z36; the page comes with the guest screens, Z39).

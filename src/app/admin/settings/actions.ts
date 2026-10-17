@@ -52,10 +52,31 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         .max(100000)
         .optional()
         .transform((v) => (v === undefined ? undefined : v * 100)),
+      // Module upsell: days before arrival with an offer e-mail, "7, 2" in the form (Z37).
+      upsell_offer_days: z
+        .string()
+        .max(20)
+        .optional()
+        .transform((v, ctx) => {
+          if (v === undefined) return undefined;
+          const days = [
+            ...new Set(
+              v
+                .split(/[\s,;]+/)
+                .filter(Boolean)
+                .map(Number),
+            ),
+          ];
+          if (days.length > 3 || days.some((d) => !Number.isInteger(d) || d < 1 || d > 30)) {
+            ctx.addIssue({ code: "custom", message: "days" });
+            return z.NEVER;
+          }
+          return days.sort((a, b) => b - a);
+        }),
     })
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
-  const { stay_account_limit, ...settings } = parsed.data;
+  const { stay_account_limit, upsell_offer_days, ...settings } = parsed.data;
   // Module checkin: tax for accommodation and retention — only when the form had them.
   let checkin = {};
   if (form.has("checkin_retention_days")) {
@@ -76,6 +97,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     ...settings,
     ...checkin,
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
+    ...(upsell_offer_days === undefined ? {} : { upsell_offer_days }),
     cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
   });
   if (error) return fail(dbErrorKey(error));

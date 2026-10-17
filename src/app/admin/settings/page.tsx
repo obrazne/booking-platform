@@ -88,6 +88,17 @@ export default async function SettingsPage() {
                 />
               </Field>
             ) : null}
+            {upsell ? (
+              <Field label={tu("offerDays")} htmlFor="upsell_offer_days" hint={tu("offerDaysHint")}>
+                <Input
+                  id="upsell_offer_days"
+                  name="upsell_offer_days"
+                  inputMode="numeric"
+                  maxLength={20}
+                  defaultValue={(s?.upsell_offer_days ?? [7, 2]).join(", ")}
+                />
+              </Field>
+            ) : null}
             <Field
               label={t("portalCommission")}
               htmlFor="portal_commission_bp"

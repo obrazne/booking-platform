@@ -5,7 +5,9 @@ import { CurrencyCode, encode, PaymentOptions } from "bysquare/pay";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
+import { modelQuantity } from "@/core/pricing/calculate";
 import { diffDays } from "@/core/pricing/dates";
+import type { PriceModel } from "@/core/pricing/types";
 import messagesSk from "@/i18n/messages/sk.json";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { EmailContext } from "./context";
@@ -27,7 +29,8 @@ export type EmailKind =
   | "guest_order_received"
   | "guest_order_confirmed"
   | "guest_order_declined"
-  | "guest_checkin_reminder";
+  | "guest_checkin_reminder"
+  | "guest_upsell_offer";
 
 function esc(s: string): string {
   return s.replace(
@@ -388,6 +391,66 @@ export async function renderEmail(
           guestButton,
         ),
         text: [t("greeting", { name: r.guest_name }), ...lines, ctx.guestLink ?? ""].join("\n\n"),
+      };
+    }
+    case "guest_upsell_offer": {
+      // Services the guest can still order (Z37): active, offered after the reservation, of this property, before
+      // the cutoff (a service for the days of the stay until the last night). Nothing left → nothing is sent.
+      const { data: services } = await createAdminClient()
+        .from("services")
+        .select(
+          "name, price_model, amount_cents, property_id, upsell_cutoff_hours, upsell_requires_confirmation",
+        )
+        .eq("tenant_id", r.tenant_id)
+        .eq("active", true)
+        .eq("upsell_enabled", true)
+        .order("sort");
+      if (!item) return null;
+      const nights = diffDays(item.check_in, item.check_out);
+      const persons = r.adults + r.children;
+      const offers = (services ?? [])
+        .filter((s) => !s.property_id || s.property_id === property?.id)
+        .filter((s) => {
+          const perDay = s.price_model === "per_night" || s.price_model === "per_person_night";
+          const day = perDay ? item.check_out : item.check_in;
+          const closes = Date.parse(`${day}T00:00:00Z`) - s.upsell_cutoff_hours * 3_600_000;
+          // Midnight in UTC is at most 2 hours off the tenant's midnight — enough for an e-mail days ahead.
+          return closes > Date.now();
+        })
+        .map((s) => {
+          const model = s.price_model as PriceModel;
+          const dated = model === "per_night" || model === "per_person_night";
+          const price = fmt(s.amount_cents * modelQuantity(model, dated ? 1 : nights, persons, 1));
+          return t("guest_upsell_offer.line", {
+            service: tr(s.name, locale),
+            price:
+              dated || s.upsell_requires_confirmation
+                ? t("guest_upsell_offer.from", { price })
+                : price,
+          });
+        });
+      if (!offers.length) return null;
+      const intro = t("guest_upsell_offer.intro", { days: Number(payload.days ?? 0) });
+      const outro = t("guest_upsell_offer.outro");
+      const link = ctx.guestLink ?? ctx.stayLink;
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t("guest_upsell_offer.subject", vars),
+        html: layout(
+          accent,
+          t("guest_upsell_offer.subject", vars),
+          [
+            p(t("greeting", { name: r.guest_name })),
+            p(intro),
+            `<ul style="margin:0 0 14px;padding-left:20px;line-height:1.7">${offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>`,
+            p(outro),
+            signature,
+          ],
+          { href: link, label: t("guest_upsell_offer.button") },
+        ),
+        text: [t("greeting", { name: r.guest_name }), intro, ...offers, outro, link].join("\n\n"),
       };
     }
     case "guest_checkin_reminder": {

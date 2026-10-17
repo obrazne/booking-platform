@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { fitsStayAccount, guestCanCancel, orderPrice, stayAccount } from "./rules";
+import {
+  dayMode,
+  fitsStayAccount,
+  guestCanCancel,
+  localMidnight,
+  orderCutoff,
+  orderPrice,
+  stayAccount,
+} from "./rules";
 
 describe("upsell rules", () => {
   it("prices an order like the cart", () => {
@@ -13,6 +21,43 @@ describe("upsell rules", () => {
     expect(
       orderPrice({ priceModel: "per_night", amountCents: 500, maxQuantity: null }, stay, 0),
     ).toEqual({ items: 1, quantity: 3, amountCents: 1500 });
+  });
+
+  it("prices an order for one day as one night (Z37)", () => {
+    const stay = { nights: 3, persons: 2 };
+    const breakfast = {
+      priceModel: "per_person_night" as const,
+      amountCents: 1500,
+      maxQuantity: null,
+    };
+    expect(orderPrice(breakfast, stay, 1, true)).toEqual({
+      items: 1,
+      quantity: 2,
+      amountCents: 3000,
+    });
+    expect(
+      orderPrice({ priceModel: "per_person", amountCents: 6500, maxQuantity: null }, stay, 1, true),
+    ).toEqual({ items: 1, quantity: 2, amountCents: 13000 });
+  });
+
+  it("picks days by the price model", () => {
+    expect(dayMode("per_person_night", false)).toBe("multi");
+    expect(dayMode("per_night", true)).toBe("multi");
+    expect(dayMode("per_person", true)).toBe("single");
+    expect(dayMode("per_stay", false)).toBe("none");
+  });
+
+  it("closes ordering the given hours before the local day", () => {
+    // Bratislava in winter is UTC+1, in summer UTC+2.
+    expect(orderCutoff("2026-12-22", 6, "Europe/Bratislava").toISOString()).toBe(
+      "2026-12-21T17:00:00.000Z",
+    );
+    expect(orderCutoff("2026-07-10", 0, "Europe/Bratislava").toISOString()).toBe(
+      "2026-07-09T22:00:00.000Z",
+    );
+    expect(localMidnight("2026-03-29", "Europe/Bratislava").toISOString()).toBe(
+      "2026-03-28T23:00:00.000Z",
+    );
   });
 
   it("keeps the limit of the stay account", () => {

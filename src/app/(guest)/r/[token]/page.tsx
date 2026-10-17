@@ -14,6 +14,7 @@ import {
 import { startAccountFromReservation } from "@/core/guest/auth";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
+import { ModuleSlot } from "@/core/modules/module-slot";
 import { money } from "@/core/money/money";
 import { payBySquarePng, payBySquareSvg } from "@/core/payments/pay-by-square";
 import { diffDays } from "@/core/pricing/dates";
@@ -499,6 +500,14 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
             </section>
           ) : null}
 
+          <ModuleSlot
+            name="guest.stay.main"
+            tenantId={r.tenant_id}
+            locale={locale}
+            reservationId={r.id}
+            accessToken={token}
+          />
+
           {/* Phones: the green stay card after the steps */}
           <div className="lg:hidden">{stayCard}</div>
 
@@ -575,7 +584,16 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           <p className="text-muted-foreground text-sm">{tg("reservation.keepLink")}</p>
         </div>
 
-        <aside className="hidden lg:block">{stayCard}</aside>
+        <aside className="grid content-start gap-4">
+          <div className="hidden lg:contents">{stayCard}</div>
+          <ModuleSlot
+            name="guest.stay.aside"
+            tenantId={r.tenant_id}
+            locale={locale}
+            reservationId={r.id}
+            accessToken={token}
+          />
+        </aside>
       </Container>
     </main>
   );

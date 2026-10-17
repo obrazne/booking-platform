@@ -2592,6 +2592,7 @@ export type Database = {
           tenant_id: string
           terms_url: string | null
           updated_at: string
+          upsell_offer_days: number[]
           vat_payer: boolean
           website_url: string | null
           whatsapp_phone: string | null
@@ -2618,6 +2619,7 @@ export type Database = {
           tenant_id: string
           terms_url?: string | null
           updated_at?: string
+          upsell_offer_days?: number[]
           vat_payer?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
@@ -2644,6 +2646,7 @@ export type Database = {
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string
+          upsell_offer_days?: number[]
           vat_payer?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
@@ -3253,6 +3256,18 @@ export type Database = {
         }
         Returns: string
       }
+      place_orders: {
+        Args: {
+          p_dates?: string[]
+          p_items?: number
+          p_note?: string
+          p_payment_method?: string
+          p_reservation_id: string
+          p_service_id: string
+          p_token?: string
+        }
+        Returns: string[]
+      }
       platform_create_tenant: {
         Args: {
           p_country?: string
@@ -3498,6 +3513,7 @@ export type Database = {
           nights: unknown
         }[]
       }
+      upsell_tick: { Args: never; Returns: number }
       write_audit: {
         Args: {
           p_action: string

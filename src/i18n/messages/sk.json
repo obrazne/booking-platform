@@ -385,6 +385,77 @@
         },
         "saved": "Uložené.",
         "error": "Nepodarilo sa uložiť. Skúste to znova."
+      },
+      "offerDays": "Ponuky e-mailom pred príchodom (dni)",
+      "offerDaysHint": "Koľko dní pred príchodom dostane hosť e-mail so službami, ktoré si ešte môže doobjednať. Najviac 3 hodnoty oddelené čiarkou (napr. 7, 2); prázdne = neposielať.",
+      "guest": {
+        "title": "K pobytu si môžete doobjednať.",
+        "title2": "Kedykoľvek.",
+        "subtitle": "Jedným ťuknutím, záväzne. Zaplatíte pri odchode, alebo hneď prevodom.",
+        "from": "od {price}",
+        "details": "Podrobnosti — {name}",
+        "close": "Zavrieť",
+        "confirmShort": "potvrdzuje hostiteľ",
+        "daysMulti": "Na ktoré dni",
+        "daysSingle": "Na ktorý deň",
+        "dayTaken": "Na tento deň už objednané",
+        "dayClosed": "Na tento deň sa už objednať nedá",
+        "howPay": "Ako zaplatíte",
+        "payAccount": "Na účet pobytu",
+        "payAccountNote": "Zaplatíte pri odchode",
+        "payNow": "Zaplatiť teraz",
+        "payNowNote": "Prevodom cez QR kód",
+        "accountNotAllowed": "Túto službu treba zaplatiť vopred prevodom.",
+        "accountOverLimit": "Na účet pobytu môžete mať najviac {limit}. Túto objednávku zaplaťte prevodom.",
+        "needsConfirm": "Termín potvrdí {name, select, none {hostiteľ} other {{name}}} do 24 hodín. Kým nepotvrdí, nič neplatíte.",
+        "order": "Objednať záväzne · {amount}",
+        "ordering": "Objednávame…",
+        "cutoffAt": "Objednať a zrušiť môžete do {date}",
+        "cutoffBefore": "Objednať a zrušiť môžete najneskôr {hours} h pred daným dňom",
+        "done": "Objednané. Potvrdenie sme vám poslali e-mailom.",
+        "status": {
+          "ordered": "Objednané",
+          "awaiting": "Čaká na potvrdenie",
+          "declined": "Zamietnuté"
+        },
+        "methods": {
+          "stay_account": "na účet pobytu",
+          "transfer": "prevodom"
+        },
+        "paid": "zaplatené",
+        "awaitingLine": "{name, select, none {Hostiteľ} other {{name}}} potvrdí termín do 24 hodín — dáme vám vedieť e-mailom.",
+        "declinedReason": "Dôvod: {reason}",
+        "cancel": "Zrušiť objednávku",
+        "cancelAsk": "Naozaj zrušiť?",
+        "cancelYes": "Áno, zrušiť",
+        "cancelNo": "Nechať",
+        "cancelUntil": "Zrušiť môžete do {date}",
+        "payTitle": "Zaplatiť objednané služby prevodom",
+        "payText": "Na rovnaký účet a s rovnakým variabilným symbolom ako pobyt. Platbu spárujeme sami.",
+        "payNote": "Služby k pobytu {number}",
+        "account": {
+          "title": "Účet pobytu",
+          "stay": "Pobyt · {nights}",
+          "awaiting": "čaká na potvrdenie",
+          "paid": "zaplatené",
+          "transferDue": "prevodom — čaká na platbu",
+          "open": "Na účet pobytu",
+          "note": "Zaplatíte pri odchode — na mieste alebo prevodom. Na účet pobytu môžete objednať do {limit}.",
+          "settled": "Vyúčtované",
+          "settledNote": "Všetko zaplatené {date}."
+        },
+        "errors": {
+          "cutoff_passed": "Na tento deň sa už objednať nedá — uplynula uzávierka.",
+          "over_limit": "Na účte pobytu by ste prekročili limit. Zvoľte platbu prevodom.",
+          "service_unavailable": "Túto službu už nie je možné objednať.",
+          "not_confirmed": "Služby si môžete doobjednať, keď je pobyt zaplatený.",
+          "departed": "Pobyt sa už skončil.",
+          "stay_account_not_allowed": "Túto službu treba zaplatiť vopred prevodom.",
+          "not_cancellable": "Túto objednávku už nie je možné zrušiť.",
+          "not_allowed": "Na túto akciu nemáte prístup. Otvorte pobyt znova z odkazu v e-maile.",
+          "invalid": "Skontrolujte výber.",
+          "generic": "Nepodarilo sa to. Skúste to znova."
+        }
       }
     },
     "checkin": {
@@ -1070,7 +1141,16 @@
       "perk2": "Stav platby a doklady na stiahnutie",
       "perk3": "Všetky vaše pobyty na jednom mieste",
       "noReservation": "Ešte nemáte rezerváciu?",
-      "seeDates": "Pozrite si voľné termíny"
+      "seeDates": "Pozrite si voľné termíny",
+      "reservationNo": "Rezervácia {number}",
+      "hero": {
+        "upcoming": "Tešíme sa na vás.",
+        "inProgress": "Príjemný pobyt.",
+        "completed": "Ďakujeme za návštevu.",
+        "cancelled": "Rezervácia je zrušená."
+      },
+      "arrivesIn": "Príchod {count, plural, one {zajtra} few {o # dni} other {o # dní}}",
+      "contactAsk": "Otázky? Odpovedá {name}."
     },
     "v2": {
       "yourDates": "Váš termín",
@@ -1447,6 +1527,14 @@
       "subject": "Online check-in — {property}",
       "intro": "{days, plural, =0 {dnes vás čakáme} one {zajtra vás čakáme} few {o # dni vás čakáme} other {o # dní vás čakáme}}. Vyplňte, prosím, vopred údaje všetkých hostí — pri príchode tak nebudete nič vypĺňať.",
       "button": "Vyplniť check-in"
+    },
+    "guest_upsell_offer": {
+      "subject": "K pobytu si môžete doobjednať — {property}",
+      "intro": "{days, plural, one {zajtra vás čakáme} few {o # dni vás čakáme} other {o # dní vás čakáme}}. K pobytu si ešte môžete jedným ťuknutím doobjednať:",
+      "line": "{service} — {price}",
+      "from": "od {price}",
+      "outro": "Zaplatíte pri odchode na účet pobytu, alebo hneď prevodom. Objednávka je záväzná, zrušiť ju môžete do uzávierky.",
+      "button": "Pozrieť a objednať"
     }
   },
   "ical": {

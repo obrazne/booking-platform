@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** Z37 (upsell pre hostí) → Z39 (check-in pre hostí).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z38 (recenzie pre hostí); **B:** ~~Z37 (upsell pre hostí)~~ ✅ → Z39 (check-in pre hostí).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -171,7 +171,7 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z37 [B] 🔄 — Upsell pre hostí (po Z35)
+### Z37 [B] ✅ — Upsell pre hostí (po Z35)
 Detail pobytu v účte hosťa podľa `UcetPobyt` (aj cez prístupový odkaz `/r/<kód>`): sekcia „K pobytu si môžete doobjednať“ s rozbalením,
 výberom dní, spôsobom platby, „Objednať záväzne“, stavmi, zrušením do uzávierky; pravý stĺpec „Účet pobytu“; mobil so spodným oknom
 a zeleným pásom. Zaplatiť teraz → platobné údaje s QR. E-maily hosťovi s ponukami pred príchodom (7 a 2 dni, podľa nastavenia;
@@ -258,6 +258,12 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Upsell pre hostí (Z37):** (1) Veta z návrhu „Termín potvrdí Jana **do 24 hodín**“ je sľub hosťovi — systém lehotu nestráži
+  (žiadna pripomienka majiteľke ani automatické zamietnutie). Nechať vetu, zmeniť ju, alebo pridať pripomienku po 20 h? (2) Služby
+  „za noc / za osobu a noc“ (raňajky) si hosť vyberá **po nociach pobytu** (dátum noci) — pri raňajkách by prirodzenejšie boli rána
+  (deň po noci). Ak to chceš, treba pri službe nastavenie „ráno / večer“. (3) Pri modrej téme Ukážkového klienta má svetlý text na
+  akcentovej karte (`text-on-accent-muted`, napr. „VÁŠ POBYT“ v potvrdení) kontrast pod 4,5 : 1 — týka sa to jadra (košík, potvrdenie),
+  nie Z37; navrhujem upraviť token pre svetlé akcenty (malá úloha).
 - **Online check-in (Z36) — pred ostrou prevádzkou overiť:** polia knihy ubytovaných a hlásenia cudzinca, lehotu 5 dní a uchovávanie
   (nastavené 730 dní po odchode, potom sa čísla dokladov a dátumy narodenia samy vymažú), či doklad treba aj pri deťoch (teraz áno pri
   všetkých osobách) a sadzbu dane obce STRÖMY. **Oficiálne tlačivo MV SR v repozitári nie je** — PDF je vlastné prehľadné s rovnakými
@@ -294,6 +300,31 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z37 [linka B]: **upsell pre hostí** (návrh v2.3 `UcetPobyt`, `MobilPobyt`). (Claude Code)
+  - **Detail pobytu v účte hosťa prestavaný podľa návrhu:** úvod s prechodom (číslo, stav, „Tešíme sa na vás.“ + objekt, termín,
+    „Príchod o N dní“), dva stĺpce (obsah + 360 px vpravo, prilepený), vpravo kontakt na hostiteľa. Pre moduly **nové sloty**
+    `guest.stay.main` a `guest.stay.aside` (aj na prístupovom odkaze `/r/<kód>`, s `accessToken`); zapnutie modulov sa pre hosťa
+    overuje cez `is_module_enabled` (hosť nečíta `tenant_modules`). Z38/Z39 sa napoja jedným riadkom v manifeste.
+  - **„K pobytu si môžete doobjednať. Kedykoľvek.“** (`src/modules/upsell/guest/`): riadky služieb, rozbalenie s fotkou, popisom,
+    výberom dní, „Ako zaplatíte“ (Na účet pobytu / Zaplatiť teraz), „Objednať záväzne · suma“ a uzávierkou; objednané so stavom
+    (Objednané / Čaká na potvrdenie / Zamietnuté s dôvodom) a „Zrušiť objednávku“ do uzávierky (s potvrdením). Nad limit účtu pobytu
+    alebo pri službe bez účtu pobytu je karta „Na účet pobytu“ neaktívna s vetou prečo. Zaplatiť teraz → po potvrdení blok
+    „Zaplatiť objednané služby prevodom“ (suma, IBAN, VS rezervácie, QR). Mobil: služba v spodnom okne, dole zelený pás
+    „Na účet pobytu · suma“ s „Účet pobytu ▴“. Vpravo zelená karta **Účet pobytu** (pobyt ✓, objednávky so stavom a platbou,
+    otvorené na účet pobytu, po vyúčtovaní „Vyúčtované ✓“).
+  - **Výber dní (rozhodnutie):** služba „za noc“ / „za osobu a noc“ → ľubovoľné noci pobytu, **objednávka na každý deň zvlášť**
+    (vlastná uzávierka, zrušenie po dňoch); služba s potvrdením majiteľa → jeden deň; ostatné → na celý pobyt. Migrácia
+    `20261017231000_upsell_guest.sql`: `place_order` pri dátume počíta **jednu noc** (inak ako košík), nová `place_orders`
+    (viac dní naraz, všetko alebo nič, limit účtu pobytu počíta aj dni z toho istého volania).
+  - **E-mail s ponukami pred príchodom** (`guest_upsell_offer`): `upsell_tick` (cron každú hodinu, 23. min.) v dňoch
+    `tenant_settings.upsell_offer_days` (predvolene 7 a 2, nastavenie v Nastaveniach pri limite účtu pobytu), od 9:00 času klienta,
+    raz na deň; len potvrdené rezervácie mimo Bookingu/Airbnb, keď ostáva aspoň jedna služba pred uzávierkou; v e-maile zoznam
+    služieb s cenou a odkaz na rezerváciu (prístupový odkaz, inak účet). **Pozor pre obe linky:** `email_outbox_kind_check` sa
+    pri novom druhu e-mailu prepisuje celý — zoznam ber z poslednej migrácie.
+  - Modul Upsell v katalógu → **hotový** (`ready`). Testy: vitest (deň = jedna noc, výber dní, uzávierka v časovom pásme),
+    pgTAP `upsell_guest.test.sql` (spustí CI), Playwright `e2e/upsell-guest.spec.ts` na **Ukážkovom klientovi** (Glamping Lúka,
+    e-maily `+b@booking-platform.test`): objednanie na účet pobytu (2 dni), s potvrdením, zrušenie, nad limit prevodom s QR, axe;
+    mobil: spodné okno a zelený pás. Prešlo aj `confirm`, `account` a `upsell` (admin).
 - 2026-10-17 — Z40: **mapa z OpenFreeMap + „Navigovať v Google Mapách“.**
   - Interaktívna mapa (Okolie) = MapLibre GL + vektorové dlaždice OpenFreeMap (štýl Positron, URL na jednom mieste `src/core/maps/config.ts`,
     prepísateľná `NEXT_PUBLIC_MAP_STYLE_URL`), značka / oblasť v akcente témy, atribúcia od MapLibre, priblíženie kolieskom až po kliknutí.
