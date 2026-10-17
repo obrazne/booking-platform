@@ -2,6 +2,14 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Mapa: OpenFreeMap, Google len ako odkaz na navigáciu
+
+- Martin navrhol Google Maps, aby to bolo zadarmo. Vložená Google mapa (Embed API) je síce zadarmo, ale potrebuje Google Cloud účet
+  s fakturačným účtom, nedá sa zladiť s témou klienta a posiela údaje návštevníkov Googlu → smela by sa načítať až po súhlase s cookies.
+  Interaktívna Google mapa má od 3/2025 len 10 000 načítaní mesačne zadarmo — spoločne pre všetkých klientov.
+- Rozhodnuté: podklady **OpenFreeMap** (zadarmo aj komerčne, bez registrácie, kľúča a cookies; bez SLA — URL štýlu je jedno nastavenie,
+  dá sa prejsť na vlastné hostovanie) + tlačidlo **„Navigovať v Google Mapách“** ako obyčajný odkaz. (Martin + Claude) → Z40.
+
 ## 2026-10-17 — Obrazovky modulov pre hostí v2.3 schválené
 
 - Martin schválil dosky `UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` („môže byť“). Detail pobytu v účte hosťa je jedno miesto pre

@@ -119,6 +119,21 @@ v komponentoch**; pred ostrým nasadením ich overíme.
 dosky `docs/navrhy/stranka-hosta/UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` (klikacie). Zámer, nie pixelová predloha; téma klienta,
 preklady, PC aj mobil 390 px, axe. Každá úloha nadväzuje na svoj základ (Z34–Z36) — ak základ chýba, sprav najprv ho.
 
+### Z40 — Mapa: OpenFreeMap + „Navigovať v Google Mapách“ (Martin 17. 10.) — **malá, môže ísť hneď po Z31**
+Dnes ide mapa (statický náhľad `osm-map.tsx` aj interaktívna `interactive-map.tsx`, Leaflet) priamo z dlaždíc `tile.openstreetmap.org` —
+pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Maps; rozhodnuté inak (ROZHODNUTIA 17. 10.).
+1. **Podklady z OpenFreeMap** (openfreemap.org — zadarmo aj komerčne, bez registrácie, kľúča, cookies a limitu; vektorové dlaždice,
+   klient MapLibre GL). Štýl tlmený (Positron alebo Liberty upravený na tlmené farby), značka objektu a miesta v okolí v akcente témy
+   ako doteraz. Atribúcia „© OpenMapTiles · Data from OpenStreetMap“ (MapLibre ju pridá sám). URL štýlu v jednom nastavení (ak by
+   OpenFreeMap vypadol alebo ho budeme hostovať sami, mení sa na jednom mieste). Leaflet odstrániť, ak sa už nepoužíva.
+2. **Výkon:** MapLibre načítať až keď je mapa blízko obrazovky (alebo po kliknutí na náhľad) — `node scripts/perf-check.mjs` na mobile
+   sa nesmie zhoršiť; zapíš pred/po do Denníka. Statický náhľad (malá mapa hore pri cene): vyber riešenie bez načítania knižnice
+   pri prvom zobrazení (napr. MapLibre až pri viditeľnosti, alebo vopred vyrenderovaný obrázok pri uložení polohy) a zdôvodni v Denníku.
+3. **Tlačidlo „Navigovať v Google Mapách ↗“** pri mape (sekcia Okolie aj potvrdenie rezervácie / pokyny k príchodu): obyčajný odkaz
+   `https://www.google.com/maps/dir/?api=1&destination=<lat>,<lng>` — bez kľúča a bez načítania Google na stránke. Pri približnej
+   polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
+4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
+
 ### Z37 — Upsell pre hostí (po Z35)
 Detail pobytu v účte hosťa podľa `UcetPobyt` (aj cez prístupový odkaz `/r/<kód>`): sekcia „K pobytu si môžete doobjednať“ s rozbalením,
 výberom dní, spôsobom platby, „Objednať záväzne“, stavmi, zrušením do uzávierky; pravý stĺpec „Účet pobytu“; mobil so spodným oknom
@@ -215,8 +230,7 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
   ešte nie sú), štítok „Ukážka“ pri klientovi (v databáze nie je príznak ukážkového klienta). „Zabudnuté heslo?“ pošle prihlasovací odkaz.
   E-mail podpory na prihlasovacej obrazovke sa zobrazí, keď nastavíš `NEXT_PUBLIC_SUPPORT_EMAIL` (Vercel). Chceš niektoré z toho doplniť?
 - **Prístupnosť (Z23):** sivé štítky z návrhu (#8b929b) nesplnili kontrast AA, v administrácii sú preto tmavšie (#5a6672).
-- **Mapa (Z19):** zatiaľ dlaždice priamo z OpenStreetMap (zadarmo, mierne používanie). Pred ostrou prevádzkou s väčšou návštevnosťou
-  odporúčam poskytovateľa dlaždíc s bezplatným limitom (MapTiler alebo Stadia — treba účet). Súhlasíš?
+- ~~**Mapa (Z19):** OSM dlaždice → poskytovateľ?~~ Rozhodnuté 17. 10.: OpenFreeMap + odkaz na navigáciu v Google Mapách → Z40.
 - **STRÖMY (Z19):** miesta v okolí a popisy zvýrazneného vybavenia sú orientačné — nech ich Jana skontroluje v administrácii.
 - **Captcha:** zapojená (pozri Denník). Pri napojení vlastnej domény klienta treba doménu pridať do widgetu `booking-platform`
   v Cloudflare (Turnstile → Hostname Management), inak sa overenie na tej doméne nenačíta.
