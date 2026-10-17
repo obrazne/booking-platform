@@ -7,10 +7,7 @@ import { listModules } from "./registry";
  */
 export type CatalogEntry = { key: string; ready: boolean; dependsOn: readonly string[] };
 
-const PLANNED: CatalogEntry[] = [
-  { key: "messages", ready: false, dependsOn: [] },
-  { key: "sms", ready: false, dependsOn: [] },
-];
+const PLANNED: CatalogEntry[] = [{ key: "sms", ready: false, dependsOn: [] }];
 
 export function moduleCatalog(): CatalogEntry[] {
   return [

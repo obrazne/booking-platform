@@ -730,6 +730,219 @@ export type Database = {
           },
         ]
       }
+      message_overrides: {
+        Row: {
+          body: string | null
+          reservation_id: string
+          rule_id: string
+          skip: boolean
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body?: string | null
+          reservation_id: string
+          rule_id: string
+          skip?: boolean
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string | null
+          reservation_id?: string
+          rule_id?: string
+          skip?: boolean
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_overrides_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_overrides_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "message_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_overrides_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_overrides_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_rules: {
+        Row: {
+          anchor: string
+          body: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string | null
+          name: Json
+          offset_days: number
+          send_time: string | null
+          sort: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          anchor: string
+          body?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string | null
+          name?: Json
+          offset_days?: number
+          send_time?: string | null
+          sort?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          anchor?: string
+          body?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string | null
+          name?: Json
+          offset_days?: number
+          send_time?: string | null
+          sort?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_rules_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          guest_read_at: string | null
+          reservation_id: string
+          team_read_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          guest_read_at?: string | null
+          reservation_id: string
+          team_read_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          guest_read_at?: string | null
+          reservation_id?: string
+          team_read_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_threads_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: true
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          email_via: string | null
+          id: string
+          reservation_id: string
+          rule_id: string | null
+          sender: string
+          tenant_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          email_via?: string | null
+          id?: string
+          reservation_id: string
+          rule_id?: string | null
+          sender: string
+          tenant_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          email_via?: string | null
+          id?: string
+          reservation_id?: string
+          rule_id?: string | null
+          sender?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "message_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       modules: {
         Row: {
           created_at: string
@@ -1495,6 +1708,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "push_subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quick_replies: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          sort: number
+          tenant_id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          sort?: number
+          tenant_id: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          sort?: number
+          tenant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quick_replies_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -3244,10 +3492,57 @@ export type Database = {
         Args: { p_guest_id: string; p_reported?: boolean }
         Returns: undefined
       }
+      mark_messages_read: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: undefined
+      }
       mark_tour_seen: {
         Args: { p_tour: string; p_version: string }
         Returns: undefined
       }
+      message_inbox: {
+        Args: { p_filter?: string; p_search?: string; p_tenant_id: string }
+        Returns: {
+          check_in: string
+          check_out: string
+          guest_name: string
+          last_at: string
+          last_body: string
+          last_sender: string
+          number: string
+          reservation_id: string
+          status: string
+          unread: boolean
+          waiting: boolean
+        }[]
+      }
+      message_rule_at: {
+        Args: {
+          p_reservation_id: string
+          p_rule: Database["public"]["Tables"]["message_rules"]["Row"]
+        }
+        Returns: string
+      }
+      message_rule_text: {
+        Args: {
+          p_reservation_id: string
+          p_rule: Database["public"]["Tables"]["message_rules"]["Row"]
+        }
+        Returns: string
+      }
+      messages_for: {
+        Args: { p_reservation_id: string; p_token?: string }
+        Returns: {
+          body: string
+          created_at: string
+          id: string
+          rule_id: string
+          sender: string
+        }[]
+      }
+      messages_review_rule: { Args: { p_tenant_id: string }; Returns: string }
+      messages_tick: { Args: never; Returns: number }
+      messages_waiting: { Args: { p_tenant_id: string }; Returns: number }
       my_review_eligibility: {
         Args: { p_reservation_id: string }
         Returns: string
@@ -3462,6 +3757,30 @@ export type Database = {
       save_checkin: {
         Args: { p_data: Json; p_reservation_id: string; p_token?: string }
         Returns: string
+      }
+      scheduled_messages: {
+        Args: { p_reservation_id: string }
+        Returns: {
+          body: string
+          changed: boolean
+          rule_id: string
+          rule_name: Json
+          send_at: string
+          skipped: boolean
+        }[]
+      }
+      send_message: {
+        Args: { p_body: string; p_reservation_id: string; p_token?: string }
+        Returns: string
+      }
+      set_message_override: {
+        Args: {
+          p_body?: string
+          p_reservation_id: string
+          p_rule_id: string
+          p_skip: boolean
+        }
+        Returns: undefined
       }
       set_reservation_progress: {
         Args: { p_reservation_id: string; p_status: string }

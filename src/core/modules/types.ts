@@ -71,4 +71,19 @@ export type ModuleManifest = {
   guestTodos?: (args: { reservationId: string; locale: string }) => Promise<GuestTodo[]>;
   /** Section types for the property page (B7), e.g. services on request. */
   sections?: readonly SectionDef[];
+  /** After the control center switches the module on for a client (e.g. default settings — messages, Z45). */
+  onEnable?: (tenantId: string) => Promise<void>;
+  /**
+   * Blocks a module adds to a core e-mail to the guest (e.g. an automatic message inside the confirmation or the
+   * arrival instructions — no double e-mails, Z45). Runs in the e-mail worker (no user).
+   */
+  emailBlocks?: (args: EmailBlockArgs) => Promise<EmailBlock[]>;
 };
+
+export type EmailBlockArgs = {
+  kind: "guest_confirmed" | "guest_arrival" | "guest_upsell_offer";
+  tenantId: string;
+  reservationId: string;
+  locale: string;
+};
+export type EmailBlock = { title: string; text: string };

@@ -3,7 +3,15 @@ import { cache } from "react";
 import { MODULES } from "@/modules";
 import { createClient } from "@/lib/supabase/server";
 import { isEnabledStatus, resolveEnabled } from "./resolve";
-import type { BookingEventName, GuestTodo, ModuleEvent, ModuleManifest, SlotName } from "./types";
+import type {
+  BookingEventName,
+  EmailBlock,
+  EmailBlockArgs,
+  GuestTodo,
+  ModuleEvent,
+  ModuleManifest,
+  SlotName,
+} from "./types";
 
 /** All modules known to the code (control center lists them with their switches). */
 export function listModules(): readonly ModuleManifest[] {
@@ -82,4 +90,20 @@ export async function moduleGuestTodos(
     ),
   );
   return lists.flat();
+}
+
+/** Blocks enabled modules add to a core e-mail to the guest (Z45). A failing module never stops the e-mail. */
+export async function moduleEmailBlocks(args: EmailBlockArgs): Promise<EmailBlock[]> {
+  const keys = await enabledModuleKeysPublic(args.tenantId);
+  const lists = await Promise.all(
+    MODULES.filter((m) => m.emailBlocks && keys.includes(m.key)).map((m) =>
+      m.emailBlocks!(args).catch(() => [] as EmailBlock[]),
+    ),
+  );
+  return lists.flat();
+}
+
+/** After the module is switched on for a client (Z45): its defaults. */
+export async function runModuleOnEnable(key: string, tenantId: string): Promise<void> {
+  await getModule(key)?.onEnable?.(tenantId);
 }

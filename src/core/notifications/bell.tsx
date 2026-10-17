@@ -10,8 +10,9 @@ import {
   CalendarX,
   CheckCircle2,
   ClipboardCheck,
-  ConciergeBell,
   Clock,
+  ConciergeBell,
+  MessageCircle,
   Plus,
   RefreshCw,
   Star,
@@ -46,6 +47,7 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   checkin_completed: { icon: ClipboardCheck, tone: "accent" },
   foreigner_unreported: { icon: AlertTriangle, tone: "warn" },
   account_deletion: { icon: UserX, tone: "warn" },
+  message_new: { icon: MessageCircle, tone: "accent" },
 };
 
 const TONE = {

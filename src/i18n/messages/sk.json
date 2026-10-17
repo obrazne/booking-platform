@@ -528,6 +528,47 @@
         }
       }
     },
+    "messages": {
+      "nav": "Správy",
+      "defaults": {
+        "rules": {
+          "welcome": {
+            "name": "Privítanie",
+            "body": "Dobrý deň {meno}, ďakujeme za rezerváciu. Tešíme sa na vás {príchod}. Ak budete pred príchodom čokoľvek potrebovať, napíšte nám sem.\n\n{podpis}"
+          },
+          "directions": {
+            "name": "Ako sa k nám dostanete",
+            "body": "Dobrý deň {meno}, o tri dni sa uvidíme. Pokyny k príchodu a kód od dverí nájdete v detaile pobytu — pošleme vám ich aj e-mailom. Ak by ste prišli neskôr večer, dajte nám vedieť.\n\n{podpis}"
+          },
+          "check": {
+            "name": "Je všetko v poriadku?",
+            "body": "Dobrý deň {meno}, dúfame, že sa máte dobre. Je všetko v poriadku? Ak niečo chýba alebo nefunguje, napíšte nám — vybavíme to.\n\n{podpis}"
+          },
+          "departure": {
+            "name": "Pokyny k odchodu",
+            "body": "Dobrý deň {meno}, zajtra je deň odchodu ({odchod}). Kľúče prosím nechajte podľa pokynov k príchodu. Ďakujeme a šťastnú cestu.\n\n{podpis}"
+          },
+          "thanks": {
+            "name": "Poďakovanie",
+            "body": "Ďakujeme za návštevu, {meno}! Budeme radi, ak nám napíšete, ako sa vám u nás páčilo: {odkaz na hodnotenie}\n\n{podpis}"
+          }
+        },
+        "quick": {
+          "thanks": {
+            "title": "Ďakujem, ozvem sa",
+            "body": "Ďakujem za správu, pozriem sa na to a čoskoro sa ozvem."
+          },
+          "late": {
+            "title": "Neskorý príchod",
+            "body": "Neskorší príchod nie je problém — pokyny k príchodu a kód od dverí nájdete v detaile pobytu."
+          },
+          "help": {
+            "title": "Ako vám pomôžem?",
+            "body": "Dobrý deň, ako vám môžem pomôcť?"
+          }
+        }
+      }
+    },
     "checkin": {
       "nav": "Príchody",
       "title": "Online check-in",
@@ -1722,7 +1763,19 @@
       "subject": "Pokyny k príchodu — {property}",
       "intro": "blíži sa váš pobyt. Tu sú informácie k príchodu.",
       "checkIn": "Príchod od {time}, odchod do {time2}.",
-      "address": "Adresa: {address}"
+      "address": "Adresa: {address}",
+      "doorCode": "Kód od dverí",
+      "wifi": "Wi-Fi",
+      "wifiPassword": "Heslo Wi-Fi"
+    },
+    "guest_message": {
+      "subject": "{owner} vám napísal(a) k pobytu {stay}",
+      "button": "Odpovedať",
+      "replyHint": "Odpovedať môžete aj priamo na tento e-mail — príde k {owner}."
+    },
+    "owner_message": {
+      "subject": "Nová správa od hosťa — {guest} · {number}",
+      "button": "Odpovedať v administrácii"
     },
     "owner_new": {
       "subject": "Nová rezervácia {number} — {guest}",
@@ -2534,6 +2587,10 @@
       "account_deletion": {
         "title": "Hosť žiada zrušiť účet",
         "text": "{guest} — údaje, ktoré netreba uchovať zo zákona, zmažte alebo anonymizujte"
+      },
+      "message_new": {
+        "title": "Nová správa — {guest}",
+        "text": "{number} · {excerpt}"
       }
     },
     "settings": {
@@ -2562,7 +2619,8 @@
         "order_awaiting": "Objednávka čaká na moje potvrdenie",
         "checkin_completed": "Hosť dokončil online check-in",
         "foreigner_unreported": "Cudzinec ešte nie je nahlásený (4. deň)",
-        "account_deletion": "Hosť žiada zrušiť účet"
+        "account_deletion": "Hosť žiada zrušiť účet",
+        "message_new": "Nová správa od hosťa (e-mail o 15 min, ak ju nikto neotvoril)"
       },
       "onlyExpired": "len pri neuhradení"
     }

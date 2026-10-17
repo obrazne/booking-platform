@@ -5,6 +5,7 @@ import { CurrencyCode, encode, PaymentOptions } from "bysquare/pay";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
 import { money } from "@/core/money/money";
+import { moduleEmailBlocks } from "@/core/modules/registry";
 import { modelQuantity } from "@/core/pricing/calculate";
 import { diffDays } from "@/core/pricing/dates";
 import type { PriceModel } from "@/core/pricing/types";
@@ -30,7 +31,9 @@ export type EmailKind =
   | "guest_order_confirmed"
   | "guest_order_declined"
   | "guest_checkin_reminder"
-  | "guest_upsell_offer";
+  | "guest_upsell_offer"
+  | "guest_message"
+  | "owner_message";
 
 function esc(s: string): string {
   return s.replace(
@@ -101,6 +104,16 @@ export async function renderEmail(
     ? { href: ctx.guestLink, label: t("openReservation") }
     : undefined;
   const ownerTo = settings?.owner_notification_email ?? property?.contact_email ?? null;
+  // Blocks modules add to the guest's e-mail (e.g. an automatic message — no double e-mails, Z45).
+  const moduleBlocks =
+    kind === "guest_confirmed" || kind === "guest_arrival" || kind === "guest_upsell_offer"
+      ? await moduleEmailBlocks({ kind, tenantId: r.tenant_id, reservationId: r.id, locale })
+      : [];
+  const blocksHtml = moduleBlocks.map(
+    (b) =>
+      `<div style="margin:0 0 16px;padding:12px 16px;border-left:3px solid ${accent};background:#fafaf8">${b.title ? `<p style="margin:0 0 6px;font-weight:700">${esc(b.title)}</p>` : ""}${p(b.text)}</div>`,
+  );
+  const blocksText = moduleBlocks.map((b) => [b.title, b.text].filter(Boolean).join("\n"));
 
   async function paymentBlock() {
     const vs = r.payments[0]?.variable_symbol ?? r.number.replace("-", "");
@@ -209,6 +222,7 @@ export async function renderEmail(
           [
             p(t("greeting", { name: r.guest_name })),
             p(t("guest_confirmed.intro")),
+            ...blocksHtml,
             summary,
             signature,
           ],
@@ -217,6 +231,7 @@ export async function renderEmail(
         text: [
           t("greeting", { name: r.guest_name }),
           t("guest_confirmed.intro"),
+          ...blocksText,
           ctx.guestLink ?? "",
         ].join("\n\n"),
       };
@@ -250,6 +265,14 @@ export async function renderEmail(
       const address = [property?.street, property?.postal_code, property?.city]
         .filter(Boolean)
         .join(", ");
+      // Door code and Wi-Fi of the property (Z44, private) — only here and on the unlocked stay page.
+      const codes = (
+        [
+          [t("guest_arrival.doorCode"), property?.private?.door_code],
+          [t("guest_arrival.wifi"), property?.private?.wifi_name],
+          [t("guest_arrival.wifiPassword"), property?.private?.wifi_password],
+        ] as [string, string | null | undefined][]
+      ).filter((x): x is [string, string] => Boolean(x[1]));
       const times = t("guest_arrival.checkIn", {
         time: property?.check_in_from?.slice(0, 5) ?? "",
         time2: property?.check_out_until?.slice(0, 5) ?? "",
@@ -267,7 +290,9 @@ export async function renderEmail(
             p(t("guest_arrival.intro")),
             p(times),
             address ? p(t("guest_arrival.address", { address })) : "",
+            codes.length ? rows(codes) : "",
             instructions ? p(instructions) : "",
+            ...blocksHtml,
             signature,
           ],
           guestButton,
@@ -276,7 +301,9 @@ export async function renderEmail(
           t("greeting", { name: r.guest_name }),
           t("guest_arrival.intro"),
           times,
+          ...codes.map(([k, v]) => `${k}: ${v}`),
           instructions,
+          ...blocksText,
         ].join("\n\n"),
       };
     }
@@ -446,11 +473,80 @@ export async function renderEmail(
             p(intro),
             `<ul style="margin:0 0 14px;padding-left:20px;line-height:1.7">${offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>`,
             p(outro),
+            ...blocksHtml,
             signature,
           ],
           { href: link, label: t("guest_upsell_offer.button") },
         ),
-        text: [t("greeting", { name: r.guest_name }), intro, ...offers, outro, link].join("\n\n"),
+        text: [
+          t("greeting", { name: r.guest_name }),
+          intro,
+          ...offers,
+          outro,
+          ...blocksText,
+          link,
+        ].join("\n\n"),
+      };
+    }
+    case "guest_message":
+    case "owner_message": {
+      // Messages (module messages, Z45): everything written since the first message of this e-mail (several
+      // messages within 15 minutes = one e-mail). The owner's e-mail is not sent when the team has read it meanwhile.
+      const since = typeof payload.since === "string" ? payload.since : new Date(0).toISOString();
+      const admin = createAdminClient();
+      const toGuest = kind === "guest_message";
+      const [{ data: list }, { data: thread }] = await Promise.all([
+        admin
+          .from("messages")
+          .select("sender, body, created_at, email_via")
+          .eq("reservation_id", r.id)
+          .gte("created_at", since)
+          .order("created_at"),
+        admin
+          .from("message_threads")
+          .select("team_read_at")
+          .eq("reservation_id", r.id)
+          .maybeSingle(),
+      ]);
+      const items = (list ?? []).filter((m) =>
+        toGuest ? m.sender !== "guest" && !m.email_via : m.sender === "guest",
+      );
+      if (!items.length) return null;
+      if (!toGuest && thread?.team_read_at && thread.team_read_at >= items.at(-1)!.created_at)
+        return null;
+      const owner = settings?.contact_name?.trim() || tenantName;
+      const mv = { ...vars, owner, stay };
+      const bubbles = items.map(
+        (m) =>
+          `<div style="margin:0 0 12px;padding:12px 16px;border-radius:12px;background:#f3f4f2">${p(m.body)}</div>`,
+      );
+      if (toGuest) {
+        const reply = ctx.guestLink ? `${ctx.guestLink}#spravy` : ctx.stayLink;
+        return {
+          to: r.guest_email,
+          replyTo: ownerTo,
+          fromName: `${owner} · ${property?.name ?? tenantName}`,
+          subject: t("guest_message.subject", mv),
+          html: layout(
+            accent,
+            t("guest_message.subject", mv),
+            [...bubbles, p(t("guest_message.replyHint", mv))],
+            { href: reply, label: t("guest_message.button", mv) },
+          ),
+          text: [...items.map((m) => m.body), t("guest_message.replyHint", mv), reply].join("\n\n"),
+        };
+      }
+      if (!ownerTo) return null;
+      const link = `${ctx.adminLink}&tab=messages`;
+      return {
+        to: ownerTo,
+        fromName: tenantName,
+        subject: t("owner_message.subject", mv),
+        html: layout(accent, t("owner_message.subject", mv), bubbles, {
+          href: link,
+          label: t("owner_message.button"),
+        }),
+        text: [...items.map((m) => m.body), link].join("\n\n"),
       };
     }
     case "guest_checkin_reminder": {

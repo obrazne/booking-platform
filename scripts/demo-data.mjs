@@ -742,6 +742,8 @@ async function createDemo() {
   await demoOrders(martin, b);
   // Online check-in of two stays, one foreigner (Z36). Fictional documents.
   await demoCheckins(martin, b);
+  // Messages with the guest (Z45): default rules, quick replies, conversations; (b) waits for a reply.
+  const waiting = await demoMessages(martin, { a, b, c });
 
   // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
   must(
@@ -749,6 +751,7 @@ async function createDemo() {
     "clear generated notifications",
   );
   await curatedNotifications(martin, { a, b }, trialEnds);
+  if (waiting) must(await db.from("notifications").insert(waiting), "message notification");
 
   // E-mails the demo queued: not sent (Martin's inbox stays quiet; the guest-zone code is sent only on login).
   const ids = await demoReservationIds();
@@ -926,6 +929,135 @@ async function demoOrders(martin, b) {
   must(await db.from("reservation_orders").insert(rows), "orders");
   await quiet(b.id);
   console.log(`Orders: ${rows.length} on ${b.number} (module upsell on).`);
+}
+
+// ---------------------------------------------------------------- messages (Z45)
+async function demoMessages(martin, { a, b, c }) {
+  must(
+    await db
+      .from("tenant_modules")
+      .upsert(
+        { tenant_id: TENANT, module_key: "messages", status: "active", updated_by: martin.id },
+        { onConflict: "tenant_id,module_key" },
+      ),
+    "messages module",
+  );
+  // Default rules and quick replies, as when the module is switched on (texts from the translations).
+  const d = sk.modules.messages.defaults;
+  const rules = [
+    ["welcome", "confirmed", 0, null, true],
+    ["directions", "check_in", -3, "10:00", true],
+    ["check", "check_in", 1, "10:00", true],
+    ["departure", "check_out", -1, "18:00", false],
+    ["thanks", "check_out", 1, "11:00", true],
+  ];
+  const existing = must(
+    await db.from("message_rules").select("id, key").eq("tenant_id", TENANT),
+    "message rules",
+  );
+  if (!existing.length)
+    must(
+      await db.from("message_rules").insert(
+        rules.map(([key, anchor, offset, time, enabled], i) => ({
+          tenant_id: TENANT,
+          key,
+          anchor,
+          offset_days: offset,
+          send_time: time,
+          enabled,
+          sort: i,
+          name: { sk: d.rules[key].name },
+          body: { sk: d.rules[key].body },
+        })),
+      ),
+      "insert message rules",
+    );
+  const { count } = await db
+    .from("quick_replies")
+    .select("id", { count: "exact", head: true })
+    .eq("tenant_id", TENANT);
+  if (!count)
+    must(
+      await db.from("quick_replies").insert(
+        Object.entries(d.quick).map(([, q], i) => ({
+          tenant_id: TENANT,
+          title: q.title,
+          body: q.body,
+          sort: i,
+        })),
+      ),
+      "quick replies",
+    );
+  const byKey = Object.fromEntries(
+    must(
+      await db.from("message_rules").select("id, key, body").eq("tenant_id", TENANT),
+      "rules",
+    ).map((r) => [r.key, r]),
+  );
+  const at = (hoursAgo) => new Date(Date.now() - hoursAgo * 3_600_000).toISOString();
+  const names = Object.fromEntries(
+    must(
+      await db.from("reservations").select("id, guest_name").in("id", [a.id, b.id, c.id]),
+      "guest names",
+    ).map((r) => [r.id, r.guest_name]),
+  );
+  const first = (name) => (name ?? "").split(" ")[0];
+  const fill = (key, r) =>
+    (byKey[key]?.body?.sk ?? "")
+      .replaceAll("{meno}", first(names[r.id]))
+      .replaceAll("{príchod}", r.checkIn.split("-").reverse().map(Number).join(". "))
+      .replaceAll("{odchod}", r.checkOut.split("-").reverse().map(Number).join(". "))
+      .replaceAll("{podpis}", "Martina")
+      .replaceAll("{odkaz na hodnotenie}", `${target.host}/ucet/pobyt/${r.id}/hodnotenie`);
+  const rows = [];
+  const msg = (r, sender, body, hoursAgo, extra = {}) =>
+    rows.push({
+      tenant_id: TENANT,
+      reservation_id: r.id,
+      sender,
+      body,
+      created_at: at(hoursAgo),
+      author_id: sender === "staff" ? martin.id : null,
+      ...extra,
+    });
+  // (a) waiting for payment: a question answered.
+  msg(a, "guest", "Dobrý deň, dá sa doplatiť aj kartou na mieste, alebo len prevodom?", 30);
+  msg(a, "staff", "Dobrý deň, zatiaľ len prevodom — QR kód nájdete v rezervácii. Ďakujeme!", 28);
+  // (b) confirmed: welcome, a question, an answer and a new question nobody answered yet.
+  if (byKey.welcome)
+    msg(b, "auto", fill("welcome", b), 120, {
+      rule_id: byKey.welcome.id,
+      email_via: "guest_confirmed",
+    });
+  msg(b, "guest", "Dobrý deň, môžeme prísť už o 13:00? Ideme z Bratislavy skoro ráno.", 26);
+  msg(b, "staff", "Dobrý deň, áno — chalet bude pripravený o 13:00. Šťastnú cestu!", 25);
+  msg(b, "guest", "Super, ďakujeme! Je v okolí obchod, kde kúpime raňajky na prvý deň?", 2);
+  // (c) completed: the thank-you with the review link and the guest's reply.
+  if (byKey.thanks) msg(c, "auto", fill("thanks", c), 70, { rule_id: byKey.thanks.id });
+  msg(c, "guest", "Ďakujeme, bolo to krásne. Radi prídeme znova!", 60);
+  must(await db.from("messages").insert(rows), "messages");
+  must(
+    await db.from("message_threads").upsert(
+      [a, b, c].map((r) => ({
+        reservation_id: r.id,
+        tenant_id: TENANT,
+        team_read_at: r === b ? at(25) : at(1),
+        guest_read_at: at(1),
+      })),
+    ),
+    "message threads",
+  );
+  console.log(`Messages: ${rows.length} in 3 conversations, ${b.number} waits for a reply.`);
+  // The bell: the unanswered question of (b) (added after the generated notifications are cleared).
+  return {
+    tenant_id: TENANT,
+    audience: "tenant",
+    kind: "message_new",
+    data: { number: b.number, guest: names[b.id], excerpt: rows.at(-3)?.body?.slice(0, 140) ?? "" },
+    target: `/admin/reservations?panel=reservation:${b.id}&tab=messages`,
+    dedupe_key: `message_new:demo:${runId}`,
+    created_at: at(2),
+  };
 }
 
 // ---------------------------------------------------------------- online check-in (Z36)

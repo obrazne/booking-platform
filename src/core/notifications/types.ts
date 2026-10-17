@@ -32,6 +32,7 @@ export const TENANT_KINDS = [
   { kind: "checkin_completed", email: "no", module: "checkin" },
   { kind: "foreigner_unreported", email: "no", module: "checkin" },
   { kind: "account_deletion", email: "no" },
+  { kind: "message_new", email: "yes", module: "messages" },
 ] as const;
 
 export const PLATFORM_KINDS = [

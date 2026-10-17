@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → Z48 (storno pásma) ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -173,7 +173,7 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z45 [B] 🔄 — Modul Správy: základ (databáza, automatické správy, e-maily, upozornenia) (Martin 17. 10.)
+### Z45 [B] ✅ — Modul Správy: základ (databáza, automatické správy, e-maily, upozornenia) (Martin 17. 10.)
 Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10. Rozhranie robia Z46 (administrácia) a Z47 (hosť).
 1. Modul `messages` (manifest, katalóg „Správy s hosťom“, `ready: false` kým nie sú hotové Z46 a Z47), migrácia: správy pri rezervácii,
    pravidlá automatických správ (po jazykoch), vynechania/úpravy naplánovanej správy pri rezervácii, rýchle odpovede; RLS + pgTAP
@@ -358,6 +358,9 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Správy (Z45) — tlačidlo „Odpovedať“ v e-maile hosťovi:** vedie na prístupový odkaz pobytu (`/r/<kód>#spravy`), ktorý hosťa pustí
+  k pobytu bez hesla a **neexspiruje** (návrh B11 hovorí o prihlásení platnom 7 dní). Stačí to tak, alebo chceš jednorazové prihlásenie
+  do účtu s platnosťou 7 dní (bezpečnejšie pri preposlanom e-maile, ale hosť bez účtu by si ho musel založiť)?
 - **Zrušenie účtu hosťa (Z43) — skontroluj formulácie:** v Moje údaje „Stiahnite si kópiu svojich údajov alebo požiadajte o zrušenie účtu.
   Údaje, ktoré musíme uchovať zo zákona (doklady, kniha ubytovaných), zostanú do konca lehoty.“ a v okne „Požiadame {ubytovateľ} o zrušenie
   vášho účtu. Údaje, ktoré netreba uchovať zo zákona, zmaže alebo anonymizuje; doklady a kniha ubytovaných zostanú do konca zákonnej lehoty.
@@ -409,6 +412,30 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z45 [linka B]: **modul Správy — základ** (B11 Správy s hosťom, bez obrazoviek — tie sú Z46/Z47). (Claude Code)
+  - Migrácia `20261017290000_messages.sql`: `messages` (hosť / tím / automatika, max. 4 000 znakov, `record_history`, mažú sa s rezerváciou),
+    `message_threads` (spoločné „vybavené“ tímu, prečítanie hosťom), `message_rules` (kotva potvrdenie / príchod / odchod, posun dní,
+    čas v pásme klienta, text po jazykoch), `message_overrides` (pri hosťovi upraviť / neposielať), `quick_replies`. RLS: tím klienta,
+    hosť v účte; prístupový odkaz cez funkcie s `p_token`.
+  - Funkcie: `send_message` (hosť do 30 dní po odchode, 20 správ za hodinu, len priame rezervácie), `mark_messages_read`, `messages_for`,
+    `messages_waiting` (odznak), `message_inbox` (filtre všetky / čakajú / pred a počas / po odchode, hľadanie), `scheduled_messages`,
+    `set_message_override`, `message_rule_at` / `message_rule_text` (premenné {meno}, {príchod}, {odchod}, {podpis}, {odkaz na hodnotenie}).
+  - `messages_tick` každých 5 min: raz na pravidlo a rezerváciu, nie zrušené, nie vynechané, **čas pred vznikom rezervácie (alebo pravidla)
+    sa nedobieha**. **Bez dvojitých e-mailov:** Privítanie ide v e-maile potvrdenia, správa v deň pokynov k príchodu / ponuky upsell ako blok
+    v tom e-maile (nový háčik manifestu `emailBlocks`, jadro o module nevie), správa sa označí `email_via`. Poďakovanie s
+    `{odkaz na hodnotenie}` nahrádza pozvánku `reviews_tick` (pripomienka po 7 dňoch od poďakovania ostáva).
+  - E-maily `guest_message` / `owner_message` o 15 min (viac správ = jeden e-mail; majiteľovi sa nepošle, ak tím medzičasom otvoril).
+    Hosťovi od „meno · objekt“, Reply-To kontakt klienta, tlačidlo Odpovedať → prístupový odkaz `#spravy` (Otázky). Upozornenie
+    `message_new` (zvonček, push — aj medzi predvolenými druhmi nového zariadenia, nastavenia upozornení).
+  - **Predvolené pravidlá a rýchle odpovede** (texty v `modules.messages.defaults`) vznikajú pri zapnutí modulu v riadiacom centre — nový
+    háčik manifestu `onEnable`. Modul je v katalógu „v príprave“ (`ready: false`), kým nie sú Z46 a Z47.
+  - **Ukážkové dáta** (len Ukážkový klient, `scripts/demo-data.mjs`): modul zapnutý, pravidlá, rýchle odpovede, 3 konverzácie (pri (b)
+    čaká otázka hosťa) a upozornenie — **prejavia sa pri ďalšom `npm run demo-data -- --reset`** (teraz som reset nespúšťal, aby som nerozbil
+    testy linky A).
+  - Popri tom: e-mail s pokynmi k príchodu teraz obsahuje aj **kód od dverí a Wi-Fi** zo Z44 (doteraz len text pokynov);
+    `localMidnight` presunutý do `src/core/time/zone.ts`.
+  - Testy: pgTAP `messages.test.sql` (oddelenie klientov, odkaz, zvonček, zlúčený e-mail, čakajúce a schránka, pravidlá — raz, vynechané,
+    nedobieha sa, premenné; okno 30 dní), vitest (čas pravidla v pásme, premenné). Build prechádza.
 - 2026-10-17 — Z43: **účet hosťa v2.4 — lišta, prehľad, Moje údaje** (`UcetPrehlad`, `MobilUcet`).
   - **Lišta účtu** v spoločnom layoute `/ucet` (nie na prihlásení): Pobyty s odznakom vecí na vybavenie · Moje údaje · Odhlásiť sa; mobil pilulky.
     **Drobčeky** „Pobyty › termín (› Check-in)“ v detaile pobytu a check-ine (mobil „‹ Pobyty“) cez `crumbs`, ktoré pripravila linka B.

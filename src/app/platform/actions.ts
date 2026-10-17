@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { moduleCatalog } from "@/core/modules/catalog";
+import { runModuleOnEnable } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 
 export type FormState = {
@@ -82,6 +83,8 @@ export async function setModule(_prev: FormState, formData: FormData): Promise<F
     p_trial_ends_at: v.status === "trial" ? v.trialEndsAt : undefined,
   });
   if (error) return { error: "error" };
+  // Defaults of the module for the client (e.g. automatic messages, Z45) — never blocks the switch.
+  if (v.status !== "off") await runModuleOnEnable(v.moduleKey, v.tenantId).catch(() => undefined);
   // The module is shown in the catalog, trials, the client list and the client's detail.
   revalidatePath("/platform", "layout");
   return { error: null, ok: true };

@@ -1,5 +1,6 @@
 import type { ModuleManifest } from "@/core/modules/types";
 import { checkinModule } from "./checkin/manifest";
+import { messagesModule } from "./messages/manifest";
 import { pushModule } from "./push/manifest";
 import { reviewsModule } from "./reviews/manifest";
 import { servicesModule } from "./services/manifest";
@@ -12,4 +13,5 @@ export const MODULES: readonly ModuleManifest[] = [
   reviewsModule,
   upsellModule,
   checkinModule,
+  messagesModule,
 ];

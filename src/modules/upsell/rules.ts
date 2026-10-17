@@ -1,5 +1,8 @@
 import { modelQuantity } from "@/core/pricing/calculate";
 import type { PriceModel } from "@/core/pricing/types";
+import { localMidnight } from "@/core/time/zone";
+
+export { localMidnight };
 
 /** States of an order (B11); the first three count on the stay account. */
 export const ORDER_STATUSES = [
@@ -41,38 +44,6 @@ export type DayMode = "multi" | "single" | "none";
 export function dayMode(priceModel: PriceModel, requiresConfirmation: boolean): DayMode {
   if (priceModel === "per_night" || priceModel === "per_person_night") return "multi";
   return requiresConfirmation ? "single" : "none";
-}
-
-/** Midnight of a calendar day in a time zone, as an instant. */
-export function localMidnight(date: string, timeZone: string): Date {
-  const guess = Date.parse(`${date}T00:00:00Z`);
-  const offset = (at: number) => {
-    const parts = Object.fromEntries(
-      new Intl.DateTimeFormat("en-US", {
-        timeZone,
-        hourCycle: "h23",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-        .formatToParts(at)
-        .map((p) => [p.type, p.value]),
-    );
-    const local = Date.UTC(
-      Number(parts.year),
-      Number(parts.month) - 1,
-      Number(parts.day),
-      Number(parts.hour),
-      Number(parts.minute),
-      Number(parts.second),
-    );
-    return local - at;
-  };
-  const first = guess - offset(guess);
-  return new Date(guess - offset(first));
 }
 
 /** When ordering closes: the given hours before the day of the service, or before arrival (as place_order). */

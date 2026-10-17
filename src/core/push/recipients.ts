@@ -4,6 +4,7 @@ export const DEFAULT_PUSH_KINDS = [
   "calendar_conflict",
   "sync_failed",
   "cancel_request",
+  "message_new",
 ] as const;
 
 export const DEFAULT_PLATFORM_PUSH_KINDS = [

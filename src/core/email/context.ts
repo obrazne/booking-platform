@@ -13,7 +13,7 @@ export async function loadEmailContext(reservationId: string) {
        lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, sort),
        payments(variable_symbol, amount_cents),
        property:properties(id, name, street, city, postal_code, check_in_from, check_out_until, contact_email, booking_mode,
-         private:property_private(arrival_instructions)),
+         private:property_private(arrival_instructions, door_code, wifi_name, wifi_password)),
        tenant:tenants(name, timezone, default_locale, domains:tenant_domains(hostname, is_primary))`,
     )
     .eq("id", reservationId)
