@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** fronta je prázdna — čaká na ďalšie zadanie z Claude chatu.
+- **Ďalší krok pre Claude Code:** **Z24** (vzory administrácie v1.1) a **Z25** (riadiace centrum, roly, vstup správcu) — Martinove pripomienky zo stagingu 17. 10.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
@@ -147,6 +147,45 @@ iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako 
    kalendár (výber dní, panel), riadiace centrum, prihlásenie hosťa — na počítači aj 390 px, prístupnosť (axe). Potom **obnov snímky
    prehliadky** (`npm run tour:screens`) a zvýš jej verziu, nech Martin uvidí novinky.
 
+### Z24 — Vzory administrácie v1.1 (pripomienky zo stagingu 17. 10.)
+Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-administracia.md` → *Pravidlá vzhľadu administrácie*
+(**pravidlá 1, 6, 7, 8, 9 sú nové alebo zmenené v1.1**) a rozhodnutie 17. 10. *Pripomienky zo stagingu*. Dosky na plátne sú ešte v1
+(panel s dvoma stĺpcami) — **platí text**. Logiku nemeň, je to rozhranie.
+1. **`RecordPanel` — jeden stĺpec** (pravidlo 1): prilepená hlavička, súhrnná karta s mriežkou kľúčových údajov, hlavná akcia, sekcie pod sebou,
+   vedľajšie sekcie (História, Súhlasy, Posledné zmeny) ako zbalené riadky s počtom, prilepená spodná lišta. `PanelColumns` zruš alebo
+   nahraď jednoduchou dvojicou pre krátke hodnoty. Prerob panel rezervácie (Z23) a všetky ostatné panely na nový vzor. Nič sa nesmie
+   prekrývať ani v 680 px, ani pri dlhých textoch (over Playwrightom s dlhým menom, e-mailom a poznámkou).
+2. **Plochy** (pravidlo 6): token pre jemne sivý podklad kariet a sekcií + vlasová linka; použi na **všetkých** obrazovkách administrácie
+   aj riadiaceho centra (aj tie, ktoré neboli na plátne: Nastavenia, Booking a Airbnb, Objekty, Služby, Referencie, Blokácie, Tím, Dokumenty…).
+3. **Rozbaľovacie riadky** (pravidlo 7): spoločný komponent (riadok: názov, 1–2 údaje, stav, šípka; rozbalenie na mieste, naraz jeden,
+   klávesnica a čítačka — `aria-expanded`). Použi pre Doplnkové služby (riadok: názov · cena a spôsob výpočtu · Aktívna), Referencie,
+   importované kalendáre (Booking a Airbnb), Blokácie, Tím, miesta v okolí a podobné zoznamy. Formuláre na pridanie skry za tlačidlo
+   „Pridať …“ (otvorí nový rozbalený riadok navrchu). Akcie v riadku pri obsahu (pravidlo 8).
+4. **Drobnosti zo snímok:** súhlasy a záznam zmien cez preklady (žiadne `terms`, `privacy`, `module.changed`, `membership`); tlačidlo
+   **Nahrať** nesmie vyzerať ako neaktívne, kým nie je vybraný súbor (vyber súbor → potom aktívne, alebo jedno tlačidlo „Nahrať súbor“);
+   zástupný text polí sa nesmie orezávať; odsadenie položiek bočného menu od ľavého okraja; zdvojený názov importovaného kalendára
+   („Booking.com (ukážka) · Booking.com“ → názov a zdroj zobraz raz); pozdrav na prehľade s menom (`profiles.full_name`, inak bez mena,
+   ale bez prázdnej čiarky).
+5. Playwright (počítač aj 390 px, axe) na prerobených obrazovkách; obnov snímky prehliadky (`npm run tour:screens`) a zvýš jej verziu.
+
+### Z25 — Riadiace centrum, roly a vstup správcu (pripomienky zo stagingu 17. 10.)
+Čítaj `docs/vizual-administracia.md` → *Riadiace centrum, roly a vstup správcu (v1.1)*, `ARCHITEKTURA.md` A4 a rozhodnutie 17. 10.
+1. **Odlíšenie:** grafitové bočné menu riadiaceho centra + štítok „Riadiace centrum · vidíš len ty“. Menu: Klienti, Moduly, Stav systému,
+   Audit ako **samostatné stránky** (presuň Moduly a Záznam zmien zo stránky Klienti; Stav systému = kontroly po klientoch). Položku
+   „Do administrácie“ zruš.
+2. **Vstup správcu do klienta** („Pozrieť sa ako klient“, A4): tlačidlo **Otvoriť administráciu** v paneli klienta otvorí administráciu
+   daného klienta v **novej karte** s grafitovým pruhom „Prezeráš ako správca: <klient> · Späť do riadiaceho centra“; každý vstup
+   do auditu (kto, kedy, ktorý klient). Správca **nemá potrebovať členstvo** u klienta. **Neoslabuj RLS:** ak by to vyžadovalo zmenu
+   politík (napr. prístup správcu k dátam klienta), navrhni riešenie, zapíš ho do *Otázky pre Martina* a **zastav sa** pred nasadením
+   — urob zatiaľ ostatné body. Existujúce členstvá info@obrazne.sk na stagingu nemeň (Martin ich zatiaľ používa).
+3. **Výber ubytovania** v administrácii len pri viac ako jednom ubytovaní.
+4. **Panel klienta** podľa nového vzoru panela (Z24, jeden stĺpec) — dnes sa v ňom prvky prekrývajú. Kontakt klienta = majiteľ
+   (nie testovacie účty `@booking-platform.test`), **verejná adresa** klienta všade (zoznam aj panel; nikdy `*.localhost`),
+   „Stránka pre hostí ↗“ a „Otvoriť administráciu“ v novej karte.
+5. **Objekty:** formulár „Nový objekt“ ubytovateľovi skry; zakladať objekt môže správca (riadiace centrum alebo režim „Prezeráš ako správca“).
+6. Testy: Playwright pre vstup správcu (nová karta, pruh, audit), majiteľ s jedným ubytovaním (bez výberu), majiteľ nevidí riadiace
+   centrum ani „Nový objekt“; pgTAP, ak sa mení databáza. Testovací majiteľ STRÖMY na stagingu: info+jana@obrazne.sk (založil Claude chat 17. 10.).
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -194,6 +233,8 @@ iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako 
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Riadiace centrum v produkcii (pripomienka 17. 10.):** vlastná adresa (subdoména) s vlastným prihlásením a dvojstupňovým overením pre správcu — rozhodnúť pri príprave produkcie (DNS).
+- **Nový objekt:** zatiaľ ho zakladá len správca; či si ho ubytovateľ pridá sám (a či je počet objektov súčasťou balíka), rozhodne obchodný model.
 - **Kód hosťa (Z23):** návrh má 6 políčok, ale staging posiela **8-miestny** kód (nastavenie Supabase Auth → Email OTP length).
   Políčka sa riadia skutočnou dĺžkou kódu, takže to funguje. Ak chceš 6 ako na návrhu, treba prepnúť dĺžku v Supabase (staging aj neskôr produkcia).
 - **Z23 — čo som vynechal, lebo to v aplikácii zatiaľ nie je:** „Zostať prihlásený“ (prihlásenie ostáva ako doteraz), „Upraviť“

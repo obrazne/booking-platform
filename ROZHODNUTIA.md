@@ -2,6 +2,20 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Pripomienky zo stagingu: vzory administrácie v1.1
+
+- **Bočný panel má jeden stĺpec** so súhrnnou kartou hore a zbalenými vedľajšími sekciami — dva stĺpce z v1 pri skutočných dátach nefungovali
+  (prázdna polovica, zalamovanie, v úzkom paneli prekrývanie). Martin: „nedáva to zmysel… natrieskané, natrepané“. Chyba návrhu (Claude).
+- **Kompaktne, detaily na požiadanie:** nastavovacie zoznamy (služby, referencie, kalendáre…) ako riadky, ktoré sa rozbalia na mieste;
+  rezervácie a klienti ostávajú v bočnom paneli (majú priebeh a veľa akcií). Formuláre na pridanie nie sú stále otvorené. (Martin + Claude)
+- **Karty na jemne sivom podklade** na bielom pozadí — biele na bielom splývalo (Martin).
+- **Role oddelene:** jeden účet v troch rolách (správca, majiteľ, hosť) ukazoval súčet všetkého a mýlil. Testuje sa tromi účtami
+  v oddelených profiloch prehliadača; riadiace centrum je vizuálne odlíšené a do klienta sa vstupuje len cez „Otvoriť administráciu“
+  (nová karta, pruh „Prezeráš ako správca“, záznam v audite — A4). Správca nemusí byť členom klientov.
+- **Nový objekt zakladá zatiaľ správca**, nie ubytovateľ — objekt bez fotiek, cien a sezón by na webe vyzeral prázdny a počet objektov môže
+  byť súčasťou balíka. Definitívne s obchodným modelom.
+- Na neskôr (produkcia): riadiace centrum na vlastnej adrese s vlastným prihlásením a dvojstupňovým overením pre správcu.
+
 ## 2026-10-17 — Vizuál administrácie v1
 
 - Administrácia, riadiace centrum a všetky prihlásenia majú **rovnaký vizuálny jazyk ako stránka hosťa v2** (Martin: „nech to všetko ladí“) —
