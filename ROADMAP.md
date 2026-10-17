@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z41** (ukážkové dáta preč zo STRÖMY — prednostne), potom **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z41 (ukážkové dáta preč zo STRÖMY) → Z40 (mapa) → Z38 (recenzie pre hostí); **B:** Z37 (upsell pre hostí) → Z39 (check-in pre hostí).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -27,6 +27,19 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 > („Ostrý kalendár chaletu na Bookingu“). **`npm run demo-data` (ani `--reset`) pre tenanta STRÖMY nespúšťaj** a nevytváraj tam
 > ukážkové iCal kanály ani rezervácie — Martin ich mazal a skript ich vrátil. Ukážkové dáta nových modulov (Z35–Z39) daj zatiaľ
 > **len Ukážkovému klientovi**. Kanál „Ostrý kalendár…“ nemaž ani nemeň. Riešenie → Z41.
+
+**Dve linky naraz (Martin 17. 10. — zrýchlenie).** Úlohy majú v nadpise linku **[A]** alebo **[B]**. Každá linka beží v **samostatnom
+termináli a vlastnom priečinku** (git worktree): `/dalej A` berie len úlohy [A], `/dalej B` len [B]. Bez písmena = A.
+Pravidlá spolupráce (platia pre obe):
+- **Zabratie:** pred začatím úlohy pridaj do nadpisu `🔄` (napr. `### Z37 [B] 🔄 — …`), commit + push hneď; po dokončení `🔄` → `✅`.
+- **Často sťahuj a posielaj:** `git pull --rebase` pred každým commitom; konflikty v `ROADMAP.md` (Denník), `sk.json` a `CLAUDE.md` vyrieš
+  tak, že **ponecháš obe strany** (sú to len pridané riadky). Pri inom konflikte zastav a povedz Martinovi.
+- **Spoločné súbory meň čo najmenej:** nové časti ako samostatné komponenty (napr. `stay-upsell.tsx`, `stay-review.tsx`, `stay-checkin.tsx`)
+  a do spoločnej stránky len jeden riadok s ich vložením.
+- **Migrácie:** názov s aktuálnym časom tesne pred vytvorením (po `git pull`); ak `db push` hlási poradie, použi `npx supabase db push --include-all`.
+- **Testy proti stagingu:** každá linka púšťa len testy svojej úlohy; testovacie e-maily s označením linky (`…+a@booking-platform.test` /
+  `…+b@…`) a upratuje len svoje. **Celú sadu e2e a snímky prehliadky „Čo je nové“ spúšťa linka A až na konci fronty.**
+- Nečakaj na CI medzi úlohami — výsledok CI skontroluj na konci a oprav, ak niečo spadlo.
 
 *Hotové Z1–Z30 (analýza, kostra platformy, MVP Chalet STRÖMY, stránka hosťa a košík podľa vizuálu v2–v2.2, potvrdenie rezervácie,
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
@@ -124,7 +137,26 @@ v komponentoch**; pred ostrým nasadením ich overíme.
 dosky `docs/navrhy/stranka-hosta/UcetPobyt`, `MobilPobyt`, `Checkin`, `Recenzie` (klikacie). Zámer, nie pixelová predloha; téma klienta,
 preklady, PC aj mobil 390 px, axe. Každá úloha nadväzuje na svoj základ (Z34–Z36) — ak základ chýba, sprav najprv ho.
 
-### Z40 — Mapa: OpenFreeMap + „Navigovať v Google Mapách“ (Martin 17. 10.) — **malá, môže ísť hneď po Z31**
+### Z41 [A] — Ukážkové dáta preč zo STRÖMY, skutočný kalendár Jany (17. 10.) — **prednostne**
+STRÖMY na stagingu odteraz slúži na skúšku so **skutočným kalendárom z Bookingu**; ukážkové dáta ho miešali (ukážkový „Booking.com
+(ukážka)“ 21.–24. 12. vyzeral ako skutočná obsadenosť, kolízie, zmazané veci sa po `demo-data` vrátili).
+1. `scripts/demo-data.mjs`: cieľový klient je parameter; **predvolene Ukážkový klient**, STRÖMY len s výslovným `--tenant stromy --force`
+   a **nikdy, ak má aktívny skutočný iCal kanál** (URL mimo `example.invalid`) — skript vtedy skončí s vysvetlením. Ukážkové iCal kanály
+   len na ukážkovom klientovi. Ukážkovému klientovi prenes všetko, čo doteraz dostával STRÖMY (história ~18 mesiacov, recenzie, objednávky,
+   check-iny, dokumenty, blokácia), s jeho objektmi a cenami (doplň fotky/ceny ako pri STRÖMY, ak chýbajú).
+2. **Upratanie STRÖMY na stagingu** (testovacie dáta — smieš): zmaž ukážkové iCal kanály a ich udalosti, rezervácie s poznámkou „DEMO — …“
+   a testovacie rezervácie (2026-0001/0002/0003/0040/0619, `@booking-platform.test`, `stromy-demo.invalid`) vrátane naviazaných dát cez existujúce
+   funkcie/kaskády; nechaj objekt, ceny, sezóny, fotky, služby, sekcie, dokumenty objektu, tím a **kanál „Ostrý kalendár…“**. Pred mazaním
+   vypíš do Denníka počty, po mazaní over, že ostala len skutočná obsadenosť z Bookingu. Hosť demo-host@obrazne.sk (zóna hosťa) presunúť
+   na ukážkového klienta.
+3. Testy prehliadačom (e2e) nesmú vytvárať dáta v STRÖMY — prepni ich na ukážkového klienta (alebo vlastného testovacieho klienta);
+   zapíš do CLAUDE.md. Snímky prehliadky „Čo je nové“ z ukážkového klienta.
+4. **Kalendár v administrácii:** udalosť z iCalu so štítkom „CLOSED - Not available“ zobraz ako **„Zavreté na Bookingu“** (nie ako rezerváciu) —
+   Booking v exporte nerozlišuje rezerváciu od ručne zavretého termínu a neposiela termíny prevzaté z iných kalendárov (napr. Airbnb);
+   v paneli udalosti veta, že podrobnosti sú v extranete Bookingu.
+5. Do Denníka: čo ostalo na STRÖMY, aké udalosti prišli z ostrého kalendára.
+
+### Z40 [A] — Mapa: OpenFreeMap + „Navigovať v Google Mapách“ (Martin 17. 10.) — **malá, môže ísť hneď po Z31**
 Dnes ide mapa (statický náhľad `osm-map.tsx` aj interaktívna `interactive-map.tsx`, Leaflet) priamo z dlaždíc `tile.openstreetmap.org` —
 pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Maps; rozhodnuté inak (ROZHODNUTIA 17. 10.).
 1. **Podklady z OpenFreeMap** (openfreemap.org — zadarmo aj komerčne, bez registrácie, kľúča, cookies a limitu; vektorové dlaždice,
@@ -139,21 +171,21 @@ pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Map
    polohe (skrytá presná adresa) odkaz len v potvrdení a pokynoch, nie na verejnej stránke.
 4. Playwright: mapa sa načíta (canvas MapLibre), odkaz na navigáciu má správne súradnice; axe.
 
-### Z37 — Upsell pre hostí (po Z35)
+### Z37 [B] — Upsell pre hostí (po Z35)
 Detail pobytu v účte hosťa podľa `UcetPobyt` (aj cez prístupový odkaz `/r/<kód>`): sekcia „K pobytu si môžete doobjednať“ s rozbalením,
 výberom dní, spôsobom platby, „Objednať záväzne“, stavmi, zrušením do uzávierky; pravý stĺpec „Účet pobytu“; mobil so spodným oknom
 a zeleným pásom. Zaplatiť teraz → platobné údaje s QR. E-maily hosťovi s ponukami pred príchodom (7 a 2 dni, podľa nastavenia;
 len aktívne služby s upsellom, s odkazom do účtu). Modul v katalógu → hotový. Playwright: objednanie na účet pobytu, objednanie s potvrdením,
 zrušenie, limit účtu pobytu.
 
-### Z38 — Recenzie pre hostí a na stránke (po Z34)
+### Z38 [A] — Recenzie pre hostí a na stránke (po Z34)
 Formulár „Ako sa vám u nás páčilo?“ v detaile ukončeného pobytu (hviezdičky, podrobnosti, text, zobrazené meno, poďakovanie s Google odkazom
 pre všetkých — URL Google profilu je nastavenie klienta, bez nej sa tlačidlo neukáže); odkaz z pozvánky (Z34) vedie sem. Na stránke objektu
 sekcia podľa `Recenzie` (priemer, pruhy, overenie, filtre, odpovede, vybrané, iné zdroje oddelene); v košíku a hore na detaile vybraná
 overená recenzia. **Štruktúrované dáta (schema.org AggregateRating) len z overených recenzií.** Modul → hotový. Playwright: odoslanie, zobrazenie
 po zverejnení, filter kritických.
 
-### Z39 — Online check-in pre hostí (po Z36)
+### Z39 [B] — Online check-in pre hostí (po Z36)
 Karta check-inu a zamknuté pokyny v detaile pobytu, stránka check-inu podľa `Checkin` (karty hostí, polia podľa pravidiel krajiny, čas príchodu,
 súhlas, hotovo), aj cez prístupový odkaz; pripomienky e-mailom (Z36). Citlivé polia sa po uložení hosťovi zobrazujú maskované.
 Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknutie pokynov podľa nastavenia, validácie.
