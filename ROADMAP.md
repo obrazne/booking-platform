@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš — musí bežať ešte pred ostrými dátami), potom **Z32** (orezané tmavé menu).
+- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš — musí bežať ešte pred ostrými dátami).
 - **Claude chat po Z31:** návrh modulov Online check-in a Upsell (Fáza 4, 🧠).
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
@@ -41,12 +41,6 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
 4. **Uchovávanie:** história 180 dní (pg_cron), pri anonymizácii hosťa vyčistiť aj jeho riadky v histórii. Zapíš do Denníka.
 5. Testy: pgTAP (RLS, trigger zapisuje insert/update/delete, iný klient nevidí), Playwright (zmazať službu → obnoviť z koša;
    zmeniť cenu → vrátiť v riadiacom centre).
-
-### Z32 — Oprava: obsah tmavého menu riadiaceho centra je zľava orezaný (pripomienka 29, 17. 10.)
-Na Martinovej snímke (Katalóg modulov, PC) sú texty menu odrezané zľava: „…ooking platforma“, „…IADIACE CENTRUM“, „…enti“, „…oduly“,
-„…talóg“ — obsah menu je posunutý doľava za okraj (pás má plnú šírku). Pravdepodobne vodorovný posun / preklad pri pripnutí alebo
-zbalení menu, alebo pretečenie po pridaní podpoložiek. Zreprodukuj (pripnuté aj nepripnuté menu, šírky 1280–1920, Chrome a Safari),
-oprav v `AdminShell` pre obe menu a pridaj Playwright kontrolu, že ľavý okraj textu položiek je v menu viditeľný (≥ 12 px od okraja).
 
 ---
 
@@ -94,8 +88,11 @@ oprav v `AdminShell` pre obe menu a pridaj Playwright kontrolu, že ľavý okraj
 - [ ] 🧠 **Návrh modulu Online check-in** (po Z31, Martin 17. 10.): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
   (kniha ubytovaných, hlásenie cudzincov, ubytovacia daň — slovenský balík pravidiel A6), čas príchodu, súhlas s ubytovacím poriadkom;
   po check-ine sa mu X dní pred príchodom odomknú pokyny a prístupové kódy. Majiteľ vidí stav check-inu pri rezervácii. Plátno + špecifikácia.
-- [ ] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): po rezervácii ponuky doplnkových služieb
-  v účte hosťa a v e-mailoch pred príchodom (načasovanie), pridanie k pobytu, doplatok, potvrdenie majiteľom tam, kde treba. Plátno + špecifikácia.
+- [ ] 🧠 **Návrh modulu Upsell** (po Z31, Martin 17. 10.; potrebuje Doplnkové služby): spokojný hosť si **kedykoľvek** (pred príchodom
+  aj počas pobytu) v účte jedným ťuknutím **záväzne objedná** doplnkovú službu a vyberie platbu: **kartou hneď** (po Stripe), alebo
+  **„na účet pobytu“ s vyúčtovaním na konci**. Martin: „super predajný argument“ pre ubytovateľa. Rozhodnúť: uzávierky objednávok
+  (napr. raňajky do 18:00 deň vopred), služby s potvrdením majiteľom (kapacita), ktoré služby a do akej sumy idú na účet pobytu,
+  účet pobytu v administrácii a vyúčtovanie pri odchode (doklad cez fakturačný nástroj), ponuky v e-mailoch pred príchodom. Plátno + špecifikácia.
 
 ## Fáza 5 — Značka a predajný web 🧠 + 🔧 *(po MVP; cieľ: hotové pred eventom v eXtreme parku Žilina)*
 - [ ] Značka produktu: názov, doména, vizuál 🧠
