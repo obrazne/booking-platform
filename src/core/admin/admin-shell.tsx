@@ -209,7 +209,7 @@ export function AdminShell({
       <div
         className={cn(
           "hidden shrink-0 transition-[width] duration-200 md:block",
-          pinned ? "w-62" : "w-16",
+          pinned ? "w-62" : "w-[68px]",
         )}
       >
         <aside
@@ -221,9 +221,9 @@ export function AdminShell({
             if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHovered(false);
           }}
           className={cn(
-            "bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-40 flex flex-col gap-[18px] overflow-hidden border-r px-3 py-[18px]",
+            "bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-40 flex flex-col gap-[18px] overflow-hidden border-r px-3.5 py-[18px]",
             "transition-[width,box-shadow] duration-200 ease-out",
-            expanded ? "w-62" : "w-16",
+            expanded ? "w-62" : "w-[68px]",
             hovered && !pinned && "shadow-xl",
           )}
         >

@@ -13,7 +13,13 @@ import {
 import { DocumentsManager } from "@/core/admin/documents";
 import { PageHeader } from "@/core/admin/page-header";
 import { parsePanel } from "@/core/admin/panel-param";
-import { PanelColumns, PanelLink, PanelSection, RecordPanel } from "@/core/admin/record-panel";
+import {
+  PanelCollapsible,
+  PanelLink,
+  PanelSection,
+  PanelSummary,
+  RecordPanel,
+} from "@/core/admin/record-panel";
 import { StatusPill } from "@/core/admin/status";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
@@ -218,43 +224,8 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
               </>
             ) : null
           }
-          title={
-            detail ? (
-              <>
-                {detail.guest_name}
-                <p className="text-muted-foreground mt-1 text-sm font-light tracking-normal">
-                  <a href={`mailto:${detail.guest_email}`} className="hover:underline">
-                    {detail.guest_email}
-                  </a>
-                  {detail.guest_phone ? (
-                    <>
-                      {" · "}
-                      <a href={`tel:${detail.guest_phone}`} className="hover:underline">
-                        {detail.guest_phone}
-                      </a>
-                    </>
-                  ) : null}
-                </p>
-                {/* Phone (07): call and e-mail as big buttons. */}
-                <span className="mt-4 flex gap-2.5 text-sm tracking-normal md:hidden">
-                  {detail.guest_phone ? (
-                    <Button asChild variant="outline" className="min-h-11 flex-1">
-                      <a href={`tel:${detail.guest_phone}`}>
-                        <Phone /> {tv("call")}
-                      </a>
-                    </Button>
-                  ) : null}
-                  <Button asChild variant="outline" className="min-h-11 flex-1">
-                    <a href={`mailto:${detail.guest_email}`}>
-                      <Mail /> {tv("email")}
-                    </a>
-                  </Button>
-                </span>
-              </>
-            ) : (
-              tc("detail")
-            )
-          }
+          title={detail ? undefined : tc("detail")}
+          label={detail ? `${detail.number} · ${detail.guest_name}` : undefined}
           actions={
             detail && ["pending_payment", "confirmed", "in_progress"].includes(detail.status) ? (
               <>
@@ -281,212 +252,239 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
           }
         >
           {detail ? (
-            <div className="grid gap-6 text-sm font-normal">
+            <div className="grid gap-6 text-sm font-normal [&>*]:min-w-0">
+              {(() => {
+                const item = detail.items[0];
+                return (
+                  <PanelSummary
+                    title={detail.guest_name}
+                    subtitle={
+                      <>
+                        <a href={`mailto:${detail.guest_email}`} className="hover:underline">
+                          {detail.guest_email}
+                        </a>
+                        {detail.guest_phone ? (
+                          <>
+                            {" · "}
+                            <a href={`tel:${detail.guest_phone}`} className="hover:underline">
+                              {detail.guest_phone}
+                            </a>
+                          </>
+                        ) : null}
+                      </>
+                    }
+                    facts={[
+                      ...(item
+                        ? [
+                            { label: tv("checkIn"), value: formatDate(item.check_in, locale) },
+                            { label: tv("checkOut"), value: formatDate(item.check_out, locale) },
+                            {
+                              label: tv("nightsLabel"),
+                              value: diffDays(item.check_in, item.check_out),
+                            },
+                          ]
+                        : []),
+                      {
+                        label: tv("people"),
+                        value: [
+                          people(detail),
+                          detail.infants ? t("panel.infants", { count: detail.infants }) : null,
+                          detail.pets ? t("panel.pets", { count: detail.pets }) : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · "),
+                      },
+                      { label: tv("amount"), value: fmt(detail.total_cents, detail.currency) },
+                      { label: t("source"), value: sourceLabel(detail.source) },
+                      {
+                        label: tv("unit"),
+                        value: `${detail.property?.name ?? ""}${item?.unit ? ` · ${item.unit.name}` : ""}`,
+                      },
+                    ]}
+                  >
+                    {/* Phone (07): call and e-mail as big buttons. */}
+                    <span className="flex gap-2.5 md:hidden">
+                      {detail.guest_phone ? (
+                        <Button asChild variant="outline" className="min-h-11 flex-1">
+                          <a href={`tel:${detail.guest_phone}`}>
+                            <Phone /> {tv("call")}
+                          </a>
+                        </Button>
+                      ) : null}
+                      <Button asChild variant="outline" className="min-h-11 flex-1">
+                        <a href={`mailto:${detail.guest_email}`}>
+                          <Mail /> {tv("email")}
+                        </a>
+                      </Button>
+                    </span>
+                  </PanelSummary>
+                );
+              })()}
+
               {detail.cancellation_requested_at ? (
                 <div className="card-warm rounded-[10px] px-[18px] py-3.5 text-[#5b3a1f]">
                   <p className="font-bold">{t("panel.cancelRequest")}</p>
                   {detail.cancellation_request_note ? (
-                    <p>
+                    <p className="[overflow-wrap:anywhere]">
                       {t("panel.cancelRequestNote", { note: detail.cancellation_request_note })}
                     </p>
                   ) : null}
                 </div>
               ) : null}
-              <PanelColumns
-                left={
-                  <>
-                    {detail.items.map((i) => (
+
+              {detail.status === "pending_payment" ? (
+                <section className="card-warm flex flex-wrap items-center justify-between gap-3 rounded-[10px] px-[18px] py-4">
+                  <span className="grid min-w-0 gap-0.5">
+                    <span className="text-ink text-[15px] font-bold">
+                      {tv("waiting", { amount: fmt(detail.total_cents, detail.currency) })}
+                    </span>
+                    <span className="text-muted-foreground text-[13px]">
+                      {[
+                        detail.payments[0]
+                          ? `${t("panel.vs")} ${detail.payments[0].variable_symbol}`
+                          : null,
+                        detail.payment_due_at
+                          ? tv("dueAt", { date: when(detail.payment_due_at) })
+                          : null,
+                        tv("autoCancel"),
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  </span>
+                  <span className="hidden flex-wrap gap-2 md:flex">
+                    <MarkPaidButton
+                      id={detail.id}
+                      amountLabel={fmt(detail.total_cents, detail.currency)}
+                      className="font-bold"
+                    />
+                    <ExtendDueButton id={detail.id} />
+                  </span>
+                </section>
+              ) : detail.payments.some((p) => p.received_at) ? (
+                <section className="bg-accent-soft flex items-center gap-3 rounded-[10px] px-[18px] py-3.5">
+                  <CircleCheck className="text-primary size-6 shrink-0" />
+                  <span className="grid gap-0.5">
+                    <span className="text-ink text-[15px] font-bold">
+                      {tv("paid", { amount: fmt(detail.total_cents, detail.currency) })}
+                    </span>
+                    <span className="text-muted-foreground text-[13px]">
+                      {detail.payments
+                        .filter((p) => p.received_at)
+                        .map((p) => tv("paidOn", { date: when(p.received_at!) }))
+                        .join(" · ")}
+                    </span>
+                  </span>
+                </section>
+              ) : null}
+
+              <PanelSection label={t("panel.lines")}>
+                <dl className="border-hair border-t">
+                  {[...detail.lines]
+                    .sort((a, b) => a.sort - b.sort)
+                    .map((l, i) => (
                       <div
-                        key={i.check_in}
-                        className="border-line grid grid-cols-2 overflow-hidden rounded-[10px] border"
+                        key={i}
+                        className="border-hair flex justify-between gap-3 border-b py-2.5"
                       >
-                        <span className="border-line grid gap-0.5 border-r px-3.5 py-3">
-                          <span className="label-mono">{tv("checkIn")}</span>
-                          <span className="text-ink text-base font-bold">
-                            {formatDate(i.check_in, locale)}
-                          </span>
-                        </span>
-                        <span className="grid gap-0.5 px-3.5 py-3">
-                          <span className="label-mono">{tv("checkOut")}</span>
-                          <span className="text-ink text-base font-bold">
-                            {formatDate(i.check_out, locale)}
-                          </span>
-                        </span>
-                        <span className="border-line col-span-2 border-t px-3.5 py-2.5">
-                          {[
-                            t("nights", { count: diffDays(i.check_in, i.check_out) }),
-                            people(detail),
-                            detail.infants ? t("panel.infants", { count: detail.infants }) : null,
-                            detail.pets ? t("panel.pets", { count: detail.pets }) : null,
-                            sourceLabel(detail.source),
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")}
-                          <span className="text-muted-foreground block text-xs">
-                            {detail.property?.name}
-                            {i.unit ? ` · ${i.unit.name}` : ""}
-                          </span>
-                        </span>
+                        <dt className="min-w-0 [overflow-wrap:anywhere]">
+                          {l.kind === "accommodation" ? `${l.quantity} × ` : ""}
+                          {l.label}
+                        </dt>
+                        <dd className="text-ink shrink-0 font-medium tabular-nums">
+                          {fmt(l.amount_cents, detail.currency)}
+                        </dd>
                       </div>
                     ))}
+                  <div className="text-ink flex justify-between pt-3 text-base font-extrabold">
+                    <dt>{t("total")}</dt>
+                    <dd className="tabular-nums">{fmt(detail.total_cents, detail.currency)}</dd>
+                  </div>
+                </dl>
+                {detail.promo_code ? (
+                  <p className="text-muted-foreground text-xs">
+                    {t("panel.promo")}: <span className="font-mono">{detail.promo_code}</span>
+                  </p>
+                ) : null}
+              </PanelSection>
 
-                    {detail.status === "pending_payment" ? (
-                      <section className="card-warm grid gap-3 rounded-[10px] px-[18px] py-4">
-                        <span className="grid gap-0.5">
-                          <span className="text-ink text-[15px] font-bold">
-                            {tv("waiting", { amount: fmt(detail.total_cents, detail.currency) })}
-                          </span>
-                          <span className="text-muted-foreground text-[13px]">
-                            {[
-                              detail.payments[0]
-                                ? `${t("panel.vs")} ${detail.payments[0].variable_symbol}`
-                                : null,
-                              detail.payment_due_at
-                                ? tv("dueAt", { date: when(detail.payment_due_at) })
-                                : null,
-                              tv("autoCancel"),
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
-                          </span>
-                        </span>
-                        <span className="flex flex-wrap gap-2">
-                          <MarkPaidButton
-                            id={detail.id}
-                            amountLabel={fmt(detail.total_cents, detail.currency)}
-                            className="font-bold"
-                          />
-                          <ExtendDueButton id={detail.id} />
-                        </span>
-                      </section>
-                    ) : detail.payments.some((p) => p.received_at) ? (
-                      <section className="bg-accent-soft flex items-center gap-3 rounded-[10px] px-[18px] py-3.5">
-                        <CircleCheck className="text-primary size-6 shrink-0" />
-                        <span className="grid gap-0.5">
-                          <span className="text-ink text-[15px] font-bold">
-                            {tv("paid", { amount: fmt(detail.total_cents, detail.currency) })}
-                          </span>
-                          <span className="text-muted-foreground text-[13px]">
-                            {detail.payments
-                              .filter((p) => p.received_at)
-                              .map((p) => tv("paidOn", { date: when(p.received_at!) }))
-                              .join(" · ")}
-                          </span>
-                        </span>
-                      </section>
-                    ) : null}
+              <PanelSection label={tv("guestNote")}>
+                <p className="surface px-3.5 py-3 leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line">
+                  {detail.guest_note || tv("noNote")}
+                </p>
+              </PanelSection>
 
-                    <PanelSection label={t("panel.lines")}>
-                      <dl className="border-line border-t">
-                        {[...detail.lines]
-                          .sort((a, b) => a.sort - b.sort)
-                          .map((l, i) => (
-                            <div
-                              key={i}
-                              className="border-line flex justify-between gap-3 border-b py-2.5"
-                            >
-                              <dt>
-                                {l.kind === "accommodation" ? `${l.quantity} × ` : ""}
-                                {l.label}
-                              </dt>
-                              <dd className="text-ink font-medium tabular-nums">
-                                {fmt(l.amount_cents, detail.currency)}
-                              </dd>
-                            </div>
-                          ))}
-                        <div className="text-ink flex justify-between pt-3 text-base font-extrabold">
-                          <dt>{t("total")}</dt>
-                          <dd className="tabular-nums">
-                            {fmt(detail.total_cents, detail.currency)}
-                          </dd>
-                        </div>
-                      </dl>
-                      {detail.promo_code ? (
-                        <p className="text-muted-foreground text-xs">
-                          {t("panel.promo")}: <span className="font-mono">{detail.promo_code}</span>
-                        </p>
-                      ) : null}
-                    </PanelSection>
-                  </>
-                }
-                right={
-                  <>
-                    <PanelSection label={tv("guestNote")}>
-                      <p className="bg-muted rounded-[10px] px-3.5 py-3 leading-relaxed whitespace-pre-line">
-                        {detail.guest_note || tv("noNote")}
+              <PanelSection label={td("heading")}>
+                <DocumentsManager
+                  tenantId={active.tenantId}
+                  reservationId={detail.id}
+                  documents={documents.map((d) => ({
+                    id: d.id,
+                    title: tr(d.title, locale),
+                    visibleWhen: d.visible_when,
+                  }))}
+                />
+              </PanelSection>
+
+              <PanelSection label={tv("internalNote")}>
+                {[...detail.notes]
+                  .sort((a, b) => a.created_at.localeCompare(b.created_at))
+                  .map((n) => (
+                    <div key={n.id} className="surface px-3.5 py-2.5">
+                      <p className="[overflow-wrap:anywhere] whitespace-pre-line">{n.body}</p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        {n.author?.full_name ?? n.author?.email} · {when(n.created_at)}
                       </p>
-                    </PanelSection>
+                    </div>
+                  ))}
+                <NoteForm id={detail.id} />
+              </PanelSection>
 
-                    <PanelSection label={td("heading")}>
-                      <DocumentsManager
-                        tenantId={active.tenantId}
-                        reservationId={detail.id}
-                        documents={documents.map((d) => ({
-                          id: d.id,
-                          title: tr(d.title, locale),
-                          visibleWhen: d.visible_when,
-                        }))}
-                      />
-                    </PanelSection>
-
-                    <PanelSection label={tv("internalNote")}>
-                      {[...detail.notes]
-                        .sort((a, b) => a.created_at.localeCompare(b.created_at))
-                        .map((n) => (
-                          <div key={n.id} className="bg-muted rounded-[10px] px-3.5 py-2.5">
-                            <p className="whitespace-pre-line">{n.body}</p>
-                            <p className="text-muted-foreground mt-1 text-xs">
-                              {n.author?.full_name ?? n.author?.email} · {when(n.created_at)}
-                            </p>
-                          </div>
-                        ))}
-                      <NoteForm id={detail.id} />
-                    </PanelSection>
-
-                    <PanelSection label={t("panel.history")}>
-                      <ul className="grid gap-2.5">
-                        {[...detail.history]
-                          .sort((a, b) => b.changed_at.localeCompare(a.changed_at))
-                          .map((h, i) => (
-                            <li key={i} className="grid grid-cols-[12px_minmax(0,1fr)] gap-3">
-                              <span className="mt-1.5 size-2 rounded-full bg-[#c9cdd2]" />
-                              <span className="grid gap-px">
-                                <span className="text-ink">
-                                  {h.from_status
-                                    ? `${statusLabel(h.from_status)} → ${statusLabel(h.to_status)}`
-                                    : tv("created", { status: statusLabel(h.to_status) })}
-                                  {h.actor
-                                    ? ` — ${h.actor.full_name ?? h.actor.email}`
-                                    : ` — ${t("panel.system")}`}
-                                  {h.reason === "payment_deadline_expired"
-                                    ? ` · ${t("panel.expired")}`
-                                    : h.reason === "cancellation_request_declined"
-                                      ? ` · ${t("panel.declined")}`
-                                      : h.reason
-                                        ? ` · ${h.reason}`
-                                        : ""}
-                                </span>
-                                <span className="text-xs text-[#5a6672]">{when(h.changed_at)}</span>
-                              </span>
-                            </li>
-                          ))}
-                      </ul>
-                    </PanelSection>
-
-                    {detail.consents.length > 0 ? (
-                      <PanelSection label={t("panel.consents")}>
-                        <ul className="text-muted-foreground grid gap-1">
-                          {detail.consents.map((c) => (
-                            <li key={c.kind}>
-                              {c.kind}: {c.granted ? t("panel.granted") : t("panel.notGranted")}
-                            </li>
-                          ))}
-                        </ul>
-                      </PanelSection>
-                    ) : null}
-                  </>
-                }
-              />
+              <div>
+                <PanelCollapsible label={t("panel.history")} count={detail.history.length}>
+                  <ul className="grid gap-2.5">
+                    {[...detail.history]
+                      .sort((a, b) => b.changed_at.localeCompare(a.changed_at))
+                      .map((h, i) => (
+                        <li key={i} className="grid grid-cols-[12px_minmax(0,1fr)] gap-3">
+                          <span className="mt-1.5 size-2 rounded-full bg-[#c9cdd2]" />
+                          <span className="grid gap-px">
+                            <span className="text-ink [overflow-wrap:anywhere]">
+                              {h.from_status
+                                ? `${statusLabel(h.from_status)} → ${statusLabel(h.to_status)}`
+                                : tv("created", { status: statusLabel(h.to_status) })}
+                              {h.actor
+                                ? ` — ${h.actor.full_name ?? h.actor.email}`
+                                : ` — ${t("panel.system")}`}
+                              {h.reason === "payment_deadline_expired"
+                                ? ` · ${t("panel.expired")}`
+                                : h.reason === "cancellation_request_declined"
+                                  ? ` · ${t("panel.declined")}`
+                                  : h.reason
+                                    ? ` · ${h.reason}`
+                                    : ""}
+                            </span>
+                            <span className="text-xs text-[#5a6672]">{when(h.changed_at)}</span>
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                </PanelCollapsible>
+                {detail.consents.length > 0 ? (
+                  <PanelCollapsible label={t("panel.consents")} count={detail.consents.length}>
+                    <ul className="grid gap-1.5">
+                      {detail.consents.map((c) => (
+                        <li key={c.kind} className="flex justify-between gap-3">
+                          <span>{tv(`consents.${c.kind as "terms"}`)}</span>
+                          <span className="text-muted-foreground">
+                            {c.granted ? t("panel.granted") : t("panel.notGranted")}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </PanelCollapsible>
+                ) : null}
+              </div>
             </div>
           ) : (
             <p className="text-muted-foreground text-sm">{tc("noResults")}</p>

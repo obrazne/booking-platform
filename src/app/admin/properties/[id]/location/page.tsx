@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DeleteButton } from "@/core/admin/delete-button";
+import { ExpandableList } from "@/core/admin/expandable-list";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
 import { tr } from "@/core/i18n/localized";
 import { createClient } from "@/lib/supabase/server";
@@ -72,45 +73,45 @@ export default async function PropertyLocationPage({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("places")}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {(places ?? []).length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t("noPlaces")}</p>
-          ) : (
-            <ul className="divide-border grid divide-y rounded-xl border">
-              {(places ?? []).map((pl) => (
-                <li key={pl.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                  <span className="grid flex-1">
-                    <span className="font-medium">{tr(pl.name, locale)}</span>
-                    <span className="text-muted-foreground text-xs">{tr(pl.how, locale)}</span>
-                  </span>
-                  <span className="font-mono text-xs">{pl.distance}</span>
-                  <DeleteButton action={deletePlace.bind(null, property.id, pl.id)} />
-                </li>
-              ))}
-            </ul>
-          )}
-          <ActionForm
-            action={addPlace.bind(null, property.id)}
-            resetOnSuccess
-            className="sm:grid-cols-3"
-          >
-            <Field label={t("placeName")} htmlFor="name">
-              <Input id="name" name="name" required maxLength={80} />
-            </Field>
-            <Field label={t("placeHow")} htmlFor="how">
-              <Input id="how" name="how" maxLength={120} />
-            </Field>
-            <Field label={t("placeDistance")} htmlFor="distance">
-              <Input id="distance" name="distance" maxLength={40} placeholder="≈ 7 km" />
-            </Field>
-            <SubmitButton>{t("addPlace")}</SubmitButton>
-          </ActionForm>
-        </CardContent>
-      </Card>
+      {/* Rule 7: places as compact rows, the add form behind "Pridať miesto". */}
+      <ExpandableList
+        heading={t("places")}
+        rows={(places ?? []).map((pl) => ({
+          id: pl.id,
+          title: tr(pl.name, locale),
+          meta: [tr(pl.how, locale), pl.distance].filter(Boolean).join(" · "),
+          content: (
+            <div>
+              <DeleteButton action={deletePlace.bind(null, property.id, pl.id)} />
+            </div>
+          ),
+        }))}
+        addLabel={t("addPlace")}
+        newRow={{
+          title: t("addPlace"),
+          content: (
+            <ActionForm
+              action={addPlace.bind(null, property.id)}
+              resetOnSuccess
+              className="sm:grid-cols-3"
+            >
+              <Field label={t("placeName")} htmlFor="name">
+                <Input id="name" name="name" required maxLength={80} />
+              </Field>
+              <Field label={t("placeHow")} htmlFor="how">
+                <Input id="how" name="how" maxLength={120} />
+              </Field>
+              <Field label={t("placeDistance")} htmlFor="distance">
+                <Input id="distance" name="distance" maxLength={40} placeholder="≈ 7 km" />
+              </Field>
+              <div className="sm:col-span-3">
+                <SubmitButton>{t("addPlace")}</SubmitButton>
+              </div>
+            </ActionForm>
+          ),
+        }}
+        empty={t("noPlaces")}
+      />
     </div>
   );
 }

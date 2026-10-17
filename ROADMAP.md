@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1** (Z23). Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z24** (vzory administrácie v1.1) a **Z25** (riadiace centrum, roly, vstup správcu) — Martinove pripomienky zo stagingu 17. 10.
+- **Ďalší krok pre Claude Code:** Z24 hotová, ďalej **Z25** (riadiace centrum, roly, vstup správcu) — Martinove pripomienky zo stagingu 17. 10.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie hotový a uložený (`docs/vizual-administracia.md`); ďalej Martinove pripomienky zo stagingu, obchodný model, príprava ukážky pre Janu.
@@ -147,7 +147,7 @@ iCal a prihlásenia nemeň; čo už funguje, len oblečieš. Údaje a texty ako 
    kalendár (výber dní, panel), riadiace centrum, prihlásenie hosťa — na počítači aj 390 px, prístupnosť (axe). Potom **obnov snímky
    prehliadky** (`npm run tour:screens`) a zvýš jej verziu, nech Martin uvidí novinky.
 
-### Z24 — Vzory administrácie v1.1 (pripomienky zo stagingu 17. 10.)
+### Z24 ✅ — Vzory administrácie v1.1 (pripomienky zo stagingu 17. 10.)
 Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-administracia.md` → *Pravidlá vzhľadu administrácie*
 (**pravidlá 1, 6, 7, 8, 9 sú nové alebo zmenené v1.1**) a rozhodnutie 17. 10. *Pripomienky zo stagingu*. Dosky na plátne sú ešte v1
 (panel s dvoma stĺpcami) — **platí text**. Logiku nemeň, je to rozhranie.
@@ -265,6 +265,16 @@ Martin si preklikal Z23 na stagingu a poslal pripomienky. Čítaj `docs/vizual-a
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z24: **vzory administrácie v1.1.** Panel záznamu má **jeden stĺpec**: prilepená hlavička, súhrnná karta
+  (`PanelSummary` — meno, kontakt, mriežka Príchod · Odchod · Noci · Hostia · Suma · Zdroj · Ubytovanie), hlavná akcia (platba),
+  sekcie pod sebou, História a Súhlasy zbalené s počtom (`PanelCollapsible`), prilepená spodná lišta; dlhé mená, e-maily a slová sa
+  zalamujú kdekoľvek (Playwright test s dlhými textmi na PC aj 390 px). Prerobený panel rezervácie a kalendára; `PanelColumns` zrušený.
+  **Plochy:** token `--surface-card` #fafaf8 + vlasová linka #ecebe6, trieda `surface`; všetky karty administrácie (`[data-slot=card]`)
+  ho majú automaticky, aj natívne `select` sú pilulky. **Rozbaľovacie riadky** `ExpandableList` (naraz jeden, `aria-expanded`,
+  formulár „Pridať …“ ako nový riadok navrchu, po uložení sa zavrie): Doplnkové služby, Referencie (namiesto panela), importované
+  kalendáre (názov a portál raz), Blokácie, Tím, miesta v okolí. Drobnosti: súhlasy a záznam zmien cez preklady (`auditLabel`),
+  dokumenty jedným tlačidlom „Nahrať súbor“ (výber súboru hneď nahrá, bez názvu sa použije meno súboru) a v jednom stĺpci, širšie
+  odsadenie bočného menu. Prehliadka „Čo je nové“: nové snímky, verzia 2026-10-17.2. (Claude Code)
 - 2026-10-17 — Z23: **administrácia, riadiace centrum a prihlásenia podľa vizuálu v1.** Spoločné: bočné menu podľa dosky Sidebar
   (výber ubytovania, Obsadenosť, Tím/Nastavenia/Riadiace centrum, používateľ s Čo je nové · Odhlásiť, odznak čakajúcich platieb;
   zbaľovanie, pripnutie, rozbalenie aj klávesnicou), **`SidePanel`/`RecordPanel` 680 px, dva stĺpce od 1024 px**, nemodálny — klik na

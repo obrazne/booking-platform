@@ -160,7 +160,10 @@
         "kicker": "Na objednávku",
         "title": "Pripravíme, čo si želáte.",
         "subtitle": "Objednáte v košíku."
-      }
+      },
+      "activeShort": "Aktívna",
+      "inactiveShort": "Neaktívna",
+      "add": "Pridať službu"
     }
   },
   "forms": {
@@ -374,7 +377,10 @@
     "to": "Do (deň odchodu)",
     "label": "Poznámka",
     "add": "Blokovať",
-    "empty": "Žiadne blokácie."
+    "empty": "Žiadne blokácie.",
+    "addRow": "Pridať blokáciu",
+    "untitled": "Blokácia",
+    "newBlock": "Nová blokácia"
   },
   "guest": {
     "touristTax": "Daň za ubytovanie",
@@ -1089,14 +1095,16 @@
     "empty": "Zatiaľ žiadny importovaný kalendár.",
     "copy": "Kopírovať",
     "copied": "Skopírované.",
-    "exportFor": "Export pre {name}"
+    "exportFor": "Export pre {name}",
+    "addChannel": "Pridať kalendár",
+    "newChannel": "Nový importovaný kalendár"
   },
   "documents": {
     "tab": "Dokumenty",
     "heading": "Dokumenty pre hostí",
     "empty": "Zatiaľ žiadne dokumenty.",
     "title": "Názov",
-    "titlePlaceholder": "Napr. Ubytovací poriadok",
+    "titlePlaceholder": "Napr. Domový poriadok",
     "visibility": "Kedy ich hosť uvidí",
     "visible": {
       "always": "vždy",
@@ -1108,7 +1116,8 @@
     "uploaded": "Dokument nahraný.",
     "uploadFailed": "Dokument sa nepodarilo nahrať.",
     "tooLarge": "Súbor je väčší ako 10 MB.",
-    "hint": "PDF alebo obrázok do 10 MB. Hostia ich uvidia vo svojom účte (odkaz platí 10 minút)."
+    "hint": "PDF alebo obrázok do 10 MB. Hostia ich uvidia vo svojom účte (odkaz platí 10 minút).",
+    "uploadFile": "Nahrať súbor"
   },
   "sectionsAdmin": {
     "title": "Sekcie stránky objektu",
@@ -1447,7 +1456,15 @@
       "internalNote": "Interná poznámka",
       "created": "Vytvorená ({status})",
       "call": "Zavolať",
-      "email": "E-mail"
+      "email": "E-mail",
+      "nightsLabel": "Noci",
+      "unit": "Ubytovanie",
+      "consents": {
+        "terms": "Obchodné podmienky",
+        "cancellation": "Storno podmienky",
+        "privacy": "Ochrana osobných údajov",
+        "marketing": "Novinky e-mailom"
+      }
     },
     "calendar": {
       "title": "Kalendár",
@@ -1488,7 +1505,10 @@
       "minNights": "Minimálny pobyt v tomto období je {min, plural, one {1 noc} few {# noci} other {# nocí}}. Hosť by si ho na webe nevybral — ručne ho vytvoriť môžete.",
       "free": "Termín je voľný ({nights, plural, one {1 noc} few {# noci} other {# nocí}}), minimálny pobyt je splnený.",
       "createManual": "Vytvoriť ručnú rezerváciu",
-      "blockThis": "Zablokovať tento termín"
+      "blockThis": "Zablokovať tento termín",
+      "directSub": "Priama rezervácia",
+      "portalSub": "Termín prevzatý zo synchronizácie kalendára",
+      "newStaySub": "Cena podľa cenníka, kontrola minima nocí a kolízií"
     },
     "platform": {
       "numbers": "Čísla naprieč klientmi",
@@ -1527,6 +1547,24 @@
       "contrastLow": "Nízky kontrast — skontrolovať",
       "defaultTheme": "Predvolená téma platformy",
       "recent": "Posledné zmeny"
+    },
+    "audit": {
+      "tenantCreated": "Klient založený",
+      "tenantStatus": "Stav klienta: {status}",
+      "tenantStatuses": {
+        "onboarding": "zakladá sa",
+        "active": "aktívny",
+        "suspended": "pozastavený"
+      },
+      "moduleChanged": "Modul {module}: {status}",
+      "moduleStatuses": {
+        "trial": "skúška",
+        "active": "zapnutý",
+        "off": "vypnutý"
+      },
+      "membershipCreated": "Pridaný človek do tímu",
+      "adminEntered": "Správca otvoril administráciu",
+      "other": "Iná zmena"
     }
   }
 }

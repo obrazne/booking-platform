@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowUpRight, Plus, Shield } from "lucide-react";
@@ -5,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { getCurrentUser, isPlatformAdmin } from "@/core/auth/session";
 import { PageHeader } from "@/core/admin/page-header";
 import { parsePanel } from "@/core/admin/panel-param";
-import { PanelColumns, PanelLink, PanelSection, RecordPanel } from "@/core/admin/record-panel";
+import { PanelLink, PanelSection, RecordPanel } from "@/core/admin/record-panel";
 import { formatDate, formatDateTime } from "@/core/format/format";
 import { listModules } from "@/core/modules/registry";
 import { contrastRatio } from "@/core/theme/contrast";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { auditLabel } from "@/core/admin/audit-label";
 import { openTenantAdmin } from "./actions";
 import { ModuleSwitchForm } from "./forms";
 
@@ -22,6 +24,16 @@ const STATUS_PILL: Record<TenantStatus, string> = {
   active: "bg-primary text-primary-foreground",
   suspended: "bg-[#eef0f3] text-[#3b4652]",
 };
+
+/** Panel sections one under another (v1.1 — one column). */
+function PanelStack({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+  return (
+    <div className="grid gap-6">
+      {left}
+      {right}
+    </div>
+  );
+}
 
 /** Point in time n days back (the 30-day reservation count). */
 function daysAgo(n: number): string {
@@ -53,6 +65,9 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
     getCurrentUser(),
   ]);
   const tAll = await getTranslations();
+  const ta = (await getTranslations("adminV1.audit")) as unknown as Parameters<
+    typeof auditLabel
+  >[0];
   const supabase = await createClient();
   const since = daysAgo(30);
   const [
@@ -81,7 +96,9 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
       .eq("status", "failed"),
     supabase
       .from("audit_log")
-      .select("id, tenant_id, action, entity, created_at, actor:profiles(email, full_name)")
+      .select(
+        "id, tenant_id, action, entity, entity_id, data, created_at, actor:profiles(email, full_name)",
+      )
       .order("created_at", { ascending: false })
       .limit(40),
     user
@@ -131,7 +148,7 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
       <div className="grid gap-9 px-5 pb-14 md:px-10">
         <section
           aria-label={tm("numbers")}
-          className="border-line grid grid-cols-2 overflow-hidden rounded-[10px] border lg:grid-cols-4"
+          className="surface grid grid-cols-2 overflow-hidden lg:grid-cols-4"
         >
           <Stat
             label={tm("clients")}
@@ -278,7 +295,7 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
               {audit.map((a) => (
                 <li key={a.id} className="border-line grid gap-0.5 border-b py-2.5 text-sm">
                   <span className="text-ink">
-                    {a.action} · {a.entity}
+                    {auditLabel(ta, a, moduleLabel)}
                     {a.tenant_id ? (
                       <span className="text-muted-foreground">
                         {" "}
@@ -357,7 +374,7 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
           }
         >
           {selected ? (
-            <PanelColumns
+            <PanelStack
               left={
                 <>
                   <PanelSection label={tm("packageModules")}>
@@ -466,9 +483,7 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
                         .slice(0, 5)
                         .map((a) => (
                           <li key={a.id} className="grid gap-px">
-                            <span className="text-ink">
-                              {a.action} · {a.entity}
-                            </span>
+                            <span className="text-ink">{auditLabel(ta, a, moduleLabel)}</span>
                             <span className="text-xs text-[#5a6672]">
                               {formatDateTime(a.created_at, locale, "Europe/Bratislava", "short")}
                             </span>

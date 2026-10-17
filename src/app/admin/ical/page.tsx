@@ -1,9 +1,9 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { requireTenant } from "@/core/admin/action";
 import { DeleteButton } from "@/core/admin/delete-button";
+import { ExpandableList, RowState } from "@/core/admin/expandable-list";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
 import { formatDateTime } from "@/core/format/format";
 import { getTenantInfo } from "@/core/tenant/info";
@@ -78,81 +78,84 @@ export default async function IcalPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("channels")}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {(channels ?? []).length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t("empty")}</p>
-          ) : null}
-          {(channels ?? []).map((c) => {
-            const unit = (units ?? []).find((u) => u.id === c.unit_id);
-            return (
-              <div
-                key={c.id}
-                className="border-border flex flex-wrap items-center gap-3 rounded-xl border p-3 text-sm"
-              >
-                <div className="grid flex-1 gap-0.5">
-                  <span className="font-medium">
-                    {c.name} · {t(`sources.${c.source as "booking" | "airbnb" | "other"}`)}
-                  </span>
-                  <span className="text-muted-foreground">{unit ? unitLabel(unit) : ""}</span>
-                  <span className="text-muted-foreground truncate text-xs">{c.import_url}</span>
-                  {c.last_error ? (
-                    <span className="text-destructive text-xs">{c.last_error}</span>
-                  ) : null}
+      {/* Rule 7: imported calendars as compact rows; name and portal shown once. */}
+      <ExpandableList
+        heading={t("channels")}
+        rows={(channels ?? []).map((c) => {
+          const unit = (units ?? []).find((u) => u.id === c.unit_id);
+          const source = t(`sources.${c.source as "booking" | "airbnb" | "other"}`);
+          const sourceInName = c.name.toLowerCase().includes(source.toLowerCase().split(".")[0]!);
+          return {
+            id: c.id,
+            title: c.name,
+            meta: [sourceInName ? null : source, unit ? unitLabel(unit) : null]
+              .filter(Boolean)
+              .join(" · "),
+            status: c.last_status ? (
+              <RowState on={c.last_status === "ok"}>
+                {t(`status.${c.last_status as "ok" | "error" | "conflict"}`)}
+              </RowState>
+            ) : null,
+            content: (
+              <div className="grid gap-3 text-sm font-normal">
+                <p className="text-muted-foreground font-mono text-xs break-all">{c.import_url}</p>
+                <p className="text-muted-foreground">
+                  {t("lastSync")}:{" "}
+                  {c.last_sync_at
+                    ? formatDateTime(c.last_sync_at, locale, tenant.timezone, "short")
+                    : t("never")}
+                </p>
+                {c.last_error ? <p className="text-[#a8432f]">{c.last_error}</p> : null}
+                <div>
+                  <DeleteButton action={deleteChannel.bind(null, c.id)} />
                 </div>
-                <div className="grid justify-items-end gap-1">
-                  {c.last_status ? (
-                    <Badge variant={c.last_status === "ok" ? "secondary" : "destructive"}>
-                      {t(`status.${c.last_status as "ok" | "error" | "conflict"}`)}
-                    </Badge>
-                  ) : null}
-                  <span className="text-muted-foreground text-xs">
-                    {t("lastSync")}:{" "}
-                    {c.last_sync_at
-                      ? formatDateTime(c.last_sync_at, locale, tenant.timezone, "short")
-                      : t("never")}
-                  </span>
-                </div>
-                <DeleteButton action={deleteChannel.bind(null, c.id)} />
               </div>
-            );
-          })}
-          <ActionForm
-            action={addChannel}
-            resetOnSuccess
-            className="border-border border-t pt-4 sm:grid-cols-2"
-          >
-            <Field label={t("unit")} htmlFor="unit_id">
-              <select id="unit_id" name="unit_id" className={selectClass} required>
-                {(units ?? []).map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {unitLabel(u)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t("source")} htmlFor="source">
-              <select id="source" name="source" className={selectClass}>
-                {(["booking", "airbnb", "other"] as const).map((s) => (
-                  <option key={s} value={s}>
-                    {t(`sources.${s}`)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t("name")} htmlFor="name">
-              <Input id="name" name="name" required maxLength={80} />
-            </Field>
-            <Field label={t("url")} hint={t("urlHint")} htmlFor="import_url">
-              <Input id="import_url" name="import_url" type="url" required placeholder="https://" />
-            </Field>
-            <SubmitButton>{tf("add")}</SubmitButton>
-          </ActionForm>
-        </CardContent>
-      </Card>
+            ),
+          };
+        })}
+        addLabel={t("addChannel")}
+        newRow={{
+          title: t("newChannel"),
+          content: (
+            <ActionForm action={addChannel} resetOnSuccess className="sm:grid-cols-2">
+              <Field label={t("unit")} htmlFor="unit_id">
+                <select id="unit_id" name="unit_id" className={selectClass} required>
+                  {(units ?? []).map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {unitLabel(u)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t("source")} htmlFor="source">
+                <select id="source" name="source" className={selectClass}>
+                  {(["booking", "airbnb", "other"] as const).map((s) => (
+                    <option key={s} value={s}>
+                      {t(`sources.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={t("name")} htmlFor="name">
+                <Input id="name" name="name" required maxLength={80} />
+              </Field>
+              <Field label={t("url")} hint={t("urlHint")} htmlFor="import_url">
+                <Input
+                  id="import_url"
+                  name="import_url"
+                  type="url"
+                  required
+                  placeholder="https://"
+                />
+              </Field>
+              <div>
+                <SubmitButton>{tf("add")}</SubmitButton>
+              </div>
+            </ActionForm>
+          ),
+        }}
+        empty={t("empty")}
+      />
     </div>
   );
 }

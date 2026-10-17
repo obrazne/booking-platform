@@ -267,7 +267,7 @@ export default async function AdminDashboard() {
 
         <section
           aria-label={t("numbers")}
-          className="border-line grid grid-cols-2 overflow-hidden rounded-[10px] border lg:grid-cols-4"
+          className="surface grid grid-cols-2 overflow-hidden lg:grid-cols-4"
         >
           <Stat
             label={t("statDirect", { year })}
@@ -358,7 +358,7 @@ export default async function AdminDashboard() {
                 {t("calendar")} →
               </Link>
             </div>
-            <div className="border-line grid gap-3 rounded-[10px] border p-[18px]">
+            <div className="surface grid gap-3 p-[18px]">
               {Array.from({ length: 12 }, (_, w) => {
                 const mon = addDays(weekStart, w * 7);
                 return (

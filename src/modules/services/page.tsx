@@ -1,9 +1,12 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DeleteButton } from "@/core/admin/delete-button";
+import { ExpandableList, RowState } from "@/core/admin/expandable-list";
+import { PageHeader } from "@/core/admin/page-header";
+import { formatMoney } from "@/core/format/format";
+import { money } from "@/core/money/money";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { asLocalized, tr } from "@/core/i18n/localized";
 import type { TenantInfo } from "@/core/tenant/info";
@@ -71,7 +74,7 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
             multiline
             rows={2}
           />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid gap-3 sm:grid-cols-3">
             <Field label={t("priceModel")} htmlFor={`model-${k}`}>
               <select
                 id={`model-${k}`}
@@ -117,24 +120,27 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
     );
   };
 
+  const price = (cents: number) => formatMoney(money(cents, tenant.currency), locale);
+  // Rule 7: compact rows (name · price and how it is counted · state), the form opens in place.
   return (
-    <div className="grid gap-6">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
-      {(services ?? []).length === 0 ? <p className="text-muted-foreground">{t("empty")}</p> : null}
-      {(services ?? []).map((s) => (
-        <Card key={s.id}>
-          <CardHeader>
-            <CardTitle>{tr(s.name, locale)}</CardTitle>
-          </CardHeader>
-          <CardContent>{form(s)}</CardContent>
-        </Card>
-      ))}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("newService")}</CardTitle>
-        </CardHeader>
-        <CardContent>{form()}</CardContent>
-      </Card>
+    <div data-bleed>
+      <PageHeader kicker={tenant.name} title={t("title")} />
+      <div className="px-5 pb-14 md:px-10">
+        <ExpandableList
+          rows={(services ?? []).map((s) => ({
+            id: s.id,
+            title: tr(s.name, locale),
+            meta: `${price(s.amount_cents)} · ${tp(s.price_model as (typeof PRICE_MODELS)[number])}`,
+            status: (
+              <RowState on={s.active}>{s.active ? t("activeShort") : t("inactiveShort")}</RowState>
+            ),
+            content: form(s),
+          }))}
+          addLabel={t("add")}
+          newRow={{ title: t("newService"), content: form() }}
+          empty={t("empty")}
+        />
+      </div>
     </div>
   );
 }

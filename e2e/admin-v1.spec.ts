@@ -6,7 +6,9 @@ import {
   loginOwner,
   loginPlatformAdmin,
   markToursSeen,
+  service,
   STROMY,
+  STROMY_UNIT,
   TEST_DOMAIN,
 } from "./helpers";
 
@@ -137,5 +139,96 @@ test("08 guest login: client theme, code boxes after the e-mail", async ({ page 
   await page.goto(`${GUEST_URL}/ucet/prihlasenie`);
   await expect(page.getByRole("heading", { name: "Vaše pobyty na jednom mieste." })).toBeVisible();
   expect.soft(await serious(page, "prihlásenie hosťa")).toEqual([]);
+  await noHorizontalScroll(page);
+});
+
+test("v1.1 panel: one column, long name, e-mail and note never overlap", async ({ page }, info) => {
+  const db = service();
+  const stay = await freeStay(2);
+  const long = "Maximiliána Alexandrovna Kowalczyk-Hohenzollernová-Szentgyörgyiová";
+  const email = `veľmi.dlhá.adresa.pre.test.prekrývania.${Date.now()}@${TEST_DOMAIN}`;
+  const { data: created, error } = await db
+    .rpc("create_reservation", {
+      p: {
+        tenant_id: STROMY,
+        property_id: "b0000000-0000-4000-8000-000000000100",
+        unit_id: STROMY_UNIT,
+        guest_name: long,
+        guest_email: email,
+        guest_note:
+          "Poznámka ".repeat(60) + "bezmedzerovýdlhýtextbezmedzerovýdlhýtextbezmedzerovýdlhýtext",
+        adults: 2,
+        currency: "EUR",
+        total_cents: 140000,
+        lines: [
+          {
+            kind: "accommodation",
+            label: "Ubytovanie s veľmi dlhým názvom položky rozpisu, ktorý sa musí zalomiť",
+            quantity: 2,
+            unit_amount_cents: 70000,
+            amount_cents: 140000,
+          },
+        ],
+        check_in: stay.checkIn,
+        check_out: stay.checkOut,
+      },
+    })
+    .single();
+  if (error) throw error;
+  await markToursSeen("qa@booking-platform.test");
+  await loginOwner(page, ADMIN_URL);
+  await page.goto(
+    `${ADMIN_URL}/admin/reservations?panel=reservation:${(created as { id: string }).id}`,
+  );
+  const panel = page.getByRole("dialog");
+  await expect(panel).toContainText("Maximiliána");
+  await page.waitForTimeout(400);
+  // Nothing sticks out of the panel and no two blocks of the summary overlap.
+  const problems = await panel.evaluate((root) => {
+    const box = root.getBoundingClientRect();
+    const out: string[] = [];
+    for (const el of Array.from(root.querySelectorAll<HTMLElement>("*"))) {
+      const r = el.getBoundingClientRect();
+      if (r.width <= 1 || r.height <= 1 || el.classList.contains("sr-only")) continue;
+      if (r.right > box.right + 1 || r.left < box.left - 1)
+        out.push(el.tagName + " " + el.className);
+    }
+    const scrollers = Array.from(root.querySelectorAll<HTMLElement>("*")).filter(
+      (el) =>
+        !el.classList.contains("sr-only") &&
+        el.scrollWidth > el.clientWidth + 1 &&
+        getComputedStyle(el).overflowX !== "visible",
+    );
+    for (const el of scrollers) out.push("scroll " + el.className);
+    return out.slice(0, 5);
+  });
+  expect(problems).toEqual([]);
+  if (info.project.name !== "mobile") {
+    // Secondary sections are folded rows with a count.
+    const history = panel.getByRole("button", { name: /História/ });
+    await expect(history).toHaveAttribute("aria-expanded", "false");
+    await history.click();
+    await expect(history).toHaveAttribute("aria-expanded", "true");
+  }
+});
+
+test("v1.1 settings lists: compact rows expand in place, add form behind a button", async ({
+  page,
+}) => {
+  await markToursSeen("qa@booking-platform.test");
+  await loginOwner(page, ADMIN_URL);
+  await page.goto(`${ADMIN_URL}/admin/blocks`);
+  const add = page.getByRole("button", { name: "Pridať blokáciu" });
+  await expect(page.locator("#from")).toHaveCount(0);
+  await add.click();
+  await expect(page.locator("#from")).toBeVisible();
+  const row = page.getByRole("button", { name: /Nová blokácia/ });
+  await expect(row).toHaveAttribute("aria-expanded", "true");
+  expect(await serious(page, "blokácie")).toEqual([]);
+  await page.goto(`${ADMIN_URL}/admin/services`);
+  const first = page.locator("ul button[aria-expanded]").first();
+  await first.click();
+  await expect(first).toHaveAttribute("aria-expanded", "true");
+  expect(await serious(page, "služby")).toEqual([]);
   await noHorizontalScroll(page);
 });

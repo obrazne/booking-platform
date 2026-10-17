@@ -31,6 +31,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
   // Owner block.
   const block = await freeStay(2, [stay.checkIn, stay.checkOut]);
   await page.goto(`${ADMIN_URL}/admin/blocks`);
+  await page.getByRole("button", { name: "Pridať blokáciu" }).click();
   await page.locator("#unit_id").selectOption(STROMY_UNIT);
   await page.locator("#label").fill("E2E blokácia");
   await page.locator("#from").fill(block.checkIn);
@@ -65,7 +66,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
     .single();
   expect(conflict).toEqual({ conflict: true, is_blocking: false });
   await page.goto(`${ADMIN_URL}/admin/ical`);
-  await expect(page.getByText("E2E kanál · Iný")).toBeVisible();
+  await expect(page.getByRole("button", { name: /E2E kanál/ })).toBeVisible();
   await expect(page.getByText("Kolízia").first()).toBeVisible();
 
   // Document for guests at the property (private storage, shown in the guest zone).
@@ -77,7 +78,7 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4 1 0 obj<<>>endobj trailer<<>> %%EOF"),
   });
-  await page.getByRole("button", { name: "Nahrať" }).click();
+  // One button "Nahrať súbor": choosing the file uploads it.
   await expect(page.getByText("E2E poriadok")).toBeVisible();
 
   // The reservation itself is untouched by the conflict.

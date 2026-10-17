@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import type { ComponentProps, ReactNode } from "react";
+import { useId, useState, type ComponentProps, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, X } from "lucide-react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import { PANEL_PARAM, panelValue } from "./panel-param";
@@ -60,7 +60,7 @@ export function PanelLink({
 
 /**
  * Side panel with a record (A18, vizuál administrácie v1): 680 px on a computer, header with the number and state,
- * content (two columns from 1024 px — use `PanelColumns`), action bar at the bottom. Full screen on a phone with
+ * content in one column (`PanelSummary`, `PanelSection`, `PanelCollapsible`), action bar at the bottom. Full screen on a phone with
  * a "‹ back" bar and the actions stuck to the bottom. Closes with the cross, Esc, Back and a click beside it;
  * a click on another record (`data-panel-switch`) switches it instead. The page behind stays usable (not modal).
  */
@@ -125,7 +125,7 @@ export function SidePanel({
               <X className="size-5" />
             </SheetPrimitive.Close>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-6 md:px-7">
+          <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-5 py-6 md:px-7 [&>*]:min-w-0">
             {title ? (
               <div className="text-ink mb-6 text-[28px] leading-tight font-extrabold tracking-tight">
                 {title}
@@ -144,13 +144,85 @@ export function SidePanel({
   );
 }
 
-/** Two columns of the panel content (left: dates, payment, breakdown; right: notes, documents, history). */
-export function PanelColumns({ left, right }: { left: ReactNode; right: ReactNode }) {
+/**
+ * Summary card at the top of the panel (v1.1, rule 1): name 28 px, contact line, key facts in a grid of 2–4
+ * (e.g. Príchod · Odchod · Noci · Hostia · Suma) on the soft surface. Long values wrap, nothing overlaps.
+ */
+export function PanelSummary({
+  title,
+  subtitle,
+  facts = [],
+  children,
+}: {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  facts?: { label: ReactNode; value: ReactNode }[];
+  children?: ReactNode;
+}) {
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
-      <div className="grid min-w-0 gap-6">{left}</div>
-      <div className="grid min-w-0 gap-6">{right}</div>
+    <div className="surface grid min-w-0 gap-4 p-5">
+      <div className="grid min-w-0 gap-1">
+        <div className="text-ink text-[28px] leading-tight font-extrabold tracking-tight [overflow-wrap:anywhere]">
+          {title}
+        </div>
+        {subtitle ? (
+          <div className="text-muted-foreground text-sm font-normal [overflow-wrap:anywhere]">
+            {subtitle}
+          </div>
+        ) : null}
+      </div>
+      {facts.length ? (
+        <dl className="border-hair grid grid-cols-2 gap-x-5 gap-y-3 border-t pt-4 sm:grid-cols-4">
+          {facts.map((f, i) => (
+            <div key={i} className="grid min-w-0 content-start gap-0.5">
+              <dt className="label-mono">{f.label}</dt>
+              <dd className="text-ink text-[15px] font-bold [overflow-wrap:anywhere]">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+      {children}
     </div>
+  );
+}
+
+/** Secondary section folded as a row with a count (História (3), Súhlasy (4), Posledné zmeny). */
+export function PanelCollapsible({
+  label,
+  count,
+  children,
+}: {
+  label: ReactNode;
+  count?: number;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  return (
+    <section className="border-hair border-t">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+        className="flex min-h-12 w-full items-center gap-2 text-left"
+      >
+        <span className="label-mono">{label}</span>
+        {count !== undefined ? (
+          <span className="text-muted-foreground font-mono text-[11px]">({count})</span>
+        ) : null}
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            "text-muted-foreground ml-auto size-4 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        />
+      </button>
+      <div id={id} hidden={!open} className="pb-4">
+        {open ? children : null}
+      </div>
+    </section>
   );
 }
 
@@ -165,7 +237,7 @@ export function PanelSection({
   children: ReactNode;
 }) {
   return (
-    <section className="grid gap-2">
+    <section className="grid min-w-0 gap-2 [&>*]:min-w-0">
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="label-mono">{label}</h3>
         {aside}
@@ -184,9 +256,12 @@ export function RecordPanel({
   header,
   actions,
   backLabel,
+  label,
   children,
 }: {
-  title: ReactNode;
+  title?: ReactNode;
+  /** Accessible name when the title is not plain text (or the summary card shows the name). */
+  label?: string;
   /** Short line under the title (e.g. a hint). */
   description?: ReactNode;
   header?: ReactNode;
@@ -229,7 +304,7 @@ export function RecordPanel({
           title
         )
       }
-      label={typeof title === "string" ? title : undefined}
+      label={label ?? (typeof title === "string" ? title : undefined)}
       actions={actions}
       backLabel={backLabel}
     >

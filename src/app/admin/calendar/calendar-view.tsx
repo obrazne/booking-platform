@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { createBlock, deleteBlock } from "@/app/admin/blocks/actions";
 import { MarkPaidButton } from "@/app/admin/reservations/quick-actions";
 import type { OccupancyEvent } from "@/core/admin/occupancy";
-import { PanelSection, SidePanel } from "@/core/admin/record-panel";
+import { PanelSection, PanelSummary, SidePanel } from "@/core/admin/record-panel";
 import { OCCUPANCY_CLASS, StatusPill } from "@/core/admin/status";
 import { formatMoney } from "@/core/format/format";
 import { money } from "@/core/money/money";
@@ -68,6 +68,7 @@ export function CalendarView({
   sync: ReactNode;
 }) {
   const t = useTranslations("adminV1.calendar");
+  const tv = useTranslations("adminV1.reservations");
   const tr = useTranslations("reservations");
   const [selection, setSelection] = useState<Selection | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
@@ -345,17 +346,6 @@ export function CalendarView({
             </span>
           )
         }
-        title={
-          event
-            ? event.reservation
-              ? event.reservation.guestName
-              : event.kind === "portal"
-                ? (PORTAL_NAMES[event.portal ?? ""] ?? event.label ?? t("portal"))
-                : (event.label ?? t("blockKind"))
-            : selection?.end
-              ? `${longDate(selection.start)} – ${longDate(selection.end)}`
-              : ""
-        }
         actions={
           event?.reservation ? (
             <>
@@ -381,20 +371,44 @@ export function CalendarView({
       >
         <div className="grid gap-6 text-sm font-normal">
           {event || selection?.end ? (
-            <DatesCard
-              from={event?.checkIn ?? selection!.start}
-              to={event?.checkOut ?? selection!.end!}
-              longDate={longDate}
-              extra={
-                event?.reservation
-                  ? `${tr("nights", { count: diffDays(event.checkIn, event.checkOut) })} · ${tr("panel.adults", { count: event.reservation.adults })}${event.reservation.children ? ` + ${event.reservation.children}` : ""}`
-                  : tr("nights", {
-                      count: diffDays(
-                        event?.checkIn ?? selection!.start,
-                        event?.checkOut ?? selection!.end!,
-                      ),
-                    })
+            <PanelSummary
+              title={
+                event
+                  ? event.reservation
+                    ? event.reservation.guestName
+                    : event.kind === "portal"
+                      ? (PORTAL_NAMES[event.portal ?? ""] ?? event.label ?? t("portal"))
+                      : (event.label ?? t("blockKind"))
+                  : t("newStay")
               }
+              subtitle={
+                event?.reservation
+                  ? t("directSub")
+                  : event?.kind === "portal"
+                    ? t("portalSub")
+                    : event
+                      ? t("blockSub")
+                      : t("newStaySub")
+              }
+              facts={[
+                { label: tv("checkIn"), value: longDate(event?.checkIn ?? selection!.start) },
+                { label: tv("checkOut"), value: longDate(event?.checkOut ?? selection!.end!) },
+                {
+                  label: tv("nightsLabel"),
+                  value: diffDays(
+                    event?.checkIn ?? selection!.start,
+                    event?.checkOut ?? selection!.end!,
+                  ),
+                },
+                ...(event?.reservation
+                  ? [
+                      {
+                        label: tv("people"),
+                        value: `${event.reservation.adults}${event.reservation.children ? ` + ${event.reservation.children}` : ""}`,
+                      },
+                    ]
+                  : []),
+              ]}
             />
           ) : null}
 
@@ -447,33 +461,6 @@ export function CalendarView({
   );
 }
 
-function DatesCard({
-  from,
-  to,
-  extra,
-  longDate,
-}: {
-  from: string;
-  to: string;
-  extra: string;
-  longDate: (iso: string) => string;
-}) {
-  const t = useTranslations("adminV1.reservations");
-  return (
-    <div className="border-line grid grid-cols-2 overflow-hidden rounded-[10px] border">
-      <span className="border-line grid gap-0.5 border-r px-3.5 py-3">
-        <span className="label-mono">{t("checkIn")}</span>
-        <span className="text-ink text-base font-bold">{longDate(from)}</span>
-      </span>
-      <span className="grid gap-0.5 px-3.5 py-3">
-        <span className="label-mono">{t("checkOut")}</span>
-        <span className="text-ink text-base font-bold">{longDate(to)}</span>
-      </span>
-      <span className="border-line col-span-2 border-t px-3.5 py-2.5">{extra}</span>
-    </div>
-  );
-}
-
 function Notice({ warm, children }: { warm?: boolean; children: ReactNode }) {
   return (
     <p
@@ -494,7 +481,6 @@ function BlockEditor({ event, onDone }: { event: OccupancyEvent; onDone: () => v
   const [pending, start] = useTransition();
   return (
     <div className="grid gap-4">
-      <p className="text-muted-foreground">{t("blockSub")}</p>
       <label className="grid gap-1.5">
         <span className="label-mono">{t("reason")}</span>
         <Input value={label} maxLength={80} onChange={(e) => setLabel(e.target.value)} />

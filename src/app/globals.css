@@ -226,6 +226,10 @@
 /* Administration, control center and staff login (vizuál administrácie v1): same language as the guest page v2.
    Applied while a [data-admin-ui] element is on the page, so overlays rendered outside the tree (panels, menus) match. */
 :root:has([data-admin-ui]):not(.dark) {
+  /* Surfaces v1.1 (rule 6): cards, sections and summaries on a very soft grey with a hairline — never white on white. */
+  --surface-card: #fafaf8;
+  --line-hair: #ecebe6;
+  --card: var(--surface-card);
   --sidebar: #f7f6f2;
   --sidebar-border: var(--line);
   --sidebar-foreground: #3b3d42;
@@ -236,6 +240,13 @@
   --foreground: #3b3d42;
   --muted-foreground: #5a6672;
   --muted: #f7f6f2;
+}
+/* Every card of the administration uses the surface token (also screens that were not on the canvas). */
+:root:has([data-admin-ui]) [data-slot="card"] {
+  border: 1px solid var(--line-hair, var(--border));
+  border-radius: 10px;
+  --tw-ring-shadow: 0 0 #0000;
+  box-shadow: none;
 }
 /* One-line fields are pills of the same height as the button next to them; multi-line fields keep radius 10. */
 :root:has([data-admin-ui]) [data-slot="input"],
@@ -258,6 +269,12 @@
 :root:has([data-admin-ui]) [data-slot="textarea"] {
   border-radius: 10px;
 }
+/* Native selects of older forms look like the pill fields too. */
+:root:has([data-admin-ui]) select:not([data-slot]) {
+  border-radius: 9999px;
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+}
 /* Login screens: 46 px fields and buttons. */
 :root:has([data-login-ui]) [data-slot="input"],
 :root:has([data-login-ui]) [data-slot="button"][data-size="lg"] {
@@ -274,6 +291,15 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #5a6672;
+  }
+  /* Card / section / summary surface (rule 6). */
+  .surface {
+    background: var(--surface-card, #fafaf8);
+    border: 1px solid var(--line-hair, #ecebe6);
+    border-radius: 10px;
+  }
+  .border-hair {
+    border-color: var(--line-hair, #ecebe6);
   }
   .bg-accent-soft {
     background: color-mix(in oklab, var(--primary) 9%, transparent);

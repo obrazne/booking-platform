@@ -9,6 +9,7 @@ import { rowToTheme } from "@/core/theme/load";
 import { DEFAULT_THEME } from "@/core/theme/theme";
 import { ThemeStyle } from "@/core/theme/theme-style";
 import { createClient } from "@/lib/supabase/server";
+import { auditLabel } from "@/core/admin/audit-label";
 import { ModuleSwitchForm, TenantStatusForm } from "../../forms";
 
 type ModuleStatus = "trial" | "active" | "off";
@@ -18,6 +19,13 @@ export default async function TenantDetail({ params }: PageProps<"/platform/tena
   if (!(await isPlatformAdmin())) return null;
   const { id } = await params;
   const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
+  const ta = (await getTranslations("adminV1.audit")) as unknown as Parameters<
+    typeof auditLabel
+  >[0];
+  const moduleName = (key: string) => {
+    const m = listModules().find((x) => x.key === key);
+    return m ? t(`${m.messages}.title` as Parameters<typeof t>[0]) : key;
+  };
   const supabase = await createClient();
 
   const { data: tenant } = await supabase
@@ -177,10 +185,7 @@ export default async function TenantDetail({ params }: PageProps<"/platform/tena
               {audit.map((a) => (
                 <li key={a.id} className="grid gap-0.5">
                   <span>
-                    <span className="font-medium">{a.action}</span>
-                    {a.entity_id ? (
-                      <span className="text-muted-foreground"> · {a.entity_id}</span>
-                    ) : null}
+                    <span className="font-medium">{auditLabel(ta, a, moduleName)}</span>
                   </span>
                   <span className="text-muted-foreground text-xs">
                     {formatDateTime(a.created_at, locale, tenant.timezone)} ·{" "}

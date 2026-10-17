@@ -35,7 +35,9 @@ export function DocumentsManager({
 
   async function upload() {
     const f = file.current?.files?.[0];
-    if (!f || !title.trim()) return;
+    if (!f) return;
+    // Without a title the file name is used (without the extension).
+    const name = title.trim() || f.name.replace(/\.[^.]+$/, "").slice(0, 120);
     if (f.size > 10 * 1024 * 1024) {
       toast.error(t("tooLarge"));
       return;
@@ -55,7 +57,7 @@ export function DocumentsManager({
         propertyId,
         reservationId,
         storagePath: path,
-        title,
+        title: name,
         visibleWhen,
       });
       if (!r.ok) throw new Error(r.error);
@@ -70,17 +72,16 @@ export function DocumentsManager({
     }
   }
 
-  const selectClass = "border-input bg-background h-9 rounded-md border px-3 text-sm shadow-xs";
   return (
     <div className="grid gap-4">
       {documents.length === 0 ? (
         <p className="text-muted-foreground text-sm">{t("empty")}</p>
       ) : (
-        <ul className="divide-border grid divide-y rounded-xl border">
+        <ul className="border-hair grid divide-y divide-[#ecebe6] rounded-[10px] border">
           {documents.map((d) => (
             <li key={d.id} className="flex items-center gap-3 px-3 py-2 text-sm">
               <FileText className="text-muted-foreground size-4" />
-              <span className="flex-1">{d.title}</span>
+              <span className="min-w-0 flex-1 break-words">{d.title}</span>
               <span className="text-muted-foreground text-xs">
                 {t(d.visibleWhen === "always" ? "visible.always" : "visible.confirmed")}
               </span>
@@ -94,7 +95,8 @@ export function DocumentsManager({
           ))}
         </ul>
       )}
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+      {/* One column (fits the 680 px panel); one button picks the file and uploads it right away. */}
+      <div className="grid gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor={`doc-title-${propertyId ?? reservationId}`}>{t("title")}</Label>
           <Input
@@ -109,7 +111,7 @@ export function DocumentsManager({
           <Label htmlFor={`doc-vis-${propertyId ?? reservationId}`}>{t("visibility")}</Label>
           <select
             id={`doc-vis-${propertyId ?? reservationId}`}
-            className={selectClass}
+            className="border-input bg-background h-10 rounded-full border px-4 text-sm"
             value={visibleWhen}
             onChange={(e) => setVisibleWhen(e.target.value as "always" | "confirmed")}
           >
@@ -122,15 +124,18 @@ export function DocumentsManager({
           type="file"
           accept="application/pdf,image/jpeg,image/png"
           aria-label={t("file")}
-          className="text-sm sm:col-span-2"
+          className="sr-only"
+          tabIndex={-1}
+          onChange={() => void upload()}
         />
         <Button
           type="button"
-          onClick={upload}
-          disabled={busy || !title.trim()}
+          variant="outline"
+          onClick={() => file.current?.click()}
+          disabled={busy}
           className="justify-self-start"
         >
-          <FilePlus /> {busy ? t("uploading") : t("upload")}
+          <FilePlus /> {busy ? t("uploading") : t("uploadFile")}
         </Button>
       </div>
       <p className="text-muted-foreground text-xs">{t("hint")}</p>
