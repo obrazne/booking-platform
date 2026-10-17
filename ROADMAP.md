@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z41** (ukážkové dáta preč zo STRÖMY — prednostne), potom **Z36** (online check-in — základ), **Z40** (mapa — malá), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -22,6 +22,11 @@
 ## Zadanie pre Claude Code
 *Sem píše Claude chat konkrétne pokyny. Môže tu byť **fronta viacerých úloh (Z1, Z2, …)** — `/dalej` vezme prvú neoznačenú,
 po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom `/dalej`. Keď sú všetky ✅, sekciu vyprázdni.*
+
+> ⛔ **STOP pre ukážkové dáta STRÖMY (Martin 17. 10. 19:30):** na STRÖMY je pripojený **skutočný kalendár Jany z Bookingu**
+> („Ostrý kalendár chaletu na Bookingu“). **`npm run demo-data` (ani `--reset`) pre tenanta STRÖMY nespúšťaj** a nevytváraj tam
+> ukážkové iCal kanály ani rezervácie — Martin ich mazal a skript ich vrátil. Ukážkové dáta nových modulov (Z35–Z39) daj zatiaľ
+> **len Ukážkovému klientovi**. Kanál „Ostrý kalendár…“ nemaž ani nemeň. Riešenie → Z41.
 
 *Hotové Z1–Z30 (analýza, kostra platformy, MVP Chalet STRÖMY, stránka hosťa a košík podľa vizuálu v2–v2.2, potvrdenie rezervácie,
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
