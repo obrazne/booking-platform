@@ -260,7 +260,7 @@ Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišt
 Pri klientovi voliteľné pásma „zrušenie aspoň N dní pred príchodom → vrátiť P % ceny“ (Nastavenia → Storno podmienky). Hosť v okne
 žiadosti o zrušenie vidí presnú vrátenú sumu a poplatok, majiteľ v paneli rezervácie návrh podľa dňa žiadosti. Bez pásiem ako doteraz.
 
-### Z49 [B] — Prístupový odkaz `/r/<kód>` ako detail pobytu v účte (v2.4; rozhodol Claude Code 17. 10. podľa „urob ako uznáš“)
+### Z49 [B] 🔄 — Prístupový odkaz `/r/<kód>` ako detail pobytu v účte (v2.4; rozhodol Claude Code 17. 10. podľa „urob ako uznáš“)
 Podľa v2.4 majú byť stránky cez prístupový odkaz rovnaké ako v účte (bez lišty kariet, s ponukou „Uložiť do účtu“). Dnes je `/r/<kód>`
 potvrdenie rezervácie v2.1 (platba, kroky, moduly). Navrhovaný postup: hneď po rezervácii a kým čaká na platbu ostáva potvrdenie v2.1
 (schválený vizuál, nadväzuje na košík); od zaplatenia `/r/<kód>` vykreslí `StayDetail` s prístupom cez kód (stavy zo Z44 — dlaždice
