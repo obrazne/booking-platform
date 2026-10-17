@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje); **B:** Z44 (detail pobytu: stavy, zrušenie).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa: lišta, prehľad, Moje údaje) — *zabratá linkou A*; **B:** Z44 (detail pobytu: stavy, zrušenie).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -158,7 +158,7 @@ STRÖMY na stagingu odteraz slúži na skúšku so **skutočným kalendárom z B
    v paneli udalosti veta, že podrobnosti sú v extranete Bookingu.
 5. Do Denníka: čo ostalo na STRÖMY, aké udalosti prišli z ostrého kalendára.
 
-### Z40 [A] — Mapa: OpenFreeMap + „Navigovať v Google Mapách“ (Martin 17. 10.) — **malá, môže ísť hneď po Z31**
+### Z40 ✅ [A] — Mapa: OpenFreeMap + „Navigovať v Google Mapách“ (Martin 17. 10.) — **malá, môže ísť hneď po Z31**
 Dnes ide mapa (statický náhľad `osm-map.tsx` aj interaktívna `interactive-map.tsx`, Leaflet) priamo z dlaždíc `tile.openstreetmap.org` —
 pri komerčnej prevádzke to pravidlá OSM nedovoľujú. Martin chcel Google Maps; rozhodnuté inak (ROZHODNUTIA 17. 10.).
 1. **Podklady z OpenFreeMap** (openfreemap.org — zadarmo aj komerčne, bez registrácie, kľúča, cookies a limitu; vektorové dlaždice,
