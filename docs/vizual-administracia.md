@@ -163,6 +163,17 @@ Na mobile fotka len ako pruh hore.
   Moduly, Vzhľad, Domény, Ľudia, Záznam zmien · **Moduly** › Katalóg, Skúšobné doby · Stav systému · Audit.
 - **Drobčeková navigácia** hore na podstránkach: `Klienti › Chalet STRÖMY › Vzhľad` (pravidlo nižšie).
 
+### Klik na skupinu v menu — spoločné pravidlo (administrácia aj riadiace centrum, Martin 17. 10.)
+- **Klik na hlavnú položku skupiny otvorí jej prvú podstránku** a skupinu rozbalí (ako WordPress): Rezervácie → Zoznam, Objekt → Údaje
+  (pri viacerých objektoch zoznam objektov), Ponuka → Doplnkové služby, Nastavenia → Všeobecné; riadiace centrum Klienti → Všetci klienti,
+  Moduly → Katalóg. Cieľ = prvá **viditeľná** podpoložka (moduly a práva môžu niektoré skryť).
+- **Rozbalená je len skupina aktívnej stránky**, ostatné zbalené. Šípka je len znak podmenu, nie samostatné tlačidlo.
+- **Žiadne prehľadové stránky pre skupiny** (opakovali by Prehľad a Štatistiky).
+- **Skupina s jedinou viditeľnou podpoložkou sa zobrazí ako obyčajná položka** bez šípky (dnes Prepojenia → „Booking a Airbnb“);
+  skupinou sa stane automaticky, keď modul pridá druhú.
+- Zbalené menu (ikony): pri prejdení myšou / fokuse vyskakovací zoznam, klik na ikonu = prvá podstránka. Klávesnica: Enter na skupine
+  = prechod na prvú podstránku; `aria-expanded` podľa rozbalenia.
+
 ### Drobčeková navigácia — spoločné pravidlo (administrácia aj riadiace centrum, Martin 17. 10.)
 - **V hlavičke stránky, malým písmom nad nadpisom** (namiesto malého štítku nad nadpisom) — žiadny samostatný pás ani stavový riadok dole.
 - **Len od druhej úrovne:** na stránkach prvej úrovne (Prehľad, Rezervácie › Zoznam, Štatistiky…) nič — menu s aktívnou položkou

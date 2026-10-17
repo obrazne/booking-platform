@@ -268,6 +268,10 @@ Stránka hosťa je to, čo uvidí Jana a jej hostia. Návrh: `docs/vizual-strank
    **Drobčeky podľa spoločného pravidla** (`docs/vizual-administracia.md` → Drobčeková navigácia): komponent v `PageHeader`, malým písmom
    nad nadpisom, len od druhej úrovne, nie v bočných paneloch, na mobile len „‹ Späť na …“. **Použi ho aj v administrácii majiteľa**
    (Z27 už je hotová) — napr. `Objekt › <názov> › Ceny a sezóny`, `Nastavenia › Tím`; stránky prvej úrovne bez drobčekov.
+   **Klik na skupinu v menu** (pripomienka 27, obe menu — majiteľ aj riadiace centrum) podľa pravidla v `docs/vizual-administracia.md`
+   → Klik na skupinu v menu: hlavná položka vedie na prvú viditeľnú podstránku a rozbalí sa, rozbalená len skupina aktívnej stránky,
+   skupina s jedinou podpoložkou = obyčajná položka (Prepojenia), žiadne prehľadové stránky skupín. Playwright: klik na „Rezervácie“
+   otvorí Zoznam; Prepojenia bez šípky.
 3. **Detail klienta ako stránka so záložkami** (`/platform/tenants/[id]/<záložka>`) — obsah dnešného „Všetky nastavenia“ rozdelený
    do záložiek; cesty: menu, riadok v zozname, drobčeky.
 4. **Zoznam klientov = rozbaľovacie riadky** namiesto bočného panela (obsah v kapitole v1.2: tržby tento/minulý mesiac, rezervácie 30 dní
