@@ -43,14 +43,14 @@ export async function deleteDocument(id: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("documents")
-    .select("storage_path")
+    .select("id")
     .eq("id", id)
     .eq("tenant_id", active.tenantId)
     .single();
   if (!data) return fail("notFound");
+  // The file stays 30 days so the document can be restored from the trash (Z31); the job worker removes it later.
   const { error } = await supabase.from("documents").delete().eq("id", id);
   if (error) return fail(dbErrorKey(error));
-  await supabase.storage.from("guest-documents").remove([data.storage_path]);
   revalidatePath("/admin", "layout");
   return ok();
 }

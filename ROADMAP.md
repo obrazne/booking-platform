@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
@@ -25,7 +25,7 @@ po dokončení ju označí ✅ (text nechá) a ďalšiu začne až pri ďalšom 
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 
-### Z31 — História zmien a kôš (vrátenie chyby jedného klienta, 17. 10.)
+### Z31 ✅ — História zmien a kôš (vrátenie chyby jedného klienta, 17. 10.)
 Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1 a 2; vrstva 3 je úloha prípravy produkcie). Úpravy DB len pridávajú.
 1. **História zmien:** tabuľka napr. `record_history` (tenant_id, table_name, record_id, op insert/update/delete, old/new jsonb, changed_by,
    changed_at) plnená **triggerom** na všetkých tabuľkách s `tenant_id` (okrem samotnej histórie, upozornení a technických tabuliek —
@@ -237,6 +237,24 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z31: **história zmien a kôš** (A9, vrstvy 1 a 2).
+  - **`record_history`** plnená triggerom na všetkých tabuľkách s `tenant_id` (tabuľka, záznam podľa primárneho kľúča, insert/update/delete,
+    pred/po, kto, zdroj user/guest/system, transakcia, čas). **Bez histórie:** `record_history`, `audit_log`, `notifications`, `email_outbox`,
+    `request_attempts`, `guest_auth_attempts`, `guest_consent_events`, `reservation_counters`, `reservation_status_history`, dočasné
+    podržania termínu (`occupancy` kind hold) a riadky bez klienta (spoločné `terms`). Zmena len `updated_at` / `last_sync_*` /
+    `last_status` / `last_error` sa nezapisuje (synchronizácia iCal by inak zahlcovala). RLS: číta len správca platformy. pgTAP 16 testov.
+  - **Kôš** (Nastavenia › Nedávno zmazané, len majiteľ): služby, sezóny s cenami, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie,
+    iCal kalendáre, miesta v okolí — 30 dní. Obnova vráti aj riadky, ktoré odišli s nimi (rovnaká transakcia a odkaz na obnovený záznam:
+    sezóna → obdobia a ceny); udalosti iCal kalendára nechá na ďalšiu synchronizáciu. Kolízie sa vysvetlia (termín obsadený, chýbajúci
+    objekt…), nič sa vtedy neobnoví. **Súbory fotiek a dokumentov** sa pri zmazaní neodstraňujú — maže ich až job worker po 30 dňoch
+    (ak sa záznam neobnovil a súbor nepoužíva iný záznam).
+  - **Riadiace centrum → detail klienta → Záznam zmien** = história dát (obdobie, typ záznamu, osoba; 50 na stranu), „pred → po“
+    slovami (preklady polí, peniaze, áno/nie), **Vrátiť túto zmenu** s potvrdením; ak sa záznam medzitým zmenil, ukáže aktuálny stav
+    a ponúkne „Vrátiť aj tak“. Vrátenie aj obnova z koša sa zapíšu do histórie aj auditu (`history.reverted`, `trash.restored`).
+    Audit klienta (prihlásenia, moduly) je odkazom z tejto stránky.
+  - **Uchovávanie:** pg_cron denne maže históriu staršiu ako 180 dní. Anonymizácia hosťa v aplikácii **zatiaľ nie je** — pripravená funkcia
+    `forget_guest_history(tenant, email)` vymaže jeho riadky z histórie; zavolá ju anonymizácia, keď vznikne.
+  - Playwright `history.spec.ts` (majiteľ zmaže službu → obnoví z koša; správca vráti zmenu ceny). Celá sada 46/46. (Claude Code)
 - 2026-10-17 — Z28 (2. časť, dokončenie): **klik na skupinu v menu** (majiteľ aj riadiace centrum) vedie na prvú viditeľnú podstránku
   a skupinu rozbalí; rozbalená je len skupina aktívnej stránky; šípka je len znak; skupina s jedinou podstránkou je obyčajná položka
   (Prepojenia → Booking a Airbnb). **Drobčeky podľa spoločného pravidla:** `PageHeader` má `breadcrumbs` (malým písmom nad nadpisom,

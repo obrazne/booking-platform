@@ -1343,6 +1343,54 @@ export type Database = {
           },
         ]
       }
+      record_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          files_purged_at: string | null
+          id: number
+          new_row: Json | null
+          old_row: Json | null
+          op: string
+          pk: Json
+          record_id: string
+          source: string
+          table_name: string
+          tenant_id: string
+          tx_id: number
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          files_purged_at?: string | null
+          id?: never
+          new_row?: Json | null
+          old_row?: Json | null
+          op: string
+          pk: Json
+          record_id: string
+          source: string
+          table_name: string
+          tenant_id: string
+          tx_id?: number
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          files_purged_at?: string | null
+          id?: never
+          new_row?: Json | null
+          old_row?: Json | null
+          op?: string
+          pk?: Json
+          record_id?: string
+          source?: string
+          table_name?: string
+          tenant_id?: string
+          tx_id?: number
+        }
+        Relationships: []
+      }
       request_attempts: {
         Row: {
           action: string
@@ -2524,6 +2572,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      forget_guest_history: {
+        Args: { p_email: string; p_tenant_id: string }
+        Returns: number
+      }
       free_units: {
         Args: { p_check_in: string; p_check_out: string; p_tenant_id: string }
         Returns: {
@@ -2542,6 +2594,14 @@ export type Database = {
       guest_set_marketing: {
         Args: { p_granted: boolean; p_tenant_id: string }
         Returns: boolean
+      }
+      history_columns: { Args: { p_table: string }; Returns: string }
+      history_current: { Args: { p_pk: Json; p_table: string }; Returns: Json }
+      history_noise: { Args: { p_row: Json }; Returns: Json }
+      history_pk_where: { Args: { p_pk: Json }; Returns: string }
+      history_restore_deleted: {
+        Args: { p_entry: Database["public"]["Tables"]["record_history"]["Row"] }
+        Returns: string
       }
       hit_request_limit: {
         Args: {
@@ -2608,6 +2668,17 @@ export type Database = {
         Args: { p_property_id: string; p_template: string }
         Returns: string
       }
+      owner_restore: { Args: { p_history_id: number }; Returns: string }
+      owner_trash: {
+        Args: { p_tenant_id: string }
+        Returns: {
+          deleted_at: string
+          deleted_by: string
+          id: number
+          label: string
+          table_name: string
+        }[]
+      }
       ping_job_worker: { Args: never; Returns: undefined }
       platform_create_tenant: {
         Args: {
@@ -2618,6 +2689,10 @@ export type Database = {
           p_slug: string
         }
         Returns: string
+      }
+      platform_revert_change: {
+        Args: { p_force?: boolean; p_history_id: number }
+        Returns: Json
       }
       platform_set_module: {
         Args: {
@@ -2721,6 +2796,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      trash_tables: { Args: never; Returns: string[] }
       unit_busy_nights: {
         Args: { p_from: string; p_to: string; p_unit_id: string }
         Returns: {

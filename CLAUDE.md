@@ -106,6 +106,9 @@ Ukážkové = poznámka hosťa „DEMO — …“, e-maily na `stromy-demo.inval
 **Štatistiky (Z27):** jedna funkcia `tenant_monthly_stats` (DB, RLS) pre Štatistiky, Prehľad aj riadiace centrum; pomocné výpočty
 v `src/core/stats/compute.ts`. **Upozornenia:** vznikajú len v databáze (`notify()` z triggerov a `notify_scheduled` cez pg_cron),
 deduplikované cez `dedupe_key`; zvonček `src/core/notifications/`. Nový druh = pridať do kontroly `kind`, trigger, text `notifications.kinds.*`.
+**História zmien a kôš (Z31):** každá tabuľka s `tenant_id` má trigger `record_history` (nová tabuľka ho dostane len novou migráciou —
+pridaj `create trigger record_history … record_history_capture(<pk stĺpce>)`). Mazanie súborov fotiek a dokumentov nerob v akcii — rieši
+ho job worker po 30 dňoch (`purgeTrashFiles`). Obnova a vrátenie: `owner_restore`, `platform_revert_change` (databáza).
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
 zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens`
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).

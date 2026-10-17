@@ -255,9 +255,7 @@ export async function movePhoto(propertyId: string, photoId: string, direction: 
 
 export async function deletePhoto(propertyId: string, photoId: string) {
   const { supabase } = await context();
-  const { data } = await supabase.from("photos").select("storage_path").eq("id", photoId).single();
-  if (!data) return;
-  await supabase.storage.from("property-photos").remove([data.storage_path]);
+  // The file stays 30 days so the photo can be restored from the trash (Z31); the job worker removes it later.
   await supabase.from("photos").delete().eq("id", photoId);
   revalidatePath(`/admin/properties/${propertyId}/photos`);
 }
