@@ -184,7 +184,7 @@ Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy
    Právne formulácie pri zrušení účtu zapíš do Otázok pre Martina na kontrolu.
 4. Playwright (Ukážkový klient, PC + mobil): prechod prehľad → pobyt → späť drobčekmi, karta Moje údaje, stiahnutie údajov; axe.
 
-### Z44 [B] — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
+### Z44 [B] 🔄 — Detail pobytu: stavy, rozpis v účte pobytu, žiadosť o zrušenie (pripomienka 30, 17. 10.)
 Podľa toho istého návrhu, doska `StavyPobytu` (prepínač stavov hore). Lišta účtu a drobčeky robí Z43 — nezasahuj do nich (len vlož komponent, ak už existuje).
 1. **Čaká na platbu:** navrchu karta s QR (PAY by square), sumou, IBAN, VS, lehotou a vetou o automatickom zrušení; doobjednávanie skryté s vetou „po zaplatení“.
 2. **Počas pobytu:** odomknuté pokyny ako dlaždice (kód od dverí, Wi-Fi, príchod, odchod — z údajov objektu, nič natvrdo), text pokynov, „Navigovať v Google Mapách“,
