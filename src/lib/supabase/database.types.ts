@@ -2581,6 +2581,7 @@ export type Database = {
           city_tax_municipality: string | null
           contact_name: string | null
           contact_phone: string | null
+          google_review_url: string | null
           hold_minutes: number
           iban: string | null
           owner_notification_email: string | null
@@ -2608,6 +2609,7 @@ export type Database = {
           city_tax_municipality?: string | null
           contact_name?: string | null
           contact_phone?: string | null
+          google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
           owner_notification_email?: string | null
@@ -2635,6 +2637,7 @@ export type Database = {
           city_tax_municipality?: string | null
           contact_name?: string | null
           contact_phone?: string | null
+          google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
           owner_notification_email?: string | null

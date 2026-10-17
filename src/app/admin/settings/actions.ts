@@ -77,6 +77,14 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
   const { stay_account_limit, upsell_offer_days, ...settings } = parsed.data;
+  // Module reviews: Google link offered after a review — only when the form had it.
+  const google = form.has("google_review_url")
+    ? z
+        .union([z.url().startsWith("https://").max(500), z.literal("")])
+        .transform((v) => v || null)
+        .safeParse(String(form.get("google_review_url") ?? "").trim())
+    : null;
+  if (google && !google.success) return fail("invalid");
   // Module checkin: tax for accommodation and retention — only when the form had them.
   let checkin = {};
   if (form.has("checkin_retention_days")) {
@@ -96,6 +104,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     tenant_id: tenant.id,
     ...settings,
     ...checkin,
+    ...(google?.success ? { google_review_url: google.data } : {}),
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     ...(upsell_offer_days === undefined ? {} : { upsell_offer_days }),
     cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),

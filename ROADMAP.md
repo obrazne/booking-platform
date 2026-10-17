@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** Z38 (recenzie pre hostí); **B:** ~~Z37~~ ✅ → ~~Z39~~ ✅ → **Z42** (kolízia termínov — panel a odkazy).
+- **Ďalší krok pre Claude Code:** dve linky naraz — **A:** ~~Z38 (recenzie pre hostí)~~ ✅ — linka A má frontu prázdnu; **B:** ~~Z37~~ ✅ → ~~Z39~~ ✅ → **Z42** (kolízia termínov — panel a odkazy).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -198,7 +198,7 @@ a zeleným pásom. Zaplatiť teraz → platobné údaje s QR. E-maily hosťovi s
 len aktívne služby s upsellom, s odkazom do účtu). Modul v katalógu → hotový. Playwright: objednanie na účet pobytu, objednanie s potvrdením,
 zrušenie, limit účtu pobytu.
 
-### Z38 [A] — Recenzie pre hostí a na stránke (po Z34)
+### Z38 ✅ [A] — Recenzie pre hostí a na stránke (po Z34)
 Formulár „Ako sa vám u nás páčilo?“ v detaile ukončeného pobytu (hviezdičky, podrobnosti, text, zobrazené meno, poďakovanie s Google odkazom
 pre všetkých — URL Google profilu je nastavenie klienta, bez nej sa tlačidlo neukáže); odkaz z pozvánky (Z34) vedie sem. Na stránke objektu
 sekcia podľa `Recenzie` (priemer, pruhy, overenie, filtre, odpovede, vybrané, iné zdroje oddelene); v košíku a hore na detaile vybraná
@@ -325,6 +325,17 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z38: **recenzie pre hostí a na stránke** (B11, návrh v2.3 `UcetPobyt`, `Recenzie`). Modul Recenzie je v katalógu **hotový**.
+  - **Účet hosťa → ukončený pobyt:** „Ako sa vám u nás páčilo? Úprimne.“ — hviezdičky s popisom (Sklamanie…Výborné), podrobnosti bodkami
+    (nepovinné), text, „Zobraziť ako“ (krstné + iniciála), pravidlá zverejnenia; odoslanie cez `submit_review` (oprávnenosť rozhoduje DB).
+    Po odoslaní poďakovanie, **„Ohodnotiť aj na Google ↗“ všetkým bez ohľadu na hviezdičky** (nové nastavenie klienta `google_review_url`,
+    Nastavenia → pri module Recenzie) a „Rezervovať znova“. Odkaz z pozvánky `/ucet/pobyt/<id>/hodnotenie` vedie sem (cez prihlásenie).
+    Cez prístupový odkaz sa nehodnotí (pozvánka vedie do účtu).
+  - **Stránka objektu:** sekcia „Hostia hovoria“ s overenými recenziami nahrádza referencie, keď sú (priemer, čiastkové pruhy, „Overené
+    recenzie.“, filtre Všetky / S odpoveďou / Kritické, odpovede majiteľa, výber majiteľa, Zobraziť všetky); ručné referencie pod tým
+    ako „Hodnotenia z iných zdrojov“. V košíku a galérii vybrané overené recenzie namiesto ručných. **schema.org AggregateRating len
+    z overených zverejnených recenzií** (`review_summary`).
+  - Playwright `reviews-guest.spec.ts` (pozvánka → prihlásenie → hodnotenie → Google → zverejnenie → filter kritických → JSON-LD, axe); celá sada 61 ok.
 - 2026-10-17 — Z41: **ukážka na STRÖMY vytvorená znova** (Martin): `demo-data --tenant stromy --force --with-real-calendar` — bez ukážkových
   iCal kanálov a portálových udalostí, rezervácia (b) na `zona-hosta@stromy-demo.invalid`, takže **neodišiel žiadny e-mail** (overené).
   48 ukážkových rezervácií (a 2026-0647, b 2026-0648, c 2026-0649), recenzie, objednávky, check-iny, dokumenty, blokácia. Ostré kalendáre

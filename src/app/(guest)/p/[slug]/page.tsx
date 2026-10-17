@@ -22,6 +22,7 @@ import type { GuestTestimonial, SectionData } from "@/core/sections/types";
 import { nextFreeStay } from "@/core/booking/next-free";
 import { Container } from "@/core/sections/ui";
 import { getTenantFromHost } from "@/core/tenant/current";
+import { loadVerifiedReviews } from "@/modules/reviews/guest/public";
 
 function one(v: string | string[] | undefined): string {
   return Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
@@ -45,6 +46,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
     publicLocation(p.id),
   ]);
 
+  const verified = modules.includes("reviews") ? await loadVerifiedReviews(tenant.id, p.id) : null;
   const unit = units.find((u) => u.id === one(sp.unit)) ?? units[0];
   if (!unit) notFound();
   const today = todayIso();
@@ -77,6 +79,19 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
       featured: r.featured,
     }))
     .filter((r) => r.text);
+  // Cart and gallery: the reviews the owner featured, verified, instead of the manual testimonials (Z38).
+  const featuredVerified: GuestTestimonial[] = (verified?.reviews ?? [])
+    .filter((r) => r.featured && r.body)
+    .map((r) => ({
+      id: r.id,
+      author: r.name,
+      text: r.body,
+      source: "verified",
+      sourceUrl: null,
+      stayMonth: r.stayMonth,
+      featured: true,
+    }));
+  const bookingTestimonials = featuredVerified.length ? featuredVerified : testimonials;
   const termById = new Map(terms.map((x) => [x.id, x]));
   const highlights = detail.highlighted
     .map((h) => {
@@ -116,6 +131,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
     reviewsUrl: detail.reviewsUrl,
     contact: contactInfo,
     testimonials,
+    verified,
     services: serviceRows.map((s) => ({
       id: s.id,
       name: tr(s.name, locale),
@@ -147,7 +163,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         propertyName: p.booking_mode === "units" ? `${p.name} — ${unit.name}` : p.name,
         propertyCity: p.city,
         photos: photoList,
-        testimonials,
+        testimonials: bookingTestimonials,
         reviewsUrl: detail.reviewsUrl,
         settings: {
           paymentDueHours: settings.paymentDueHours,
@@ -195,6 +211,29 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
               <ChevronLeft className="size-4" /> {t("property.back")}
             </Link>
           </Container>
+        ) : null}
+        {verified ? (
+          // Structured data: the rating only from verified published reviews (Z38) — never from manual testimonials.
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "LodgingBusiness",
+                name: p.name,
+                address: p.city
+                  ? { "@type": "PostalAddress", addressLocality: p.city, addressCountry: p.country }
+                  : undefined,
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: verified.average,
+                  reviewCount: verified.count,
+                  bestRating: 5,
+                  worstRating: 1,
+                },
+              }).replace(/</g, "\\u003c"),
+            }}
+          />
         ) : null}
         <PropertySections sections={detail.sections} data={sectionData} modules={modules} />
       </main>

@@ -62,6 +62,8 @@ export type SectionData = {
   reviewsUrl: string | null;
   contact: { name: string | null; phone: string | null; whatsapp: string | null } | null;
   testimonials: GuestTestimonial[];
+  /** Verified reviews from stays (module reviews, Z38); they replace the testimonials section when there are some. */
+  verified: import("@/modules/reviews/guest/public").VerifiedReviews | null;
   services: {
     id: string;
     name: string;

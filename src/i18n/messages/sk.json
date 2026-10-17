@@ -337,7 +337,63 @@
     },
     "reviews": {
       "nav": "Recenzie",
-      "title": "Recenzie"
+      "title": "Recenzie",
+      "guest": {
+        "kicker": "Ohodnoťte pobyt",
+        "title": "Ako sa vám u nás páčilo?",
+        "title2": "Úprimne.",
+        "lead": "Vaše hodnotenie pomôže ďalším hosťom aj nám. Hodnotiť môžete do {date}.",
+        "overall": "Celkovo",
+        "stars": {
+          "1": "Sklamanie",
+          "2": "Nič moc",
+          "3": "V poriadku",
+          "4": "Veľmi dobré",
+          "5": "Výborné"
+        },
+        "starAria": "{n} z 5 — {label}",
+        "details": "Podrobnejšie",
+        "optional": "nepovinné",
+        "partAria": "{part}: {n} z 5",
+        "text": "Čo by ste povedali ďalším hosťom?",
+        "textPlaceholder": "Čo sa vám páčilo, čo by sme mohli zlepšiť…",
+        "showAs": "Zobraziť ako",
+        "rules": "Recenzia sa zverejní na stránke {property} do 3 dní spolu s mesiacom pobytu. Zverejňujeme všetky recenzie — nezverejníme len text s vulgarizmami, osobnými údajmi alebo bez súvisu s pobytom. Majiteľ môže verejne odpovedať.",
+        "submit": "Odoslať hodnotenie",
+        "needStars": "Vyberte celkové hodnotenie.",
+        "thanks": "Ďakujeme.",
+        "thanksName": "Ďakujeme, {name}.",
+        "thanks2": "Veľmi to pomáha.",
+        "thanksPending": "Vaša recenzia sa zverejní do 3 dní. Ak by ste chceli, budeme radi aj za hodnotenie na Google — ľudia tam ubytovanie často hľadajú.",
+        "thanksPublished": "Vaša recenzia je zverejnená. Ak by ste chceli, budeme radi aj za hodnotenie na Google — ľudia tam ubytovanie často hľadajú.",
+        "google": "Ohodnotiť aj na Google",
+        "rebook": "Rezervovať znova",
+        "errors": {
+          "expired": "Čas na hodnotenie tohto pobytu už uplynul.",
+          "exists": "Tento pobyt ste už ohodnotili.",
+          "generic": "Hodnotenie sa nepodarilo odoslať. Skúste to znova."
+        }
+      },
+      "public": {
+        "ofVerified": "z {count, plural, one {1 overenej recenzie} few {# overených recenzií} other {# overených recenzií}}",
+        "verifiedTitle": "Overené recenzie.",
+        "verifiedText": "Hodnotiť môže len hosť, ktorý u nás býval, a len raz za pobyt. Zverejňujeme všetky — okrem textov s vulgarizmami, osobnými údajmi alebo bez súvisu s pobytom.",
+        "filters": "Filtrovať recenzie",
+        "filterAll": "Všetky · {count}",
+        "filterReply": "S odpoveďou majiteľa",
+        "filterCritical": "Kritické (3★ a menej)",
+        "featured": "Výber majiteľa",
+        "starsAria": "{rating} z 5 hviezdičiek",
+        "reply": "Odpoveď majiteľa",
+        "replyFrom": "Odpoveď majiteľa · {name}",
+        "verifiedStay": "Overený pobyt",
+        "noneInFilter": "Žiadna recenzia nezodpovedá filtru.",
+        "showAll": "Zobraziť všetky ({count})",
+        "othersTitle": "Hodnotenia z iných zdrojov",
+        "othersText": "Pridal ich majiteľ z Google, Bookingu a ďalších zdrojov. Neoverujeme ich a do priemeru sa nepočítajú."
+      },
+      "googleUrl": "Odkaz na hodnotenie na Google",
+      "googleUrlHint": "Po odoslaní recenzie ho uvidí každý hosť (bez ohľadu na hviezdičky). V profile firmy na Google: Získať viac recenzií → odkaz."
     },
     "upsell": {
       "nav": "Upsell",
@@ -1294,7 +1350,8 @@
         "booking": "Booking.com",
         "airbnb": "Airbnb",
         "email": "e-mail",
-        "other": "priamo od hostí"
+        "other": "priamo od hostí",
+        "verified": "overený pobyt"
       },
       "reviewsOrigin": "Vybrané hodnotenia hostí, ktoré majiteľ zverejnil so súhlasom. Zdroj: {sources}.",
       "moreReviews": "Ďalšie hodnotenia na webe ubytovania",

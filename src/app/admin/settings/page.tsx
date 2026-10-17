@@ -13,14 +13,16 @@ import { saveSettings } from "./actions";
 
 export default async function SettingsPage() {
   const active = await requireTenant();
-  const [t, tf, tu, tc, tenant, upsell, checkin] = await Promise.all([
+  const [t, tf, tu, tc, tr, tenant, upsell, checkin, reviews] = await Promise.all([
     getTranslations("settings"),
     getTranslations("forms"),
     getTranslations("modules.upsell"),
     getTranslations("modules.checkin.settings"),
+    getTranslations("modules.reviews"),
     getTenantInfo(active.tenantId),
     isModuleEnabled(active.tenantId, "upsell"),
     isModuleEnabled(active.tenantId, "checkin"),
+    isModuleEnabled(active.tenantId, "reviews"),
   ]);
   const supabase = await createClient();
   const { data: s } = await supabase
@@ -158,6 +160,17 @@ export default async function SettingsPage() {
                 defaultValue={s?.reviews_url ?? ""}
               />
             </Field>
+            {reviews ? (
+              <Field label={tr("googleUrl")} hint={tr("googleUrlHint")} htmlFor="google_review_url">
+                <Input
+                  id="google_review_url"
+                  name="google_review_url"
+                  type="url"
+                  placeholder="https://"
+                  defaultValue={s?.google_review_url ?? ""}
+                />
+              </Field>
+            ) : null}
           </CardContent>
         </Card>
         <Card>

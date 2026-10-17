@@ -45,6 +45,7 @@ import { tr } from "@/core/i18n/localized";
 import { cn } from "@/lib/utils";
 import { InteractiveMap } from "./interactive-map";
 import { MapPreview } from "./map-preview";
+import { VerifiedReviewsSection } from "@/modules/reviews/guest/reviews-section";
 import { googleDirectionsUrl } from "@/core/maps/config";
 import {
   defineSection,
@@ -792,6 +793,27 @@ const testimonials = defineSection({
   type: "testimonials",
   schema: z.object({ ...headingFields }),
   render: async ({ content, data }) => {
+    if (data.verified) {
+      // Module reviews (Z38): verified reviews replace the manual testimonials, which stay below as other sources.
+      const t = await getTranslations("guest.sections.testimonials");
+      return (
+        <section id="recenzie" className="scroll-mt-20">
+          <Container className="py-20 sm:py-24">
+            <VerifiedReviewsSection
+              verified={data.verified}
+              others={data.testimonials}
+              heading={{
+                kicker: pick(content.kicker, data.locale, t("kicker")),
+                title: pick(content.title, data.locale, t("title")),
+                subtitle: pick(content.subtitle, data.locale, t("subtitle")),
+              }}
+              ownerName={data.contact?.name?.trim().split(/\s+/)[0] ?? null}
+              locale={data.locale}
+            />
+          </Container>
+        </section>
+      );
+    }
     if (data.testimonials.length === 0) return null;
     const t = await getTranslations("guest.sections.testimonials");
     const tv = await getTranslations("guest.v2");
