@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { SectionDef } from "@/core/sections/types";
 
@@ -42,7 +42,8 @@ export type SlotProps = {
 export type GuestTodo = { key: string; tone: "warn" | "info"; text: string };
 
 /** Groups of the side menu (v1.2) a module item can join; an empty group is not shown. */
-export type NavGroupKey = "reservations" | "property" | "offer" | "connections" | "settings";
+export type NavGroupKey =
+  "reservations" | "messages" | "property" | "offer" | "connections" | "settings";
 
 export type ModuleNavItem = {
   /** Path under /admin, e.g. "/admin/services". */
@@ -52,6 +53,21 @@ export type ModuleNavItem = {
   /** Translation key inside the module's message namespace. */
   labelKey: string;
   icon: LucideIcon;
+  /** Warm counter next to the item (e.g. conversations waiting for a reply, Z46). */
+  badge?: (tenantId: string) => Promise<number>;
+};
+
+/**
+ * A tab a module adds to the reservation panel (Z46, e.g. Správy) next to "Prehľad"; opened by `?tab=<key>`.
+ * Null = no tab for this reservation (e.g. a portal stay).
+ */
+export type ReservationTab = {
+  key: string;
+  render: (args: {
+    tenantId: string;
+    reservationId: string;
+    locale: string;
+  }) => Promise<{ label: string; count?: number; content: ReactNode } | null>;
 };
 
 export type ModuleManifest = {
@@ -75,6 +91,8 @@ export type ModuleManifest = {
   guestTodos?: (args: { reservationId: string; locale: string }) => Promise<GuestTodo[]>;
   /** Section types for the property page (B7), e.g. services on request. */
   sections?: readonly SectionDef[];
+  /** Tabs of the reservation panel (Z46). */
+  reservationTabs?: readonly ReservationTab[];
   /** After the control center switches the module on for a client (e.g. default settings — messages, Z45). */
   onEnable?: (tenantId: string) => Promise<void>;
   /**

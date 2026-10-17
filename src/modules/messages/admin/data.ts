@@ -1,0 +1,145 @@
+import "server-only";
+import { tr } from "@/core/i18n/localized";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import type { MessageAnchor } from "../rules";
+
+export type ConversationMessage = {
+  id: string;
+  sender: "guest" | "staff" | "auto";
+  body: string;
+  createdAt: string;
+  author: string | null;
+  rule: { name: string; anchor: MessageAnchor; offsetDays: number } | null;
+  readByGuest: boolean;
+};
+
+export type ScheduledMessage = {
+  ruleId: string;
+  name: string;
+  anchor: MessageAnchor;
+  offsetDays: number;
+  sendAt: string;
+  body: string;
+  skipped: boolean;
+  changed: boolean;
+};
+
+/**
+ * One conversation for the team (Z46, RLS): messages with their authors and rules, what is scheduled (also left
+ * out), quick replies. Null for a portal stay (no guest here) or a reservation of another client.
+ */
+export async function loadConversation(reservationId: string, locale: string) {
+  const supabase = await createClient();
+  const { data: r } = await supabase
+    .from("reservations")
+    .select("id, tenant_id, guest_name, source, status, locale")
+    .eq("id", reservationId)
+    .maybeSingle();
+  if (!r || r.source === "booking" || r.source === "airbnb") return null;
+  const [
+    { data: messages },
+    { data: thread },
+    { data: scheduled },
+    { data: rules },
+    { data: quick },
+  ] = await Promise.all([
+    supabase
+      .from("messages")
+      .select("id, sender, body, created_at, author_id, rule_id")
+      .eq("reservation_id", reservationId)
+      .order("created_at"),
+    supabase
+      .from("message_threads")
+      .select("team_read_at, guest_read_at")
+      .eq("reservation_id", reservationId)
+      .maybeSingle(),
+    supabase.rpc("scheduled_messages", { p_reservation_id: reservationId }),
+    supabase
+      .from("message_rules")
+      .select("id, name, anchor, offset_days")
+      .eq("tenant_id", r.tenant_id),
+    supabase
+      .from("quick_replies")
+      .select("id, title, body")
+      .eq("tenant_id", r.tenant_id)
+      .order("sort"),
+  ]);
+  // Names of the team members who wrote (profiles of other members through the server).
+  const authorIds = [
+    ...new Set((messages ?? []).map((m) => m.author_id).filter(Boolean)),
+  ] as string[];
+  const { data: authors } = authorIds.length
+    ? await createAdminClient().from("profiles").select("id, full_name").in("id", authorIds)
+    : { data: [] };
+  const ruleOf = (id: string | null) => {
+    const rule = (rules ?? []).find((x) => x.id === id);
+    return rule
+      ? {
+          name: tr(rule.name, locale),
+          anchor: rule.anchor as MessageAnchor,
+          offsetDays: rule.offset_days,
+        }
+      : null;
+  };
+  const guestRead = thread?.guest_read_at ?? null;
+  return {
+    reservation: { id: r.id, guestName: r.guest_name, status: r.status },
+    teamReadAt: thread?.team_read_at ?? null,
+    messages: (messages ?? []).map((m): ConversationMessage => ({
+      id: m.id,
+      sender: m.sender as ConversationMessage["sender"],
+      body: m.body,
+      createdAt: m.created_at,
+      author: (authors ?? []).find((a) => a.id === m.author_id)?.full_name ?? null,
+      rule: ruleOf(m.rule_id),
+      readByGuest: Boolean(guestRead && guestRead >= m.created_at),
+    })),
+    scheduled: (scheduled ?? []).map((s): ScheduledMessage => ({
+      ruleId: s.rule_id,
+      name: tr(s.rule_name, locale),
+      anchor: (ruleOf(s.rule_id)?.anchor ?? "check_in") as MessageAnchor,
+      offsetDays: ruleOf(s.rule_id)?.offsetDays ?? 0,
+      sendAt: s.send_at,
+      body: s.body,
+      skipped: s.skipped,
+      changed: s.changed,
+    })),
+    quickReplies: quick ?? [],
+  };
+}
+
+export type Conversation = NonNullable<Awaited<ReturnType<typeof loadConversation>>>;
+
+/** Messages of the guest the team has not read yet (the count on the tab). */
+export function unreadCount(c: Conversation): number {
+  return c.messages.filter(
+    (m) => m.sender === "guest" && (!c.teamReadAt || m.createdAt > c.teamReadAt),
+  ).length;
+}
+
+export type InboxFilter = "all" | "waiting" | "upcoming" | "past";
+
+/** The inbox (database `message_inbox`) and the counts of the filters. */
+export async function loadInbox(tenantId: string, filter: InboxFilter, search: string) {
+  const supabase = await createClient();
+  const [{ data: rows }, { data: all }] = await Promise.all([
+    supabase.rpc("message_inbox", {
+      p_tenant_id: tenantId,
+      p_filter: filter,
+      p_search: search || undefined,
+    }),
+    supabase.rpc("message_inbox", { p_tenant_id: tenantId, p_filter: "all" }),
+  ]);
+  const list = all ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  return {
+    rows: rows ?? [],
+    counts: {
+      all: list.length,
+      waiting: list.filter((r) => r.waiting).length,
+      upcoming: list.filter((r) => r.check_out >= today && r.status !== "cancelled").length,
+      past: list.filter((r) => r.check_out < today || r.status === "cancelled").length,
+    },
+  };
+}

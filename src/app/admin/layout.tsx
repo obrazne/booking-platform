@@ -9,6 +9,7 @@ import {
   Gift,
   House,
   LayoutDashboard,
+  MessageCircle,
   Plus,
   RefreshCw,
   Search,
@@ -73,6 +74,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       .limit(2);
     const extra: Record<NavGroupKey, ShellNavItem[]> = {
       reservations: [],
+      messages: [],
       property: [],
       offer: [],
       connections: [],
@@ -82,7 +84,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       for (const nav of m.navItems ?? []) {
         // Module labels live in the module's own namespace; key is checked when the module is written.
         const label = t(`${m.messages}.${nav.labelKey}` as Parameters<typeof t>[0]);
-        extra[nav.group].push({ href: nav.href, label });
+        const badge = nav.badge ? await nav.badge(active.tenantId).catch(() => 0) : undefined;
+        extra[nav.group].push({ href: nav.href, label, badge });
       }
     }
     const single = properties?.length === 1 ? `/admin/properties/${properties[0]!.id}` : null;
@@ -104,6 +107,17 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           ...extra.reservations,
         ],
       },
+      // Modules' own group (Z46): Správy after Rezervácie, with the badge of what waits.
+      ...(extra.messages.length
+        ? [
+            {
+              label: t("nav.messages"),
+              icon: <MessageCircle />,
+              badge: extra.messages.reduce((sum, i) => sum + (i.badge ?? 0), 0),
+              children: extra.messages,
+            },
+          ]
+        : []),
       // One property: straight to its tabs. Several: the list first, the tabs are on each property.
       single
         ? {

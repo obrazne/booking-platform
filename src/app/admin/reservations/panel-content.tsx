@@ -1,4 +1,5 @@
 import "server-only";
+import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { CircleCheck, FileText, Mail, Phone } from "lucide-react";
@@ -19,6 +20,8 @@ import { money } from "@/core/money/money";
 import { diffDays } from "@/core/pricing/dates";
 import { getTenantInfo } from "@/core/tenant/info";
 import { cancellationOutcome, parseBands } from "@/core/booking/cancellation";
+import { PanelTabs } from "@/core/admin/panel-tabs";
+import { reservationTabs } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { CancelReservationButton, NoteForm, ReservationActions } from "./panel-actions";
 import { getReservationDetail, SOURCES, type ReservationStatus } from "./query";
@@ -87,6 +90,29 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
     (d) => d.visible_when === "always" || (d.visible_when === "confirmed" && confirmed),
   );
 
+  // Tabs modules add (Z46, e.g. Správy) next to "Prehľad"; without them the panel stays one column.
+  const moduleTabs = (
+    await Promise.all(
+      (await reservationTabs(active.tenantId)).map(async (tab) => {
+        const r = await tab
+          .render({ tenantId: active.tenantId, reservationId: detail.id, locale })
+          .catch(() => null);
+        return r ? { key: tab.key, ...r } : null;
+      }),
+    )
+  ).filter((x): x is NonNullable<typeof x> => x !== null);
+  const withTabs = (overview: ReactNode) =>
+    moduleTabs.length ? (
+      <PanelTabs
+        tabs={[
+          { key: "overview", label: t("panel.overviewTab"), content: overview },
+          ...moduleTabs,
+        ]}
+      />
+    ) : (
+      overview
+    );
+
   return {
     label: `${detail.number} · ${detail.guest_name}`,
     header: detail ? (
@@ -118,7 +144,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
           <CancelReservationButton id={detail.id} label={detail.number} />
         </>
       ) : undefined,
-    body: (
+    body: withTabs(
       <div className="grid gap-6 text-sm font-normal [&>*]:min-w-0">
         {(() => {
           const item = detail.items[0];
@@ -390,7 +416,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             </PanelCollapsible>
           ) : null}
         </div>
-      </div>
+      </div>,
     ),
   };
 }

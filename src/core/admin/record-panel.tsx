@@ -13,10 +13,20 @@ const OPENED_IN_APP_KEY = "record-panel-opened";
 /** Elements that switch the panel to another record instead of closing it (rows of the list, calendar bars). */
 const SWITCHES_PANEL = "[data-panel-switch]";
 
-function hrefWithPanel(pathname: string, params: URLSearchParams, panel: string | null): string {
+/** Tab of the panel (`?tab=…`, Z46) — goes away with the panel. */
+const TAB_PARAM = "tab";
+
+function hrefWithPanel(
+  pathname: string,
+  params: URLSearchParams,
+  panel: string | null,
+  extra?: Record<string, string>,
+): string {
   const next = new URLSearchParams(params);
+  next.delete(TAB_PARAM);
   if (panel) next.set(PANEL_PARAM, panel);
   else next.delete(PANEL_PARAM);
+  for (const [k, v] of Object.entries(extra ?? {})) next.set(k, v);
   const qs = next.toString();
   return qs ? `${pathname}?${qs}` : pathname;
 }
@@ -52,10 +62,16 @@ function loadPanel(type: string, id: string, fresh = false): Promise<PanelConten
 }
 
 /** Changes the URL without asking the server for the page again (Next keeps useSearchParams in sync). */
-function setPanelInUrl(value: string | null, mode: "push" | "replace") {
+function setPanelInUrl(
+  value: string | null,
+  mode: "push" | "replace",
+  extra?: Record<string, string>,
+) {
   const url = new URL(window.location.href);
+  url.searchParams.delete(TAB_PARAM);
   if (value) url.searchParams.set(PANEL_PARAM, value);
   else url.searchParams.delete(PANEL_PARAM);
+  for (const [k, v] of Object.entries(extra ?? {})) url.searchParams.set(k, v);
   const next = url.pathname + url.search + url.hash;
   if (mode === "push") window.history.pushState(null, "", next);
   else window.history.replaceState(null, "", next);
@@ -70,9 +86,15 @@ function setPanelInUrl(value: string | null, mode: "push" | "replace") {
 export function PanelLink({
   type,
   id,
+  params: extra,
   className,
   ...props
-}: { type: string; id: string } & Omit<ComponentProps<typeof Link>, "href">) {
+}: {
+  type: string;
+  id: string;
+  /** More of the URL, e.g. `{ tab: "messages" }` to open a tab of the panel (Z46). */
+  params?: Record<string, string>;
+} & Omit<ComponentProps<typeof Link>, "href">) {
   const pathname = usePathname();
   const params = useSearchParams();
   const value = panelValue(type, id);
@@ -92,7 +114,7 @@ export function PanelLink({
       className={cn(selected && "bg-accent-soft", className)}
       // Switching records replaces the entry, so one Back still closes the panel.
       replace={current !== null}
-      href={hrefWithPanel(pathname, params, value)}
+      href={hrefWithPanel(pathname, params, value, extra)}
       scroll={false}
       onMouseEnter={(e) => {
         prefetch();
@@ -116,7 +138,7 @@ export function PanelLink({
         const plain = !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0;
         if (plain && loaders.has(type)) {
           e.preventDefault();
-          setPanelInUrl(value, current === null ? "push" : "replace");
+          setPanelInUrl(value, current === null ? "push" : "replace", extra);
         }
       }}
     />

@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha — hotová, čaká na tajné hodnoty od Martina)** → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha — hotová, čaká na tajné hodnoty od Martina)** → ~~Z46 (Správy: administrácia)~~ ✅ → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina (Z50, ~10 min):** pridať do GitHubu tri tajné hodnoty pre nočnú zálohu stagingu podľa
   `docs/prevadzka/zaloha-a-obnova.md` → *Jednorazové nastavenie* (kľúč `age-keygen`, súkromný kľúč do správcu hesiel), potom spustiť
@@ -210,7 +210,7 @@ prepnúť na iné úložisko. Nič neplatené.
    nahratie súborov späť; bez tajných hodnôt. **Jedna skúšobná obnova s Martinom** (on rozšifruje) — výsledok do Denníka.
 7. Pozn. pre 3f: na produkciu úložisko v EÚ (A9) — GitHub artefakty sú dočasné riešenie len pre staging.
 
-### Z46 [B] 🔄 — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
+### Z46 [B] ✅ — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
 Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `SpravyAuto`, `Sidebar`.
 1. Menu: skupina Správy s odznakom (Schránka, Automatické správy), len so zapnutým modulom.
 2. Schránka `/admin/messages` (filtre, riadky, hľadanie) → klik otvorí **panel rezervácie na karte Správy** (`?panel=reservation:id&tab=messages`).
@@ -433,6 +433,18 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z46 [linka B]: **modul Správy — administrácia** (vizuál v1.3). (Claude Code)
+  - Menu: skupina **Správy** za Rezerváciami (Schránka s počítadlom čakajúcich konverzácií, Automatické správy) — len so zapnutým modulom;
+    modul je teraz `ready` (Z46 + Z47 hotové) → v riadiacom centre sa dá zapnúť.
+  - **Schránka** `/admin/messages`: filtre (Všetky / Čakajú na odpoveď / Pred príchodom a počas pobytu / Po odchode), hľadanie, riadok
+    s posledným textom („Vy:“, „Automaticky:“), stavom pobytu a neprečítanými; klik otvorí panel rezervácie na karte Správy.
+  - **Karty v paneli rezervácie** (Prehľad + karty modulov, `?tab=`): Správy — konverzácia, odpoveď, rýchle odpovede, naplánované
+    automatické správy (upraviť pre tohto hosťa / neposielať / vrátiť); otvorenie označí konverzáciu ako prečítanú pre celý tím.
+  - **Automatické správy** `/admin/messages/auto`: časová os pobytu po fázach, vypínač, panel úprav (kedy, text s premennými, náhľad
+    s ukážkovým hosťom, upozornenie keď ide v e-maile s pokynmi/ponukou, skúšobný e-mail sebe); **rýchle odpovede** — pridať,
+    upraviť, poradie, zmazať. Predvolené pravidlá sa doplnia pri prvej návšteve (aj modul zapnutý priamo v DB).
+  - Test `e2e/messages-admin.spec.ts` (Ukážkový klient, „+b“, axe): schránka → panel → rýchla odpoveď → neposielať/vrátiť → úprava
+    pravidla (vráti sa späť). Ukážkové správy (Z45) sa prejavia pri najbližšom `npm run demo-data -- --reset` (len Ukážkový klient).
 - 2026-10-17 — Z50 [linka B]: **nočná záloha stagingu** — hotové, čaká na tajné hodnoty od Martina. (Claude Code)
   - `.github/workflows/backup-staging.yml` (každú noc 1:00 UTC + ručne): `supabase db dump` (roly, schéma, dáta), všetky súbory
     z úložiska (`scripts/backup-storage.mjs`, zoznam s veľkosťami), **obnova v tom istom behu** do čistej databázy Supabase

@@ -10,6 +10,7 @@ import type {
   GuestTodo,
   ModuleEvent,
   ModuleManifest,
+  ReservationTab,
   SlotName,
 } from "./types";
 
@@ -112,4 +113,9 @@ export async function runModuleOnEnable(key: string, tenantId: string): Promise<
 export async function guestContactByModule(tenantId: string): Promise<boolean> {
   const keys = new Set(await enabledModuleKeysPublic(tenantId));
   return resolveEnabled(MODULES, keys).some((m) => m.guestContact);
+}
+
+/** Tabs enabled modules add to the reservation panel (Z46), in the order of the modules. */
+export async function reservationTabs(tenantId: string): Promise<ReservationTab[]> {
+  return (await getEnabledModules(tenantId)).flatMap((m) => m.reservationTabs ?? []);
 }

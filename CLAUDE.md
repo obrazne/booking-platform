@@ -133,6 +133,8 @@ kód a Wi-Fi z `property_private`, zrušenie); moduly vkladajú riadky do karty 
 **Správy (Z45, modul `messages`):** tabuľky `messages`, `message_threads`, `message_rules`, `message_overrides`, `quick_replies`; zápis len
 cez `send_message` (aj `p_token`), automatika `messages_tick` (cron 5 min). Moduly môžu pridať blok do e-mailu hosťa (`emailBlocks`) a nastavenia
 pri zapnutí (`onEnable`) — háčiky manifestu. Pri novom druhu e-mailu/upozornenia ber zoznam z poslednej migrácie (teraz `…290000`).
+Administrácia (Z46): `src/modules/messages/admin/` (dáta, akcie, konverzácia, `auto.tsx`), stránky `/admin/messages` (schránka) a
+`/admin/messages/auto`; karty panelu rezervácie dodávajú moduly cez `reservationTabs` (`PanelTabs`, `?tab=`), počítadlo v menu cez `navItems[].badge`.
 **Kolízie kalendárov (Z42):** iCal udalosť cez obsadený termín = `occupancy.conflict` (nie blokuje); vyriešenie `resolve_conflict`,
 zoznam a panel `/admin/collisions` (`src/core/admin/collisions.ts`), stav kanála `ical_channel_status` (len nevyriešené).
 **Online check-in (Z36, modul `checkin`):** pravidlá krajiny v `checkin_rules` (DB) a `src/modules/checkin/rules.ts` — meniť spolu.
