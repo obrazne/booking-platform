@@ -31,6 +31,7 @@ export const TENANT_KINDS = [
   { kind: "order_awaiting", email: "no", module: "upsell" },
   { kind: "checkin_completed", email: "no", module: "checkin" },
   { kind: "foreigner_unreported", email: "no", module: "checkin" },
+  { kind: "account_deletion", email: "no" },
 ] as const;
 
 export const PLATFORM_KINDS = [

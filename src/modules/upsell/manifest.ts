@@ -1,5 +1,6 @@
 import type { ModuleManifest } from "@/core/modules/types";
 import { GuestStayAccountCard, GuestStayAccountLines } from "./guest/stay-account-card";
+import { upsellTodos } from "./guest/todos";
 import { GuestStayOffers } from "./guest/stay-offers";
 import { StayAccountSection } from "./stay-account";
 
@@ -20,4 +21,5 @@ export const upsellModule: ModuleManifest = {
     "guest.stay.aside": GuestStayAccountCard,
     "guest.stay.account": GuestStayAccountLines,
   },
+  guestTodos: upsellTodos,
 };

@@ -51,10 +51,17 @@ test("guest account: login with a code, stays, payment, consent, cancellation, b
   // Dashboard: the stay booked with this e-mail is there.
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý deň, Zóna");
   await expect(page.getByText("Najbližší pobyt")).toBeVisible();
-  const rebook = page.getByRole("link", { name: "Rezervovať znova" }).first();
-  await expect(rebook).toHaveAttribute("href", /adults=3&children=1/);
+  await expect(page.getByRole("link", { name: "Rezervovať ďalší pobyt" })).toHaveAttribute(
+    "href",
+    "/",
+  );
 
-  // Marketing consent: one click on, one click off — both in the history.
+  // Marketing consent (Moje údaje, v2.4): one click on, one click off — both in the history.
+  await page
+    .getByRole("navigation", { name: "Môj účet" })
+    .getByRole("link", { name: "Moje údaje" })
+    .click();
+  await page.waitForURL(/\/ucet\/udaje/);
   await page.getByRole("button", { name: "Chcem dostávať novinky" }).click();
   await expect(page.getByRole("button", { name: "Odhlásiť z noviniek" })).toBeVisible();
   await page.getByRole("button", { name: "Odhlásiť z noviniek" }).click();
@@ -71,13 +78,13 @@ test("guest account: login with a code, stays, payment, consent, cancellation, b
     .eq("guest_id", guest!.id);
   expect(count).toBe(2);
 
-  // Detail: payment with QR, arrival instructions not yet, cancellation request.
-  await page.getByRole("link", { name: "Detail pobytu" }).first().click();
-  await expect(page.getByText("Platba prevodom")).toBeVisible();
-  await expect(page.getByRole("img", { name: /PAY by square/ }).locator("svg")).toBeVisible();
-  await expect(page.getByText(/Pokyny k príchodu a prístupové kódy uvidíte/)).toBeVisible();
-  await page.getByRole("button", { name: "Požiadať o zrušenie" }).click();
-  await expect(page.getByText("Žiadosť o zrušenie sme odoslali")).toBeVisible();
+  // Detail: payment with QR (states and cancellation in detail: stay-states.spec, Z44).
+  await page
+    .getByRole("navigation", { name: "Môj účet" })
+    .getByRole("link", { name: /Pobyty/ })
+    .click();
+  await page.getByRole("link", { name: /Otvoriť pobyt/ }).click();
+  await expect(page.getByRole("img", { name: /PAY by square/ }).first()).toBeVisible();
 
   // Sign out → zone asks for login again.
   await page.goto(`${GUEST_URL}/ucet`);

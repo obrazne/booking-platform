@@ -17,7 +17,10 @@ export async function CheckinScreen({
   locale,
   backHref,
   done,
+  crumbs,
 }: {
+  /** Breadcrumbs of the guest account (Z43) — they replace the "back" link. */
+  crumbs?: React.ReactNode;
   data: GuestCheckin;
   token?: string;
   locale: string;
@@ -36,10 +39,13 @@ export async function CheckinScreen({
             {t("kicker")}
           </span>
         </span>
-        <Link href={backHref} className="text-sm text-[#5a6672] hover:text-[#11212f]">
-          {t("back")}
-        </Link>
+        {crumbs ? null : (
+          <Link href={backHref} className="text-sm text-[#5a6672] hover:text-[#11212f]">
+            {t("back")}
+          </Link>
+        )}
       </Container>
+      {crumbs ? <Container className="pb-4">{crumbs}</Container> : null}
     </div>
   );
 

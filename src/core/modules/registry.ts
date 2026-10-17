@@ -3,7 +3,7 @@ import { cache } from "react";
 import { MODULES } from "@/modules";
 import { createClient } from "@/lib/supabase/server";
 import { isEnabledStatus, resolveEnabled } from "./resolve";
-import type { BookingEventName, ModuleEvent, ModuleManifest, SlotName } from "./types";
+import type { BookingEventName, GuestTodo, ModuleEvent, ModuleManifest, SlotName } from "./types";
 
 /** All modules known to the code (control center lists them with their switches). */
 export function listModules(): readonly ModuleManifest[] {
@@ -67,4 +67,19 @@ export async function slotComponents(tenantId: string, slot: SlotName) {
     const Component = m.slots?.[slot];
     return Component ? [{ key: m.key, Component }] : [];
   });
+}
+
+/** What enabled modules ask the guest to do for one stay (account v2.4, Z43). */
+export async function moduleGuestTodos(
+  tenantId: string,
+  reservationId: string,
+  locale: string,
+): Promise<GuestTodo[]> {
+  const keys = await enabledModuleKeysPublic(tenantId);
+  const lists = await Promise.all(
+    MODULES.filter((m) => m.guestTodos && keys.includes(m.key)).map((m) =>
+      m.guestTodos!({ reservationId, locale }),
+    ),
+  );
+  return lists.flat();
 }

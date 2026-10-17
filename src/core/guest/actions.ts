@@ -53,3 +53,15 @@ export async function requestStayCancellation(
   revalidatePath(`/ucet/pobyt/${reservationId}`);
   return { done: Boolean(data) };
 }
+
+/** "Zrušiť účet" (Z43): the request goes to the owner (notification); the database records it once. */
+export async function requestAccountDeletion(note: string): Promise<{ ok: boolean; at?: string }> {
+  const { tenant, supabase } = await requireGuest();
+  const { data, error } = await supabase.rpc("request_account_deletion", {
+    p_tenant_id: tenant.id,
+    p_note: note.slice(0, 300),
+  });
+  if (error || !data) return { ok: false };
+  revalidatePath("/ucet/udaje");
+  return { ok: true, at: data };
+}

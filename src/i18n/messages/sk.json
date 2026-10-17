@@ -373,7 +373,8 @@
           "expired": "Čas na hodnotenie tohto pobytu už uplynul.",
           "exists": "Tento pobyt ste už ohodnotili.",
           "generic": "Hodnotenie sa nepodarilo odoslať. Skúste to znova."
-        }
+        },
+        "todo": "Ohodnoťte pobyt"
       },
       "public": {
         "ofVerified": "z {count, plural, one {1 overenej recenzie} few {# overených recenzií} other {# overených recenzií}}",
@@ -516,6 +517,15 @@
           "invalid": "Skontrolujte výber.",
           "generic": "Nepodarilo sa to. Skúste to znova."
         }
+      },
+      "guestTodo": {
+        "ordered": "Objednané: {service} · {method} {amount}",
+        "awaiting": "Čaká na potvrdenie: {service} · {amount}",
+        "methods": {
+          "stay_account": "na účet pobytu",
+          "transfer": "prevodom",
+          "card": "kartou"
+        }
       }
     },
     "checkin": {
@@ -597,7 +607,9 @@
           "not_allowed": "Na túto akciu nemáte prístup. Otvorte pobyt znova z odkazu v e-maile.",
           "invalid": "Skontrolujte zadané údaje (dátum narodenia, číslo dokladu).",
           "generic": "Nepodarilo sa to uložiť. Skúste to znova."
-        }
+        },
+        "todo": "Vyplňte online check-in — na mieste už len kľúče",
+        "todoOpens": "Online check-in sa otvorí {date}"
       },
       "section": {
         "title": "Check-in",
@@ -1301,7 +1313,46 @@
         "cancelled": "Rezervácia je zrušená."
       },
       "arrivesIn": "Príchod {count, plural, one {zajtra} few {o # dni} other {o # dní}}",
-      "contactAsk": "Otázky? Odpovedá {name}."
+      "contactAsk": "Otázky? Odpovedá {name}.",
+      "tabs": {
+        "stays": "Pobyty",
+        "profile": "Moje údaje",
+        "badge": "{count, plural, one {1 vec na vybavenie} few {# veci na vybavenie} other {# vecí na vybavenie}}"
+      },
+      "crumbs": "Drobčeková navigácia",
+      "staysCrumb": "Pobyty",
+      "helloNext": "Tešíme sa na vás.",
+      "helloBack": "Vitajte späť.",
+      "nextIn": "Najbližší pobyt · {count, plural, =0 {dnes} one {zajtra} few {o # dni} other {o # dní}}",
+      "guests": "{count, plural, one {1 hosť} few {# hostia} other {# hostí}}",
+      "openStay": "Otvoriť pobyt",
+      "reviewStay": "Ohodnoťte pobyt",
+      "bookAnother": "Rezervovať ďalší pobyt",
+      "answers": "Odpovedá {name}",
+      "call": "Zavolať",
+      "todo": {
+        "pay": "Zaplaťte {amount}",
+        "payBy": "Zaplaťte {amount} do {date}",
+        "instructionsReady": "Pokyny k príchodu sú pripravené",
+        "instructionsFrom": "Pokyny k príchodu sa odomknú najskôr {date}"
+      },
+      "profile": {
+        "title": "Moje údaje.",
+        "title2": "Vyplníme ich za vás pri ďalšej rezervácii.",
+        "login": "Prihlásenie",
+        "loginText": "{email} · prihlasujete sa kódom z e-mailu, bez hesla.",
+        "dataTitle": "Moje dáta",
+        "dataText": "Stiahnite si kópiu svojich údajov alebo požiadajte o zrušenie účtu. Údaje, ktoré musíme uchovať zo zákona (doklady, kniha ubytovaných), zostanú do konca lehoty.",
+        "download": "Stiahnuť moje údaje",
+        "delete": "Zrušiť účet",
+        "deleteTitle": "Zrušiť účet?",
+        "deleteText": "Požiadame {tenant} o zrušenie vášho účtu. Údaje, ktoré netreba uchovať zo zákona, zmaže alebo anonymizuje; doklady a kniha ubytovaných zostanú do konca zákonnej lehoty. Rezervácie, ktoré ešte len prídu, to neruší.",
+        "deleteNote": "Poznámka (nepovinné)",
+        "deleteKeep": "Ponechať účet",
+        "deleteSend": "Odoslať žiadosť",
+        "deleteSent": "Žiadosť o zrušenie účtu sme odoslali {date}. Ozveme sa vám e-mailom.",
+        "deleteError": "Žiadosť sa nepodarilo odoslať. Skúste to znova."
+      }
     },
     "stay": {
       "hero": {
@@ -2479,6 +2530,10 @@
       "foreigner_unreported": {
         "title": "Cudzinec nenahlásený — {number}",
         "text": "{person} · nahlásiť polícii do {reportDue}"
+      },
+      "account_deletion": {
+        "title": "Hosť žiada zrušiť účet",
+        "text": "{guest} — údaje, ktoré netreba uchovať zo zákona, zmažte alebo anonymizujte"
       }
     },
     "settings": {
@@ -2506,7 +2561,8 @@
         "order_new": "Nová objednávka služby po rezervácii",
         "order_awaiting": "Objednávka čaká na moje potvrdenie",
         "checkin_completed": "Hosť dokončil online check-in",
-        "foreigner_unreported": "Cudzinec ešte nie je nahlásený (4. deň)"
+        "foreigner_unreported": "Cudzinec ešte nie je nahlásený (4. deň)",
+        "account_deletion": "Hosť žiada zrušiť účet"
       },
       "onlyExpired": "len pri neuhradení"
     }

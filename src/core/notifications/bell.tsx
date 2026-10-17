@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Star,
   Undo2,
+  UserX,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -44,6 +45,7 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   order_awaiting: { icon: ConciergeBell, tone: "warn" },
   checkin_completed: { icon: ClipboardCheck, tone: "accent" },
   foreigner_unreported: { icon: AlertTriangle, tone: "warn" },
+  account_deletion: { icon: UserX, tone: "warn" },
 };
 
 const TONE = {

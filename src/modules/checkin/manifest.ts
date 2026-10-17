@@ -1,5 +1,6 @@
 import { ClipboardCheck } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
+import { checkinTodos } from "./guest/todos";
 import { CheckinSection } from "./checkin-section";
 import { GuestCheckinCard } from "./guest/stay-card";
 
@@ -17,4 +18,5 @@ export const checkinModule: ModuleManifest = {
     { href: "/admin/arrivals", group: "reservations", labelKey: "nav", icon: ClipboardCheck },
   ],
   slots: { "booking.detail.tabs": CheckinSection, "guest.stay.top": GuestCheckinCard },
+  guestTodos: checkinTodos,
 };

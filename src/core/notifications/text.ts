@@ -19,6 +19,7 @@ export const NOTIFICATION_KINDS = [
   "order_awaiting",
   "checkin_completed",
   "foreigner_unreported",
+  "account_deletion",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {

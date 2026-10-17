@@ -1,3 +1,6 @@
+import { notFound } from "next/navigation";
+import { listStays } from "@/core/guest/zone";
+import { stayCrumbs } from "../../stay-crumbs";
 import { StayDetail } from "./stay-detail";
 
 /**
@@ -6,5 +9,7 @@ import { StayDetail } from "./stay-detail";
  */
 export default async function StayPage({ params }: PageProps<"/ucet/pobyt/[id]">) {
   const { id } = await params;
-  return <StayDetail id={id} />;
+  const stay = (await listStays()).find((s) => s.id === id);
+  if (!stay) notFound();
+  return <StayDetail id={id} crumbs={await stayCrumbs(stay)} />;
 }

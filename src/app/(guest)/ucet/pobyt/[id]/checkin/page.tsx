@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { listStays, requireGuest } from "@/core/guest/zone";
+import { stayCrumbs } from "../../../stay-crumbs";
 import { CheckinScreen } from "@/modules/checkin/guest/screen";
 import { loadGuestCheckin } from "@/modules/checkin/guest/load";
 
@@ -20,6 +21,7 @@ export default async function StayCheckinPage({
       data={data}
       locale={await getLocale()}
       backHref={`/ucet/pobyt/${stay.id}`}
+      crumbs={await stayCrumbs(stay, true)}
       done={data.status === "completed" && !query.upravit}
     />
   );

@@ -135,6 +135,8 @@ zoznam a panel `/admin/collisions` (`src/core/admin/collisions.ts`), stav kanál
 **Online check-in (Z36, modul `checkin`):** pravidlá krajiny v `checkin_rules` (DB) a `src/modules/checkin/rules.ts` — meniť spolu.
 Osoby (`checkin_guests`) tím nečíta priamo: `checkin_people` (maskované), `reveal_checkin_guest` (len majiteľ, audit). PDF: `src/core/pdf/form-pdf.ts`
 (font Geist, OFL). Do `record_history` osoby nepatria (citlivé polia sa po lehote mažú).
+**Účet hosťa v2.4 (Z43):** lišta v `src/app/(guest)/ucet/layout.tsx`, drobčeky `stay-crumbs.tsx`; body „čo treba urobiť“ = jadro
+(`src/core/guest/todos.ts`) + háčik manifestu `guestTodos` modulov (warn body = odznak na karte Pobyty).
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
 zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens` (Ukážkový klient)
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).

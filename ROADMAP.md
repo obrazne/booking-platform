@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** Z43 (účet hosťa) — *zabratá linkou A*, potom Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → Z48 (storno pásma) ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa, po Z45); **B:** Z44 ✅ → Z48 (storno pásma) ✅ → **Z45** (Správy: základ) → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -210,7 +210,7 @@ Ak Z45 ešte nie je ✅, počkaj (pull každých pár minút) — linka A nemá 
 5. Po 30 dňoch od odchodu len čítanie s vetou o kontakte. Správy v exporte „Moje dáta“ (Z43).
 6. Playwright (Ukážkový klient, PC + mobil): hosť napíše, majiteľ vidí v schránke; odkaz z e-mailu; axe.
 
-### Z43 [A] — Účet hosťa: lišta s kartami, prehľad a Moje údaje (pripomienka 30, 17. 10.)
+### Z43 ✅ [A] — Účet hosťa: lišta s kartami, prehľad a Moje údaje (pripomienka 30, 17. 10.)
 Podľa `docs/vizual-stranka-hosta.md` → **Účet hosťa — navigácia a stavy pobytu (v2.4)**, dosky `UcetPrehlad`, `MobilUcet` (+ hlavička v `UcetPobyt`).
 1. Spoločný komponent **lišty účtu** (karty Pobyty s odznakom / Moje údaje, Odhlásiť sa; mobil pilulky) na prehľade, v detaile pobytu aj na
    check-ine; **drobčeky** v detaile pobytu a check-ine (mobil „‹ Pobyty“); odstrániť „Späť na moje pobyty“.
@@ -358,6 +358,10 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Zrušenie účtu hosťa (Z43) — skontroluj formulácie:** v Moje údaje „Stiahnite si kópiu svojich údajov alebo požiadajte o zrušenie účtu.
+  Údaje, ktoré musíme uchovať zo zákona (doklady, kniha ubytovaných), zostanú do konca lehoty.“ a v okne „Požiadame {ubytovateľ} o zrušenie
+  vášho účtu. Údaje, ktoré netreba uchovať zo zákona, zmaže alebo anonymizuje; doklady a kniha ubytovaných zostanú do konca zákonnej lehoty.
+  Rezervácie, ktoré ešte len prídu, to neruší.“ Žiadosť dostane majiteľ ako upozornenie; samotné zmazanie zatiaľ robí ručne (nástroj neskôr).
 - **Online check-in pre hostí (Z39):** (1) Hosť **môže údaje upraviť aj po dokončení, až do dňa príchodu** (tak to hovorí návrh);
   úprava check-in znova otvorí a hosť ho dokončí znova — majiteľka sa pri tom znova neupozorní (rovnaký kľúč upozornenia). Ak už
   cudzinca nahlásila, záznam o nahlásení ostáva. Stačí tak? (2) Veta z návrhu „Dieťa bez dokladu: stačí meno, dátum narodenia a adresa“
@@ -405,6 +409,19 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z43: **účet hosťa v2.4 — lišta, prehľad, Moje údaje** (`UcetPrehlad`, `MobilUcet`).
+  - **Lišta účtu** v spoločnom layoute `/ucet` (nie na prihlásení): Pobyty s odznakom vecí na vybavenie · Moje údaje · Odhlásiť sa; mobil pilulky.
+    **Drobčeky** „Pobyty › termín (› Check-in)“ v detaile pobytu a check-ine (mobil „‹ Pobyty“) cez `crumbs`, ktoré pripravila linka B.
+  - **Body „čo treba urobiť“** z jadra (platba, pokyny k príchodu) a z modulov cez nový háčik manifestu `guestTodos` (check-in, objednávky,
+    hodnotenie); „warn“ body tvoria odznak. **Prehľad Pobyty:** pozdrav, najbližší pobyt ako veľká klikateľná karta s bodmi, ďalšie menšie,
+    minulé riadky so štítkom „Ohodnoťte pobyt“, „Rezervovať ďalší pobyt“, karta kontaktu.
+  - **Moje údaje** `/ucet/udaje`: kontakt, prihlásenie, novinky, **Moje dáta** — ZIP s `udaje.json` (profil, pobyty, súhlasy, recenzie,
+    objednávky, osoby z check-inu s maskovaným dokladom a dátumom narodenia; vlastný ZIP bez knižnice `src/lib/zip.ts`) a **žiadosť
+    o zrušenie účtu** (`request_account_deletion`, `guests.deletion_requested_at`, upozornenie `account_deletion` majiteľovi). Formulácie → Otázky.
+  - Migrácia `20261017270000` aplikovaná cez `db query` (na stagingu bola migrácia linky B, ktorá ešte nebola v repozitári) a zapísaná
+    do histórie migrácií.
+  - Testy: Playwright `account-v24.spec.ts` (PC + mobil, axe), `account.spec` upravený na nové rozloženie (stavy detailu pokrýva
+    `stay-states.spec`), vitest `zip.test.ts`; zlyhania z plného behu samostatne prešli (nestabilné pri záťaži).
 - 2026-10-17 — Z48 [linka B]: **storno pásma** (Martin k otázke zo Z44: „urob ako uznáš za vhodné“). (Claude Code)
   - `tenant_settings.cancellation_bands` (migrácia `20261017280000_cancellation_bands.sql`, po `…270000` linky A), výpočet
     `src/core/booking/cancellation.ts` (poplatok = časť ceny, ktorá sa nevracia; vrátime = zaplatené mínus poplatok; vitest).

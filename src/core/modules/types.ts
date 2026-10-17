@@ -36,6 +36,9 @@ export type SlotProps = {
   accessToken?: string;
 };
 
+/** One point "what to do" of a guest's stay (account v2.4): warn = the guest should act (counts in the badge). */
+export type GuestTodo = { key: string; tone: "warn" | "info"; text: string };
+
 /** Groups of the side menu (v1.2) a module item can join; an empty group is not shown. */
 export type NavGroupKey = "reservations" | "property" | "offer" | "connections" | "settings";
 
@@ -64,6 +67,8 @@ export type ModuleManifest = {
   navItems?: readonly ModuleNavItem[];
   slots?: Partial<Record<SlotName, ComponentType<SlotProps>>>;
   events?: Partial<Record<BookingEventName, (event: ModuleEvent) => Promise<void>>>;
+  /** Points for the guest's stay card in the account (Z43): e.g. "Vyplňte online check-in". Signed-in guest only. */
+  guestTodos?: (args: { reservationId: string; locale: string }) => Promise<GuestTodo[]>;
   /** Section types for the property page (B7), e.g. services on request. */
   sections?: readonly SectionDef[];
 };

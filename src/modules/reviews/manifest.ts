@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import type { ModuleManifest } from "@/core/modules/types";
+import { reviewTodos } from "./guest/todos";
 import { GuestStayReview } from "./guest/stay-review";
 
 /**
@@ -13,4 +14,5 @@ export const reviewsModule: ModuleManifest = {
   ready: true,
   navItems: [{ href: "/admin/reviews", group: "offer", labelKey: "nav", icon: Star }],
   slots: { "guest.stay.main": GuestStayReview },
+  guestTodos: reviewTodos,
 };
