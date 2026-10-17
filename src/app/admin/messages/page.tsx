@@ -10,7 +10,8 @@ import { isModuleEnabled } from "@/core/modules/registry";
 import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
-import { loadInbox, type InboxFilter } from "@/modules/messages/admin/data";
+import { loadInbox, newMessageTargets, type InboxFilter } from "@/modules/messages/admin/data";
+import { NewMessageButton } from "@/modules/messages/admin/new-message";
 import { ensureMessageDefaults } from "@/modules/messages/defaults";
 import { loadReservationPanel } from "../reservations/panel-loader";
 
@@ -38,7 +39,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
   const filter = FILTERS.find((f) => f === sp.filter) ?? "all";
   const search = typeof sp.q === "string" ? sp.q.trim().slice(0, 80) : "";
   const supabase = await createClient();
-  const [t, tn, locale, tenant, inbox, { count: rulesOn }] = await Promise.all([
+  const [t, tn, locale, tenant, inbox, { count: rulesOn }, targets] = await Promise.all([
     getTranslations("modules.messages.admin"),
     getTranslations("modules.messages"),
     getLocale(),
@@ -49,6 +50,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
       .select("id", { count: "exact", head: true })
       .eq("tenant_id", active.tenantId)
       .eq("enabled", true),
+    newMessageTargets(active.tenantId),
   ]);
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: tenant.timezone }).format(new Date());
   const day = (iso: string) =>
@@ -92,12 +94,23 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
         breadcrumbs={[{ label: tn("nav"), href: "/admin/messages" }, { label: tn("navInbox") }]}
         title={t("inbox.title")}
         actions={
-          <Link
-            href="/admin/messages/auto"
-            className="text-ink text-sm font-medium underline underline-offset-[3px]"
-          >
-            {t("inbox.autoLink", { count: rulesOn ?? 0 })}
-          </Link>
+          <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Link
+              href="/admin/messages/auto"
+              className="text-ink text-sm font-medium underline underline-offset-[3px]"
+            >
+              {t("inbox.autoLink", { count: rulesOn ?? 0 })}
+            </Link>
+            <NewMessageButton
+              targets={targets.map((r) => ({
+                id: r.id,
+                number: r.number,
+                guestName: r.guestName,
+                dates: `${formatDate(r.checkIn, locale, "short")} – ${formatDate(r.checkOut, locale, "short")}`,
+                hasThread: r.hasThread,
+              }))}
+            />
+          </span>
         }
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">

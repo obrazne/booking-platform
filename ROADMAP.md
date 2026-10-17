@@ -433,6 +433,9 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Správy [linka B]: **„Nová správa“ v Schránke** (Martin): okno „Komu napísať?“ s hľadaním medzi priamymi rezerváciami
+  (od 60 dní dozadu, najbližší príchod hore, „už si píšete“ pri existujúcej konverzácii) → panel rezervácie na karte Správy.
+  Test v `e2e/messages-admin.spec.ts`. (Claude Code)
 - 2026-10-17 — Oprava [linka B]: **riadiace centrum › Moduly — výber stavu po „Uložiť“ skočil späť** na pôvodný stav (automatický reset
   formulára po akcii), ďalšie „Uložiť“ potom modul vrátilo (Martin: Správy pre STRÖMY sa zaplo a o 4 s vyplo). Formuláre so
   stavom (modul, priradenie, stav klienta) sa odosielajú bez resetu; test `e2e/platform-modules.spec.ts`. (Claude Code)

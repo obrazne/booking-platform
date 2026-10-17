@@ -577,14 +577,21 @@
           "you": "Vy:",
           "auto": "Automaticky:",
           "portals": "Jedna konverzácia = jedna rezervácia. Hostia z Bookingu a Airbnb tu nie sú — s nimi sa píše na portáli.",
-          "empty": "Zatiaľ žiadne konverzácie. Keď hosť napíše alebo odíde automatická správa, objaví sa tu.",
+          "empty": "Zatiaľ žiadne konverzácie. Hosťovi napíšete cez „Nová správa“ — objaví sa tu aj vtedy, keď hosť napíše alebo odíde automatická správa.",
           "emptyFilter": "Tu nič nie je.",
           "stayIn": "o {count, plural, one {# deň} few {# dni} other {# dní}}",
           "stayInWeeks": "o {count, plural, one {# týždeň} few {# týždne} other {# týždňov}}",
           "stayNow": "prebieha",
           "stayPast": "odišli",
           "stayCancelled": "zrušená",
-          "unread": "neprečítané"
+          "unread": "neprečítané",
+          "newMessage": "Nová správa",
+          "newTitle": "Komu napísať?",
+          "newLead": "Vyberte rezerváciu — otvorí sa jej panel na karte Správy.",
+          "newSearch": "Meno hosťa alebo číslo rezervácie",
+          "newEmpty": "Žiadna priama rezervácia nezodpovedá hľadaniu.",
+          "newNote": "Len priame rezervácie od 60 dní dozadu. Hostia z Bookingu a Airbnb tu nie sú — s nimi sa píše na portáli.",
+          "hasThread": "už si píšete"
         },
         "auto": {
           "title": "Automatické správy",

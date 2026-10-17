@@ -143,3 +143,41 @@ export async function loadInbox(tenantId: string, filter: InboxFilter, search: s
     },
   };
 }
+
+/**
+ * Whom "Nová správa" can write to (Martin 17. 10.): direct reservations not cancelled, from 60 days back, the nearest
+ * arrival first; marks those with a conversation already.
+ */
+export async function newMessageTargets(tenantId: string) {
+  const supabase = await createClient();
+  const from = new Date(Date.now() - 60 * 86_400_000).toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
+  const [{ data: rows }, { data: threads }] = await Promise.all([
+    supabase
+      .from("reservations")
+      .select("id, number, guest_name, items:reservation_items(check_in, check_out)")
+      .eq("tenant_id", tenantId)
+      .not("source", "in", "(booking,airbnb)")
+      .in("status", ["pending_payment", "confirmed", "in_progress", "completed"])
+      .limit(1000),
+    supabase.rpc("message_inbox", { p_tenant_id: tenantId, p_filter: "all" }),
+  ]);
+  const withThread = new Set((threads ?? []).map((x) => x.reservation_id));
+  return (rows ?? [])
+    .map((r) => ({
+      id: r.id,
+      number: r.number,
+      guestName: r.guest_name,
+      checkIn: r.items.reduce((m, i) => (!m || i.check_in < m ? i.check_in : m), ""),
+      checkOut: r.items.reduce((m, i) => (i.check_out > m ? i.check_out : m), ""),
+      hasThread: withThread.has(r.id),
+    }))
+    .filter((r) => r.checkIn && r.checkOut >= from)
+    .sort((a, b) => {
+      // Stays now and coming first (nearest arrival), then the past ones (latest departure).
+      const pa = a.checkOut < today;
+      const pb = b.checkOut < today;
+      if (pa !== pb) return pa ? 1 : -1;
+      return pa ? b.checkOut.localeCompare(a.checkOut) : a.checkIn.localeCompare(b.checkIn);
+    });
+}

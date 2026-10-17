@@ -12,7 +12,7 @@ import {
   TEST_DOMAIN,
 } from "./helpers";
 
-// Messages in the administration (Z46, linka B): the guest wrote → Správy › Schránka "Čakajú na odpoveď" → the row
+// Messages in the administration (Z46, linka B): "Nová správa" opens the chosen reservation; the guest wrote → Správy › Schránka "Čakajú na odpoveď" → the row
 // opens the reservation panel on the tab Správy → a quick reply is sent, a scheduled automatic message is left out
 // → Automatické správy: a rule is edited (and put back). Ukážkový klient only (never STRÖMY), e-mails "+b".
 
@@ -95,6 +95,20 @@ test("owner answers from the inbox with a quick reply, leaves out a scheduled me
     await markToursSeen("qa@booking-platform.test");
     await loginOwner(page, ADMIN_URL);
     // The first visit adds the default rules of a client that has none.
+    // "Nová správa": choose the reservation → its panel on the tab Správy.
+    await page.goto(`${ADMIN_URL}/admin/messages`);
+    await page.getByRole("button", { name: "Nová správa" }).click();
+    const picker = page.getByRole("dialog", { name: "Komu napísať?" });
+    await picker.getByRole("searchbox", { name: /Meno hosťa/ }).fill(stamp);
+    const target = picker.getByRole("button", { name: new RegExp(guest) });
+    await expect(target).toContainText("už si píšete");
+    await noSeriousA11y(page, '[role="dialog"]');
+    await target.click();
+    await expect(page).toHaveURL(/tab=messages/);
+    await expect(
+      page.getByRole("dialog").getByRole("textbox", { name: "Odpoveď hosťovi" }),
+    ).toBeVisible();
+
     await page.goto(`${ADMIN_URL}/admin/messages?filter=waiting`);
     await expect(page.getByRole("heading", { level: 1, name: "Správy" })).toBeVisible();
     const row = page.getByRole("link", { name: new RegExp(guest) });
