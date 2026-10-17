@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa) — *zabratá linkou A*; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → Z47 (Správy pre hosťa) — *zabratá linkou A* → **Z50 (nočná záloha stagingu, prednostne)**; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z46** (Správy: administrácia) → **Z49** (prístupový odkaz ako detail pobytu).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -199,6 +199,24 @@ Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `Spr
    pokynov/ponuky, Poslať skúšobne mne); rýchle odpovede (pridať, upraviť, poradie).
 5. Mobil: schránka zoznam → rezervácia cez celú obrazovku na karte Správy.
 6. Playwright (Ukážkový klient): odpoveď hosťovi, rýchla odpoveď, vynechanie naplánovanej správy, úprava pravidla; axe.
+
+### Z50 [A] — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, hneď po rozpracovanej úlohe**
+Staging je na bezplatnom pláne Supabase, ktorý **nerobí žiadne zálohy**. Nenahraditeľné sú nastavenia a texty STRÖMY, fotky v úložisku
+(~40 súborov), Janin iCal kanál a používatelia (databáza ~40 MB). Je to predstupeň 3f (A9) — postav ho tak, aby sa dal pre produkciu len
+prepnúť na iné úložisko. Nič neplatené.
+1. GitHub Actions `backup-staging.yml`: každú noc (`cron: '0 1 * * *'`) + ručné spustenie. Výpis databázy (`supabase db dump`: roly,
+   schéma, dáta zvlášť) a všetky súbory zo Storage (skript cez service role, so zoznamom a veľkosťami).
+2. **Overenie v tom istom behu:** výpis sa obnoví do čistého Postgresu (služba v jobe) a porovnajú sa počty riadkov hlavných tabuliek
+   a počet súborov; nesedí → job zlyhá.
+3. **Šifrovanie `age`** verejným kľúčom (v GitHube je len verejný; súkromný má iba Martin) → artefakt behu, uchovanie 14 dní
+   (zohľadni limit úložiska GitHubu pre súkromný repozitár — v Denníku zapíš veľkosť jednej zálohy). Nezašifrované nikde neostáva.
+4. Pri zlyhaní: e-mail z GitHubu stačí na staging; v Denníku napíš, komu chodí.
+5. **Martin pridá tajné hodnoty sám** — priprav mu presný postup krok za krokom pre jeho počítač (vytvorenie kľúča `age-keygen`, kam
+   odložiť súkromný kľúč, GitHub → Settings → Secrets → Actions): `STAGING_DB_URL`, `STAGING_SERVICE_ROLE_KEY`, `BACKUP_AGE_PUBLIC_KEY`.
+   Hodnoty nikdy nečítaj, nevypisuj ani necommituj. Kým ich Martin nepridá, pokračuj ďalšou úlohou a vráť sa sem.
+6. Postup obnovy `docs/prevadzka/zaloha-a-obnova.md`: stiahnutie artefaktu, rozšifrovanie, obnova do nového projektu aj do stagingu,
+   nahratie súborov späť; bez tajných hodnôt. **Jedna skúšobná obnova s Martinom** (on rozšifruje) — výsledok do Denníka.
+7. Pozn. pre 3f: na produkciu úložisko v EÚ (A9) — GitHub artefakty sú dočasné riešenie len pre staging.
 
 ### Z47 [A] — Modul Správy: hosť (konverzácia v detaile pobytu, mobil, e-mail) — po Z43 a Z45
 Podľa `docs/vizual-stranka-hosta.md` → **Správy s hosťom (v2.5)**, dosky `SpravyPobyt`, `MobilSpravy`, `EmailSprava`.
