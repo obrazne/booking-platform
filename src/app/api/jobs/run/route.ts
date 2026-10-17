@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 import { processEmailQueue } from "@/core/email/worker";
 import { syncDueChannels } from "@/core/ical/sync";
 import { purgeTrashFiles } from "@/core/history/purge-files";
+import { processPushQueue } from "@/core/push/send";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Background worker, pinged every minute by pg_cron (see migration email_outbox) with the CRON_SECRET.
  * Syncs iCal channels (conflicts queue owner mails), queues scheduled e-mails, sends the outbox and removes files of
- * photos and documents that stayed in the trash for 30 days.
+ * photos and documents that stayed in the trash for 30 days. Sends push notifications a ping missed (Z33).
  */
 export async function POST(request: Request) {
   const secret = process.env.CRON_SECRET ?? "";
@@ -23,5 +24,6 @@ export async function POST(request: Request) {
   const { data: queued } = await admin.rpc("enqueue_scheduled_emails");
   const emails = await processEmailQueue();
   const purgedFiles = await purgeTrashFiles();
-  return NextResponse.json({ ical, queued, emails, purgedFiles });
+  const push = await processPushQueue();
+  return NextResponse.json({ ical, queued, emails, purgedFiles, push });
 }

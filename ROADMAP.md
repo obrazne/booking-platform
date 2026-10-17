@@ -11,9 +11,11 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
+- **Ďalší krok pre Claude Code:** **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ), potom obrazovky pre hostí **Z37** (upsell), **Z38** (recenzie), **Z39** (check-in).
 - **Claude chat:** obrazovky modulov pre hostí nakreslené a schválené (v2.3) → Z37–Z39; ďalej pripomienky zo stagingu, obchodný model.
-- **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
+- **Ďalší krok pre Martina:** pridať do Vercelu (Production aj Preview) premenné `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`,
+  `VAPID_SUBJECT` — hodnoty sú v `.env.local` — a nasadiť znova; potom v riadiacom centre → Upozornenia zapnúť push na mobile (Z33).
+  Ďalej preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
 
@@ -47,7 +49,7 @@ obrazovky upsellu, recenzií a check-inu — **obrazovky pre hostí v Z34–Z36 
 „v príprave“: prepni na hotový až keď bude aj rozhranie (Z33 áno, Z34–Z36 nie). Každý modul podľa návodu v CLAUDE.md (manifest,
 `public.modules`, `isModuleEnabled`, preklady). Stále len staging.
 
-### Z33 — Modul Push notifikácie (celý)
+### Z33 ✅ — Modul Push notifikácie (celý)
 1. **PWA:** manifest administrácie (názov platformy, ikony, `display: standalone`, štart `/admin`), service worker len pre push
    (bez cachovania stránok). Riadiace centrum rovnako.
 2. **Zariadenia:** tabuľka napr. `push_subscriptions` (user_id, tenant_id alebo null pre platformu, endpoint, kľúče, popis zariadenia,
@@ -237,6 +239,24 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-17 — Z33: **modul Push notifikácie** (B11).
+  - **Zariadenia:** `push_subscriptions` (osoba, klient alebo null = platforma, endpoint, kľúče, popis, vybrané druhy, posledné doručenie,
+    zlyhania). RLS: každý len svoje; klientske zariadenie len člen tímu so zapnutým modulom `push`, platformové len správca platformy;
+    stav doručenia zapisuje len server. Bez `record_history` (technické údaje osoby, ako upozornenia). pgTAP `push.test.sql` (16).
+  - **Odosielanie — zdôvodnenie:** trigger na `notifications` zaradí upozornenie do `push_queue`, len ak ho chce nejaké zariadenie, a cez
+    pg_net zavolá chránený endpoint `/api/push/run` (CRON_SECRET z Vaultu — rovnaká cesta ako e-mailový worker). Edge Function by
+    potrebovala druhú kópiu VAPID kľúčov a web-push v Deno; takto je jeden kód aj jedno miesto na kľúče. Čo ping nestihne, pošle
+    minútový job worker; `claim_push_jobs` berie každé upozornenie raz. Príjemcov vyberá `selectRecipients` (druh, modul, člen tímu,
+    kto udalosť spôsobil nedostane). 404/410 → zariadenie sa zmaže. Text a odkaz rovnaké ako v zvončeku (`notificationText`, spoločné).
+    Testovacie endpointy `*.test`/`*.invalid` sa neodosielajú (ako e-maily testovacích dát).
+  - **PWA:** manifesty `/pwa/admin` a `/pwa/platform` (štart `/admin`, `/platform`, standalone), ikony `/pwa/icon/<veľkosť>`,
+    service worker `public/push-sw.js` len pre push (bez cachovania).
+  - **Rozhranie:** Nastavenia → E-maily a upozornenia → „Upozornenia na tomto zariadení“ (zapnúť/vypnúť, druhy — predvolene nová
+    rezervácia, kolízia, zlyhaná synchronizácia, žiadosť o storno — skúšobné upozornenie, moje zariadenia); modul vypnutý = veta
+    o module; iPhone/iPad mimo plochy = návod v 3 krokoch. Riadiace centrum → **Upozornenia** (platformové, vždy). Modul v katalógu hotový.
+  - Kľúče VAPID: názvy v `.env.example`, hodnoty v `.env.local`; do Vercelu ich treba pridať (Martin). Testy: vitest (výber príjemcov),
+    Playwright `push.spec.ts` (povolenie, uloženie, druhy, skúšobné, odobratie, platforma, axe) — celá sada 45 ok, známy flaky mobil
+    „02 overview“ samostatne prejde.
 - 2026-10-17 — Z31: **história zmien a kôš** (A9, vrstvy 1 a 2).
   - **`record_history`** plnená triggerom na všetkých tabuľkách s `tenant_id` (tabuľka, záznam podľa primárneho kľúča, insert/update/delete,
     pred/po, kto, zdroj user/guest/system, transakcia, čas). **Bez histórie:** `record_history`, `audit_log`, `notifications`, `email_outbox`,

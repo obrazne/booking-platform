@@ -109,6 +109,9 @@ deduplikované cez `dedupe_key`; zvonček `src/core/notifications/`. Nový druh 
 **História zmien a kôš (Z31):** každá tabuľka s `tenant_id` má trigger `record_history` (nová tabuľka ho dostane len novou migráciou —
 pridaj `create trigger record_history … record_history_capture(<pk stĺpce>)`). Mazanie súborov fotiek a dokumentov nerob v akcii — rieši
 ho job worker po 30 dňoch (`purgeTrashFiles`). Obnova a vrátenie: `owner_restore`, `platform_revert_change` (databáza).
+**Push (Z33, modul `push`):** zariadenia `push_subscriptions`, fronta `push_queue` z triggeru na `notifications` → pg_net `/api/push/run`
+(+ záloha v job workeri); kód `src/core/push/` (výber príjemcov, odoslanie cez `web-push`, nastavenia). Kľúče `NEXT_PUBLIC_VAPID_PUBLIC_KEY`,
+`VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`. Endpointy `*.test` sa neodosielajú. Nový druh upozornenia = doplniť aj kontrolu `kinds` v `push_subscriptions`.
 **Prehliadka „Čo je nové“ (A15):** obsah v `src/core/tours/tours.ts` (verzia + snímky; texty `tours.*` v prekladoch). Po zmene snímok
 zvýš `version` → každý ju po prihlásení uvidí znova. Snímky: lokálny server proti stagingu + `npm run demo-data`, potom `npm run tour:screens`
 → `public/tours/` (testovacie účty qa@ a qa-admin@booking-platform.test; skutočné e-maily a mená mimo ukážky sa rozmažú).

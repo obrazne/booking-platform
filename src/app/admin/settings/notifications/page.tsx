@@ -4,18 +4,30 @@ import { requireTenant } from "@/core/admin/action";
 import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { TENANT_KINDS } from "@/core/notifications/types";
+import { loadPushState } from "@/core/push/load";
+import { PushSettings } from "@/core/push/push-settings";
+import { DEFAULT_PUSH_KINDS } from "@/core/push/recipients";
 import { createClient } from "@/lib/supabase/server";
 
-/** Settings → E-maily a upozornenia (v1.2): which events show in the bell and which come by e-mail too (read only). */
+/**
+ * Settings → E-maily a upozornenia (v1.2): which events show in the bell and which come by e-mail too (read only), and
+ * push notifications on this device (Z33, module `push`).
+ */
 export default async function NotificationSettingsPage() {
   const active = await requireTenant();
-  const t = await getTranslations("notifications.settings");
+  const [t, tp] = await Promise.all([
+    getTranslations("notifications.settings"),
+    getTranslations("push"),
+  ]);
   const supabase = await createClient();
-  const { data: settings } = await supabase
-    .from("tenant_settings")
-    .select("owner_notification_email")
-    .eq("tenant_id", active.tenantId)
-    .maybeSingle();
+  const [{ data: settings }, push] = await Promise.all([
+    supabase
+      .from("tenant_settings")
+      .select("owner_notification_email")
+      .eq("tenant_id", active.tenantId)
+      .maybeSingle(),
+    loadPushState("tenant", active.tenantId),
+  ]);
 
   return (
     <div data-bleed>
@@ -66,6 +78,30 @@ export default async function NotificationSettingsPage() {
             ? t("emailTo", { email: settings.owner_notification_email })
             : t("emailToDefault")}
         </p>
+        <section aria-labelledby="push-title" className="surface grid gap-3 p-5">
+          <h2 id="push-title" className="text-ink text-base font-bold">
+            {tp("title")}
+          </h2>
+          {!push.moduleOn ? (
+            <p className="text-muted-foreground max-w-prose text-sm">{tp("moduleOff")}</p>
+          ) : active.adminView ? (
+            <p className="text-muted-foreground max-w-prose text-sm">{tp("adminView")}</p>
+          ) : (
+            <>
+              <p className="text-muted-foreground max-w-prose text-sm">{tp("intro")}</p>
+              <PushSettings
+                scope="tenant"
+                publicKey={push.publicKey}
+                devices={push.devices}
+                kindOptions={TENANT_KINDS.map((k) => ({
+                  kind: k.kind,
+                  label: t(`kinds.${k.kind}`),
+                }))}
+                defaultKinds={DEFAULT_PUSH_KINDS}
+              />
+            </>
+          )}
+        </section>
       </PageBody>
     </div>
   );

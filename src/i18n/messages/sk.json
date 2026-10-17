@@ -164,6 +164,7 @@
       "trials": "Skúšobné doby",
       "status": "Stav systému",
       "audit": "Audit",
+      "notifications": "Upozornenia",
       "breadcrumbs": "Drobčeková navigácia"
     },
     "tabs": {
@@ -329,6 +330,10 @@
       "activeShort": "Aktívna",
       "inactiveShort": "Neaktívna",
       "add": "Pridať službu"
+    },
+    "push": {
+      "nav": "Push notifikácie",
+      "title": "Push notifikácie"
     }
   },
   "forms": {
@@ -2067,5 +2072,47 @@
         "error": "Vrátenie sa nepodarilo."
       }
     }
+  },
+  "push": {
+    "title": "Upozornenia na tomto zariadení",
+    "intro": "Upozornenia zo zvončeka môžu chodiť aj do mobilu alebo počítača — aj keď administráciu nemáte otvorenú. Klik otvorí to isté miesto ako v zvončeku.",
+    "introPlatform": "Platformové upozornenia (zlyhaná synchronizácia či e-maily klienta, koniec skúšobnej doby, nový klient) môžu chodiť aj do mobilu alebo počítača.",
+    "moduleOff": "Upozornenia do mobilu sú súčasťou modulu Push notifikácie. Zapína ho správca platformy v riadiacom centre.",
+    "unsupported": "Tento prehliadač upozornenia nepodporuje. Skúste Chrome, Edge, Firefox alebo Safari.",
+    "notConfigured": "Odosielanie upozornení ešte nie je na serveri nastavené.",
+    "denied": "Upozornenia sú pre túto stránku v prehliadači zablokované. Povoľte ich v nastaveniach stránky (ikona vedľa adresy) a skúste znova.",
+    "enable": "Zapnúť upozornenia na tomto zariadení",
+    "disable": "Vypnúť na tomto zariadení",
+    "enabled": "Zapnuté na tomto zariadení",
+    "off": "Na tomto zariadení sú upozornenia vypnuté.",
+    "failed": "Zapnutie sa nepodarilo. Skúste to znova.",
+    "kindsTitle": "Čo posielať na toto zariadenie",
+    "test": "Poslať skúšobné upozornenie",
+    "testSent": "Skúšobné upozornenie je odoslané.",
+    "testFailed": "Upozornenie sa nepodarilo odoslať.",
+    "testTitle": "Skúšobné upozornenie",
+    "testBody": "Takto budú vyzerať upozornenia z {name}.",
+    "devicesTitle": "Moje zariadenia",
+    "devicesEmpty": "Zatiaľ žiadne zariadenie.",
+    "thisDevice": "toto zariadenie",
+    "remove": "Odobrať",
+    "removeLabel": "Odobrať zariadenie {device}",
+    "added": "pridané {date}",
+    "lastSuccess": "naposledy doručené {date}",
+    "unknownDevice": "Neznáme zariadenie",
+    "ios": {
+      "title": "Na iPhone a iPade fungujú upozornenia len z ikony na ploche",
+      "step1": "V Safari ťuknite dole na Zdieľať (štvorček so šípkou nahor).",
+      "step2": "Vyberte „Pridať na plochu“ a potvrďte Pridať.",
+      "step3": "Otvorte administráciu z novej ikony na ploche a tu zapnite upozornenia."
+    },
+    "platformKinds": {
+      "client_sync_failed": "Klientovi zlyhala synchronizácia kalendára",
+      "client_emails_failed": "Klientovi sa neodosielajú e-maily",
+      "client_trial_ending": "Klientovi končí skúšobná doba modulu",
+      "client_new": "Nový klient"
+    },
+    "pageTitle": "Upozornenia",
+    "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia."
   }
 }

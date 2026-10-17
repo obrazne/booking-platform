@@ -1,5 +1,6 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { Activity, Building2, History, Puzzle, Shield, Store } from "lucide-react";
+import { Activity, Bell, Building2, History, Puzzle, Shield, Store } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { UserMenu } from "@/core/admin/topbar";
@@ -11,6 +12,13 @@ import { tourIsNewForUser } from "@/core/tours/server";
 import { loadBell } from "@/core/notifications/actions";
 import { NotificationBell } from "@/core/notifications/bell";
 import { createClient } from "@/lib/supabase/server";
+
+/** Installable app (Z33): manifest and the iPhone home-screen icon. */
+export const metadata: Metadata = {
+  manifest: "/pwa/platform",
+  appleWebApp: { capable: true, title: platformBrand.name, statusBarStyle: "default" },
+  icons: { apple: "/pwa/icon/180?app=platform" },
+};
 
 /**
  * Control center (A4): only for the platform admin, RLS enforces the same rule in the database. Its own menu without
@@ -60,6 +68,11 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
               },
               { href: "/platform/status", label: t("platform.nav.status"), icon: <Activity /> },
               { href: "/platform/audit", label: t("platform.nav.audit"), icon: <History /> },
+              {
+                href: "/platform/notifications",
+                label: t("platform.nav.notifications"),
+                icon: <Bell />,
+              },
             ]
           : []
       }

@@ -1254,6 +1254,82 @@ export type Database = {
           },
         ]
       }
+      push_queue: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          notification_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          notification_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          notification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_queue_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: true
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          device: string
+          endpoint: string
+          failures: number
+          id: string
+          kinds: string[]
+          last_success_at: string | null
+          p256dh: string
+          tenant_id: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          device?: string
+          endpoint: string
+          failures?: number
+          id?: string
+          kinds?: string[]
+          last_success_at?: string | null
+          p256dh: string
+          tenant_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          device?: string
+          endpoint?: string
+          failures?: number
+          id?: string
+          kinds?: string[]
+          last_success_at?: string | null
+          p256dh?: string
+          tenant_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_band_prices: {
         Row: {
           age_band_id: string
@@ -2535,6 +2611,7 @@ export type Database = {
         }
       }
       claim_guest_account: { Args: { p_tenant_id: string }; Returns: string }
+      claim_push_jobs: { Args: { p_limit?: number }; Returns: string[] }
       confirm_payment: {
         Args: { p_reservation_id: string }
         Returns: undefined
@@ -2680,6 +2757,7 @@ export type Database = {
         }[]
       }
       ping_job_worker: { Args: never; Returns: undefined }
+      ping_push_worker: { Args: never; Returns: undefined }
       platform_create_tenant: {
         Args: {
           p_country?: string

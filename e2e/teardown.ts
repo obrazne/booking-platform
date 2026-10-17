@@ -18,6 +18,7 @@ export default async function teardown() {
     .eq("kind", "block")
     .like("label", "E2E%");
   await db.from("ical_channels").delete().eq("tenant_id", STROMY).like("name", "E2E%");
+  await db.from("push_subscriptions").delete().like("endpoint", `https://push.${TEST_DOMAIN}/%`);
   const { data: docs } = await db
     .from("documents")
     .select("id, storage_path")

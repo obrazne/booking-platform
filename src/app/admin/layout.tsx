@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
@@ -30,6 +31,13 @@ import { ThemeStyle } from "@/core/theme/theme-style";
 import { TourDialog } from "@/core/tours/tour-dialog";
 import { tourIsNewForUser } from "@/core/tours/server";
 import { createClient } from "@/lib/supabase/server";
+
+/** Installable app (Z33): manifest and the iPhone home-screen icon. */
+export const metadata: Metadata = {
+  manifest: "/pwa/admin",
+  appleWebApp: { capable: true, title: platformBrand.name, statusBarStyle: "default" },
+  icons: { apple: "/pwa/icon/180" },
+};
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const t = await getTranslations();

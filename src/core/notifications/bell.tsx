@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { loadBell, markNotificationsRead } from "./actions";
+import { notificationText } from "./text";
 import type { BellData, BellScope, NotificationItem } from "./types";
 
 const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutral" }> = {
@@ -124,23 +125,6 @@ export function NotificationBell({
     startTransition(() => void markNotificationsRead(ids));
   };
 
-  const money = (cents: unknown, currency: unknown) =>
-    typeof cents === "number"
-      ? new Intl.NumberFormat(locale, {
-          style: "currency",
-          currency: typeof currency === "string" ? currency : "EUR",
-          maximumFractionDigits: 0,
-        }).format(cents / 100)
-      : "";
-  const date = (iso: unknown) =>
-    typeof iso === "string"
-      ? new Intl.DateTimeFormat(locale, {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-          timeZone: "UTC",
-        }).format(new Date(iso.length === 10 ? `${iso}T00:00:00Z` : iso))
-      : "";
   const ago = (iso: string) => {
     const minutes = Math.round((now - new Date(iso).getTime()) / 60000);
     if (minutes < 60) return t("minutesAgo", { count: Math.max(minutes, 1) });
@@ -149,29 +133,7 @@ export function NotificationBell({
       new Date(iso),
     );
   };
-  const text = (n: NotificationItem) => {
-    const d = n.data;
-    const moduleKey = typeof d.module === "string" ? `modules.${d.module}.nav` : "";
-    const moduleName =
-      moduleKey && tAll.has(moduleKey as never) ? tAll(moduleKey as never) : String(d.module ?? "");
-    const args = {
-      number: String(d.number ?? ""),
-      guest: String(d.guest ?? ""),
-      stay: d.check_in ? `${date(d.check_in)} – ${date(d.check_out)}` : "",
-      amount: money(d.total_cents, d.currency),
-      due: date(d.due_at),
-      channel: String(d.channel ?? ""),
-      tenant: String(d.tenant ?? ""),
-      module: moduleName,
-      ends: date(d.ends_at),
-      days: Number(d.days ?? 0),
-    };
-    const key = ICONS[n.kind] ? n.kind : "other";
-    return {
-      title: t(`kinds.${key}.title` as never, args as never),
-      body: t(`kinds.${key}.text` as never, args as never),
-    };
-  };
+  const text = (n: NotificationItem) => notificationText(n, t as never, tAll as never, locale);
 
   return (
     <div ref={root} className="relative">
