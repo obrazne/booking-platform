@@ -25,7 +25,9 @@ returns void language sql as $$
   select null from public.create_reservation(jsonb_build_object(
     'tenant_id', '10000000-0000-0000-0000-00000000000a', 'property_id', '20000000-0000-0000-0000-00000000000a',
     'unit_id', '30000000-0000-0000-0000-00000000000a', 'guest_name', 'Hosť', 'guest_email', p_email,
-    'adults', 2, 'currency', 'EUR', 'total_cents', p_total, 'lines', '[]'::jsonb, 'status', 'pending_payment',
+    'adults', 2, 'currency', 'EUR', 'total_cents', p_total, 'status', 'pending_payment',
+    'lines', jsonb_build_array(jsonb_build_object('kind', 'accommodation', 'label', 'Pobyt', 'quantity', 1,
+      'unit_amount_cents', p_total, 'amount_cents', p_total)),
     'source', p_source, 'check_in', p_in::text, 'check_out', p_out::text));
 $$;
 
