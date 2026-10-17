@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,18 @@ import {
 import { createTenant, setModule, setTenantStatus, type FormState } from "./actions";
 
 const initial: FormState = { error: null };
+
+/**
+ * Submits through the action without React's automatic form reset after it: the reset put the selects back to the
+ * state they started with, and the next "Uložiť" saved that old state (Martin 17. 10. — Správy went off again).
+ */
+function keepValues(action: (data: FormData) => void) {
+  return (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    startTransition(() => action(data));
+  };
+}
 
 function FormMessage({ state }: { state: FormState }) {
   const t = useTranslations();
@@ -86,7 +98,7 @@ export function ModuleSwitchForm({
   const [value, setValue] = useState(status);
   return (
     // Module row (v1.1): name and state, the trial end on the second line, Save at the row.
-    <form action={action} className="surface grid gap-2.5 px-4 py-3">
+    <form onSubmit={keepValues(action)} className="surface grid gap-2.5 px-4 py-3">
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="moduleKey" value={moduleKey} />
       <input type="hidden" name="status" value={value} />
@@ -138,7 +150,7 @@ export function TenantStatusForm({
   const [state, action, pending] = useActionState(setTenantStatus, initial);
   const [value, setValue] = useState(status);
   return (
-    <form action={action} className="flex flex-wrap items-center gap-2">
+    <form onSubmit={keepValues(action)} className="flex flex-wrap items-center gap-2">
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="status" value={value} />
       <Select value={value} onValueChange={(v) => setValue(v as typeof value)}>
@@ -177,7 +189,7 @@ export function AssignModuleForm({
   const [value, setValue] = useState<"trial" | "active">("trial");
   if (tenants.length === 0) return null;
   return (
-    <form action={action} className="grid gap-2.5 rounded-lg bg-[#f4f3ef] px-4 py-3">
+    <form onSubmit={keepValues(action)} className="grid gap-2.5 rounded-lg bg-[#f4f3ef] px-4 py-3">
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="moduleKey" value={moduleKey} />
       <input type="hidden" name="status" value={value} />
