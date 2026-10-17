@@ -390,8 +390,7 @@ Hosť má vlastnú zónu — „svoj dashboard“ (Martin 16. 10.). Rezervácia 
 
 ## B11. Moduly po MVP — upsell, recenzie, push (17. 10. 2026)
 
-*Postup: Claude Code stavia dátový a technický základ, Claude chat medzitým kreslí obrazovky; rozhranie sa doplní podľa plátna.
-Online check-in počká na odpovede Jany (ako dnes vedie knihu ubytovaných, obec, cudzinci).*
+*Postup: Claude Code stavia dátový a technický základ, Claude chat medzitým kreslí obrazovky; rozhranie sa doplní podľa plátna.*
 
 **Upsell (modul `upsell`, potrebuje `services`).** Objednávka služby **po vytvorení rezervácie** — od potvrdenia rezervácie do odchodu,
 v účte hosťa (aj cez prístupový odkaz) jedným ťuknutím **záväzne**.
@@ -414,6 +413,20 @@ v účte hosťa (aj cez prístupový odkaz) jedným ťuknutím **záväzne**.
   (vulgarizmy, osobné údaje, nesúvisí s pobytom, spam) — dôvod sa zapíše, hosť dostane e-mail. Verejná odpoveď majiteľa, výber navrch.
 - Priemer len z overených zverejnených recenzií; na stránke veta, ako sa overuje (Omnibus). **Doterajšie ručné referencie
   (`testimonials`) ostávajú** ako „hodnotenia z iných zdrojov“ so zdrojom, do priemeru sa nepočítajú a neoznačujú sa ako overené.
+
+**Online check-in (modul `checkin`) — nečaká na Janu** (Martin 17. 10.): povinnosti sú zo zákona rovnaké pre všetkých, to, čo je
+u klienta iné (obec, sadzba dane, oslobodenia, pokyny), je nastavenie. **Slovenský balík pravidiel** (A6, B9):
+- **Kniha ubytovaných** (všetci hostia): meno a priezvisko, číslo OP alebo pasu, adresa trvalého pobytu, doba ubytovania; pri cudzincoch
+  (každý, kto nie je občan SR, aj EÚ) navyše štátna príslušnosť a dátum narodenia. Písomne alebo elektronicky.
+- **Hlásenie pobytu cudzinca** polícii do 5 dní od ubytovania (zákon 404/2011): aplikácia pripraví vyplnené tlačivo (PDF, podpis hosťa
+  pri príchode) a prehľad na odoslanie; samotné elektronické odoslanie polícii (eID) robí ubytovateľ — napojenie neskôr. Tlačivo sa
+  uchováva 2 roky.
+- **Daň za ubytovanie** (zákon 582/2004, sadzbu a oslobodenia určuje VZN obce): nastavenie klienta — obec, sadzba za osobu a noc,
+  oslobodenia (napr. vek); výpočet pri pobyte a mesačný prehľad pre obec.
+- Hosť vyplní v účte (alebo cez prístupový odkaz) údaje **všetkých** osôb pobytu, čas príchodu, súhlas s ubytovacím poriadkom; po
+  dokončení sa mu podľa nastavenia odomknú pokyny a prístupové kódy. Majiteľ vidí stav check-inu pri rezervácii a v prehľade príchodov.
+- **Citlivé údaje:** čísla dokladov a dátumy narodenia vidí len majiteľ (nie celý tím, nie správca bez vstupu cez audit), každé zobrazenie
+  sa zapíše; po uplynutí lehoty uchovávania sa automaticky zmažú. **Konkrétne lehoty a polia overiť pred ostrým nasadením** (zákon sa mení).
 
 **Push notifikácie (modul `push`).** Web Push (VAPID) z nainštalovanej administrácie — bez platenej služby. Kanál nad upozorneniami (A13):
 zariadenia per používateľ, výber druhov, odoslanie pri vzniku upozornenia, upratanie neplatných. iPhone len po „Pridať na plochu“

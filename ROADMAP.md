@@ -11,8 +11,8 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ).
-- **Claude chat:** kreslí obrazovky Upsellu a Recenzií (účet hosťa, stránka, e-maily); online check-in po odpovediach Jany.
+- **Ďalší krok pre Claude Code:** **Z31** (história zmien a kôš), potom **Z33** (push), **Z34** (recenzie — základ), **Z35** (upsell — základ), **Z36** (online check-in — základ).
+- **Claude chat:** kreslí obrazovky Upsellu, Recenzií a Online check-inu pre hostí (účet hosťa, stránka).
 - **Ďalší krok pre Martina:** preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
   odpovedať na otázky nižšie (mapa, prístup pre Janu, otázky pre Janu).
 - **Claude chat:** návrh administrácie v1.2 hotový a uložený (pripomienky 16–24); ďalej Martinove pripomienky zo stagingu (od č. 25), obchodný model, príprava ukážky pre Janu.
@@ -42,9 +42,9 @@ Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1
 5. Testy: pgTAP (RLS, trigger zapisuje insert/update/delete, iný klient nevidí), Playwright (zmazať službu → obnoviť z koša;
    zmeniť cenu → vrátiť v riadiacom centre).
 
-**Kontext pre Z33–Z35 (moduly po MVP, 17. 10.):** `ARCHITEKTURA.md` → **B11**. Claude Code stavia základ, Claude chat medzitým kreslí
-obrazovky upsellu a recenzií — **obrazovky pre hostí v Z34/Z35 nerob** (prídu ako ďalšie úlohy podľa plátna). Moduly sú v katalógu
-„v príprave“: prepni na hotový až keď bude aj rozhranie (Z33 áno, Z34/Z35 nie). Každý modul podľa návodu v CLAUDE.md (manifest,
+**Kontext pre Z33–Z36 (moduly po MVP, 17. 10.):** `ARCHITEKTURA.md` → **B11**. Claude Code stavia základ, Claude chat medzitým kreslí
+obrazovky upsellu, recenzií a check-inu — **obrazovky pre hostí v Z34–Z36 nerob** (prídu ako ďalšie úlohy podľa plátna). Moduly sú v katalógu
+„v príprave“: prepni na hotový až keď bude aj rozhranie (Z33 áno, Z34–Z36 nie). Každý modul podľa návodu v CLAUDE.md (manifest,
 `public.modules`, `isModuleEnabled`, preklady). Stále len staging.
 
 ### Z33 — Modul Push notifikácie (celý)
@@ -91,6 +91,27 @@ Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
    Vzory v1.1. Obrazovky pre hostí a e-maily s ponukami pred príchodom prídu podľa plátna.
 5. Ukážkové dáta (2–3 objednávky v rôznych stavoch), testy unit (výpočet, uzávierka, limit), pgTAP, Playwright admin.
 
+
+### Z36 — Modul Online check-in: základ (bez obrazoviek pre hostí)
+Podľa B11 → Online check-in (slovenský balík pravidiel). Polia a lehoty sú zo zákona — **v kóde ako pravidlá krajiny, nie natvrdo
+v komponentoch**; pred ostrým nasadením ich overíme.
+1. Tabuľky napr. `checkins` (rezervácia, stav not_started/in_progress/completed, čas príchodu, súhlas s ubytovacím poriadkom, kto a kedy)
+   a `checkin_guests` (meno, priezvisko, typ a číslo dokladu, adresa trvalého pobytu, dátum narodenia, štátna príslušnosť, je občan SR) —
+   RLS: hosť len k svojej rezervácii (aj cez prístupový odkaz cez serverovú funkciu s overením tokenu), **čítať doklady a dátumy narodenia
+   môže len rola majiteľ** (nie ostatní členovia tímu), každé zobrazenie citlivých polí → audit; pgTAP.
+2. Pravidlá krajiny SK (modul pravidiel A6): ktoré polia sú povinné pre občana SR / cudzinca, validácie (dátum, doklad), lehota hlásenia
+   cudzinca 5 dní, uchovávanie (tlačivo 2 roky — nastaviteľné), automatické mazanie citlivých polí po lehote (pg_cron).
+3. **Daň za ubytovanie:** nastavenia klienta (obec, sadzba za osobu a noc v centoch, oslobodenia podľa veku), výpočet pre pobyt podľa
+   check-inu (inak podľa počtu osôb z rezervácie), mesačný prehľad pre obec (CSV).
+4. **Hlásenie cudzinca:** vyplnené tlačivo PDF na podpis pri príchode (vzor podľa platného tlačiva MV SR — ak nie je dostupné v repozitári,
+   sprav vlastné prehľadné PDF s rovnakými údajmi a zapíš do Otázok), prehľad „čaká na nahlásenie“ s termínom 5 dní.
+5. Nastavenia objektu: odomknúť pokyny k príchodu a kódy **až po dokončení check-inu** (áno/nie), koľko dní pred príchodom sa check-in otvorí,
+   pripomienky e-mailom (napr. 7 a 2 dni pred príchodom, len ak nedokončený).
+6. **Administrácia (vzory v1.1):** v paneli rezervácie sekcia „Check-in“ (stav, osoby — doklady maskované, odkryť klikom so zápisom do auditu,
+   PDF tlačiva); Rezervácie › **Príchody** (nasledujúce príchody so stavom check-inu a hlásení) — ak sa to nehodí ako podpoložka, zapíš prečo.
+   Upozornenia: check-in dokončený, cudzinec nenahlásený 4. deň.
+7. Ukážkové dáta: check-in u 2 ukážkových pobytov (jeden cudzinec). Testy pgTAP (RLS, maskovanie, mazanie po lehote), unit (pravidlá, daň), Playwright admin.
+
 ---
 
 ## Fáza 0 — Organizácia projektu
@@ -134,7 +155,7 @@ Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
 - [ ] Vkladací widget, ďalšie moduly podľa katalógu
-- [ ] 🧠 **Návrh modulu Online check-in** (po Z31, Martin 17. 10.): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
+- [ ] 🧠 **Návrh modulu Online check-in** (Martin 17. 10.; základ → Z36, obrazovky hosťa na plátne): hosť v svojom účte pred príchodom vyplní údaje ubytovaných
   (kniha ubytovaných, hlásenie cudzincov, ubytovacia daň — slovenský balík pravidiel A6), čas príchodu, súhlas s ubytovacím poriadkom;
   po check-ine sa mu X dní pred príchodom odomknú pokyny a prístupové kódy. Majiteľ vidí stav check-inu pri rezervácii. Plátno + špecifikácia.
 - [ ] 🧠 **Návrh modulu Recenzie** (po Z31, Martin 17. 10.): po odchode sa hosťovi v účte odomkne „Ohodnoťte pobyt“ (+ e-mail deň po
@@ -178,7 +199,7 @@ Podľa B11. **Zmrazené riadky rezervácie (`reservation_lines`) sa nemenia.**
   vlastnú doménu. Ktoré?
 - Fotky showroomu: kľúč Pexels API (zadarmo) do `.env.local` ako `PEXELS_API_KEY` — potom ich doplním. Dovtedy zástupné obrázky.
 - Kľúč Resend bol poslaný v chate — po dokončení Z11 ho v Resende vymeň za nový.
-- **Jana (online check-in):** ako dnes vedie knihu ubytovaných (papier, program?), v ktorej obci platí daň z ubytovania a ako ju hlási, ako často má hostí zo zahraničia (hlásenie polícii)?
+- **Jana (nastavenia check-inu, neblokuje):** obec a sadzba dane z ubytovania (+ oslobodenia), ako dnes vedie knihu ubytovaných, hlási cudzincov elektronicky (eID) alebo papierovo?
 - **Jana:** skutočné ceny služieb a poplatku za zviera, storno pásma 11–13 a 15–29 dní, je platiteľka DPH? (zatiaľ orientačne)
 - Supabase aj Vercel CLI sa z tvojho PC nevedia spojiť (Transport error / zaseknuté). Nevadí — Vercel je napojený cez web a databáza cez MCP; ak chceš CLI, treba pozrieť firewall/antivírus/proxy pre PowerShell.
 - Doména platformy pre subdomény klientov (napr. `*.booking.obrazne.sk`) — na staging stačí adresa Vercelu, na rezerváciu cez subdomény treba wildcard DNS.

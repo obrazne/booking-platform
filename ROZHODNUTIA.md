@@ -2,6 +2,12 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-17 — Online check-in nečaká na Janu
+
+- Martin: „Prečo by mal check-in čakať na Janu? Nechcem čakať.“ Má pravdu — povinnosti (kniha ubytovaných, hlásenie cudzincov, daň
+  za ubytovanie) sú zo zákona rovnaké pre všetkých; obec, sadzba a oslobodenia sú nastavenie klienta. Jane otázky ostávajú len na
+  doplnenie jej nastavení. Základ ide do fronty ako Z36 (B11). Odoslanie hlásenia polícii elektronicky (eID) zatiaľ robí ubytovateľ sám. (Martin + Claude)
+
 ## 2026-10-17 — Moduly po MVP: základ teraz, rozhranie po plátne
 
 - Martin nechal postup na Claude: **Claude Code hneď stavia dátový a technický základ** (Z33 push celý — rozhranie z existujúcich vzorov;
