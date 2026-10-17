@@ -210,7 +210,7 @@ prepnúť na iné úložisko. Nič neplatené.
    nahratie súborov späť; bez tajných hodnôt. **Jedna skúšobná obnova s Martinom** (on rozšifruje) — výsledok do Denníka.
 7. Pozn. pre 3f: na produkciu úložisko v EÚ (A9) — GitHub artefakty sú dočasné riešenie len pre staging.
 
-### Z46 [B] — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
+### Z46 [B] 🔄 — Modul Správy: administrácia (schránka, karta v paneli rezervácie, automatické správy) — po Z45
 Podľa `docs/vizual-administracia.md` → **v1.3 Správy**, dosky `Spravy`, `SpravyAuto`, `Sidebar`.
 1. Menu: skupina Správy s odznakom (Schránka, Automatické správy), len so zapnutým modulom.
 2. Schránka `/admin/messages` (filtre, riadky, hľadanie) → klik otvorí **panel rezervácie na karte Správy** (`?panel=reservation:id&tab=messages`).
