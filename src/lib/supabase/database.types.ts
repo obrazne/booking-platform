@@ -3783,7 +3783,12 @@ export type Database = {
       }
       restore_discard: { Args: { p_session: string }; Returns: undefined }
       restore_plan: {
-        Args: { p_apply?: boolean; p_session: string; p_tenant: string }
+        Args: {
+          p_apply?: boolean
+          p_ids?: string[]
+          p_session: string
+          p_tenant: string
+        }
         Returns: Json
       }
       restore_stage: {

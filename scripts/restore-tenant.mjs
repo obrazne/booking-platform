@@ -1,7 +1,11 @@
 // Surgical restore of ONE client from a backup (Z52, A9 layer 3). Postup: docs/prevadzka/zaloha-a-obnova.md.
 //
 //   node --env-file=.env.local scripts/restore-tenant.mjs --dump backup/db/data.sql --tenant <uuid>
-//        [--storage backup/storage] [--apply] [--yes]
+//        [--ids <uuid,uuid,…>] [--storage backup/storage] [--apply] [--yes]
+//
+// --ids: only these records — rows whose id or reservation_id is in the list (e.g. one deleted reservation with its
+//    items, lines and payments). Nothing else of the client changes. RECOMMENDED for "something was deleted".
+// Without --ids the whole client goes back to the moment of the backup — also everything done since is undone.
 //
 // 1. Reads the client's rows of every table from the decrypted backup (data.sql, COPY format), sends them to the
 //    database (private staging, server key) and prints the PLAN: per table how many rows would be added, changed
@@ -25,11 +29,15 @@ const flag = (name) => args.includes(`--${name}`);
 const dump = opt("dump");
 const tenant = opt("tenant");
 const storage = opt("storage");
+const ids = opt("ids")
+  ?.split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
 if (!dump || !tenant || !url || !key) {
   console.error(
-    "Použitie: node --env-file=.env.local scripts/restore-tenant.mjs --dump <data.sql> --tenant <uuid> [--storage <priečinok>] [--apply] [--yes]",
+    "Použitie: node --env-file=.env.local scripts/restore-tenant.mjs --dump <data.sql> --tenant <uuid> [--ids <uuid,…>] [--storage <priečinok>] [--apply] [--yes]",
   );
   process.exit(2);
 }
@@ -124,7 +132,7 @@ async function listAll(bucket, prefix) {
   return out;
 }
 let missingFiles = [];
-if (storage) {
+if (storage && !ids) {
   const manifest = JSON.parse(readFileSync(join(storage, "manifest.json"), "utf8")).filter((f) =>
     f.path.startsWith(`${tenant}/`),
   );
@@ -139,13 +147,19 @@ const { data: plan, error: planError } = await db.rpc("restore_plan", {
   p_session: session,
   p_tenant: tenant,
   p_apply: false,
+  p_ids: ids ?? null,
 });
 if (planError) {
   await db.rpc("restore_discard", { p_session: session });
   throw new Error(planError.message);
 }
 console.log(`\nObnova klienta ${info.name} (${info.slug}) zo zálohy ${dump}`);
-console.log(`Riadkov klienta v zálohe: ${staged} v ${rowsByTable.size} tabuľkách.\n`);
+console.log(`Riadkov klienta v zálohe: ${staged} v ${rowsByTable.size} tabuľkách.`);
+console.log(
+  ids
+    ? `Len vybrané záznamy (${ids.length}) a ich riadky — nič iné sa nezmení.\n`
+    : "CELÝ KLIENT — vráti sa do stavu zálohy; zmeny urobené odvtedy sa stratia.\n",
+);
 const entries = Object.entries(plan ?? {});
 if (entries.length === 0 && missingFiles.length === 0) {
   console.log("Žiadny rozdiel — dáta klienta sú rovnaké ako v zálohe.");
@@ -189,6 +203,7 @@ const { error: applyError } = await db.rpc("restore_plan", {
   p_session: session,
   p_tenant: tenant,
   p_apply: true,
+  p_ids: ids ?? null,
 });
 if (applyError) {
   await db.rpc("restore_discard", { p_session: session });

@@ -1,7 +1,7 @@
-# Test of the surgical restore of one client (Z52) on staging — the Ukážkový klient only, never STRÖMY. Manual.
-# Its own records: prepare → dump of staging (stays in the runner, deleted at the end) → damage → restore with
-# scripts/restore-tenant.mjs (plan, then --apply --yes) → verify → plan again (should be empty) → clean up.
-# Run when no e2e tests are running: the restore puts the Ukážkový klient back to the moment of the dump.
+# Test of the surgical restore (Z52) on staging — the Ukážkový klient only, never STRÖMY. Manual.
+# Its own records: prepare → dump of staging (stays in the runner, deleted at the end) → damage → restore of exactly
+# those records (--ids; nothing else of the client changes, so tests running at the same time are not affected) →
+# verify → plan again (should be empty) → clean up.
 name: Skúška obnovy klienta
 
 on:
@@ -53,8 +53,8 @@ jobs:
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
         run: |
-          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA"
-          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA" --apply --yes
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA" --ids "$R1,$Q1,$Q2"
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA" --ids "$R1,$Q1,$Q2" --apply --yes
 
       - name: Verify
         env:
@@ -62,7 +62,7 @@ jobs:
         run: |
           node scripts/restore-tenant-check.mjs verify
           echo "Plan after the restore (expected: no difference):"
-          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA"
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA" --ids "$R1,$Q1,$Q2"
 
       - name: Clean up
         if: always()
