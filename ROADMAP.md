@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY) — *zabratá linkou A*; **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -73,7 +73,7 @@ Nočná záloha stagingu už beží (Z50). Doplň zvyšok 3f — **nič neplaten
    záznamov → obnov → porovnaj); na STRÖMY nič nezapisuj.
 4. **Postup pri výpadku** (dokument `docs/prevadzka/vypadok.md`): Vercel, Supabase, e-maily, iCal — čo robiť, komu písať, ako vrátiť verziu.
 
-### Z53 [A] — Pred ukážkou Jane: prehliadka „Čo je nové“ a celkový test (po Z51)
+### Z53 [A] 🔄 — Pred ukážkou Jane: prehliadka „Čo je nové“ a celkový test (po Z51)
 1. **Prehliadka „Čo je nové“** doplnená o veci od poslednej verzie: správy (schránka, automatické správy), check-in, doobjednanie a účet
    pobytu, recenzie, kolízie, storno pásma, podklad na doklad. Nové snímky z Ukážkového klienta (`npm run tour:screens`), zvýš `version`.
 2. **Celý e2e beh** (PC aj mobil, axe) proti stagingu po všetkých úlohách oboch liniek; nestabilné testy oprav alebo zapíš.
