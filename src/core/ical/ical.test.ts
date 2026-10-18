@@ -52,7 +52,9 @@ describe("parseIcal", () => {
 
 describe("icalDetails", () => {
   it("keeps only the link, the code and the phone's last digits", () => {
-    expect(icalDetails("Booking number: 4567890123\nGuest: Ján Novák")).toEqual({ code: "4567890123" });
+    expect(icalDetails("Booking number: 4567890123\nGuest: Ján Novák")).toEqual({
+      code: "4567890123",
+    });
     expect(icalDetails("Nič užitočné")).toBeUndefined();
   });
 });
