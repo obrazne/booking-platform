@@ -364,6 +364,10 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 - [x] 🧠 **Návrh modulu Správy s hosťom** (Martin 17. 10.; → Z45–Z47): konverzácia pri pobyte, každá správa majiteľa aj e-mailom
   s tlačidlom „Odpovedať“, automatické správy (náhrada workflows z JetBookingu), rýchle odpovede. Platený modul, povinné e-maily ostávajú v jadre.
+- [ ] 🧠 **Modul Prepojenie s e-mail marketingom** (Martin 18. 10., doplnkový modul, teraz nerobiť): kontakty priamych hostí
+  sa automaticky posielajú do nástroja klienta — **Ecomail**, **SmartEmailing** (prípadne ďalšie). Len hostia so **súhlasom s novinkami**
+  (nepovinný, nezaškrtnutý — B7); odvolanie súhlasu v účte hosťa = odhlásenie aj v nástroji. Rozhodnúť: ktoré polia (meno, e-mail, jazyk,
+  termín posledného pobytu, objekt) a štítky, jednorazový import existujúcich, API kľúč klienta v nastaveniach modulu, čo pri výpadku.
 - [ ] 🧠 + 🔧 **Zaučenie klienta — návod a prechod systémom** (Martin 17. 10., **teraz nerobiť** — až keď bude systém vyladený, najneskôr po
   prezentácii Jane): popri prehliadke „Čo je nové“ niečo, s čím sa klient rýchlo zžije — **mapa administrácie** (diagram: čo kde nájde),
   **krátke slajdy** „prvý deň s rezerváciami“ (prvá rezervácia, platba, kalendár, Booking/Airbnb, správy, moduly), prípadne krátke videá;
