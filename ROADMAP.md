@@ -433,7 +433,7 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
 - 2026-10-18 — Z50 [linka B]: **prvá ostrá záloha stagingu prešla** — Martin pridal tri tajné hodnoty (cez `gh secret set`;
-  AVG blokoval PowerShell, išlo cez Príkazový riadok). Beh: 92 tabuliek obnovených a porovnaných, 38 súborov v 2 bucketoch,
+  AVG najprv blokoval PowerShell, Martin ho odblokoval). Beh: 92 tabuliek obnovených a porovnaných, 38 súborov v 2 bucketoch,
   zašifrovaný artefakt `staging-2026-10-18.tar.gz.age` **8,0 MB** (14 dní). Ďalej beží každú noc o 1:00 UTC; ostáva skúšobná
   obnova s Martinom. (Claude Code)
 - 2026-10-17 — Správy [linka B]: **„Nová správa“ v Schránke** (Martin): okno „Komu napísať?“ s hľadaním medzi priamymi rezerváciami
