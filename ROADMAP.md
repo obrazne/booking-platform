@@ -366,8 +366,9 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
   s tlačidlom „Odpovedať“, automatické správy (náhrada workflows z JetBookingu), rýchle odpovede. Platený modul, povinné e-maily ostávajú v jadre.
 - [ ] 🧠 **Modul Automatické párovanie platieb** (Martin 18. 10., platený doplnkový modul, teraz nerobiť): platba prevodom / QR sa sama
   spáruje s rezerváciou podľa **variabilného symbolu a sumy** → „Platba prijatá“ bez kliku majiteľa (a s ňou potvrdzovací e-mail hosťovi).
-  Možnosti na preskúmanie: **Fio API** (token len na čítanie, pohyby na účte), **e-mailové notifikácie banky** na špeciálnu adresu, ktorú
-  systém číta (Martin to takto používa so SuperFaktúrou pri Fio banke — funguje aj pri bankách bez API), prípadne PSD2 agregátor pre ostatné banky.
+  **Pre všetky banky klientov, nie len Fio.** Hlavná cesta: **e-mailové notifikácie banky** na adresu, ktorú systém vygeneruje a číta
+  (tak to robí SuperFaktúra aj Fakturoid — v SK funguje ČSOB, Fio, Slovenská sporiteľňa, Tatra banka; formát e-mailu sa líši, parser na banku).
+  Doplnkovo API bánk tam, kde je (Fio API zadarmo s tokenom; Tatra banka Premium API — platené, podnikateľský účet) alebo PSD2 agregátor.
   Rozhodnúť: čiastočná platba a preplatok, platba bez VS (ručné priradenie), platby za účet pobytu (rovnaký VS), bezpečnosť tokenu klienta.
 - [ ] 🧠 **Modul Prepojenie s e-mail marketingom** (Martin 18. 10., doplnkový modul, teraz nerobiť): kontakty priamych hostí
   sa automaticky posielajú do nástroja klienta — **Ecomail**, **SmartEmailing** (prípadne ďalšie). Len hostia so **súhlasom s novinkami**
