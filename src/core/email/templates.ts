@@ -12,6 +12,16 @@ import type { PriceModel } from "@/core/pricing/types";
 import messagesSk from "@/i18n/messages/sk.json";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { EmailContext } from "./context";
+import {
+  emailLayout,
+  esc,
+  guestFrame,
+  guestFrameText,
+  guestMessageHtml,
+  paragraph,
+  type EmailFrame,
+  type GuestFrameInput,
+} from "./layout";
 import type { OutgoingEmail } from "./send";
 
 const MESSAGES = { sk: messagesSk } as const;
@@ -35,34 +45,10 @@ export type EmailKind =
   | "guest_message"
   | "owner_message";
 
-function esc(s: string): string {
-  return s.replace(
-    /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
-  );
-}
+// Layout and helpers shared with the preview in the administration (Z60).
+const layout = emailLayout;
+const p = paragraph;
 
-/** Minimal, client-safe HTML layout in the tenant's accent colour (A7, A12). */
-function layout(
-  accent: string,
-  title: string,
-  blocks: string[],
-  button?: { href: string; label: string },
-) {
-  const btn = button
-    ? `<p style="margin:28px 0"><a href="${esc(button.href)}" style="background:${accent};color:#fff;text-decoration:none;padding:12px 22px;border-radius:999px;display:inline-block;font-weight:500">${esc(button.label)}</a></p>`
-    : "";
-  return `<!doctype html><html><body style="margin:0;background:#f6f5f1;font-family:Roboto,Helvetica,Arial,sans-serif;color:#1d1d1b">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
-<table role="presentation" width="100%" style="max-width:560px;background:#fff;border:1px solid #e9e5db;border-radius:24px" cellpadding="0" cellspacing="0"><tr><td style="padding:32px">
-<h1 style="font-size:22px;line-height:1.3;margin:0 0 20px">${esc(title)}</h1>
-${blocks.join("\n")}
-${btn}
-</td></tr></table></td></tr></table></body></html>`;
-}
-
-const p = (text: string) =>
-  `<p style="margin:0 0 14px;line-height:1.6">${esc(text).replace(/\n/g, "<br>")}</p>`;
 const rows = (pairs: [string, string][]) =>
   `<table role="presentation" width="100%" style="margin:8px 0 18px;border-top:1px solid #e9e5db" cellpadding="0" cellspacing="0">${pairs
     .map(
@@ -71,12 +57,58 @@ const rows = (pairs: [string, string][]) =>
     )
     .join("")}</table>`;
 
-/** Renders the message for an outbox row. Returns null when it cannot be sent (missing recipient). */
+/** Header and footer data of the e-mails to the guest of a reservation (Z60). */
+export function guestFrameInput(
+  ctx: EmailContext,
+  labels: GuestFrameInput["labels"],
+): GuestFrameInput {
+  return {
+    accent: ctx.accent,
+    name: ctx.r.property?.name ?? ctx.r.tenant?.name ?? "",
+    logoUrl: ctx.logoUrl,
+    contactName: ctx.settings?.contact_name?.trim() || null,
+    phone: ctx.settings?.contact_phone ?? null,
+    email: ctx.r.property?.contact_email ?? null,
+    whatsapp: ctx.settings?.whatsapp_phone ?? null,
+    stayLink: ctx.guestLink ?? ctx.stayLink,
+    labels,
+  };
+}
+
+/**
+ * Renders the message for an outbox row. Returns null when it cannot be sent (missing recipient). E-mails to the
+ * guest (guest_*) get the header and footer of the client (Z60).
+ */
 export async function renderEmail(
   kind: EmailKind,
   ctx: EmailContext,
   payload: Record<string, unknown>,
 ): Promise<OutgoingEmail | null> {
+  if (!kind.startsWith("guest_")) return renderEmailBody(kind, ctx, payload);
+  const locale = (ctx.r.locale in MESSAGES ? ctx.r.locale : "sk") as keyof typeof MESSAGES;
+  const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: "emails.frame" });
+  const input = guestFrameInput(ctx, {
+    questions: t("questions"),
+    myStay: t("myStay"),
+    whatsapp: t("whatsapp"),
+  });
+  const mail = await renderEmailBody(kind, ctx, payload, guestFrame(input));
+  return mail ? { ...mail, text: `${mail.text}${guestFrameText(input)}` } : null;
+}
+
+async function renderEmailBody(
+  kind: EmailKind,
+  ctx: EmailContext,
+  payload: Record<string, unknown>,
+  frame?: EmailFrame,
+): Promise<OutgoingEmail | null> {
+  // E-mails to guests: every layout of this e-mail with the client's header and footer.
+  const layout = (
+    a: string,
+    title: string,
+    blocks: string[],
+    button?: { href: string; label: string },
+  ) => emailLayout(a, title, blocks, button, frame);
   const { r, settings, accent } = ctx;
   const locale = (r.locale in MESSAGES ? r.locale : "sk") as keyof typeof MESSAGES;
   const t = createTranslator({ locale, messages: MESSAGES[locale], namespace: "emails" });
@@ -220,6 +252,12 @@ export async function renderEmail(
           accent,
           t("guest_confirmed.subject", vars),
           [
+            // The main photo of the accommodation — only in the confirmation (Z60), fixed width, with alt.
+            ...(ctx.cover
+              ? [
+                  `<img src="${esc(ctx.cover.url)}" alt="${esc(ctx.cover.alt || property?.name || "")}" width="496" style="display:block;width:100%;max-width:496px;height:auto;border-radius:16px;margin:0 0 20px;border:0">`,
+                ]
+              : []),
             p(t("greeting", { name: r.guest_name })),
             p(t("guest_confirmed.intro")),
             ...blocksHtml,
@@ -528,16 +566,19 @@ export async function renderEmail(
           replyTo: ownerTo,
           fromName: `${owner} · ${property?.name ?? tenantName}`,
           subject: t("guest_message.subject", mv),
-          html: layout(
+          // The same builder as the preview and the test e-mail in the administration (Z60).
+          html: guestMessageHtml({
             accent,
-            t("guest_message.subject", mv),
-            [
-              p(t("guest_message.greeting", { ...mv, name: r.guest_name.split(/\s+/)[0] ?? "" })),
-              ...bubbles,
-              p(t("guest_message.replyHint", mv)),
-            ],
-            { href: reply, label: t("guest_message.button", mv) },
-          ),
+            frame,
+            title: t("guest_message.subject", mv),
+            greeting: t("guest_message.greeting", {
+              ...mv,
+              name: r.guest_name.split(/\s+/)[0] ?? "",
+            }),
+            bodies: items.map((m) => m.body),
+            replyHint: t("guest_message.replyHint", mv),
+            button: { href: reply, label: t("guest_message.button", mv) },
+          }),
           text: [...items.map((m) => m.body), t("guest_message.replyHint", mv), reply].join("\n\n"),
         };
       }
@@ -662,12 +703,23 @@ export function renderLoginCode(
     to,
     subject,
     fromName: tenant.name,
-    html: layout(tenant.accent, t("guest_login_code.title"), [
-      p(t("guest_login_code.greeting")),
-      p(t("guest_login_code.intro", { property: tenant.name })),
-      codeBlock,
-      p(t("guest_login_code.note")),
-    ]),
+    html: emailLayout(
+      tenant.accent,
+      t("guest_login_code.title"),
+      [
+        p(t("guest_login_code.greeting")),
+        p(t("guest_login_code.intro", { property: tenant.name })),
+        codeBlock,
+        p(t("guest_login_code.note")),
+      ],
+      undefined,
+      // E-mails to guests carry the client's header (Z60); no stay yet — no footer.
+      guestFrame({
+        accent: tenant.accent,
+        name: tenant.name,
+        labels: { questions: "", myStay: "", whatsapp: "" },
+      }),
+    ),
     text: [
       t("guest_login_code.greeting"),
       t("guest_login_code.intro", { property: tenant.name }),

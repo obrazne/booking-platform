@@ -7,8 +7,9 @@ import { isModuleEnabled } from "@/core/modules/registry";
 import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { AutoMessages, type AutoRule } from "@/modules/messages/admin/auto";
+import { ruleEmailTemplate } from "@/modules/messages/admin/email-preview";
 import { ensureMessageDefaults } from "@/modules/messages/defaults";
-import type { MessageAnchor } from "@/modules/messages/rules";
+import { messageSignature, type MessageAnchor } from "@/modules/messages/rules";
 
 /** ISO date `days` from today. */
 function inDays(days: number): string {
@@ -56,7 +57,7 @@ export default async function AutoMessagesPage() {
       .order("sort"),
     supabase
       .from("tenant_settings")
-      .select("arrival_email_days_before, upsell_offer_days, contact_name")
+      .select("arrival_email_days_before, upsell_offer_days, contact_name, message_signature")
       .eq("tenant_id", active.tenantId)
       .maybeSingle(),
   ]);
@@ -70,6 +71,19 @@ export default async function AutoMessagesPage() {
     sendTime: r.send_time,
     enabled: r.enabled,
   }));
+
+  const sample = {
+    signature: messageSignature(settings, tenant.name),
+    checkIn: inDays(14),
+    checkOut: inDays(17),
+    reviewLink: "https://…/hodnotenie",
+  };
+  // The e-mail as the guest gets it (Z60): the preview fills in the text while typing.
+  const email = await ruleEmailTemplate(active.tenantId, {
+    guestName: t("auto.sampleGuest"),
+    checkIn: sample.checkIn,
+    checkOut: sample.checkOut,
+  });
 
   return (
     <div data-bleed>
@@ -86,12 +100,8 @@ export default async function AutoMessagesPage() {
           arrivalDays={settings?.arrival_email_days_before ?? 3}
           upsellDays={upsellOn ? (settings?.upsell_offer_days ?? []) : []}
           reviewsOn={reviewsOn}
-          sample={{
-            signature: settings?.contact_name?.trim() || tenant.name,
-            checkIn: inDays(14),
-            checkOut: inDays(17),
-            reviewLink: "https://…/hodnotenie",
-          }}
+          sample={sample}
+          emailTemplate={email.html}
         />
       </div>
     </div>

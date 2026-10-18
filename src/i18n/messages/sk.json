@@ -651,7 +651,8 @@
           "testSubject": "Skúška automatickej správy: {name}",
           "appliesNote": "Zmena platí pre správy, ktoré ešte neodišli.",
           "saved": "Uložené.",
-          "sampleGuest": "Tomáš Kováč"
+          "sampleGuest": "Tomáš Kováč",
+          "signatureNote": "Podpis upravíte v Nastaveniach → Kontakt"
         }
       },
       "nav": "Správy",
@@ -734,8 +735,7 @@
           "generic": "Správu sa nepodarilo odoslať. Skúste to znova."
         },
         "newMark": "{day} · nová správa"
-      },
-      "title": "Správy s hosťom"
+      }
     },
     "checkin": {
       "nav": "Príchody",
@@ -1136,7 +1136,16 @@
     "reviewsUrl": "Odkaz na všetky hodnotenia",
     "reviewsUrlHint": "Napr. Google alebo stránka s hodnoteniami na vašom webe. Hosť ho uvidí až v zozname referencií.",
     "portalCommission": "Provízia portálov (%)",
-    "portalCommissionHint": "Koľko by ste zaplatili Bookingu alebo Airbnb. Z tohto čísla prehľad odhaduje, koľko ste ušetrili na priamych rezerváciách."
+    "portalCommissionHint": "Koľko by ste zaplatili Bookingu alebo Airbnb. Z tohto čísla prehľad odhaduje, koľko ste ušetrili na priamych rezerváciách.",
+    "contact": {
+      "title": "Kontakt",
+      "hint": "Kontakt pre hostí — ukáže sa pri pobyte, v pätičke e-mailov hosťom a v správach.",
+      "name": "Kontaktná osoba",
+      "phone": "Telefón",
+      "whatsapp": "WhatsApp (číslo s predvoľbou)",
+      "signature": "Podpis správ",
+      "signatureHint": "Vloží sa do správ hosťom namiesto premennej Podpis, napr. „Jana Hladká · Chalet STRÖMY · +421 900 000 000“. Prázdne = meno kontaktnej osoby."
+    }
   },
   "blocks": {
     "title": "Blokácie termínov",
@@ -2050,6 +2059,11 @@
       "from": "od {price}",
       "outro": "Zaplatíte pri odchode na účet pobytu, alebo hneď prevodom. Objednávka je záväzná, zrušiť ju môžete do uzávierky.",
       "button": "Pozrieť a objednať"
+    },
+    "frame": {
+      "questions": "Otázky k pobytu?",
+      "myStay": "Môj pobyt",
+      "whatsapp": "WhatsApp"
     }
   },
   "collisions": {

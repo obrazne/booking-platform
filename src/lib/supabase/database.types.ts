@@ -2912,6 +2912,7 @@ export type Database = {
           google_review_url: string | null
           hold_minutes: number
           iban: string | null
+          message_signature: string | null
           message_topics: Json | null
           owner_notification_email: string | null
           payment_due_hours: number
@@ -2942,6 +2943,7 @@ export type Database = {
           google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
+          message_signature?: string | null
           message_topics?: Json | null
           owner_notification_email?: string | null
           payment_due_hours?: number
@@ -2972,6 +2974,7 @@ export type Database = {
           google_review_url?: string | null
           hold_minutes?: number
           iban?: string | null
+          message_signature?: string | null
           message_topics?: Json | null
           owner_notification_email?: string | null
           payment_due_hours?: number

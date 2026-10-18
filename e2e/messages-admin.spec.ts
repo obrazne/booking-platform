@@ -17,7 +17,8 @@ import {
 // → Automatické správy: a rule is edited (and put back). Ukážkový klient only (never STRÖMY), e-mails "+b".
 
 async function noSeriousA11y(page: Page, include?: string) {
-  let axe = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]);
+  // The e-mail preview is a sandboxed frame (no scripts) — its content is an e-mail, not the administration (Z60).
+  let axe = new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).exclude("iframe");
   if (include) axe = axe.include(include);
   const r = await axe.analyze();
   const serious = r.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
@@ -43,6 +44,12 @@ test("owner answers from the inbox with a quick reply, leaves out a scheduled me
   let reservationId: string | null = null;
   let quickId: string | null = null;
   let rule: Record<string, unknown> | null = null;
+  // The signature of messages (Z60) as it was — the test sets its own and puts it back.
+  const { data: settings0 } = await db
+    .from("tenant_settings")
+    .select("message_signature")
+    .eq("tenant_id", TENANT)
+    .single();
   try {
     const stay = await freeStay(3);
     const { data: created, error } = await db
@@ -162,6 +169,11 @@ test("owner answers from the inbox with a quick reply, leaves out a scheduled me
     await expect(panel.getByRole("button", { name: "Vrátiť" })).toHaveCount(0);
 
     // Automatické správy: edit the text of the first rule.
+    // Automatické správy: the signature of Nastavenia → Kontakt goes into {podpis} (Z60).
+    await db
+      .from("tenant_settings")
+      .update({ message_signature: `E2E podpis ${stamp}` })
+      .eq("tenant_id", TENANT);
     await page.goto(`${ADMIN_URL}/admin/messages/auto`);
     await expect(page.getByRole("heading", { level: 1, name: "Automatické správy" })).toBeVisible();
     await noSeriousA11y(page);
@@ -178,8 +190,17 @@ test("owner answers from the inbox with a quick reply, leaves out a scheduled me
     const editor = page.getByRole("dialog");
     await expect(editor).toHaveCSS("opacity", "1");
     const text = editor.getByRole("textbox", { name: "Text" });
-    await text.fill(`E2E text ${stamp} pre {meno}`);
-    await expect(editor).toContainText(`E2E text ${stamp} pre Tomáš`);
+    await expect(editor.getByRole("link", { name: /Nastaveniach → Kontakt/ })).toHaveAttribute(
+      "href",
+      "/admin/settings#kontakt",
+    );
+    await text.fill(`E2E text ${stamp} pre {meno} — {podpis}`);
+    // The preview is the whole e-mail with the client's header and footer (Z60), in a frame.
+    const email = editor.frameLocator("iframe");
+    await expect(
+      email.getByText(`E2E text ${stamp} pre Tomáš — E2E podpis ${stamp}`),
+    ).toBeVisible();
+    await expect(email.getByText("Odpovedať")).toBeVisible();
     await noSeriousA11y(page, '[role="dialog"]');
     await editor.getByRole("button", { name: "Uložiť" }).click();
     await expect(page.getByText("Uložené.")).toBeVisible();
@@ -188,8 +209,14 @@ test("owner answers from the inbox with a quick reply, leaves out a scheduled me
       .select("body")
       .eq("id", original!.id)
       .single();
-    expect((saved?.body as Record<string, string>).sk).toBe(`E2E text ${stamp} pre {meno}`);
+    expect((saved?.body as Record<string, string>).sk).toBe(
+      `E2E text ${stamp} pre {meno} — {podpis}`,
+    );
   } finally {
+    await db
+      .from("tenant_settings")
+      .update({ message_signature: settings0?.message_signature ?? null })
+      .eq("tenant_id", TENANT);
     if (rule) {
       const { id, ...back } = rule;
       await db

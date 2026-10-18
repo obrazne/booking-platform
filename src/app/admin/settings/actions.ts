@@ -37,6 +37,16 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         .union([z.url().startsWith("https://"), z.literal("")])
         .transform((v) => v || null),
       owner_notification_email: z.union([z.email(), z.literal("")]).transform((v) => v || null),
+      // Kontakt (Z60): shown to guests; the signature replaces {podpis} in the messages.
+      contact_name: text(120),
+      contact_phone: text(40),
+      whatsapp_phone: text(40),
+      // Several lines; the browser sends CRLF — kept as plain new lines.
+      message_signature: z
+        .string()
+        .transform((v) => v.replace(/\r\n?/g, "\n").trim())
+        .pipe(z.string().max(500))
+        .transform((v) => v || null),
       arrival_email_days_before: z.coerce.number().int().min(0).max(30),
       vat_payer: z.preprocess((v) => v === "on", z.boolean()),
       // Percent in the form, basis points in the database.

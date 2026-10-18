@@ -5,8 +5,10 @@ import { z } from "zod";
 import { dbErrorKey, fail, ok, requireTenant } from "@/core/admin/action";
 import type { ActionResult } from "@/core/admin/form";
 import { getCurrentUser } from "@/core/auth/session";
+import { fillMessagePreview } from "@/core/email/layout";
 import { sendEmail } from "@/core/email/send";
 import { createClient } from "@/lib/supabase/server";
+import { ruleEmailTemplate } from "./email-preview";
 
 const uuid = z.uuid();
 
@@ -120,20 +122,29 @@ export async function toggleRule(id: string, enabled: boolean): Promise<ActionRe
   return ok();
 }
 
-/** "Poslať skúšobne mne": the preview as an e-mail to the signed-in member. */
-export async function sendRuleTest(subject: string, text: string): Promise<ActionResult> {
-  await requireTenant();
+/**
+ * "Poslať skúšobne mne": the e-mail exactly as in the preview — the client's header and footer, the greeting, the
+ * text with the sample guest (Z60) — to the signed-in member.
+ */
+export async function sendRuleTest(
+  subject: string,
+  text: string,
+  sample: { guestName: string; checkIn: string; checkOut: string },
+): Promise<ActionResult> {
+  const active = await requireTenant();
   const user = await getCurrentUser();
-  if (!user?.email || !text.trim()) return fail("invalid");
-  const esc = (s: string) =>
-    s.replace(
-      /[&<>"']/g,
-      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
-    );
+  const date = /^\d{4}-\d{2}-\d{2}$/;
+  if (!user?.email || !text.trim() || !date.test(sample.checkIn) || !date.test(sample.checkOut))
+    return fail("invalid");
+  const template = await ruleEmailTemplate(active.tenantId, {
+    guestName: sample.guestName.slice(0, 80),
+    checkIn: sample.checkIn,
+    checkOut: sample.checkOut,
+  });
   const result = await sendEmail({
     to: user.email,
     subject: subject.slice(0, 120),
-    html: `<p style="font-family:Arial,sans-serif;line-height:1.6;white-space:pre-line">${esc(text.slice(0, 4000))}</p>`,
+    html: fillMessagePreview(template.html, text.slice(0, 4000)),
     text: text.slice(0, 4000),
   });
   return result.ok ? ok() : fail("generic");

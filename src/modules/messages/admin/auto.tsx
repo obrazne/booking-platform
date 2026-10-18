@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PanelSection, SidePanel } from "@/core/admin/record-panel";
+import { fillMessagePreview } from "@/core/email/layout";
 import { fillMessageText, type MessageAnchor } from "../rules";
 import {
   deleteQuickReply,
@@ -40,6 +42,8 @@ type Props = {
   reviewsOn: boolean;
   /** Sample of the preview: the signature of the client and a stay. */
   sample: { signature: string; checkIn: string; checkOut: string; reviewLink: string };
+  /** The e-mail as the guest gets it, with BODY_MARKER for the text (Z60) — the preview fills it in. */
+  emailTemplate: string;
 };
 
 type Rel = "confirmed" | "beforeIn" | "afterIn" | "beforeOut" | "afterOut";
@@ -178,6 +182,7 @@ function RuleEditor({
   upsellDays,
   reviewsOn,
   sample,
+  emailTemplate,
   onDone,
 }: Props & { rule: AutoRule; onDone: () => void }) {
   const t = useTranslations("modules.messages.admin");
@@ -235,7 +240,11 @@ function RuleEditor({
     });
   const test = () =>
     start(async () => {
-      const r = await sendRuleTest(t("auto.testSubject", { name }), preview);
+      const r = await sendRuleTest(t("auto.testSubject", { name }), preview, {
+        guestName: sampleGuest,
+        checkIn: sample.checkIn,
+        checkOut: sample.checkOut,
+      });
       if (r.ok) toast.success(t("auto.testSent"));
       else toast.error(tf("errors.generic"));
     });
@@ -329,12 +338,22 @@ function RuleEditor({
             </button>
           ))}
         </div>
+        <Link
+          href="/admin/settings#kontakt"
+          className="justify-self-start text-xs text-[#5a6672] underline underline-offset-[3px] hover:text-[#11212f]"
+        >
+          {t("auto.signatureNote")}
+        </Link>
       </PanelSection>
 
+      {/* The whole e-mail as the guest gets it — the client's header and footer (Z60); the same as the test e-mail. */}
       <PanelSection label={t("auto.preview", { guest: sampleGuest, dates })}>
-        <div className="rounded-2xl rounded-bl-sm border border-[#dbe5df] bg-[#e9efec] px-4 py-3 text-[15px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line text-[#11212f]">
-          {preview}
-        </div>
+        <iframe
+          title={t("auto.preview", { guest: sampleGuest, dates })}
+          sandbox=""
+          srcDoc={fillMessagePreview(emailTemplate, preview)}
+          className="border-line h-[560px] w-full rounded-xl border bg-[#f6f5f1]"
+        />
       </PanelSection>
 
       <p className="text-xs text-[#5a6672]">{t("auto.appliesNote")}</p>

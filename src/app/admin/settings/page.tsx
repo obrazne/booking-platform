@@ -226,6 +226,49 @@ export default async function SettingsPage() {
             ) : null}
           </CardContent>
         </Card>
+        {/* Kontakt (Z60): the contact for guests and the signature of messages ({podpis}). */}
+        <Card id="kontakt" className="scroll-mt-24">
+          <CardHeader>
+            <CardTitle>{t("contact.title")}</CardTitle>
+            <CardDescription>{t("contact.hint")}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <Field label={t("contact.name")} htmlFor="contact_name">
+              <Input id="contact_name" name="contact_name" defaultValue={s?.contact_name ?? ""} />
+            </Field>
+            <Field label={t("contact.phone")} htmlFor="contact_phone">
+              <Input
+                id="contact_phone"
+                name="contact_phone"
+                type="tel"
+                defaultValue={s?.contact_phone ?? ""}
+              />
+            </Field>
+            <Field label={t("contact.whatsapp")} htmlFor="whatsapp_phone">
+              <Input
+                id="whatsapp_phone"
+                name="whatsapp_phone"
+                type="tel"
+                defaultValue={s?.whatsapp_phone ?? ""}
+              />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field
+                label={t("contact.signature")}
+                htmlFor="message_signature"
+                hint={t("contact.signatureHint")}
+              >
+                <Textarea
+                  id="message_signature"
+                  name="message_signature"
+                  rows={3}
+                  maxLength={500}
+                  defaultValue={s?.message_signature ?? ""}
+                />
+              </Field>
+            </div>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>{t("notifications")}</CardTitle>

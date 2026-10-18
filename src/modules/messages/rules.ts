@@ -61,3 +61,14 @@ export function ruleSendAt(
     localMidnight(d.toISOString().slice(0, 10), timeZone).getTime() + (h! * 60 + m!) * 60_000,
   );
 }
+
+/**
+ * What {podpis} becomes (Z60) — as `message_rule_text` in the database: the signature of Nastavenia → Kontakt, else the
+ * contact person's name, else the client's name.
+ */
+export function messageSignature(
+  settings: { message_signature?: string | null; contact_name?: string | null } | null | undefined,
+  tenantName: string,
+): string {
+  return settings?.message_signature?.trim() || settings?.contact_name?.trim() || tenantName;
+}

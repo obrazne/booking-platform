@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fillMessageText, ruleSendAt } from "./rules";
+import { fillMessageText, messageSignature, ruleSendAt } from "./rules";
 
 describe("automatic messages (Z45)", () => {
   it("fills in the variables as the database", () => {
@@ -45,5 +45,23 @@ describe("automatic messages (Z45)", () => {
         tz,
       ),
     ).toBeNull();
+  });
+});
+
+describe("messageSignature", () => {
+  it("the signature, else the contact's name, else the client's name", () => {
+    expect(
+      messageSignature(
+        { message_signature: " Jana · Chalet ", contact_name: "Jana Hladká" },
+        "STRÖMY",
+      ),
+    ).toBe("Jana · Chalet");
+    expect(
+      messageSignature({ message_signature: "  ", contact_name: "Jana Hladká" }, "STRÖMY"),
+    ).toBe("Jana Hladká");
+    expect(messageSignature({ message_signature: null, contact_name: null }, "STRÖMY")).toBe(
+      "STRÖMY",
+    );
+    expect(messageSignature(null, "STRÖMY")).toBe("STRÖMY");
   });
 });
