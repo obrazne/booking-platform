@@ -106,7 +106,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    nie podľa vytvorenia.
 4. Testy na Ukážkovom klientovi (ukážkové iCal kanály); STRÖMY len čítaj.
 
-### Z59 [B] — Účet hosťa: navigácia (pripomienky 38, 39, 40) — po Z58
+### Z59 [B] 🔄 — Účet hosťa: navigácia (pripomienky 38, 39, 40) — po Z58
 1. **Aktuálny pobyt ako prvá karta:** karty `Aktuálny pobyt · Pobyty · Moje údaje`. Po prihlásení sa otvorí aktuálny pobyt (prebiehajúci,
    inak najbližší budúci). Viac budúcich → najbližší + prepínač „Ďalší pobyt: 12. 2. 2027 ›“. Bez budúceho pobytu karta nie je
    a otvorí sa zoznam Pobyty. Prístupový odkaz `/r/<kód>` ostáva ako je.
