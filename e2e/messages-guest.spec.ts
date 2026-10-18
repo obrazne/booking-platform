@@ -61,13 +61,6 @@ test("guest reads the owner's message, answers, the owner gets it; e-mail link o
   if (error) throw error;
   const { id, access_token: token } = created as { id: string; access_token: string };
   try {
-    await db.from("messages").insert({
-      tenant_id: TENANT,
-      reservation_id: id,
-      sender: "staff",
-      body: `E2E: vitajte ${stamp}`,
-    });
-
     await page.goto(`${GUEST_URL}/ucet`);
     await page.waitForURL(/\/ucet\/prihlasenie/);
     await page.getByLabel("E-mail").fill(email);
@@ -77,7 +70,15 @@ test("guest reads the owner's message, answers, the owner gets it; e-mail link o
     const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email });
     await firstDigit.fill(link.properties!.email_otp);
     await page.getByRole("button", { name: "Prihlásiť sa" }).click();
-    await page.waitForURL(/\/ucet$/);
+    // Z59: signing in opens the current stay (which would read a message at once) — the owner writes after it.
+    await page.waitForURL(/\/ucet\/pobyt\/|\/ucet$/);
+    await db.from("messages").insert({
+      tenant_id: TENANT,
+      reservation_id: id,
+      sender: "staff",
+      body: `E2E: vitajte ${stamp}`,
+    });
+    await page.goto(`${GUEST_URL}/ucet`);
 
     // Unread: point on the stay card and the badge.
     const card = page.getByRole("link", { name: /Otvoriť pobyt/ });

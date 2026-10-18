@@ -106,7 +106,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    nie podľa vytvorenia.
 4. Testy na Ukážkovom klientovi (ukážkové iCal kanály); STRÖMY len čítaj.
 
-### Z59 [B] 🔄 — Účet hosťa: navigácia (pripomienky 38, 39, 40) — po Z58
+### Z59 [B] ✅ — Účet hosťa: navigácia (pripomienky 38, 39, 40) — po Z58
 1. **Aktuálny pobyt ako prvá karta:** karty `Aktuálny pobyt · Pobyty · Moje údaje`. Po prihlásení sa otvorí aktuálny pobyt (prebiehajúci,
    inak najbližší budúci). Viac budúcich → najbližší + prepínač „Ďalší pobyt: 12. 2. 2027 ›“. Bez budúceho pobytu karta nie je
    a otvorí sa zoznam Pobyty. Prístupový odkaz `/r/<kód>` ostáva ako je.
@@ -572,6 +572,17 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z59 [linka B]: **účet hosťa — navigácia** (pripomienky 38, 39, 40). (Claude Code)
+  - Karty **Aktuálny pobyt · Pobyty · Moje údaje** z jedného zdroja (`src/core/guest/account-nav.ts` + `account-nav-items.ts`),
+    ten istý zoznam má **menu „Môj účet“ v hlavičke** (stránka chaletu aj účet; + Odhlásiť sa; neprihlásený → odkaz na prihlásenie).
+    Aktuálny pobyt = prebiehajúci, inak najbližší budúci (aj čakajúci na platbu; `current-stay.ts` + test); bez neho karta nie je.
+  - **Po prihlásení** sa otvorí aktuálny pobyt (`/ucet/aktualny` → `/ucet/pobyt/<id>`, bez neho zoznam Pobyty). Pri ďalšom
+    budúcom pobyte prepínač **„Ďalší pobyt: 12. 2. 2027 ›“**; iný než aktuálny pobyt má nad nadpisom výrazné **„← Všetky pobyty“**
+    a svieti karta Pobyty (drobčeky ostávajú pri check-ine). Prístupový odkaz `/r/<kód>` bez zmeny.
+  - Mobil: tri karty sa zmestia (menšie), „Odhlásiť sa“ je na mobile v menu „Môj účet“.
+  - **Pre linku A:** upravené testy, ktoré po prihlásení čakali `/ucet` (`account`, `account-v24`, `messages-guest`,
+    `stay-states`) — teraz sa najprv otvorí pobyt; v `messages-guest` píše majiteľ až po prihlásení (otvorený pobyt správu hneď
+    prečíta). Nový test `e2e/account-nav.spec.ts` (PC aj 390 px). Všetky dotknuté testy prešli. Snímky `docs/snimky/z59/`.
 - 2026-10-18 — Z54 [linka A]: **plochy, polia a reakcia na myš naprieč aplikáciou** (pripomienky 41–43, pravidlá 1–2). (Claude Code)
   - **Tokeny** v `globals.css` (`:root`): `--page`, `--card-surface` + `--card-border` (karta = jemný odtieň **a** vlasová čiara — jeden
     spôsob všade), `--divider`, `--field` (biela), `--field-border` `#86898e` (≥ 3 : 1 voči stránke, karte aj pásu stránky hosťa),

@@ -74,7 +74,9 @@ async function login(page: Page, email: string) {
   const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email });
   await firstDigit.fill(link.properties!.email_otp);
   await page.getByRole("button", { name: "Prihlásiť sa" }).click();
-  await page.waitForURL(/\/ucet$/);
+  // Z59: signing in opens the current stay; the overview is Pobyty.
+  await page.waitForURL(/\/ucet\/pobyt\/|\/ucet$/);
+  await page.goto(`${UKAZKA_URL}/ucet`);
 }
 
 async function axe(page: Page) {

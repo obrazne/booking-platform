@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getGuestSettings } from "@/core/booking/catalog";
+import { AccountMenu } from "@/core/guest/account-menu";
+import { loadAccountNav } from "@/core/guest/account-nav";
+import { signOutGuest } from "@/core/guest/auth";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { getTenantTheme } from "@/core/theme/load";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowUpRight, CircleUser } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { ThemeStyle } from "@/core/theme/theme-style";
 
 // The booking page lives next to the client's own website and must not compete with it in search (A17).
@@ -15,13 +18,13 @@ export default async function GuestLayout({ children }: LayoutProps<"/">) {
   const tenant = await getTenantFromHost();
   if (!tenant) return <>{children}</>;
   const supabase = await createClient();
-  const [theme, settings, t, tp, ta, { data: contact }] = await Promise.all([
+  const [theme, settings, t, tp, { data: contact }, account] = await Promise.all([
     getTenantTheme(tenant.id),
     getGuestSettings(tenant.id),
     getTranslations("guest.footer"),
     getTranslations("guest.property"),
-    getTranslations("guest.account"),
     supabase.rpc("tenant_public_contact", { p_tenant_id: tenant.id }).maybeSingle(),
+    loadAccountNav(),
   ]);
   return (
     <div
@@ -34,12 +37,8 @@ export default async function GuestLayout({ children }: LayoutProps<"/">) {
           <Link href="/" className="font-heading text-lg font-semibold tracking-tight">
             {tenant.name}
           </Link>
-          <Link
-            href="/ucet"
-            className="text-muted-foreground hover:text-foreground ml-auto inline-flex min-h-11 items-center gap-1.5 text-sm"
-          >
-            <CircleUser className="size-4" /> {ta("menu")}
-          </Link>
+          {/* Z59: the same items as the account's tabs; not signed in → the login. */}
+          <AccountMenu items={account} signOut={signOutGuest} />
           {contact?.website_url ? (
             <a
               href={contact.website_url}

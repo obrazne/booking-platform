@@ -148,7 +148,8 @@ export async function verifyGuestCode(_: LoginState, form: FormData): Promise<Lo
   await supabase.rpc("claim_guest_account", { p_tenant_id: tenant.id });
   (await cookies()).delete({ name: LOGIN_EMAIL_COOKIE, path: "/ucet" });
   (await cookies()).delete({ name: LOGIN_CODE_LENGTH_COOKIE, path: "/ucet" });
-  redirect("/ucet");
+  // Straight to the current stay (Z59); without one the list of stays.
+  redirect("/ucet/aktualny");
 }
 
 /** Back to entering the e-mail. */

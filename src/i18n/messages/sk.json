@@ -1524,6 +1524,7 @@
       "arrivesIn": "Príchod {count, plural, one {zajtra} few {o # dni} other {o # dní}}",
       "contactAsk": "Otázky? Odpovedá {name}.",
       "tabs": {
+        "current": "Aktuálny pobyt",
         "stays": "Pobyty",
         "profile": "Moje údaje",
         "badge": "{count, plural, one {1 vec na vybavenie} few {# veci na vybavenie} other {# vecí na vybavenie}}"
@@ -1563,7 +1564,10 @@
         "deleteError": "Žiadosť sa nepodarilo odoslať. Skúste to znova."
       },
       "invoices": "Doklady",
-      "invoicesHint": "Doklady (faktúry), ktoré vám vystavil {name}."
+      "invoicesHint": "Doklady (faktúry), ktoré vám vystavil {name}.",
+      "allStays": "Všetky pobyty",
+      "nextStay": "Ďalší pobyt: {date}",
+      "menuOpen": "Môj účet — menu"
     },
     "stay": {
       "hero": {

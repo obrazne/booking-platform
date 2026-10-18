@@ -16,7 +16,6 @@ async function noSeriousA11y(page: Page) {
 test("account: tabs, stay card with what to do, breadcrumbs, my details, data download, close account", async ({
   page,
 }, info) => {
-  const mobile = info.project.name === "mobile";
   const db = service();
   const email = `e2e-account24-${info.project.name}-${Date.now()}@${TEST_DOMAIN}`;
   const stay = await freeStay(2);
@@ -57,10 +56,17 @@ test("account: tabs, stay card with what to do, breadcrumbs, my details, data do
     const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email });
     await firstDigit.fill(link.properties!.email_otp);
     await page.getByRole("button", { name: "Prihlásiť sa" }).click();
+    // Z59: signing in opens the current stay (the only one, waiting for payment) under "Aktuálny pobyt".
+    await page.waitForURL(new RegExp(`/ucet/pobyt/${id}`));
+    const tabs = page.getByRole("navigation", { name: "Môj účet" });
+    await expect(tabs.getByRole("link", { name: "Aktuálny pobyt" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await tabs.getByRole("link", { name: /Pobyty/ }).click();
     await page.waitForURL(/\/ucet$/);
 
     // Tabs: Pobyty active with the badge (waiting for payment = something to do).
-    const tabs = page.getByRole("navigation", { name: "Môj účet" });
     await expect(tabs.getByRole("link", { name: /Pobyty/ })).toHaveAttribute(
       "aria-current",
       "page",
@@ -71,15 +77,10 @@ test("account: tabs, stay card with what to do, breadcrumbs, my details, data do
     await expect(card).toContainText("Zaplaťte");
     await noSeriousA11y(page);
 
-    // Stay → breadcrumbs back to Pobyty.
+    // Stay (the current one) → back to Pobyty by the tab (Z59).
     await card.click();
     await page.waitForURL(new RegExp(`/ucet/pobyt/${id}`));
-    const crumbs = page.getByRole("navigation", { name: "Drobčeková navigácia" });
-    const back = mobile
-      ? crumbs.getByRole("link", { name: "Pobyty" }).first()
-      : crumbs.getByRole("link", { name: "Pobyty", exact: true });
-    await expect(back).toBeVisible();
-    await back.click();
+    await tabs.getByRole("link", { name: /Pobyty/ }).click();
     await page.waitForURL(/\/ucet$/);
 
     // Moje údaje: details, data download, request to close the account.

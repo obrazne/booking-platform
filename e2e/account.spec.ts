@@ -46,7 +46,9 @@ test("guest account: login with a code, stays, payment, consent, cancellation, b
   const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email });
   await firstDigit.fill(link.properties!.email_otp);
   await page.getByRole("button", { name: "Prihlásiť sa" }).click();
-  await page.waitForURL(/\/ucet$/);
+  // Z59: signing in opens the current stay; the overview is Pobyty.
+  await page.waitForURL(/\/ucet\/pobyt\/|\/ucet$/);
+  await page.goto(`${GUEST_URL}/ucet`);
 
   // Dashboard: the stay booked with this e-mail is there.
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Dobrý deň, Zóna");
