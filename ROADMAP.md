@@ -11,11 +11,10 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → **Z50 (nočná záloha — hotová, čaká na tajné hodnoty od Martina)** → ~~Z46 (Správy: administrácia)~~ ✅ → ~~Z49 (prístupový odkaz ako detail pobytu)~~ ✅ — fronta linky B prázdna (Z50 čaká na Martina).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → ~~Z50 (nočná záloha)~~ ✅ → ~~Z46 (Správy: administrácia)~~ ✅ → ~~Z49 (prístupový odkaz ako detail pobytu)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
-- **Ďalší krok pre Martina (Z50, ~10 min):** pridať do GitHubu tri tajné hodnoty pre nočnú zálohu stagingu podľa
-  `docs/prevadzka/zaloha-a-obnova.md` → *Jednorazové nastavenie* (kľúč `age-keygen`, súkromný kľúč do správcu hesiel), potom spustiť
-  Actions → Záloha stagingu → Run workflow; potom spolu skúšobná obnova.
+- **Ďalší krok pre Martina (Z50):** záloha stagingu beží každú noc (prvá 18. 10. prešla, 8 MB). Raz spolu **skúšobná obnova**
+  podľa `docs/prevadzka/zaloha-a-obnova.md` → *Obnova* (stiahnuť artefakt, rozšifrovať súkromným kľúčom) — povedz, kedy.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
   Ďalej preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
@@ -192,7 +191,7 @@ Podľa `ARCHITEKTURA.md` → B11 **Správy s hosťom** a `ROZHODNUTIA.md` 17. 10
 6. Ukážkové dáta (len Ukážkový klient): konverzácie k niekoľkým rezerváciám vrátane automatických a jednej čakajúcej.
 7. Testy: pgTAP + jednotkové (výpočet času pravidla, zlúčenie e-mailov).
 
-### Z50 [B] 🔄 ⏸ čaká na tajné hodnoty od Martina — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, prvá na linke B**
+### Z50 [B] ✅ — Nočná záloha stagingu (Martin 17. 10.) — **prednostne, prvá na linke B**
 Staging je na bezplatnom pláne Supabase, ktorý **nerobí žiadne zálohy**. Nenahraditeľné sú nastavenia a texty STRÖMY, fotky v úložisku
 (~40 súborov), Janin iCal kanál a používatelia (databáza ~40 MB). Je to predstupeň 3f (A9) — postav ho tak, aby sa dal pre produkciu len
 prepnúť na iné úložisko. Nič neplatené.
@@ -433,6 +432,10 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z50 [linka B]: **prvá ostrá záloha stagingu prešla** — Martin pridal tri tajné hodnoty (cez `gh secret set`;
+  AVG blokoval PowerShell, išlo cez Príkazový riadok). Beh: 92 tabuliek obnovených a porovnaných, 38 súborov v 2 bucketoch,
+  zašifrovaný artefakt `staging-2026-10-18.tar.gz.age` **8,0 MB** (14 dní). Ďalej beží každú noc o 1:00 UTC; ostáva skúšobná
+  obnova s Martinom. (Claude Code)
 - 2026-10-17 — Správy [linka B]: **„Nová správa“ v Schránke** (Martin): okno „Komu napísať?“ s hľadaním medzi priamymi rezerváciami
   (od 60 dní dozadu, najbližší príchod hore, „už si píšete“ pri existujúcej konverzácii) → panel rezervácie na karte Správy.
   Test v `e2e/messages-admin.spec.ts`. (Claude Code)
