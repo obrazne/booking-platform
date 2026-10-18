@@ -2630,7 +2630,27 @@
       "emailsFailed": "{count, plural, one {1 neodoslaný} few {# neodoslané} other {# neodoslaných}}",
       "lastSent": "posledný odoslaný {date}",
       "never": "zatiaľ nikdy",
-      "demoChannels": "{count, plural, one {1 ukážkový kalendár} few {# ukážkové kalendáre} other {# ukážkových kalendárov}} (nesynchronizuje sa)"
+      "demoChannels": "{count, plural, one {1 ukážkový kalendár} few {# ukážkové kalendáre} other {# ukážkových kalendárov}} (nesynchronizuje sa)",
+      "backups": {
+        "title": "Zálohy",
+        "lead": "Záloha stagingu beží každú noc (GitHub Actions): databáza a súbory, overená obnovou do čistej databázy, zašifrovaná. Postup obnovy: docs/prevadzka/zaloha-a-obnova.md.",
+        "none": "Zatiaľ žiadna zaznamenaná záloha.",
+        "last": "Posledná záloha",
+        "lastOk": "Posledná úspešná",
+        "okLabel": "overená",
+        "failed": "zlyhala",
+        "details": "{size} · {tables, plural, one {# tabuľka} few {# tabuľky} other {# tabuliek}} · {files, plural, one {# súbor} few {# súbory} other {# súborov}}",
+        "run": "Beh v GitHube ↗",
+        "stale": "Posledná úspešná záloha je staršia ako 36 hodín — skontrolujte beh „Záloha stagingu“ v GitHube.",
+        "restore": "Skúšobná obnova",
+        "restoreNone": "Zatiaľ nezaznamenaná — skúste ju aspoň raz za štvrťrok.",
+        "restoreOld": "Posledná je staršia ako 3 mesiace — je čas na ďalšiu.",
+        "record": "Zaznamenať skúšobnú obnovu",
+        "note": "Čo ste skúšali (napr. rozšifrovanie a obsah zálohy)",
+        "save": "Zaznamenať",
+        "saved": "Zaznamenané.",
+        "history": "Posledné behy"
+      }
     }
   },
   "stats": {
@@ -2727,6 +2747,10 @@
       "client_new": {
         "title": "Nový klient — {tenant}",
         "text": "Založený v riadiacom centre"
+      },
+      "backup_stale": {
+        "title": "Záloha neprebehla viac ako 36 hodín",
+        "text": "Posledná úspešná záloha: {last} — pozrite Stav systému"
       },
       "other": {
         "title": "Upozornenie",
@@ -2994,7 +3018,8 @@
       "client_sync_failed": "Klientovi zlyhala synchronizácia kalendára",
       "client_emails_failed": "Klientovi sa neodosielajú e-maily",
       "client_trial_ending": "Klientovi končí skúšobná doba modulu",
-      "client_new": "Nový klient"
+      "client_new": "Nový klient",
+      "backup_stale": "Záloha neprebehla (36 h)"
     },
     "pageTitle": "Upozornenia",
     "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia."

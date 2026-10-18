@@ -7,8 +7,12 @@ import { isPlatformAdmin } from "@/core/auth/session";
 import { formatDateTime } from "@/core/format/format";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { BackupsSection } from "./backups-section";
 
-/** Control center — Stav systému: checks per client (synchronisation, e-mails, last sync and send). */
+/**
+ * Control center — Stav systému: the backups (Z52), then checks per client (synchronisation, e-mails, last sync and
+ * send).
+ */
 export default async function PlatformStatus() {
   if (!(await isPlatformAdmin())) return null;
   const [t, tm, locale, list] = await Promise.all([
@@ -44,6 +48,7 @@ export default async function PlatformStatus() {
         title={tm("title")}
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
+        <BackupsSection />
         {list.map((x) => {
           // Demo calendars (example.invalid) are never downloaded — not a failing synchronisation (v1.2).
           const all = (channels ?? []).filter((c) => c.tenant_id === x.id);

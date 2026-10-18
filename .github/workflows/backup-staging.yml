@@ -41,6 +41,7 @@ jobs:
           KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
           AGE: ${{ secrets.BACKUP_AGE_PUBLIC_KEY }}
         run: |
+          echo "STARTED_AT=$(date -u +%FT%TZ)" >> "$GITHUB_ENV"
           if [ "$SOURCE" = "staging" ] && { [ -z "$DB" ] || [ -z "$KEY" ] || [ -z "$AGE" ]; }; then
             echo "::error::Chýbajú tajné hodnoty STAGING_DB_URL, STAGING_SERVICE_ROLE_KEY alebo BACKUP_AGE_PUBLIC_KEY (docs/prevadzka/zaloha-a-obnova.md)."
             exit 1
@@ -113,6 +114,7 @@ jobs:
           tar -czf - backup | age -r "$BACKUP_AGE_PUBLIC_KEY" -o "$name.tar.gz.age"
           rm -rf backup
           echo "BACKUP_FILE=$name.tar.gz.age" >> "$GITHUB_ENV"
+          echo "BACKUP_SIZE=$(stat -c %s "$name.tar.gz.age")" >> "$GITHUB_ENV"
           ls -l "$name.tar.gz.age"
           echo "### Záloha stagingu: $(du -h "$name.tar.gz.age" | cut -f1) zašifrovane" >> "$GITHUB_STEP_SUMMARY"
 
@@ -123,6 +125,15 @@ jobs:
           path: ${{ env.BACKUP_FILE }}
           retention-days: 14
           if-no-files-found: error
+
+      # Stav systému in the control center (Z52): the result also after a failure; not for a selftest.
+      - name: Record the result
+        if: always() && env.SOURCE == 'staging' && steps.secrets.outcome == 'success'
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+          OK: ${{ job.status == 'success' }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node scripts/backup-report.mjs
 
       - name: Remove local copies
         if: always()

@@ -26,11 +26,13 @@ while read -r table count; do
   fi
 done <<< "$expected"
 echo "Tables compared: $tables"
+[ -n "${GITHUB_ENV:-}" ] && echo "BACKUP_TABLES=$tables" >> "$GITHUB_ENV"
 
 if [ -n "$manifest" ] && [ -f "$manifest" ]; then
   files=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).length)' "$manifest")
   objects=$(psql "$db" -At -c "select count(*) from storage.objects")
   echo "Storage: $files files downloaded, $objects objects in the restored database"
+  [ -n "${GITHUB_ENV:-}" ] && echo "BACKUP_FILES=$files" >> "$GITHUB_ENV"
   if [ "$files" != "$objects" ]; then
     echo "::error::Storage: $files files downloaded, but $objects objects in storage.objects"
     fail=1

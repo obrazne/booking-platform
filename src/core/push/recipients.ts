@@ -12,6 +12,7 @@ export const DEFAULT_PLATFORM_PUSH_KINDS = [
   "client_emails_failed",
   "client_trial_ending",
   "client_new",
+  "backup_stale",
 ] as const;
 
 export type PushDevice = {

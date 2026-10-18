@@ -40,4 +40,5 @@ export const PLATFORM_KINDS = [
   "client_emails_failed",
   "client_trial_ending",
   "client_new",
+  "backup_stale",
 ] as const;

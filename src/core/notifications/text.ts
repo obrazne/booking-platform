@@ -21,6 +21,7 @@ export const NOTIFICATION_KINDS = [
   "foreigner_unreported",
   "account_deletion",
   "message_new",
+  "backup_stale",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {
@@ -74,6 +75,7 @@ export function notificationText(
     person: String(d.person ?? ""),
     reportDue: date(d.due),
     excerpt: String(d.excerpt ?? ""),
+    last: d.last ? date(d.last) : "—",
   };
   const key = (NOTIFICATION_KINDS as readonly string[]).includes(n.kind) ? n.kind : "other";
   return { title: t(`kinds.${key}.title`, args), body: t(`kinds.${key}.text`, args) };

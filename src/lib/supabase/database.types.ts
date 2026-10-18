@@ -1285,6 +1285,51 @@ export type Database = {
           },
         ]
       }
+      platform_backups: {
+        Row: {
+          created_by: string | null
+          environment: string
+          files: number | null
+          finished_at: string
+          id: string
+          kind: string
+          note: string | null
+          ok: boolean
+          run_url: string | null
+          size_bytes: number | null
+          started_at: string | null
+          tables_compared: number | null
+        }
+        Insert: {
+          created_by?: string | null
+          environment?: string
+          files?: number | null
+          finished_at?: string
+          id?: string
+          kind: string
+          note?: string | null
+          ok: boolean
+          run_url?: string | null
+          size_bytes?: number | null
+          started_at?: string | null
+          tables_compared?: number | null
+        }
+        Update: {
+          created_by?: string | null
+          environment?: string
+          files?: number | null
+          finished_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          ok?: boolean
+          run_url?: string | null
+          size_bytes?: number | null
+          started_at?: string | null
+          tables_compared?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -3275,6 +3320,7 @@ export type Database = {
         }[]
       }
       audit_sign_in: { Args: { p_method: string }; Returns: undefined }
+      backups_check: { Args: never; Returns: undefined }
       cancel_order: {
         Args: { p_order_id: string; p_token?: string }
         Returns: undefined

@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   Clock,
   ConciergeBell,
+  DatabaseBackup,
   MessageCircle,
   Plus,
   RefreshCw,
@@ -48,6 +49,7 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   foreigner_unreported: { icon: AlertTriangle, tone: "warn" },
   account_deletion: { icon: UserX, tone: "warn" },
   message_new: { icon: MessageCircle, tone: "accent" },
+  backup_stale: { icon: DatabaseBackup, tone: "warn" },
 };
 
 const TONE = {
