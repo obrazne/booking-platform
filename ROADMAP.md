@@ -481,6 +481,15 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z53 [linka A] **rozpracovaná** (bod 1 hotový, pokračovať bodmi 2–3). (Claude Code)
+  - Prehliadka „Čo je nové“ v `2026-10-18.1`: 8 nových snímok na začiatku (správy, automatické správy, check-in, účet pobytu, recenzie,
+    kolízie, storno pásma, podklad na doklad); snímky modulov sa ukážu len klientovi so zapnutým modulom (`module` pri snímke,
+    `TourDialog modules`). Nové snímky `npm run tour:screens`.
+  - Ukážkové dáta: kolízia z ukážkového Airbnb na (a) a storno pásma 14 dní → 100 %, inak 50 % (podľa textu storno podmienok).
+    Ukážkový klient prestavaný (`demo-data --reset`), 0 e-mailov. Ukážkovému klientovi chýba služba kuchára (súkromný kuchár) —
+    rezervácia (a) je bez neho.
+  - `e2e/tour.spec.ts` upravený na nové poradie — **ešte neprešiel overením** (beh prerušený). Ďalej: tour.spec, celý e2e beh (bod 2),
+    kontrola STRÖMY bez zápisu (bod 3).
 - 2026-10-18 — Z52 [linka B]: **príprava produkcie — zálohy, export, obnova klienta, výpadky** (3f, A9). (Claude Code)
   - **Stav záloh:** migrácia `…100000_backups` — `platform_backups` (len správca platformy), workflow zálohy zapíše výsledok
     (aj pri zlyhaní; `scripts/backup-report.mjs`), Stav systému → **Zálohy** (posledná, posledná úspešná, história, skúšobná obnova

@@ -2333,6 +2333,38 @@
     "showMe": "Ukázať mi to",
     "close": "Zavrieť prehliadku",
     "owner": {
+      "messages": {
+        "title": "Správy s hosťom",
+        "body": "Všetky konverzácie s hosťami v jednej schránke, pri každej rezervácii aj v jej paneli. Hosť vám píše zo svojho pobytu a vašu odpoveď dostane aj e-mailom."
+      },
+      "autoMessages": {
+        "title": "Automatické správy",
+        "body": "Pokyny pred príchodom, poďakovanie po odchode či pripomienku nastavíte raz a posielajú sa samy. Pri konkrétnej rezervácii ich môžete aj vynechať."
+      },
+      "checkin": {
+        "title": "Online check-in a príchody",
+        "body": "Hostia vyplnia údaje ešte pred príchodom. V Príchodoch vidíte, kto je pripravený, tlačivo pre cudzincov a podklad k dani za ubytovanie."
+      },
+      "upsell": {
+        "title": "Doobjednanie a účet pobytu",
+        "body": "Hosť si po rezervácii doobjedná služby, napríklad raňajky alebo kuchára. Objednávky potvrdíte v paneli rezervácie a na konci ich vyúčtujete naraz."
+      },
+      "reviews": {
+        "title": "Recenzie od hostí",
+        "body": "Po odchode hosťa ho požiadame o hodnotenie. Recenzia sa zverejní sama po 72 hodinách, ak ju predtým nezverejníte alebo nezamietnete, a na stránke objektu ju uvidia ako overenú."
+      },
+      "collisions": {
+        "title": "Kolízie kalendárov",
+        "body": "Keď Booking alebo Airbnb hlási obsadený termín, ktorý u vás už niekto má, nič sa neprepíše. Kolíziu nájdete tu a rozhodnete, čo s ňou."
+      },
+      "storno": {
+        "title": "Storno pásma",
+        "body": "V Nastaveniach určíte, koľko percent sa vráti pri zrušení podľa počtu dní do príchodu. Pri žiadosti hosťa o zrušenie systém návrh vypočíta sám."
+      },
+      "invoice": {
+        "title": "Podklad na doklad",
+        "body": "V paneli rezervácie skopírujete položky a platby do svojho fakturačného nástroja alebo stiahnete PDF. Vystavený doklad nahráte späť a hosť ho uvidí vo svojom pobyte."
+      },
       "menu": {
         "title": "Menu v skupinách",
         "body": "Rezervácie, objekt, ponuka a nastavenia majú vlastné skupiny. Klik na skupinu otvorí jej prvú stránku; podstránky vidíte pod ňou."

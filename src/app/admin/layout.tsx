@@ -258,7 +258,13 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     >
       <ThemeStyle theme={DEFAULT_THEME} scope="page" />
       {children}
-      {active ? <TourDialog tourKey="owner" autoOpen={tourNew} /> : null}
+      {active ? (
+        <TourDialog
+          tourKey="owner"
+          autoOpen={tourNew}
+          modules={(await getEnabledModules(active.tenantId)).map((m) => m.key)}
+        />
+      ) : null}
     </AdminShell>
   );
 }

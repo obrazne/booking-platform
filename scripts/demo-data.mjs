@@ -565,6 +565,25 @@ async function createDemo() {
         }),
         "demo contact",
       );
+    // Storno bands matching the demo text "Do 14 dní pred príchodom zdarma, potom 50 % z ceny." (Z44) — only if empty.
+    const { data: bands } = await db
+      .from("tenant_settings")
+      .select("cancellation_bands")
+      .eq("tenant_id", TENANT)
+      .maybeSingle();
+    if (!Array.isArray(bands?.cancellation_bands) || !bands.cancellation_bands.length)
+      must(
+        await db
+          .from("tenant_settings")
+          .update({
+            cancellation_bands: [
+              { days: 14, refund_pct: 100 },
+              { days: 0, refund_pct: 50 },
+            ],
+          })
+          .eq("tenant_id", TENANT),
+        "demo storno bands",
+      );
   }
   const { data: users } = await db.auth.admin.listUsers({ perPage: 1000 });
   const martin = users.users.find((u) => u.email === MARTIN);
@@ -744,6 +763,23 @@ async function createDemo() {
   await demoCheckins(martin, b);
   // Messages with the guest (Z45): default rules, quick replies, conversations; (b) waits for a reply.
   const waiting = await demoMessages(martin, { a, b, c });
+  // A collision of calendars (Z42, for the tour Z53): the demo Airbnb reports the first two nights of (a) — shown in
+  // Kolízie, nothing overwritten. Only next to the demo channels (never next to a real calendar).
+  if (channels.airbnb && a) {
+    const { error } = await db.from("occupancy").insert({
+      tenant_id: TENANT,
+      unit_id: UNIT,
+      kind: "ical",
+      ical_channel_id: channels.airbnb,
+      ical_uid: "demo-airbnb-collision",
+      label: "Airbnb (DEMO)",
+      nights: nights(a.checkIn, addDays(a.checkIn, 2)),
+      is_blocking: false,
+      conflict: true,
+      conflict_detected_at: new Date().toISOString(),
+    });
+    if (error) console.warn(`Demo collision skipped (${error.message})`);
+  }
 
   // Notifications: the events above created many; keep the bell readable with a handful of typical ones.
   must(

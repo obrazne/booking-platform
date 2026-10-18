@@ -91,6 +91,33 @@ const pendingDemo = must(
   "pending demo",
 )[0];
 if (!pendingDemo) throw new Error("Demo data missing — run npm run demo-data first");
+// A demo stay with orders on its stay account (upsell) and a confirmed one for the basis of the document (Z51).
+const withOrders = must(
+  await db
+    .from("reservation_orders")
+    .select("reservation_id")
+    .eq("tenant_id", TENANT)
+    .in(
+      "reservation_id",
+      demo.map((r) => r.id),
+    )
+    .limit(1),
+  "orders",
+)[0];
+const confirmedDemo = must(
+  await db
+    .from("reservations")
+    .select("id")
+    .in(
+      "id",
+      demo.map((r) => r.id),
+    )
+    .in("status", ["confirmed", "completed"])
+    .limit(1),
+  "confirmed demo",
+)[0];
+if (!withOrders || !confirmedDemo)
+  throw new Error("Demo orders missing — run npm run demo-data first");
 const privateTexts = reservations
   .filter((r) => r.guest_note !== DEMO_NOTE)
   .flatMap((r) => [r.guest_name, r.guest_email])
@@ -173,6 +200,20 @@ try {
   // January: an event from Booking.com next to other stays.
   const month = `${new Date().getFullYear() + 1}-01`;
   const shots = {
+    messages: ["/admin/messages"],
+    autoMessages: ["/admin/messages/auto"],
+    checkin: ["/admin/arrivals"],
+    upsell: [
+      `/admin/reservations?panel=reservation:${withOrders.reservation_id}`,
+      { heading: "Účet pobytu" },
+    ],
+    reviews: ["/admin/reviews"],
+    collisions: ["/admin/collisions"],
+    storno: ["/admin/settings", { heading: "Storno pásma (výpočet vrátenej sumy)" }],
+    invoice: [
+      `/admin/reservations?panel=reservation:${confirmedDemo.id}`,
+      { heading: "Podklad na doklad" },
+    ],
     menu: ["/admin/calendar", { menu: true }],
     statistics: ["/admin/statistics"],
     notifications: ["/admin", { bell: true }],

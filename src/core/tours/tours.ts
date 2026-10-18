@@ -9,6 +9,8 @@ export type TourSlide = {
   id: string;
   /** Page "Show me" opens. */
   href: string;
+  /** Only for clients with this module on (its page would not exist otherwise). */
+  module?: string;
 };
 
 export type Tour = { key: TourKey; version: string; slides: readonly TourSlide[] };
@@ -16,9 +18,18 @@ export type Tour = { key: TourKey; version: string; slides: readonly TourSlide[]
 export const TOURS: Record<TourKey, Tour> = {
   owner: {
     key: "owner",
-    version: "2026-10-17.6",
+    version: "2026-10-18.1",
     slides: [
-      // New in v1.2 first: menu with groups, Statistics, bell.
+      // New before the demo for Jana (Z53) first: modules, collisions, storno bands, basis for the document.
+      { id: "messages", href: "/admin/messages", module: "messages" },
+      { id: "autoMessages", href: "/admin/messages/auto", module: "messages" },
+      { id: "checkin", href: "/admin/arrivals", module: "checkin" },
+      { id: "upsell", href: "/admin/reservations", module: "upsell" },
+      { id: "reviews", href: "/admin/reviews", module: "reviews" },
+      { id: "collisions", href: "/admin/collisions" },
+      { id: "storno", href: "/admin/settings" },
+      { id: "invoice", href: "/admin/reservations" },
+      // v1.2: menu with groups, Statistics, bell.
       { id: "menu", href: "/admin" },
       { id: "statistics", href: "/admin/statistics" },
       { id: "notifications", href: "/admin/settings/notifications" },

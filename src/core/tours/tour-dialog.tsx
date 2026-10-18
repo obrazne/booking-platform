@@ -19,15 +19,25 @@ export const openTour = () => window.dispatchEvent(new Event(OPEN_TOUR_EVENT));
  * "What's new" window (A15): screenshot, heading, two sentences, progress dots, Back / Next / "Show me".
  * Opens by itself once per tour version, again from the menu. Esc or the cross closes it; full screen with swiping on phones.
  */
-export function TourDialog({ tourKey, autoOpen }: { tourKey: TourKey; autoOpen: boolean }) {
+export function TourDialog({
+  tourKey,
+  autoOpen,
+  modules,
+}: {
+  tourKey: TourKey;
+  autoOpen: boolean;
+  /** Modules the client has on — slides of other modules are left out. */
+  modules?: readonly string[];
+}) {
   const t = useTranslations("tours");
   const router = useRouter();
   const tour = TOURS[tourKey];
+  const slides = tour.slides.filter((s) => !s.module || modules?.includes(s.module));
   const [open, setOpen] = useState(autoOpen);
   const [index, setIndex] = useState(0);
   const touchX = useRef<number | null>(null);
-  const slide = tour.slides[index]!;
-  const last = index === tour.slides.length - 1;
+  const slide = slides[index]!;
+  const last = index === slides.length - 1;
 
   useEffect(() => {
     const show = () => {
@@ -43,7 +53,7 @@ export function TourDialog({ tourKey, autoOpen }: { tourKey: TourKey; autoOpen: 
     void markTourSeen(tourKey);
   }, [tourKey]);
 
-  const go = (to: number) => setIndex(Math.max(0, Math.min(tour.slides.length - 1, to)));
+  const go = (to: number) => setIndex(Math.max(0, Math.min(slides.length - 1, to)));
   const key = (k: string) => `${tourKey}.${slide.id}.${k}` as Parameters<typeof t>[0];
 
   return (
@@ -82,13 +92,13 @@ export function TourDialog({ tourKey, autoOpen }: { tourKey: TourKey; autoOpen: 
             />
           </div>
           {/* Next screenshot ready before the click. */}
-          {tour.slides[index + 1] ? (
-            <link rel="prefetch" as="image" href={tourImage(tourKey, tour.slides[index + 1]!.id)} />
+          {slides[index + 1] ? (
+            <link rel="prefetch" as="image" href={tourImage(tourKey, slides[index + 1]!.id)} />
           ) : null}
 
           <div className="flex flex-1 flex-col gap-2 p-5 sm:p-6">
             <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-              {t("kicker")} · {t("progress", { n: index + 1, total: tour.slides.length })}
+              {t("kicker")} · {t("progress", { n: index + 1, total: slides.length })}
             </p>
             <DialogPrimitive.Title className="text-xl font-semibold tracking-tight">
               {t(key("title"))}
@@ -103,7 +113,7 @@ export function TourDialog({ tourKey, autoOpen }: { tourKey: TourKey; autoOpen: 
                 role="group"
                 aria-label={t("slides")}
               >
-                {tour.slides.map((s, i) => (
+                {slides.map((s, i) => (
                   <button
                     key={s.id}
                     type="button"
