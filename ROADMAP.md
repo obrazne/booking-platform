@@ -13,8 +13,6 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → ~~Z50 (nočná záloha)~~ ✅ → ~~Z46 (Správy: administrácia)~~ ✅ → ~~Z49 (prístupový odkaz ako detail pobytu)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
-- **Ďalší krok pre Martina (Z50):** záloha stagingu beží každú noc (prvá 18. 10. prešla, 8 MB). Raz spolu **skúšobná obnova**
-  podľa `docs/prevadzka/zaloha-a-obnova.md` → *Obnova* (stiahnuť artefakt, rozšifrovať súkromným kľúčom) — povedz, kedy.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
   Ďalej preklikať novú administráciu na stagingu (prehliadka „Čo je nové“ sa po prihlásení otvorí znova) a spísať pripomienky;
@@ -434,8 +432,9 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
 - 2026-10-18 — Z50 [linka B]: **prvá ostrá záloha stagingu prešla** — Martin pridal tri tajné hodnoty (cez `gh secret set`;
   AVG najprv blokoval PowerShell, Martin ho odblokoval). Beh: 92 tabuliek obnovených a porovnaných, 38 súborov v 2 bucketoch,
-  zašifrovaný artefakt `staging-2026-10-18.tar.gz.age` **8,0 MB** (14 dní). Ďalej beží každú noc o 1:00 UTC; ostáva skúšobná
-  obnova s Martinom. (Claude Code)
+  zašifrovaný artefakt `staging-2026-10-18.tar.gz.age` **8,0 MB** (14 dní). Ďalej beží každú noc o 1:00 UTC.
+  **Skúšobná obnova s Martinom prešla:** stiahnutie (`gh run download`), rozšifrovanie jeho súkromným kľúčom, rozbalenie —
+  `data.sql` 14,8 MB, `schema.sql`, `roles.sql`, súbory oboch bucketov s `manifest.json`. (Claude Code)
 - 2026-10-17 — Správy [linka B]: **„Nová správa“ v Schránke** (Martin): okno „Komu napísať?“ s hľadaním medzi priamymi rezerváciami
   (od 60 dní dozadu, najbližší príchod hore, „už si píšete“ pri existujúcej konverzácii) → panel rezervácie na karte Správy.
   Test v `e2e/messages-admin.spec.ts`. (Claude Code)
