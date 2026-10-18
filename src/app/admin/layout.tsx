@@ -12,7 +12,6 @@ import {
   MessageCircle,
   Plus,
   RefreshCw,
-  Search,
   Settings,
   Shield,
 } from "lucide-react";
@@ -21,6 +20,7 @@ import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { openCollisions } from "@/core/admin/collisions";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
+import { TopbarSearch } from "@/core/admin/topbar-search";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
 import { getEnabledModules } from "@/core/modules/registry";
 import type { NavGroupKey } from "@/core/modules/types";
@@ -50,7 +50,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     isPlatformAdmin(),
   ]);
   const supabase = await createClient();
-  const [{ data: profile }, { count: waiting }] = await Promise.all([
+  const [{ data: profile }, { count: waiting }, { count: portalChannels }] = await Promise.all([
     user
       ? supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle()
       : Promise.resolve({ data: null }),
@@ -60,6 +60,13 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           .select("id", { count: "exact", head: true })
           .eq("tenant_id", active.tenantId)
           .eq("status", "pending_payment")
+      : Promise.resolve({ count: 0 }),
+    // Rezervácie › Z portálov only when a portal calendar is connected (Z58).
+    active
+      ? supabase
+          .from("ical_channels")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", active.tenantId)
       : Promise.resolve({ count: 0 }),
   ]);
 
@@ -101,6 +108,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           { href: "/admin/reservations", label: t("nav.list"), badge: waiting ?? 0 },
           { href: "/admin/calendar", label: t("nav.calendar") },
           { href: "/admin/blocks", label: t("nav.blocks") },
+          ...(portalChannels ? [{ href: "/admin/portal-stays", label: t("nav.portalStays") }] : []),
           ...(collisions.any
             ? [{ href: "/admin/collisions", label: t("nav.collisions"), badge: collisions.open }]
             : []),
@@ -221,18 +229,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       topbar={
         active ? (
           <>
-            <form action="/admin/reservations" className="flex-[0_1_380px]">
-              <label className="bg-muted text-muted-foreground flex min-h-[42px] items-center gap-2.5 rounded-full px-3.5 text-sm">
-                <Search className="size-4" />
-                <input
-                  type="search"
-                  name="q"
-                  placeholder={t("adminV1.overview.search")}
-                  aria-label={t("adminV1.overview.search")}
-                  className="text-ink min-w-0 flex-1 bg-transparent outline-none"
-                />
-              </label>
-            </form>
+            <TopbarSearch label={t("adminV1.overview.search")} />
             <div className="ml-auto flex items-center gap-2.5">
               {guestUrl ? (
                 <Button asChild variant="outline">

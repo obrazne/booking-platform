@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildIcal, parseIcal } from "./ical";
+import { buildIcal, icalDetails, parseIcal } from "./ical";
 
 const airbnb = [
   "BEGIN:VCALENDAR",
@@ -33,6 +33,11 @@ describe("parseIcal", () => {
         start: "2027-01-05",
         end: "2027-01-08",
         summary: "Reserved",
+        details: {
+          url: "https://www.airbnb.com/hosting/reservations/details/HMXXXX",
+          code: "HMXXXX",
+          phone4: "1234",
+        },
       },
       {
         uid: "booking-77",
@@ -42,6 +47,13 @@ describe("parseIcal", () => {
       },
       { uid: "single-day", start: "2027-03-01", end: "2027-03-02", summary: "" },
     ]);
+  });
+});
+
+describe("icalDetails", () => {
+  it("keeps only the link, the code and the phone's last digits", () => {
+    expect(icalDetails("Booking number: 4567890123\nGuest: Ján Novák")).toEqual({ code: "4567890123" });
+    expect(icalDetails("Nič užitočné")).toBeUndefined();
   });
 });
 

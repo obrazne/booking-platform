@@ -19,9 +19,10 @@ export function reservationListParams(
   to: string | null;
 } {
   const p = parseListParams(sp, {
-    sortable: ["created_at", "number", "total_cents"],
-    defaultSort: "created_at",
-    defaultDir: "desc",
+    // By arrival by default (Z58): stays now and coming first, the nearest on top (computed field arrival_order).
+    sortable: ["arrival_order", "created_at", "number", "total_cents"],
+    defaultSort: "arrival_order",
+    defaultDir: "asc",
     filters: { status: STATUSES, source: SOURCES },
   });
   const date = (v: string | string[] | undefined) =>

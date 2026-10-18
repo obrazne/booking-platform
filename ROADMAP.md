@@ -95,7 +95,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
 3. **Chyba:** v zozname klientov aj v detaile sa zobrazuje kľúč `modules.messages.title` — doplň preklad (a nájdi, či chýba aj iný
    kľúč modulu; test, ktorý porovná kľúče manifestov so `sk.json`).
 
-### Z58 [B] 🔄 — Pobyty z iných portálov a Príchody zo všetkých kanálov (pripomienka 33)
+### Z58 [B] ✅ — Pobyty z iných portálov a Príchody zo všetkých kanálov (pripomienka 33)
 1. Nová podpoložka **Rezervácie → Z portálov** (Booking, Airbnb, ďalšie iCal kanály): zoznam pobytov z iCal oddelene od vlastných
    rezervácií. Stĺpce: portál, príchod – odchod, noci, kód/odkaz rezervácie a posledné 4 číslice telefónu (Airbnb, ak sú v popise udalosti),
    kolízia (odkaz na `/admin/collisions`), posledná synchronizácia kanála. Filtre: portál, budúce/minulé. Panel pobytu so všetkým, čo
@@ -572,6 +572,20 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z58 [linka B]: **pobyty z portálov a Príchody zo všetkých kanálov** (pripomienka 33). (Claude Code)
+  - **Rezervácie › Z portálov** (`/admin/portal-stays`, v menu len s prepojeným kalendárom): pobyty z iCal (Booking, Airbnb, iné)
+    oddelene od vlastných rezervácií — portál a kalendár, príchod – odchod, noci, ubytovanie, **kód / odkaz rezervácie a posledné
+    4 číslice telefónu** (z popisu udalosti Airbnb; parser `icalDetails` ukladá len tieto tri údaje do `occupancy.ical_details`),
+    kolízia, posledná synchronizácia. Filtre: teraz a budúce / minulé, portál. Panel so všetkým, čo vieme, „Otvoriť na portáli“
+    a „Zobraziť v kalendári“. Do `reservations` sa nič nezapisuje. Migrácia `…150000_portal_stays` (stĺpec, `ical_apply`).
+    Kód a telefón sa doplnia pri najbližšej synchronizácii každého kanála (staršie udalosti ich zatiaľ nemajú).
+  - **Príchody** (modul check-in): aj príchody z portálov so štítkom „z portálu“ (kód, telefón), zavreté termíny Bookingu nie.
+  - **Zoznam rezervácií:** predvolené poradie **podľa príchodu** — prebiehajúce a najbližšie hore, potom minulé (computed field
+    `arrival_order`, stĺpec Termín sa dá aj prepnúť). „Ručná rezervácia“ len v hornej lište (z hlavičky zoznamu preč; na mobile
+    tlačidlo +). **Dve hľadania:** horné hľadá rezervácie z každej stránky (vedie na zoznam) — na samotnom zozname je skryté,
+    ostáva jedno hľadanie pri filtroch.
+  - Test `e2e/portal-stays.spec.ts` (vlastný testový kalendár Ukážkového klienta) + `admin-v1`, `collisions`, `checkin` prešli.
+    Snímky `docs/snimky/z58/`.
 - 2026-10-18 — Z57 [linka B]: **riadiace centrum — klienti v menu a zoznam klientov** (pripomienky 31, 32). (Claude Code)
   - **Menu:** pod „Klienti“ ostávajú **naposledy otvorení klienti (max. 3)**, najnovší hore — cookie `platform_recent_clients`
     (prežije obnovenie stránky aj odchod na „Všetci klienti“); aktívny klient rozbalený s podstránkami, ostatní zbalení.

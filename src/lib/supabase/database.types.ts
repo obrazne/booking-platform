@@ -1038,6 +1038,7 @@ export type Database = {
           created_by: string | null
           expires_at: string | null
           ical_channel_id: string | null
+          ical_details: Json | null
           ical_uid: string | null
           id: string
           is_blocking: boolean
@@ -1057,6 +1058,7 @@ export type Database = {
           created_by?: string | null
           expires_at?: string | null
           ical_channel_id?: string | null
+          ical_details?: Json | null
           ical_uid?: string | null
           id?: string
           is_blocking?: boolean
@@ -1076,6 +1078,7 @@ export type Database = {
           created_by?: string | null
           expires_at?: string | null
           ical_channel_id?: string | null
+          ical_details?: Json | null
           ical_uid?: string | null
           id?: string
           is_blocking?: boolean
@@ -3304,6 +3307,10 @@ export type Database = {
       arrival_instructions_visible: {
         Args: { p_reservation_id: string }
         Returns: boolean
+      }
+      arrival_order: {
+        Args: { r: Database["public"]["Tables"]["reservations"]["Row"] }
+        Returns: number
       }
       arrivals_overview: {
         Args: { p_days?: number; p_tenant_id: string }

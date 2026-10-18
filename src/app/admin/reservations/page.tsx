@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { AlertTriangle, Download, Plus } from "lucide-react";
+import { AlertTriangle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { requireTenant } from "@/core/admin/action";
 import {
@@ -107,11 +106,7 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
                 <Download /> {ti("monthExport")}
               </Button>
             </form>
-            <Button asChild className="font-bold">
-              <Link href="/admin/reservations/new">
-                <Plus /> {t("new")}
-              </Link>
-            </Button>
+            {/* "Ručná rezervácia" is in the top bar of every page (phone: the + button) — not twice here (Z58). */}
           </>
         }
       />
@@ -150,7 +145,9 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
                 <SortHeader column="number">{t("number")}</SortHeader>
               </span>
               <span role="columnheader">{t("guest")}</span>
-              <span role="columnheader">{tv("dates")}</span>
+              <span role="columnheader">
+                <SortHeader column="arrival_order">{tv("dates")}</SortHeader>
+              </span>
               <span role="columnheader">{tv("people")}</span>
               <span role="columnheader" className="text-right">
                 <SortHeader column="total_cents">{tv("amount")}</SortHeader>

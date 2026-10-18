@@ -1,6 +1,33 @@
 /** Minimal iCalendar (RFC 5545) reading and writing for availability sync with Booking.com and Airbnb (B2). */
 
-export type IcalEvent = { uid: string; start: string; end: string; summary: string };
+/**
+ * What a portal says about its stay in the description (Z58): the link or code of the reservation and the last four
+ * digits of the guest's phone (Airbnb). Nothing else of the description is kept.
+ */
+export type IcalDetails = { url?: string; code?: string; phone4?: string };
+
+export type IcalEvent = {
+  uid: string;
+  start: string;
+  end: string;
+  summary: string;
+  details?: IcalDetails;
+};
+
+/** The reservation's link, code and the phone's last digits from a portal's DESCRIPTION (Airbnb, Booking…). */
+export function icalDetails(description: string): IcalDetails | undefined {
+  const text = description.replace(/\\n/gi, " ").replace(/\\([,;\\])/g, "$1");
+  const url = /https?:\/\/[^\s"<>]+/.exec(text)?.[0];
+  const code =
+    /reservations\/details\/([A-Z0-9]{6,})/i.exec(text)?.[1] ??
+    /(?:reservation|booking)\s*(?:code|number|id)\s*[:#]\s*([A-Z0-9-]{5,})/i.exec(text)?.[1];
+  const phone4 = /last\s*4\s*digits\)?\s*:\s*(\d{4})/i.exec(text)?.[1];
+  const details: IcalDetails = {};
+  if (url) details.url = url.slice(0, 300);
+  if (code) details.code = code.slice(0, 40);
+  if (phone4) details.phone4 = phone4;
+  return Object.keys(details).length ? details : undefined;
+}
 
 function unfold(text: string): string[] {
   return text
@@ -37,6 +64,7 @@ export function parseIcal(text: string): IcalEvent[] {
           start,
           end,
           summary: current.summary ?? "",
+          ...(current.details ? { details: current.details } : {}),
         });
       }
       current = null;
@@ -49,6 +77,7 @@ export function parseIcal(text: string): IcalEvent[] {
       else if (name === "DTSTART") current.start = toDate(value) ?? undefined;
       else if (name === "DTEND") current.end = toDate(value) ?? undefined;
       else if (name === "SUMMARY") current.summary = unescapeText(value);
+      else if (name === "DESCRIPTION") current.details = icalDetails(value);
     }
   }
   return events;
