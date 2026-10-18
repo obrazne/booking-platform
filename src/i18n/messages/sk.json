@@ -531,6 +531,7 @@
       }
     },
     "messages": {
+      "title": "Správy s hosťom",
       "admin": {
         "tab": "Správy",
         "thread": "Konverzácia",
@@ -2626,7 +2627,20 @@
       "contact": "Kontakt (majiteľ)",
       "noPeople": "Zatiaľ nikto.",
       "until": "do {date}",
-      "noClientsWithModule": "Zatiaľ ho nemá žiadny klient."
+      "noClientsWithModule": "Zatiaľ ho nemá žiadny klient.",
+      "search": "Hľadať klienta, e-mail alebo adresu stránky…",
+      "filterStatus": "Stav klienta",
+      "filterAll": "Všetci",
+      "filterModule": "Modul",
+      "filterAnyModule": "Všetky moduly",
+      "filterShow": "Upozornenia",
+      "filterNone": "Bez obmedzenia",
+      "trialEnding": "Končiaca skúška (14 dní)",
+      "withIssue": "S problémom",
+      "noMatch": "Žiadny klient nezodpovedá hľadaniu alebo filtrom.",
+      "moreModules": "+{count}",
+      "expandRow": "Náhľad klienta {name}",
+      "openDetail": "Otvoriť detail klienta {name}"
     },
     "audit": {
       "tenantCreated": "Klient založený",

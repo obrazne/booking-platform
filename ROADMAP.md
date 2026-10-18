@@ -84,7 +84,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    ostáva rovnaké (výpočet ceny vrátane prechodu cez Nový rok má test v `calculate.test.ts` — nesmie sa zmeniť).
 4. Katalóg modulov: veta pod klientmi, ktorá opakuje dátumy konca skúšky, preč.
 
-### Z57 [B] 🔄 — Riadiace centrum: klienti v menu a zoznam klientov (pripomienky 31, 32)
+### Z57 [B] ✅ — Riadiace centrum: klienti v menu a zoznam klientov (pripomienky 31, 32)
 1. **Menu:** pod „Klienti“ ostávajú **naposledy otvorení klienti (max. 3)**, zapamätaní (cookie/DB pre správcu, nie len v pamäti stránky);
    aktívny klient rozbalený s podstránkami (Prehľad, Moduly, Vzhľad, Domény, Ľudia, Záznam zmien), ostatní zbalení. Po kliknutí na
    „Všetci klienti“ nezmiznú.
@@ -572,6 +572,16 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z57 [linka B]: **riadiace centrum — klienti v menu a zoznam klientov** (pripomienky 31, 32). (Claude Code)
+  - **Menu:** pod „Klienti“ ostávajú **naposledy otvorení klienti (max. 3)**, najnovší hore — cookie `platform_recent_clients`
+    (prežije obnovenie stránky aj odchod na „Všetci klienti“); aktívny klient rozbalený s podstránkami, ostatní zbalení.
+    Spoločný `AdminShell` (`contextGroup.recentCookie`) — administrácia majiteľa to nepoužíva, nič sa jej nemení.
+  - **Zoznam klientov:** klik na riadok/názov = detail klienta, šípka vpravo = rozbalenie náhľadu. Hľadanie (názov, e-mail
+    majiteľa, adresa stránky) a filtre: stav, modul, končiaca skúška (14 dní), s problémom (synchronizácia, e-maily) s počtami.
+    Moduly: dva názvy + „+N“, celý zoznam v náhľade a v popise pri prejdení. Dlaždice nie (tabuľka).
+  - **Chyba `modules.messages.title`:** doplnený preklad „Správy s hosťom“; test `src/modules/manifest-keys.test.ts` kontroluje pri
+    každom module názov, položky menu a názov v katalógu.
+  - Snímky po zmene: `docs/snimky/z57/` (PC 1440, menu, mobil 390). Test `e2e/platform-clients.spec.ts` + `platform-v12` prešli.
 - 2026-10-18 — Z53 [linka A]: **pred ukážkou Jane — prehliadka, celkový test, kontrola STRÖMY.** (Claude Code)
   - **Prehliadka „Čo je nové“** `2026-10-18.1`: 8 nových snímok na začiatku (správy, automatické správy, check-in, účet pobytu, recenzie,
     kolízie, storno pásma, podklad na doklad); snímky modulov sa ukážu len klientovi so zapnutým modulom (`module` pri snímke,

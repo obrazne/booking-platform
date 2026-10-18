@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { Activity, Bell, Building2, History, Puzzle, Shield, Store } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
@@ -24,8 +25,14 @@ export const metadata: Metadata = {
  * Control center (A4): only for the platform admin, RLS enforces the same rule in the database. Its own menu without
  * the accommodation picker — it is Martin's place across clients (vizuál administrácie v1, 05).
  */
+/** Clients opened lately (Z57) — the menu keeps them under Klienti, newest first. */
+const RECENT_COOKIE = "platform_recent_clients";
+
 export default async function PlatformLayout({ children }: LayoutProps<"/platform">) {
   const t = await getTranslations();
+  const recent = ((await cookies()).get(RECENT_COOKIE)?.value ?? "")
+    .split(",")
+    .filter((id) => /^[0-9a-f-]{36}$/.test(id));
   const [user, admin] = await Promise.all([getCurrentUser(), isPlatformAdmin()]);
   const tourNew = admin ? await tourIsNewForUser("admin") : false;
   const bell = admin ? await loadBell("platform") : null;
@@ -91,6 +98,8 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
               ],
               icon: <Store />,
               after: 0,
+              recentCookie: RECENT_COOKIE,
+              recent,
             }
           : undefined
       }

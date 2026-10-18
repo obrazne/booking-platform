@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   createContext,
   useContext,
+  useEffect,
   useId,
   useState,
   useSyncExternalStore,
@@ -17,7 +18,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Group that exists only inside one record (control center v1.2: in a client's detail, its name › Prehľad, Moduly …).
- * Built in the browser from the path, so the server layout does not need to know the current page.
+ * Built in the browser from the path, so the server layout does not need to know the current page. With
+ * `recentCookie` the records opened lately stay in the menu (collapsed) after leaving them (Z57).
  */
 export type ShellContextGroup = {
   /** Path prefix followed by the record id, e.g. "/platform/tenants/". */
@@ -29,6 +31,12 @@ export type ShellContextGroup = {
   icon?: ReactNode;
   /** Index of the main item the group follows. */
   after: number;
+  /**
+   * Records opened lately stay in the menu (Z57: the clients of the control center, max. 3) — kept in this cookie,
+   * the newest first; `recent` is its value read by the server (the same first render).
+   */
+  recentCookie?: string;
+  recent?: string[];
 };
 
 export type ShellNavItem = {
@@ -230,18 +238,57 @@ function NavGroup({
   );
 }
 
-function withContext(items: ShellNavItem[], pathname: string, group?: ShellContextGroup) {
-  if (!group || !pathname.startsWith(group.prefix)) return items;
+const RECENT_MAX = 3;
+const recentListeners = new Set<() => void>();
+
+function readCookie(name: string): string {
+  const m = new RegExp(`(?:^|; )${name}=([^;]*)`).exec(document.cookie);
+  return m ? decodeURIComponent(m[1]!) : "";
+}
+
+/** The record of the path (e.g. the client of /platform/tenants/<id>/modules), if the group knows it. */
+function currentRecord(pathname: string, group?: ShellContextGroup): string | null {
+  if (!group || !pathname.startsWith(group.prefix)) return null;
   const id = pathname.slice(group.prefix.length).split("/")[0] ?? "";
-  const name = group.names[id];
-  if (!name) return items;
-  const base = `${group.prefix}${id}`;
-  const entry: ShellNavItem = {
-    label: name,
-    icon: group.icon,
-    children: group.tabs.map((tab) => ({ href: `${base}${tab.path}`, label: tab.label })),
-  };
-  return [...items.slice(0, group.after + 1), entry, ...items.slice(group.after + 1)];
+  return group.names[id] ? id : null;
+}
+
+/** Records in the menu: the open one and those opened lately (cookie), newest first, at most three. */
+function useRecentRecords(pathname: string, group?: ShellContextGroup): string[] {
+  const cookie = group?.recentCookie;
+  const raw = useSyncExternalStore(
+    (cb) => {
+      recentListeners.add(cb);
+      return () => recentListeners.delete(cb);
+    },
+    () => (cookie ? readCookie(cookie) : ""),
+    () => (group?.recent ?? []).join(","),
+  );
+  const current = currentRecord(pathname, group);
+  const ids = [current, ...raw.split(",")].filter(
+    (id, i, all): id is string => Boolean(id && group?.names[id]) && all.indexOf(id) === i,
+  );
+  const list = (cookie ? ids : current ? [current] : []).slice(0, RECENT_MAX);
+  const value = list.join(",");
+  useEffect(() => {
+    if (!cookie || !current || value === raw) return;
+    document.cookie = `${cookie}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+    recentListeners.forEach((l) => l());
+  }, [cookie, current, value, raw]);
+  return list;
+}
+
+function withContext(items: ShellNavItem[], ids: string[], group?: ShellContextGroup) {
+  if (!group || ids.length === 0) return items;
+  const entries = ids.map((id): ShellNavItem => {
+    const base = `${group.prefix}${id}`;
+    return {
+      label: group.names[id]!,
+      icon: group.icon,
+      children: group.tabs.map((tab) => ({ href: `${base}${tab.path}`, label: tab.label })),
+    };
+  });
+  return [...items.slice(0, group.after + 1), ...entries, ...items.slice(group.after + 1)];
 }
 
 function NavTree({
@@ -259,7 +306,8 @@ function NavTree({
 }) {
   const t = useTranslations("shell");
   const pathname = usePathname();
-  const items = withContext(baseItems, pathname, contextGroup);
+  const recent = useRecentRecords(pathname, contextGroup);
+  const items = withContext(baseItems, recent, contextGroup);
   // A record's first page ("Prehľad") is active only on its exact path, not on its sub-pages.
   const current = activeHref(
     items,
