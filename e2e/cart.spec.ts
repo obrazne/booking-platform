@@ -16,7 +16,11 @@ async function pickDay(scope: Locator, date: string) {
   for (let i = 0; i < 24; i++) {
     const day = scope.locator(`button[data-date="${date}"]`).filter({ visible: true });
     if ((await day.count()) > 0) return day.first().click();
-    await scope.getByRole("button", { name: "Nasledujúci mesiac" }).first().click();
+    await scope
+      .getByRole("button", { name: "Nasledujúci mesiac" })
+      .filter({ visible: true })
+      .first()
+      .click();
   }
 }
 

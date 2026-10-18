@@ -80,7 +80,11 @@ export async function pickStay(scope: Locator, checkIn: string, checkOut: string
         await day.first().click();
         break;
       }
-      await scope.getByRole("button", { name: "Nasledujúci mesiac" }).first().click();
+      await scope
+        .getByRole("button", { name: "Nasledujúci mesiac" })
+        .filter({ visible: true })
+        .first()
+        .click();
     }
   }
 }

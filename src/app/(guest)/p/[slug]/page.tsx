@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -26,6 +27,18 @@ import { loadVerifiedReviews } from "@/modules/reviews/guest/public";
 
 function one(v: string | string[] | undefined): string {
   return Array.isArray(v) ? (v[0] ?? "") : (v ?? "");
+}
+
+/** Tab title and description of the property page (Z53: it said "Booking platform"). */
+export async function generateMetadata({ params }: PageProps<"/p/[slug]">): Promise<Metadata> {
+  const tenant = await getTenantFromHost();
+  if (!tenant) return {};
+  const [{ slug }, locale] = await Promise.all([params, getLocale()]);
+  const { property: p } = await getPublicProperty(tenant, slug);
+  return {
+    title: p.name,
+    description: tr(p.summary, locale) || undefined,
+  };
 }
 
 export default async function PropertyPage({ params, searchParams }: PageProps<"/p/[slug]">) {

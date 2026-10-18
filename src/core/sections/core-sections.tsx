@@ -629,7 +629,15 @@ const prices = defineSection({
               ))}
             </div>
             {notes.length > 0 ? (
-              <span className="pt-4 text-[13px] text-[#5a6672]">{notes.join(". ")}.</span>
+              <span className="pt-4 text-[13px] text-[#5a6672]">
+                {notes
+                  .map(
+                    (n) =>
+                      n!.charAt(0).toLocaleUpperCase(data.locale) + n!.slice(1).replace(/\.$/, ""),
+                  )
+                  .join(". ")}
+                .
+              </span>
             ) : null}
           </div>
         </Container>

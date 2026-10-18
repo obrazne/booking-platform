@@ -76,7 +76,13 @@ test("owner switches push on for the device, picks kinds and sends a test", asyn
       ).data;
     expect((await row())?.tenant_id).toBe(TENANT);
     expect([...((await row())?.kinds ?? [])].sort()).toEqual(
-      ["calendar_conflict", "cancel_request", "reservation_new", "sync_failed"].sort(),
+      [
+        "calendar_conflict",
+        "cancel_request",
+        "message_new",
+        "reservation_new",
+        "sync_failed",
+      ].sort(),
     );
     await expect(
       section.getByRole("listitem").filter({ hasText: "toto zariadenie" }),

@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY) — *zabratá linkou A*; **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → ~~Z53 (pred ukážkou Jane)~~ ✅ — fronta linky A prázdna; **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -73,7 +73,7 @@ Nočná záloha stagingu už beží (Z50). Doplň zvyšok 3f — **nič neplaten
    záznamov → obnov → porovnaj); na STRÖMY nič nezapisuj.
 4. **Postup pri výpadku** (dokument `docs/prevadzka/vypadok.md`): Vercel, Supabase, e-maily, iCal — čo robiť, komu písať, ako vrátiť verziu.
 
-### Z53 [A] 🔄 — Pred ukážkou Jane: prehliadka „Čo je nové“ a celkový test (po Z51)
+### Z53 ✅ [A] — Pred ukážkou Jane: prehliadka „Čo je nové“ a celkový test (po Z51)
 1. **Prehliadka „Čo je nové“** doplnená o veci od poslednej verzie: správy (schránka, automatické správy), check-in, doobjednanie a účet
    pobytu, recenzie, kolízie, storno pásma, podklad na doklad. Nové snímky z Ukážkového klienta (`npm run tour:screens`), zvýš `version`.
 2. **Celý e2e beh** (PC aj mobil, axe) proti stagingu po všetkých úlohách oboch liniek; nestabilné testy oprav alebo zapíš.
@@ -481,15 +481,27 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
-- 2026-10-18 — Z53 [linka A] **rozpracovaná** (bod 1 hotový, pokračovať bodmi 2–3). (Claude Code)
-  - Prehliadka „Čo je nové“ v `2026-10-18.1`: 8 nových snímok na začiatku (správy, automatické správy, check-in, účet pobytu, recenzie,
+- 2026-10-18 — Z53 [linka A]: **pred ukážkou Jane — prehliadka, celkový test, kontrola STRÖMY.** (Claude Code)
+  - **Prehliadka „Čo je nové“** `2026-10-18.1`: 8 nových snímok na začiatku (správy, automatické správy, check-in, účet pobytu, recenzie,
     kolízie, storno pásma, podklad na doklad); snímky modulov sa ukážu len klientovi so zapnutým modulom (`module` pri snímke,
-    `TourDialog modules`). Nové snímky `npm run tour:screens`.
-  - Ukážkové dáta: kolízia z ukážkového Airbnb na (a) a storno pásma 14 dní → 100 %, inak 50 % (podľa textu storno podmienok).
-    Ukážkový klient prestavaný (`demo-data --reset`), 0 e-mailov. Ukážkovému klientovi chýba služba kuchára (súkromný kuchár) —
-    rezervácia (a) je bez neho.
-  - `e2e/tour.spec.ts` upravený na nové poradie — **ešte neprešiel overením** (beh prerušený). Ďalej: tour.spec, celý e2e beh (bod 2),
-    kontrola STRÖMY bez zápisu (bod 3).
+    `TourDialog modules`). Snímky `npm run tour:screens`; `tour.spec` (PC + mobil) prechádza.
+  - **Ukážkové dáta** (Ukážkový klient): kolízia z ukážkového Airbnb na (a) a storno pásma 14 dní → 100 %, inak 50 % (podľa textu podmienok);
+    `demo-data --reset`, 0 e-mailov. Ukážkovému klientovi chýba služba kuchára — rezervácia (a) je bez neho.
+  - **Celý e2e beh** (PC + mobil, axe, proti stagingu): 68 ok, 13 preskočených podľa projektu; 2 zlyhania opravené v testoch —
+    `push.spec` čakal predvolené druhy bez „Nová správa“ (pridala Z46), `cart`/`pickStay` klikali na neviditeľné „Nasledujúci mesiac“
+    prvého mesiaca (zlyhalo, keď príchod padol na koniec druhého zobrazeného mesiaca) → len viditeľné tlačidlo. Po oprave prešli.
+  - **Opravy kódu zo stránky STRÖMY:** titulok karty bol „Booking platform“ → názov objektu a popis (`generateMetadata`);
+    poznámky cenníka „… nocí. daň za ubytovanie v cene.“ → každá veta s veľkým písmenom.
+  - **Kontrola STRÖMY bez zápisu — čo by pri ukážke Jane vyzeralo zle (obsah, nemenené):**
+    1. **Všetkých 48 rezervácií** STRÖMY sú ukážkové (DEMO) a **7 recenzií** tiež — na stránke sa ukazujú ako „Overené recenzie“
+       (Martin B., Zuzana H. …) a v „Hostia hovoria“ je jedna ukážková; Jana by videla vymyslených hostí ako skutočných.
+    2. **Účet hosťa info+host@obrazne.sk je na STRÖMY prázdny** — ukážková (b) má po obnove `zona-hosta@stromy-demo.invalid`.
+    3. **Majiteľ účtu „Chalet STRÖMY (ukážka)“** pri QR platbe a bankových údajoch; dokumenty „Vianocny program a pokyny“,
+       „Ubytovaci poriadok (ukazka)“ bez diakritiky.
+    4. **Storno pásma chýbajú** (text podmienok ich má: 30+ dní zdarma, 14 dní 50 %, 10 a menej 100 %) — pri žiadosti o zrušenie
+       hosť neuvidí presnú sumu. **Odkazy na VOP a ochranu osobných údajov chýbajú** (košík ich nemá kam odkázať). Bez loga.
+    5. **Skúška modulu Push končí 19. 10.** (zvonček už hlási „končí skúška“); Doplnkové služby v skúške do 16. 11.
+    6. 7 neprečítaných upozornení a 2 konverzácie v Správach (ukážkové). Anglické texty ani prázdne sekcie som nenašiel.
 - 2026-10-18 — Z52 [linka B]: **príprava produkcie — zálohy, export, obnova klienta, výpadky** (3f, A9). (Claude Code)
   - **Stav záloh:** migrácia `…100000_backups` — `platform_backups` (len správca platformy), workflow zálohy zapíše výsledok
     (aj pri zlyhaní; `scripts/backup-report.mjs`), Stav systému → **Zálohy** (posledná, posledná úspešná, história, skúšobná obnova
