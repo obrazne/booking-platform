@@ -95,7 +95,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
 3. **Chyba:** v zozname klientov aj v detaile sa zobrazuje kľúč `modules.messages.title` — doplň preklad (a nájdi, či chýba aj iný
    kľúč modulu; test, ktorý porovná kľúče manifestov so `sk.json`).
 
-### Z58 [B] — Pobyty z iných portálov a Príchody zo všetkých kanálov (pripomienka 33)
+### Z58 [B] 🔄 — Pobyty z iných portálov a Príchody zo všetkých kanálov (pripomienka 33)
 1. Nová podpoložka **Rezervácie → Z portálov** (Booking, Airbnb, ďalšie iCal kanály): zoznam pobytov z iCal oddelene od vlastných
    rezervácií. Stĺpce: portál, príchod – odchod, noci, kód/odkaz rezervácie a posledné 4 číslice telefónu (Airbnb, ak sú v popise udalosti),
    kolízia (odkaz na `/admin/collisions`), posledná synchronizácia kanála. Filtre: portál, budúce/minulé. Panel pobytu so všetkým, čo
