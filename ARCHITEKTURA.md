@@ -73,8 +73,10 @@ PLATFORMA (Martin)
 - **Cena sa zamrazí na rezervácii**; zmena cenníka sa existujúcich rezervácií nedotkne.
 - **Platby** všeobecne s poskytovateľom. MVP: bankový prevod s QR (PAY by square), variabilný symbol = číslo rezervácie,
   ručné potvrdenie „Platba prijatá“. Ďalší poskytovateľ: Stripe. Záloha a doplatok neskôr.
-- **Doklady** cez adaptér na fakturačný nástroj klienta (napr. SuperFaktúra API). Vystavený doklad sa nemení, oprava = dobropis.
-  Klient bez nástroja dostane len potvrdenie platby.
+- **Doklady vystavuje klient vo svojom fakturačnom nástroji.** Jadro dáva **podklad na doklad** pri rezervácii aj účte pobytu
+  (odberateľ, rozpis položiek, platby, VS — kopírovať / export) a miesto, kam klient nahrá vystavený doklad pre hosťa.
+  **Automatické prepojenie s konkrétnym nástrojom (SuperFaktúra, iKROS, Billdu, Fakturoid…) je platený modul — adaptér na nástroj**
+  (rozhodnutie 18. 10.). V adaptéri: vystavený doklad sa nemení, oprava = dobropis. Klient bez nástroja dostane len potvrdenie platby.
 - **História stavov rezervácie:** kto a kedy zmenil stav.
 
 ## A6. Jazyky a krajiny
@@ -479,4 +481,4 @@ príde aj e-mailom s tlačidlom, ktoré hosťa prihlási rovno k pobytu.
 | prístupový odkaz k rezervácii (stav, platba, storno) | účet a zóna hosťa (B10) — hneď po MVP |
 | iCal export a import s upozornením na kolíziu | API prepojenie s OTA |
 | stránka hosťa pre klienta s webom + katalóg pre showroom | vkladací widget (hneď po MVP, úloha 3e) |
-| — | doklady cez fakturačný nástroj (keď bude známy Janin nástroj) |
+| podklad na doklad (ručné vystavenie) | prepojenie s fakturačným nástrojom (platený modul, A5) |

@@ -332,7 +332,7 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] 3a Doména: objekt, cenník, sezóny, blokované dni (po revízii časti B)
 - [ ] 3b Rezervácia pre hostí: dostupnosť, výpočet ceny, služby, údaje hosťa, súhlasy (aj marketingový), dočasná blokácia, iCal
 - [ ] 3c Platba prevodom s QR, stavy rezervácie, e-maily
-- [ ] 3d Doklady cez fakturačný nástroj, prehľad rezervácií pre majiteľa, export, testovanie, spustenie popri Bookingu
+- [ ] 3d Podklad na doklad (ručné vystavenie, nahratie dokladu hosťovi — A5), prehľad rezervácií pre majiteľa, export, testovanie, spustenie popri Bookingu
 - [ ] 3f Príprava produkcie — zálohy a obnova (A9, 17. 10.): nezávislá nočná záloha mimo Supabase + upozornenie pri zlyhaní;
   **stav záloh** v Stave systému (posledná záloha, posledné skúšobné obnovenie); **export dát klienta** (ZIP) v detaile klienta;
   **skript a spísaný postup chirurgickej obnovy jedného klienta** zo zálohy bokom (len jeho `tenant_id`, výpis zmien pred zápisom,
@@ -364,9 +364,9 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 - [x] 🧠 **Návrh modulu Správy s hosťom** (Martin 17. 10.; → Z45–Z47): konverzácia pri pobyte, každá správa majiteľa aj e-mailom
   s tlačidlom „Odpovedať“, automatické správy (náhrada workflows z JetBookingu), rýchle odpovede. Platený modul, povinné e-maily ostávajú v jadre.
-- [ ] 🧠 **Prepojenie s fakturačnými nástrojmi — ďalšie adaptéry** (Martin 18. 10.): prvý adaptér je súčasť 3d (Janin nástroj, A5);
-  ďalšie podľa klientov — SuperFaktúra, iKROS, Billdu, Fakturoid, iDoklad… Doklad sa vystaví sám po zaplatení (aj vyúčtovanie účtu pobytu),
-  hosť ho nájde v účte. Rozhodnúť: jadro (doklady potrebuje každý klient) alebo platený modul.
+- [ ] 🧠 **Modul Prepojenie s fakturačným nástrojom** (platený, rozhodnutie 18. 10.): adaptér na nástroj klienta — SuperFaktúra, iKROS,
+  Billdu, Fakturoid, iDoklad…; každý nový nástroj = práca na mieru za poplatok. Doklad sa vystaví sám po zaplatení (aj vyúčtovanie účtu pobytu),
+  hosť ho nájde v účte. Pre Janu podľa toho, v čom fakturuje (otázka v Otázkach).
 - [ ] 🧠 **Modul Automatické párovanie platieb** (Martin 18. 10., platený doplnkový modul, teraz nerobiť): platba prevodom / QR sa sama
   spáruje s rezerváciou podľa **variabilného symbolu a sumy** → „Platba prijatá“ bez kliku majiteľa (a s ňou potvrdzovací e-mail hosťovi).
   **Pre všetky banky klientov, nie len Fio.** Hlavná cesta: **e-mailové notifikácie banky** na adresu, ktorú systém vygeneruje a číta

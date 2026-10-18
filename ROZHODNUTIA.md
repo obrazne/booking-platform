@@ -2,6 +2,13 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-18 — Prepojenie s fakturačným nástrojom je platený modul
+
+- Claude navrhol dať doklady do jadra (potrebuje ich každý). **Martin nesúhlasil:** doklad si klient vie vystaviť ručne z toho, čo mu
+  pripraví náš systém; fakturačných nástrojov je veľa a každé prepojenie je práca na mieru — nový nástroj klienta nerobíme zadarmo.
+- Rozhodnuté: jadro = **podklad na doklad** (odberateľ, položky, platby, VS; kopírovať / export) + nahranie vystaveného dokladu hosťovi.
+  **Adaptér na konkrétny nástroj = platený modul** (SuperFaktúra, iKROS, Billdu, Fakturoid…). Súvisí s modulom automatického párovania platieb. (Martin + Claude)
+
 ## 2026-10-17 — Správy s hosťom: konverzácia pri pobyte + automatické správy (modul)
 
 - Martin: Jana píše hosťom, chce, aby si zvykli chodiť do účtu. Rozhodnuté: modul **Správy** — konverzácia pri rezervácii, každá správa
