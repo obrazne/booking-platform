@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -60,7 +60,7 @@ Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví 
    do Otázok pre Martina (mení to, čo vidí hosť).
 5. Testy: vitest (zostavenie podkladu, súčty = cena rezervácie), Playwright na Ukážkovom klientovi (kopírovať, PDF, nahratie dokladu → hosť ho vidí), axe.
 
-### Z52 [B] 🔄 — Príprava produkcie: stav záloh, export klienta, obnova jedného klienta (3f, A9)
+### Z52 [B] ✅ — Príprava produkcie: stav záloh, export klienta, obnova jedného klienta (3f, A9)
 Nočná záloha stagingu už beží (Z50). Doplň zvyšok 3f — **nič neplatené, nič na produkcii, reálne dáta STRÖMY len čítaj**.
 1. **Stav záloh** v riadiacom centre (Stav systému): koniec workflow zálohy zapíše výsledok (čas, veľkosť, počty, výsledok overenia) do novej
    platformovej tabuľky (len správca platformy, RLS); zobraz poslednú zálohu, posledné skúšobné obnovenie a upozornenie správcovi,
@@ -481,6 +481,25 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z52 [linka B]: **príprava produkcie — zálohy, export, obnova klienta, výpadky** (3f, A9). (Claude Code)
+  - **Stav záloh:** migrácia `…100000_backups` — `platform_backups` (len správca platformy), workflow zálohy zapíše výsledok
+    (aj pri zlyhaní; `scripts/backup-report.mjs`), Stav systému → **Zálohy** (posledná, posledná úspešná, história, skúšobná obnova
+    s tlačidlom „Zaznamenať“), upozornenie `backup_stale` po 36 h bez úspešnej zálohy (cron každú hodinu). Dnešná záloha a skúšobná
+    obnova s Martinom zapísané dodatočne.
+  - **Export klienta:** detail klienta → **Export dát (ZIP)** — oblasti ako priečinky, každá tabuľka `.json` + `.csv`, súbory
+    dokumentov, README s počtami; check-in osoby maskované (doklad, dátum narodenia, adresa); audit `tenant.exported`.
+    Vlastný ZIP zapisovač bez novej závislosti (`src/core/export/zip.ts`, testy).
+  - **Obnova jedného klienta:** migrácie `…130000_restore_tenant` a `…140000_restore_scope` — `restore_plan` (plán pridať / zmeniť /
+    zmazať, zápis v jednej transakcii bez triggerov, audit `tenant.restored`), len serverový kľúč; `scripts/restore-tenant.mjs`
+    (plán, `--apply` s potvrdením slugom, **`--ids`** = len vybrané záznamy). Skúška `Skúška obnovy klienta` (workflow) na Ukážkovom:
+    rezervácia s položkami, platbou a obsadenosťou späť, zmena vrátená, nový záznam preč, plán po obnove prázdny ✓.
+  - ⚠ **Prvá skúška (12:17)** obnovila celého Ukážkového klienta a vrátila aj dáta testov linky A, ktoré bežali v tej minúte
+    (5 testových rezervácií, súkromné údaje Glamping Lúka, nastavenia). Testy linky A po sebe upratali — stav overený podľa
+    `record_history`, je ako pred testami. **Pre linku A:** ak vám o 12:17 zlyhal e2e test na Ukážkovom, príčina bola táto
+    obnova, nie kód. Odvtedy skúška obnovuje len svoje záznamy (`--ids`).
+  - **Postup pri výpadku:** `docs/prevadzka/vypadok.md` (Vercel vrátenie verzie, Supabase, Resend, iCal, plánovač, komu písať).
+  - Testy: pgTAP `backups.test.sql`, Playwright `platform-backups.spec.ts` (Zálohy, skúšobná obnova, export ZIP + audit),
+    `platform-modules`, `platform-v12` — prešli. `database.types.ts` obsahuje aj tabuľky z migrácie linky A `…120000` (zo stagingu).
 - 2026-10-18 — Z51 [linka A]: **podklad na doklad a doklady pre hosťa** (3d, A5 — prepojenie s fakturačným nástrojom nerobené). (Claude Code)
   - `src/core/invoice/basis.ts`: podklad len zo zmrazených riadkov rezervácie a prijatých platieb — súčet položiek = cena rezervácie,
     vratná záloha zvlášť; pri platiteľovi DPH základ a DPH po sadzbách (ceny sú s DPH), inak „Bez DPH“. Text na kopírovanie (položky

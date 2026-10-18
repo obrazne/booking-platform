@@ -1,6 +1,7 @@
 import { inflateRawSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 import { toCsv } from "./csv";
+import { maskCheckinGuest } from "./mask";
 import { crc32, createZip } from "./zip";
 
 describe("crc32", () => {
@@ -36,5 +37,25 @@ describe("toCsv", () => {
       { a: null, c: { k: 1 } },
     ]);
     expect(csv).toBe('﻿a;b;c\r\n1;"x;""y""";\r\n;;"{""k"":1}"\r\n');
+  });
+});
+
+describe("maskCheckinGuest", () => {
+  it("keeps the name, masks the document, birth date and address", () => {
+    expect(
+      maskCheckinGuest({
+        first_name: "Tomáš",
+        document_number: "EA123456",
+        birth_date: "1985-04-12",
+        address: "Hlavná 1, Žilina",
+        nationality: "SK",
+      }),
+    ).toEqual({
+      first_name: "Tomáš",
+      document_number: "••••••56",
+      birth_date: "1985-••-••",
+      address: "•••",
+      nationality: "SK",
+    });
   });
 });
