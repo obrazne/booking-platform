@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** Z54 (plochy, polia, hover) → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
+  **A:** Z54 (plochy, polia, hover) — *zabratá linkou A* → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
   **B:** Z57 (riadiace centrum: klienti v menu a zoznam) → Z58 (pobyty z portálov, príchody) → Z59 (účet hosťa: navigácia) → Z60 (podpis a vzhľad e-mailov).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -55,7 +55,7 @@ na rozhodnutie → Otázky, nerob ju. **Rozdelenie, aby sa linky nebili:** linka
 ukladanie) a na konci prejde všetky obrazovky; linka **B** robí navigáciu a nové funkcie a **nemení vzhľad plôch, polí ani hover** —
 použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 to zjednotí).
 
-### Z54 [A] — Plochy, polia a reakcia na myš naprieč aplikáciou (pripomienky 41, 42, 43; pravidlá 1–2)
+### Z54 [A] 🔄 — Plochy, polia a reakcia na myš naprieč aplikáciou (pripomienky 41, 42, 43; pravidlá 1–2)
 1. Tokeny v `globals.css`: pozadie stránky, karta (odtieň alebo okraj — jeden spôsob), deliaca čiara, okraj poľa s kontrastom ≥ 3 : 1
    voči karte aj stránke; žiadne farby natvrdo v komponentoch. Funguje aj pri témach klientov (svetlé aj tmavé akcenty, `src/core/theme`).
 2. Spoločné komponenty (`src/components/ui/*`, `src/core/admin/*`): input, select, textarea, dátum/čas, checkbox, prepínač — biele
