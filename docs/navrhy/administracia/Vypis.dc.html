@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Mesačný výpis — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f7f6f2}
+.btn{transition:background 150ms ease,border-color 150ms ease}
+.btn:hover{background:#efede7 !important;border-color:#c9c5ba !important}
+.btnd:hover{background:#264c42 !important}
+.lnk:hover{text-decoration:underline}
+.row{transition:background 150ms ease}
+.row:hover{background:#faf9f6}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1560px; background: #f7f6f2; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="statistiky" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; background: #f7f6f2;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e3e1da; background: #ffffff;">
+<label style="flex: 0 1 380px; display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; color: #5a6672;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" placeholder="Hľadať hosťa, číslo rezervácie…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 14px; color: #11212f; outline: none;"></label>
+<span style="display: flex; align-items: center; gap: 10px;">
+<a href="#" class="btn" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: none;">Stránka pre hostí ↗</a>
+<button type="button" class="btn" aria-label="Upozornenia" style="width: 42px; height: 42px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#11212f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg></button>
+</span>
+</div>
+
+<div style="width: 100%; max-width: 1080px; box-sizing: border-box; margin: 0 auto; padding: 28px 40px 56px; display: flex; flex-direction: column; gap: 24px;">
+
+<nav aria-label="Drobčeky" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5a6672;"><a href="#" class="lnk" style="color: #5a6672; text-decoration: none;">Štatistiky</a><span aria-hidden="true">›</span><span style="color: #11212f; font-weight: 500;">Mesačný výpis</span></nav>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 640px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #ad5a2b;">Mesačný výpis · {{monthLabel}}</span>
+<h1 style="margin: 0; font-size: 40px; line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Priamo {{revenue}}. <span style="color: #8b929b;">Bez provízie.</span></h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: #5a6672;">Chalet STRÖMY · výpis príde aj e-mailom každý 1. deň v mesiaci</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+<span role="group" aria-label="Mesiac" style="display: inline-flex; align-items: center; gap: 2px; min-height: 42px; padding: 0 4px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff;"><button type="button" class="btn" aria-label="Predchádzajúci mesiac" style="width: 34px; height: 34px; border-radius: 9999px; border: 1px solid transparent; background: #ffffff; cursor: pointer; font-size: 16px; color: #11212f;">‹</button><span style="padding: 0 8px; font-size: 14px; font-weight: 500; color: #11212f;">September 2026</span><button type="button" class="btn" aria-label="Nasledujúci mesiac" style="width: 34px; height: 34px; border-radius: 9999px; border: 1px solid transparent; background: #ffffff; cursor: pointer; font-size: 16px; color: #11212f;">›</button></span>
+<button type="button" class="btn" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="M7 10l5 5 5-5"></path><path d="M5 20h14"></path></svg>Stiahnuť PDF</button>
+<button type="button" class="btnd" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; border: none; background: {{accent}}; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="M4 7l8 6 8-6"></path></svg>Poslať účtovníkovi</button>
+</div>
+</div>
+
+<section aria-label="Hlavné čísla" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px;">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4"><div style="{{k.style}}">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;">{{k.label}}</span>
+<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{k.value}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #5a6672;"><span style="{{k.deltaStyle}}">{{k.delta}}</span> {{k.note}}</span>
+</div></sc-for>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: stretch;">
+
+<section aria-label="Ušetrené na províziách" style="display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 12px; background: {{accent}}; color: #e6efeb;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #f3d9c4;">Ušetrené na províziách</span>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -0.03em; color: #ffffff;">{{saved}}</span>
+<span style="font-size: 15px; line-height: 1.55; color: #e6efeb;">Toľko by si z vašich 2 priamych pobytov vzal Booking pri provízii {{commission}}. Zostali vám.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 0; border-top: 1px solid rgba(255,255,255,0.22);">
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.22); font-size: 14px;"><span>Od januára 2026</span><span style="font-weight: 700; color: #ffffff;">{{savedYtd}}</span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.22); font-size: 14px;"><span>Podiel priamych nocí</span><span style="font-weight: 700; color: #ffffff;">47 % <span style="font-weight: 400; color: #c9ddd4;">· v sept. 2025: 31 %</span></span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; font-size: 14px;"><span>Vlastné kontakty na hostí</span><span style="font-weight: 700; color: #ffffff;">38 <span style="font-weight: 400; color: #c9ddd4;">· +2 tento mesiac</span></span></div>
+</div>
+<a href="#" class="lnk" style="margin-top: auto; font-size: 13px; color: #f3d9c4; text-decoration: none;">Províziu portálu upravíte v Nastaveniach ›</a>
+</section>
+
+<section aria-label="Za vás odpracované" style="display: flex; flex-direction: column; gap: 16px; padding: 28px; border-radius: 12px; background: #ffffff; border: 1px solid #e3e1da;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #ad5a2b;">Za vás odpracované</span>
+<span style="font-size: 30px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{hours}} <span style="color: #8b929b;">urobil systém sám.</span></span>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1px solid #ecebe6;">
+<sc-for list="{{work}}" as="w" hint-placeholder-count="5"><div class="row" style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid #ecebe6;"><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{w.what}}</span><span style="font-size: 12.5px; color: #5a6672;">{{w.detail}}</span></span><span style="flex-shrink: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #3b3d42;">{{w.time}}</span></div></sc-for>
+</div>
+<div style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: #f4f3ef;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2f5d50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20a7 7 0 0 1 14 0"></path></svg>
+<span style="font-size: 14px; line-height: 1.5; color: #11212f;"><strong style="font-weight: 700;">Potrebovalo vás:</strong> 2× „Platba prijatá“ (jeden klik) a 1 odpoveď hosťovi. Nič iné.</span>
+</div>
+<span style="font-size: 12px; line-height: 1.5; color: #5a6672;">Odhad: koľko minút by daný úkon trval ručne. Časy sú v Nastaveniach → Mesačný výpis.</span>
+</section>
+</div>
+
+<section aria-label="Noci podľa kanála" style="display: flex; flex-direction: column; gap: 16px; padding: 28px; border-radius: 12px; background: #ffffff; border: 1px solid #e3e1da;">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px;">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #11212f;">Kde sa predalo 19 z 30 nocí</h2>
+<span style="font-size: 13px; color: #5a6672;">Booking a Airbnb sú len termíny z ich kalendárov — ceny od nich nemáme.</span>
+</div>
+<div role="img" aria-label="Priamo 9 nocí, Booking 6, Airbnb 4, voľné 11" style="display: flex; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid #c9c5ba;">
+<sc-for list="{{channels}}" as="c" hint-placeholder-count="4"><span style="{{c.bar}}">{{c.nights}}</span></sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px 28px;">
+<sc-for list="{{channels}}" as="c" hint-placeholder-count="4"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #11212f;"><span style="{{c.swatch}}"></span>{{c.name}} <span style="color: #5a6672;">· {{c.nights}} nocí</span></span></sc-for>
+</div>
+</section>
+
+<section aria-label="Výhľad na október" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px;">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 24px 28px; border-right: 1px solid #ecebe6;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #ad5a2b;">Výhľad · október</span>
+<span style="font-size: 20px; font-weight: 700; color: #11212f;">1 400 € potvrdené</span>
+<span style="font-size: 13px; color: #5a6672;">1 priamy pobyt · obsadenosť zatiaľ 30 %</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 24px 28px; border-right: 1px solid #ecebe6;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;">Voľné víkendy</span>
+<span style="font-size: 20px; font-weight: 700; color: #11212f;">9.–11. 10. · 23.–25. 10.</span>
+<span style="font-size: 13px; color: #5a6672;">ešte sa dajú ponúknuť hosťom, ktorí už boli</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 24px 28px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;">Čaká na vás</span>
+<span style="font-size: 20px; font-weight: 700; color: #11212f;">Nič</span>
+<span style="font-size: 13px; color: #5a6672;">všetky platby a check-iny sú v poriadku</span>
+</div>
+</section>
+
+<p style="margin: 0; font-size: 12.5px; line-height: 1.6; color: #5a6672;">Tržby = priame rezervácie podľa dátumu pobytu (noci v septembri), vrátane doplnkových služieb, bez dane z ubytovania. Obsadenosť počíta aj noci z Bookingu a Airbnb. Úspora = tržby z priamych pobytov × provízia portálu z vašich nastavení. Podklad, nie účtovný doklad.</p>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f"]},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var a = this.props.accent ?? '#2f5d50';
+    var kpis = [
+      { label: 'Tržby priamo', value: '6 300 €', delta: '+18 %', note: 'oproti sept. 2025', up: true },
+      { label: 'Obsadenosť', value: '63 %', delta: '+9 b.', note: '19 z 30 nocí, aj portály', up: true },
+      { label: 'Priemer za noc', value: '700 €', delta: '+4 %', note: 'priame pobyty', up: true },
+      { label: 'Pobyty', value: '5', delta: '2 priame', note: '· 3 z portálov', up: null }
+    ].map(function (k, i) {
+      return Object.assign({}, k, {
+        style: 'display: flex; flex-direction: column; gap: 6px; padding: 22px 24px;' + (i < 3 ? ' border-right: 1px solid #ecebe6;' : ''),
+        deltaStyle: 'font-weight: 700; color: ' + (k.up ? '#2b6a50' : '#11212f') + ';'
+      });
+    });
+    var work = [
+      { what: '12 e-mailov hosťom', detail: 'potvrdenia, pripomienky platby, pokyny k príchodu, poďakovanie', time: '1 h 00 min' },
+      { what: '2 rezervácie bez telefonátu', detail: 'termín, cena a služby si hostia vybrali sami', time: '1 h 30 min' },
+      { what: 'Kalendáre zosúladené', detail: 'po 5 rezerváciách na webe, Bookingu aj Airbnb · 0 kolízií', time: '1 h 15 min' },
+      { what: '2 online check-iny', detail: 'kniha ubytovaných a tlačivo pre cudzincov vyplnené', time: '1 h 00 min' },
+      { what: '1 objednávka raňajok', detail: 'prijatá a pripísaná na účet pobytu', time: '15 min' }
+    ];
+    var ch = [
+      { name: 'Priamo', n: 9, bg: a, fg: '#ffffff' },
+      { name: 'Booking', n: 6, bg: '#8fb5a5', fg: '#11212f' },
+      { name: 'Airbnb', n: 4, bg: '#c9ddd4', fg: '#11212f' },
+      { name: 'Voľné', n: 11, bg: '#f4f3ef', fg: '#5a6672' }
+    ];
+    var channels = ch.map(function (c) {
+      return {
+        name: c.name, nights: c.n,
+        bar: 'flex: ' + c.n + ' 1 0; display: flex; align-items: center; padding: 0 12px; background: ' + c.bg + '; color: ' + c.fg + '; font-size: 13px; font-weight: 700; border-right: 1px solid #ffffff;',
+        swatch: 'width: 14px; height: 14px; border-radius: 4px; background: ' + c.bg + '; border: 1px solid #c9c5ba;'
+      };
+    });
+    return {
+      accent: a, monthLabel: 'september 2026', revenue: '6 300 €', saved: '945 €', commission: '15 %', savedYtd: '5 870 €',
+      hours: '5 hodín', kpis: kpis, work: work, channels: channels
+    };
+  }
+}
+</script>
+</body>
+</html>

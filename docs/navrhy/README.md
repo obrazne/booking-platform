@@ -6,7 +6,7 @@ Sem sa ukladajú **len schválené** návrhy z plátna Claude Design. Na plátne
 | Priečinok | Obrazovka | Popis pre stavbu | Verzia |
 |---|---|---|---|
 | `stranka-hosta/` | Detail objektu, galéria, košík (bočný panel), potvrdenie rezervácie, mobil | `docs/vizual-stranka-hosta.md` | v2.5 — 17. 10. 2026 (správy: `SpravyPobyt`, `MobilSpravy`, `EmailSprava`; v2.4 účet hosťa: `UcetPrehlad`, `MobilUcet`, `StavyPobytu`; v2.3 moduly; v2.2 košík pre 13″ notebook) |
-| `administracia/` | Prihlásenie (majiteľ, správca, hosť), prehľad, rezervácie + panel, kalendár obsadenosti, riadiace centrum, mobil | `docs/vizual-administracia.md` | v1.3 — 17. 10. 2026 (správy: `Spravy`, `SpravyAuto`, menu; v1.1 pravidlá podľa pripomienok zo stagingu; dosky ostávajú v1 — panel na doskách má ešte dva stĺpce, platí text) |
+| `administracia/` | Prihlásenie (majiteľ, správca, hosť), prehľad, rezervácie + panel, kalendár obsadenosti, riadiace centrum, mobil | `docs/vizual-administracia.md` | v1.4 — 18. 10. 2026 (mesačný výpis: `Vypis`, `VypisEmail`); v1.3 — 17. 10. (správy: `Spravy`, `SpravyAuto`, menu; v1.1 pravidlá podľa pripomienok zo stagingu; dosky ostávajú v1 — panel na doskách má ešte dva stĺpce, platí text) |
 
 **Ako to funguje**
 - Súbory `*.dc.html` sú zdroj plátna (dosky). Samostatne sa v prehliadači neotvoria — slúžia na čítanie štruktúry, textov a správania

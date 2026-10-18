@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → ~~Z55 (lišta ukladania, toasty)~~ ✅ → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
-  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ — fronta linky B prázdna.
+  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ → **Z62 (mesačný výpis — predajný argument č. 1, dosky 12–13)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -125,6 +125,29 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    (osobný list, nie newsletter). Fotka objektu len v potvrdení rezervácie (ak je hlavná fotka), s `alt` a pevnou šírkou.
 3. Náhľad v úprave automatickej správy ukazuje e-mail s hlavičkou a pätou; „Poslať skúšobne mne“ posiela rovnakú verziu.
 4. Testy: vitest pre `{podpis}` (podpis / meno / názov), snímka e-mailu (HTML) v testoch šablón.
+
+### Z62 [B] — Mesačný výpis: stránka, e-mail 1. dňa v mesiaci, PDF (predajný argument č. 1, Martin 18. 10.)
+Návrh: dosky **12 `Vypis`** a **13 `VypisEmail`** v `docs/navrhy/administracia/`, pravidlá výpočtu v **`docs/vizual-administracia.md` → v1.4**
+(prečítaj celé). **Jadro, nie modul** (ARCHITEKTURA A14). Pravidlá rozhrania `docs/pravidla-rozhrania.md` platia.
+1. **Úkony, ktoré systém urobil:** zisti, čo už sa dá spočítať z existujúcich tabuliek (odoslané e-maily z outboxu, rezervácie vytvorené
+   hosťom, synchronizácie iCal, dokončené check-iny, objednávky) a čo nie. Kde to nejde spoľahlivo, pridaj **záznam úkonu** (nová tabuľka
+   s `tenant_id`, RLS, `record_history` netreba — technický záznam; zapisuje sa v DB triggermi/funkciami, nie z rozhrania). Úkony človeka
+   („Potrebovalo vás“): potvrdenie platby, odpoveď hosťovi, vyriešená kolízia, ručná rezervácia. Nič neprepočítavaj spätne do minulosti
+   „odhadom“ — výpis za minulé mesiace ukáže len to, čo sa dá zistiť z dát (a do Denníka zapíš, od kedy sú počty úplné).
+2. **Výpočet výpisu** v jednej DB funkcii (napr. `tenant_monthly_report(p_month)`, RLS ako `tenant_monthly_stats` a nad ňou — tržby
+   a obsadenosť **z tej istej funkcie, nie nový výpočet**): čísla, porovnanie s minulým rokom (bez dát = null), úspora z `portal_commission_bp`,
+   úspora od januára, podiel priamych nocí, vlastné kontakty (súhlas s ponukami), úkony × minúty, noci podľa kanála, výhľad ďalšieho mesiaca
+   (potvrdené priame tržby, obsadenosť zatiaľ, voľné víkendy pi–ne, čo čaká na majiteľa). Vitest/pgTAP: súčty sedia so Štatistikami.
+3. **Nastavenia → Mesačný výpis:** minúty na úkon (predvolené podľa v1.4), e-mailová adresa účtovníka (voliteľná, pre „Poslať účtovníkovi“);
+   zapnutie e-mailu výpisu v Nastaveniach → E-maily a upozornenia (predvolene zapnuté pre majiteľa).
+4. **Stránka** Štatistiky › Mesačný výpis (doska 12): prepínač mesiacov (najstarší = prvý mesiac s dátami), **Stiahnuť PDF** (`src/core/pdf`,
+   rovnaký obsah, font Geist), **Poslať účtovníkovi** (e-mail s PDF na adresu z nastavení; bez adresy tlačidlo vedie do nastavení). Odkaz
+   na výpis aj z Prehľadu (karta „Výpis za {mesiac} je pripravený“ prvých 7 dní v mesiaci).
+5. **E-mail 1. dňa v mesiaci** (doska 13) za predchádzajúci mesiac, ráno (pg_cron → outbox, deduplikácia klient + mesiac), PDF v prílohe;
+   nový druh e-mailu podľa pravidiel v CLAUDE.md. Klient bez jedinej rezervácie v mesiaci výpis nedostane.
+6. Prázdne a hraničné stavy: 0 priamych tržieb (iný nadpis, žiadne „+∞ %“), bez minulého roka, provízia 0 %, mesiac bez iCal kanálov.
+7. Testy: výpočet (vitest + pgTAP vrátane RLS — iný klient výpis nevidí), e2e na Ukážkovom klientovi (stránka, PDF, prepínanie mesiacov),
+   snímka e-mailu v testoch šablón, axe. STRÖMY len čítaj. Na konci do prehliadky „Čo je nové“ (spoločne so Z61 — ak už Z61 prebehla, pridaj snímku sám).
 
 ### Z61 [A] — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
 1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj

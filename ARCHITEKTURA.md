@@ -173,6 +173,9 @@ PLATFORMA (Martin)
   podiel priamych rezervácií v čase — podklad pre štatistiky v administrácii a prípadové štúdie.
 - **Stránka Štatistiky je v jadre** (17. 10.): tržby podľa termínu pobytu len z priamych rezervácií, obsadenosť zo všetkých kanálov,
   porovnanie s minulým rokom, odhad ušetrených provízií. Pravidlá výpočtu: `docs/vizual-administracia.md` (v1.2).
+- **Mesačný výpis je v jadre** (18. 10., predajný argument č. 1): raz mesačne stránka + e-mail s PDF — priame tržby, **ušetrené
+  provízie** oproti portálu, **čo systém urobil za majiteľa** (úkony × nastaviteľný odhad minút) a čo potrebovalo človeka, výhľad.
+  Úkony sa počítajú z udalostí v databáze (e-maily, rezervácie, synchronizácie, check-iny, objednávky). Pravidlá: `docs/vizual-administracia.md` (v1.4).
 - **Nástroje návštevnosti** (Google Analytics a pod.) na rezervačnej stránke s cookie súhlasom (Consent Mode). Klient si môže
   doplniť vlastné ID (GA4, Meta pixel) v nastaveniach.
 

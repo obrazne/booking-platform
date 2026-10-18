@@ -109,6 +109,21 @@
       "title": "11 Automatické správy — časová os pobytu, vypínače, úprava s náhľadom (klikací)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Vypis.dc.html": {
+      "x": 3040,
+      "y": 2440,
+      "w": 1440,
+      "h": 1560,
+      "title": "12 Mesačný výpis — september 2026 (ušetrené provízie, odpracované za vás)",
+      "expand": "fill"
+    },
+    "VypisEmail.dc.html": {
+      "x": 4560,
+      "y": 2440,
+      "w": 640,
+      "h": 1040,
+      "title": "13 Mesačný výpis — e-mail majiteľovi (1. deň v mesiaci)"
     }
   },
   "order": [
@@ -123,7 +138,9 @@
     "MobilRezervacia.dc.html",
     "Sidebar.dc.html",
     "Spravy.dc.html",
-    "SpravyAuto.dc.html"
+    "SpravyAuto.dc.html",
+    "Vypis.dc.html",
+    "VypisEmail.dc.html"
   ],
   "notes": {
     "titul": {
@@ -160,6 +177,13 @@
       "w": 1100,
       "fill": "teal",
       "text": "Správy (návrh 17. 10.): v menu nová skupina Správy s počtom nezodpovedaných. Schránka nemá vlastný panel — klik otvorí bočný panel rezervácie na karte Správy (rovnaký panel ako v Rezerváciách, karta cez slot booking.detail.tabs). Automatické správy sú v konverzácii označené, naplánované vidno vopred a pri hosťovi sa dajú upraviť alebo vynechať. Nová správa od hosťa = zvonček + push + e-mail Jane (zlúčené po 15 minútach)."
+    },
+    "vypis": {
+      "x": 3040,
+      "y": 2260,
+      "w": 1100,
+      "fill": "teal",
+      "text": "Mesačný výpis (návrh 18. 10., predajný argument č. 1): jedna stránka ako od správcu investície — tržby, ušetrené provízie oproti Bookingu, čo systém urobil za majiteľa (v hodinách) a čo potrebovalo človeka. Príde e-mailom 1. dňa v mesiaci, dá sa stiahnuť ako PDF a poslať účtovníkovi. Čísla sú ilustračné."
     }
   },
   "designSystems": []

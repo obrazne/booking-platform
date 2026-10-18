@@ -244,3 +244,27 @@ Dosky `Spravy` (schránka + panel rezervácie na karte Správy) a `SpravyAuto` (
   (vyplnený ukážkovým hosťom). **Uložiť**, „Poslať skúšobne mne“, veta „Zmena platí pre správy, ktoré ešte neodišli.“
 - **Mobil:** schránka ako zoznam, klik → rezervácia cez celú obrazovku na karte Správy, pole prilepené dole.
 
+
+## v1.4 — Mesačný výpis (predajný argument č. 1, schválené 18. 10.)
+
+Dosky **12 `Vypis`** (stránka v administrácii) a **13 `VypisEmail`** (e-mail majiteľovi 1. dňa v mesiaci) v `docs/navrhy/administracia/`.
+Čísla na doskách sú ilustračné. Cieľ: majiteľ-investor dostane raz mesačne jednu stránku ako od správcu investície — koľko zarobil,
+koľko ušetril oproti portálu, koľko práce za neho urobil systém a čo potrebovalo človeka.
+
+**Stránka** (Štatistiky › Mesačný výpis, prepínač mesiacov ‹ ›, Stiahnuť PDF, Poslať účtovníkovi):
+- Nadpis „Priamo {tržby}. Bez provízie.“ (pri nule priamych tržieb iný text — „Tento mesiac bez priamych pobytov.“, nič nepredstierať).
+- 4 čísla s porovnaním k rovnakému mesiacu minulého roka: tržby priamo, obsadenosť (aj portály), priemer za noc (priame), počet pobytov (priame + z portálov).
+  Bez dát minulého roka porovnanie nezobrazuj (nie „+∞ %“).
+- **Ušetrené na províziách** = priame tržby mesiaca × `tenant_settings.portal_commission_bp`; súčet od januára; podiel priamych nocí
+  (vs. rovnaký mesiac minulého roka); počet vlastných kontaktov na hostí (hostia priamych rezervácií so súhlasom s ponukami, + nové za mesiac).
+- **Za vás odpracované** = súčet úkonov × minúty na úkon (odhad, **nastaviteľný** v Nastaveniach → Mesačný výpis, predvolené):
+  e-mail hosťovi odoslaný automaticky 5 min · rezervácia dokončená hosťom bez zásahu 45 min · zosúladenie kalendárov po rezervácii
+  15 min · dokončený online check-in 30 min · objednávka doplnkovej služby 15 min. Riadok sa zobrazí, len ak je počet > 0.
+  Pod tým „Potrebovalo vás:“ = úkony človeka (potvrdenie platby, odpovede hosťom, vyriešené kolízie, ručné rezervácie); pri nule „Nič.“
+- **Kde sa predali noci:** pruh priamo / Booking / Airbnb / iné iCal / voľné (počty nocí, nie peniaze; farby sa líšia aj svetlosťou a počty sú v texte).
+- **Výhľad na ďalší mesiac:** potvrdené priame tržby, obsadenosť zatiaľ, voľné víkendy (pi–ne bez obsadenia), „Čaká na vás“ (nezaplatené, nevyriešené kolízie…).
+- Poznámka o výpočte (pozri dosku) — „Podklad, nie účtovný doklad.“
+- Pravidlá výpočtu tržieb a obsadenosti sú tie isté ako na stránke Štatistiky (`tenant_monthly_stats`) — **jedno miesto výpočtu**.
+
+**E-mail** (1. deň v mesiaci ráno, za predchádzajúci mesiac): predmet „Váš {mesiac}: {tržby} priamo, {úspora} ušetrených na províziách“,
+skratka stránky, PDF v prílohe, tlačidlo „Otvoriť celý výpis“; vypínateľný v Nastaveniach → E-maily a upozornenia (predvolene zapnutý pre majiteľa).

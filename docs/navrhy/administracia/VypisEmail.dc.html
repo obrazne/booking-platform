@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Mesačný výpis — e-mail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.cta:hover{background:#264c42 !important}
+</style>
+</helmet>
+<div style="width: 640px; height: 1040px; box-sizing: border-box; padding: 32px 40px; background: #f6f5f1; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42; display: flex; flex-direction: column; gap: 16px;">
+
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 0 4px; font-size: 13px; color: #5a6672;">
+<span><strong style="font-weight: 700; color: #11212f;">Predmet:</strong> Váš september: 6 300 € priamo, 945 € ušetrených na províziách</span>
+<span>Od: [Názov platformy] · Komu: Jana Hladká · 1. 10. 2026 · príloha výpis-2026-09.pdf</span>
+</div>
+
+<div style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #e3e1da; border-radius: 20px; overflow: hidden;">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 32px; border-bottom: 1px solid #ecebe6;">
+<span style="font-size: 17px; font-weight: 800; letter-spacing: -0.01em; color: #11212f;">Chalet STRÖMY</span>
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #ad5a2b;">Mesačný výpis</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 22px; padding: 30px 32px 32px;">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 15px; color: #5a6672;">Dobrý deň, Jana, takto vyzeral september:</span>
+<span style="font-size: 32px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Priamo 6 300 €. <span style="color: #8b929b;">Bez provízie.</span></span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 22px 24px; border-radius: 14px; background: {{accent}};">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #f3d9c4;">Ušetrené na províziách</span>
+<span style="font-size: 40px; line-height: 1; font-weight: 800; color: #ffffff;">945 €</span>
+<span style="font-size: 14px; line-height: 1.5; color: #e6efeb;">Od januára 5 870 €. Podiel priamych nocí 47 % (minulý september 31 %).</span>
+</div>
+
+<table role="presentation" style="width: 100%; border-collapse: collapse; font-size: 15px;">
+<tr><td style="padding: 11px 0; border-top: 1px solid #ecebe6; color: #5a6672;">Obsadenosť</td><td style="padding: 11px 0; border-top: 1px solid #ecebe6; text-align: right; font-weight: 700; color: #11212f;">63 % · 19 z 30 nocí</td></tr>
+<tr><td style="padding: 11px 0; border-top: 1px solid #ecebe6; color: #5a6672;">Priemerná cena za noc</td><td style="padding: 11px 0; border-top: 1px solid #ecebe6; text-align: right; font-weight: 700; color: #11212f;">700 €</td></tr>
+<tr><td style="padding: 11px 0; border-top: 1px solid #ecebe6; color: #5a6672;">Pobyty</td><td style="padding: 11px 0; border-top: 1px solid #ecebe6; text-align: right; font-weight: 700; color: #11212f;">2 priame · 3 z portálov</td></tr>
+<tr><td style="padding: 11px 0; border-top: 1px solid #ecebe6; border-bottom: 1px solid #ecebe6; color: #5a6672;">Za vás odpracované</td><td style="padding: 11px 0; border-top: 1px solid #ecebe6; border-bottom: 1px solid #ecebe6; text-align: right; font-weight: 700; color: #11212f;">5 hodín</td></tr>
+</table>
+
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3b3d42;">12 e-mailov hosťom, 2 check-iny a zosúladenie kalendárov s Bookingom a Airbnb prebehli samy. <strong style="font-weight: 700; color: #11212f;">Potrebovali sme vás len na 2 kliky „Platba prijatá“ a jednu odpoveď hosťovi.</strong></p>
+
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3b3d42;">V októbri máte zatiaľ 1 400 € potvrdených a dva voľné víkendy (9.–11. a 23.–25. 10.).</p>
+
+<a href="#" class="cta" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 24px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 15px; font-weight: 700; text-decoration: none;">Otvoriť celý výpis</a>
+</div>
+
+<div style="padding: 18px 32px; border-top: 1px solid #ecebe6; background: #fafaf8; font-size: 12.5px; line-height: 1.55; color: #5a6672;">Výpis v PDF je v prílohe — môžete ho rovno preposlať účtovníkovi. Úspora = tržby z priamych pobytov × provízia 15 % z vašich nastavení. Výpis chodí 1. dňa v mesiaci; vypnúť ho môžete v Nastaveniach → E-maily a upozornenia.</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f"]},"$preview":{"width":640,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#2f5d50' };
+  }
+}
+</script>
+</body>
+</html>

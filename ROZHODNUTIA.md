@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-18 — Mesačný výpis ako predajný argument č. 1 (jadro)
+
+- Martin hľadal niečo jedinečné pre majiteľov, ktorí majú ubytovanie ako investíciu a nechcú s ním robotu. Claude: funkciu „ktorú Booking
+  nemá“ Booking dorobí; jedinečné je to, čo Booking **urobiť nemôže** — ukázať, koľko majiteľa stojí (ušetrené provízie) a koľko práce
+  za neho urobil systém. Ďalšie nápady (plnenie voľných termínov vlastnými hosťami, riadenie výnimkami vrátane upratovania) sú na neskôr.
+- Rozhodnuté: **mesačný výpis v jadre** (každý klient — je to argument pri predaji aj dôvod zostať): stránka, e-mail 1. dňa, PDF pre účtovníka.
+  Hodiny sú **priznaný odhad** (minúty na úkon viditeľné a nastaviteľné), úspora len z priamych tržieb × provízia z nastavení — Booking
+  a Airbnb posielajú len termíny, ich ceny do peňazí nemiešame. Návrh: dosky 12 a 13 (administrácia v1.4). (Martin + Claude)
+
 ## 2026-10-18 — Prepojenie s fakturačným nástrojom je platený modul
 
 - Claude navrhol dať doklady do jadra (potrebuje ich každý). **Martin nesúhlasil:** doklad si klient vie vystaviť ručne z toho, čo mu
