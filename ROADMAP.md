@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z43 (účet hosťa)~~ ✅ → ~~Z47 (Správy pre hosťa)~~ ✅ — fronta linky A prázdna ; **B:** Z44 ✅ → Z48 (storno pásma) ✅ → ~~Z45 (Správy: základ)~~ ✅ → ~~Z50 (nočná záloha)~~ ✅ → ~~Z46 (Správy: administrácia)~~ ✅ → ~~Z49 (prístupový odkaz ako detail pobytu)~~ ✅ — fronta linky B prázdna.
+- **Ďalší krok pre Claude Code:** dve linky — **A:** **Z51** (podklad na doklad) → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -46,6 +46,39 @@ Pravidlá spolupráce (platia pre obe):
 *Hotové Z1–Z30 (analýza, kostra platformy, MVP Chalet STRÖMY, stránka hosťa a košík podľa vizuálu v2–v2.2, potvrdenie rezervácie,
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
+
+### Z51 [A] — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
+Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví podklad. Prepojenie s fakturačným nástrojom je neskorší platený modul — **nerob ho**.
+1. **Panel rezervácie → sekcia „Podklad na doklad“:** odberateľ (meno, kontakt, adresa, ak ju máme), položky zo zmrazených riadkov
+   rezervácie (noci, poplatky, služby, zľavy, daň za ubytovanie), sumy s DPH podľa nastavenia klienta, platby (dátum, spôsob, VS), dátum
+   pobytu. Akcie **Kopírovať** (prehľadný text na vloženie do fakturačného nástroja) a **Stiahnuť** (PDF podklad, `src/core/pdf`, s nápisom
+   „Podklad — nie je daňový doklad“). To isté pre **vyúčtovanie účtu pobytu** (objednávky modulu upsell, slot).
+2. **Nahratie vystaveného dokladu:** pri nahrávaní dokumentu k rezervácii voľba druhu „Doklad (faktúra)“ → hosť ho vidí v účte pobytu
+   v sekcii **Doklady** (aj cez prístupový odkaz); pri rezervácii stav „doklad nahratý / chýba“.
+3. **Export podkladov za mesiac** (CSV pre účtovníka: číslo rezervácie, hosť, pobyt, položky, sumy, platby, stav dokladu) v zozname rezervácií.
+4. Ak by podklad potreboval údaje, ktoré od hosťa nezbierame (firma, IČO, DIČ — „faktúra na firmu“), **do košíka ich nepridávaj** — zapíš
+   do Otázok pre Martina (mení to, čo vidí hosť).
+5. Testy: vitest (zostavenie podkladu, súčty = cena rezervácie), Playwright na Ukážkovom klientovi (kopírovať, PDF, nahratie dokladu → hosť ho vidí), axe.
+
+### Z52 [B] — Príprava produkcie: stav záloh, export klienta, obnova jedného klienta (3f, A9)
+Nočná záloha stagingu už beží (Z50). Doplň zvyšok 3f — **nič neplatené, nič na produkcii, reálne dáta STRÖMY len čítaj**.
+1. **Stav záloh** v riadiacom centre (Stav systému): koniec workflow zálohy zapíše výsledok (čas, veľkosť, počty, výsledok overenia) do novej
+   platformovej tabuľky (len správca platformy, RLS); zobraz poslednú zálohu, posledné skúšobné obnovenie a upozornenie správcovi,
+   ak posledná úspešná záloha je staršia ako 36 h. Tajné hodnoty ber z existujúcich GitHub secrets, nič nové nepridávaj bez Martina.
+2. **Export dát klienta** (A8) v detaile klienta: ZIP — rezervácie, hostia, platby, objednávky, správy, recenzie, dokumenty (súbory),
+   nastavenia; CSV + JSON; citlivé údaje z check-inu maskované. Vytvorenie exportu sa zapíše do auditu.
+3. **Chirurgická obnova jedného klienta:** skript `scripts/restore-tenant.mjs` — zo zálohy obnovenej bokom (lokálny Postgres v CI alebo
+   dočasná schéma) vyberie len riadky daného `tenant_id`, ukáže **výpis zmien pred zápisom** (pridať / zmeniť / zmazať) a zapíše až po
+   výslovnom potvrdení. Postup do `docs/prevadzka/zaloha-a-obnova.md`. **Skúšobne len na Ukážkovom klientovi** (zmaž pár ukážkových
+   záznamov → obnov → porovnaj); na STRÖMY nič nezapisuj.
+4. **Postup pri výpadku** (dokument `docs/prevadzka/vypadok.md`): Vercel, Supabase, e-maily, iCal — čo robiť, komu písať, ako vrátiť verziu.
+
+### Z53 [A] — Pred ukážkou Jane: prehliadka „Čo je nové“ a celkový test (po Z51)
+1. **Prehliadka „Čo je nové“** doplnená o veci od poslednej verzie: správy (schránka, automatické správy), check-in, doobjednanie a účet
+   pobytu, recenzie, kolízie, storno pásma, podklad na doklad. Nové snímky z Ukážkového klienta (`npm run tour:screens`), zvýš `version`.
+2. **Celý e2e beh** (PC aj mobil, axe) proti stagingu po všetkých úlohách oboch liniek; nestabilné testy oprav alebo zapíš.
+3. **Kontrola STRÖMY bez zápisu:** prejdi stránku hosťa, účet hosťa (info+host@obrazne.sk) a administráciu STRÖMY a zapíš do Denníka,
+   čo by pri ukážke Jane vyzeralo zle (prázdne sekcie, orientačné texty, chýbajúce fotky, anglické texty) — oprav len chyby kódu, obsah nemeň.
 
 ### Z31 ✅ — História zmien a kôš (vrátenie chyby jedného klienta, 17. 10.)
 Podľa `ARCHITEKTURA.md` A9 → „Vrátenie chyby jedného klienta“ (vrstvy 1 a 2; vrstva 3 je úloha prípravy produkcie). Úpravy DB len pridávajú.
