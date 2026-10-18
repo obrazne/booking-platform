@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
+  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → Z55 (lišta ukladania, toasty) — *zabratá linkou A* → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
   **B:** Z57 (riadiace centrum: klienti v menu a zoznam) → Z58 (pobyty z portálov, príchody) → Z59 (účet hosťa: navigácia) → Z60 (podpis a vzhľad e-mailov).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -67,7 +67,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    účet hosťa → detail pobytu (konverzácia, formuláre), Moje údaje. Snímky pred/po do `docs/snimky/z54/` (bez osobných údajov).
 6. Test kontrastu tokenov (vitest), axe bez nových chýb, e2e dotknutých obrazoviek.
 
-### Z55 [A] — Ukladanie: lišta neuložených zmien a toasty všade (pripomienky 36, 44; pravidlo 3) — po Z54
+### Z55 [A] 🔄 — Ukladanie: lišta neuložených zmien a toasty všade (pripomienky 36, 44; pravidlo 3) — po Z54
 1. Spoločný formulárový obal: sleduje zmeny polí, **Uložiť tiché, kým nie je zmena**, potom pripnutá lišta dole „Máte neuložené zmeny ·
    Zahodiť · Uložiť“; zmenené pole označené; potvrdenie pri odchode zo stránky (aj interná navigácia).
 2. Spoločný pomocník pre serverové akcie → toast vpravo dole pri úspechu aj chybe (`sonner`), text z prekladov.
