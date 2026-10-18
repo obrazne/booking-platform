@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** **Z51** (podklad na doklad) → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** **Z51** (podklad na doklad) — *zabratá linkou A* → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -47,7 +47,7 @@ Pravidlá spolupráce (platia pre obe):
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 
-### Z51 [A] — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
+### Z51 [A] 🔄 — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
 Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví podklad. Prepojenie s fakturačným nástrojom je neskorší platený modul — **nerob ho**.
 1. **Panel rezervácie → sekcia „Podklad na doklad“:** odberateľ (meno, kontakt, adresa, ak ju máme), položky zo zmrazených riadkov
    rezervácie (noci, poplatky, služby, zľavy, daň za ubytovanie), sumy s DPH podľa nastavenia klienta, platby (dátum, spôsob, VS), dátum
