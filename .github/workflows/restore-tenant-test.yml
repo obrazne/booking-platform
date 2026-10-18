@@ -1,0 +1,73 @@
+# Test of the surgical restore of one client (Z52) on staging — the Ukážkový klient only, never STRÖMY. Manual.
+# Its own records: prepare → dump of staging (stays in the runner, deleted at the end) → damage → restore with
+# scripts/restore-tenant.mjs (plan, then --apply --yes) → verify → plan again (should be empty) → clean up.
+# Run when no e2e tests are running: the restore puts the Ukážkový klient back to the moment of the dump.
+name: Skúška obnovy klienta
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-staging
+  cancel-in-progress: false
+
+jobs:
+  restore-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: https://uzsuwokyiprkzfirvrmb.supabase.co
+      UKAZKA: a0000000-0000-4000-8000-000000000001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+
+      - name: Prepare test records on the Ukážkový klient
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: node scripts/restore-tenant-check.mjs prepare
+
+      - name: Dump the data of staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          mkdir -p /tmp/restore-test
+          supabase db dump --db-url "$STAGING_DB_URL" --data-only --use-copy -f /tmp/restore-test/data.sql
+
+      - name: Damage the test records
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: node scripts/restore-tenant-check.mjs damage
+
+      - name: Restore the Ukážkový klient (plan, then apply)
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: |
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA"
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA" --apply --yes
+
+      - name: Verify
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: |
+          node scripts/restore-tenant-check.mjs verify
+          echo "Plan after the restore (expected: no difference):"
+          node scripts/restore-tenant.mjs --dump /tmp/restore-test/data.sql --tenant "$UKAZKA"
+
+      - name: Clean up
+        if: always()
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SERVICE_ROLE_KEY }}
+        run: |
+          node scripts/restore-tenant-check.mjs cleanup || true
+          rm -rf /tmp/restore-test

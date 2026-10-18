@@ -327,6 +327,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          kind: string
           property_id: string | null
           reservation_id: string | null
           storage_path: string
@@ -337,6 +338,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          kind?: string
           property_id?: string | null
           reservation_id?: string | null
           storage_path: string
@@ -347,6 +349,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          kind?: string
           property_id?: string | null
           reservation_id?: string | null
           storage_path?: string
@@ -3778,6 +3781,17 @@ export type Database = {
         Args: { p_occupancy_id: string; p_resolved?: boolean }
         Returns: undefined
       }
+      restore_discard: { Args: { p_session: string }; Returns: undefined }
+      restore_plan: {
+        Args: { p_apply?: boolean; p_session: string; p_tenant: string }
+        Returns: Json
+      }
+      restore_stage: {
+        Args: { p_rows: Json; p_session: string; p_table: string }
+        Returns: number
+      }
+      restore_tables: { Args: never; Returns: string[] }
+      restore_typed: { Args: { p_row: Json; p_table: string }; Returns: Json }
       reveal_checkin_guest: {
         Args: { p_guest_id: string; p_purpose?: string }
         Returns: {

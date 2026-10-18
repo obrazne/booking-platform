@@ -26,6 +26,8 @@ export function auditLabel(
       return t("membershipCreated");
     case "admin.entered":
       return t("adminEntered");
+    case "tenant.exported":
+      return t("tenantExported");
     case "auth.signed_in":
       return t("signedIn", {
         method: t(`methods.${data.method === "password" ? "password" : "link"}`),

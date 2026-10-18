@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/core/admin/breadcrumbs";
 import { isTestAccount, publicDomain } from "@/core/admin/platform-data";
@@ -91,6 +91,12 @@ export async function TenantHeader({ tenant, tab }: { tenant: TenantDetail; tab:
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
+          {/* Export of the client's data (Z52) — a plain link: the file downloads, the audit records it. */}
+          <Button asChild variant="outline">
+            <a href={`${base}/export`} download>
+              <Download /> {ts("export")}
+            </a>
+          </Button>
           {tenant.domain ? (
             <Button asChild variant="outline">
               <a href={`https://${tenant.domain}`} target="_blank" rel="noreferrer">

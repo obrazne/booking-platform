@@ -203,7 +203,8 @@
       "neverSignedIn": "zatiaľ sa neprihlásil",
       "openDetail": "Otvoriť detail",
       "openAdmin": "Otvoriť administráciu",
-      "guestPage": "Stránka pre hostí"
+      "guestPage": "Stránka pre hostí",
+      "export": "Export dát (ZIP)"
     },
     "detail": {
       "primaryDomain": "hlavná",
@@ -2602,6 +2603,7 @@
       },
       "membershipCreated": "Pridaný človek do tímu",
       "adminEntered": "Správca otvoril administráciu",
+      "tenantExported": "Export dát klienta",
       "other": "Iná zmena",
       "signedIn": "Prihlásenie ({method})",
       "methods": {
