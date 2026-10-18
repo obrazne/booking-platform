@@ -11,7 +11,9 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → ~~Z53 (pred ukážkou Jane)~~ ✅ — fronta linky A prázdna; **B:** ~~Z52 (stav záloh, export klienta, obnova jedného klienta)~~ ✅ — fronta linky B prázdna.
+- **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
+  **A:** Z54 (plochy, polia, hover) → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
+  **B:** Z57 (riadiace centrum: klienti v menu a zoznam) → Z58 (pobyty z portálov, príchody) → Z59 (účet hosťa: navigácia) → Z60 (podpis a vzhľad e-mailov).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -46,6 +48,89 @@ Pravidlá spolupráce (platia pre obe):
 *Hotové Z1–Z30 (analýza, kostra platformy, MVP Chalet STRÖMY, stránka hosťa a košík podľa vizuálu v2–v2.2, potvrdenie rezervácie,
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
+
+**Pripomienky 31–44 (Martin 18. 10.) → Z54–Z61.** Spoločné pravidlá sú v **`docs/pravidla-rozhrania.md`** — prečítaj pred každou z týchto úloh.
+**Platia všade** (administrácia, riadiace centrum, stránka a účet hosťa), aj keď pripomienka padla pri jednej časti. Č. 37 (recenzie) čaká
+na rozhodnutie → Otázky, nerob ju. **Rozdelenie, aby sa linky nebili:** linka **A** robí spoločné základy (tokeny, komponenty, formuláre,
+ukladanie) a na konci prejde všetky obrazovky; linka **B** robí navigáciu a nové funkcie a **nemení vzhľad plôch, polí ani hover** —
+použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 to zjednotí).
+
+### Z54 [A] — Plochy, polia a reakcia na myš naprieč aplikáciou (pripomienky 41, 42, 43; pravidlá 1–2)
+1. Tokeny v `globals.css`: pozadie stránky, karta (odtieň alebo okraj — jeden spôsob), deliaca čiara, okraj poľa s kontrastom ≥ 3 : 1
+   voči karte aj stránke; žiadne farby natvrdo v komponentoch. Funguje aj pri témach klientov (svetlé aj tmavé akcenty, `src/core/theme`).
+2. Spoločné komponenty (`src/components/ui/*`, `src/core/admin/*`): input, select, textarea, dátum/čas, checkbox, prepínač — biele
+   s viditeľným okrajom; karta a sekcia bez vnorených pozadí (karta v karte → deliaca čiara).
+3. Hover a `:focus-visible` podľa tabuľky v pravidle 2: riadky zoznamov, karty, tlačidlá, odkazy, ikonové tlačidlá; ~150 ms, bez pohybu.
+4. Kalendár administrácie: náhľad pobytu pri prejdení (hosť alebo portál, termín, noci, stav, suma), na dotyk prvým ťuknutím.
+   Kalendár hosťa: cena noci pri dni (ak sa dá zistiť bez ďalšieho dotazu na každý deň; inak zapíš do Denníka a vynechaj).
+5. Prejdi a oprav miesta, kde je to dnes najhoršie: Objekt → Údaje, Ceny a sezóny, riadiace centrum → Katalóg modulov a detail klienta,
+   účet hosťa → detail pobytu (konverzácia, formuláre), Moje údaje. Snímky pred/po do `docs/snimky/z54/` (bez osobných údajov).
+6. Test kontrastu tokenov (vitest), axe bez nových chýb, e2e dotknutých obrazoviek.
+
+### Z55 [A] — Ukladanie: lišta neuložených zmien a toasty všade (pripomienky 36, 44; pravidlo 3) — po Z54
+1. Spoločný formulárový obal: sleduje zmeny polí, **Uložiť tiché, kým nie je zmena**, potom pripnutá lišta dole „Máte neuložené zmeny ·
+   Zahodiť · Uložiť“; zmenené pole označené; potvrdenie pri odchode zo stránky (aj interná navigácia).
+2. Spoločný pomocník pre serverové akcie → toast vpravo dole pri úspechu aj chybe (`sonner`), text z prekladov.
+3. Nasadiť všade, kde sa ukladá: administrácia (objekt, ceny, služby, poplatky, nastavenia, prepojenia, správy, tím…), riadiace centrum
+   (klient, stav, moduly, téma, domény), účet hosťa (Moje údaje, check-in, objednávky). Stránky s viac sekciami a vlastným Uložiť →
+   jedna lišta pre stránku/záložku. Okamžité prepínače: uloženie hneď + toast.
+4. e2e: zmena → lišta → uložiť → toast; zahodiť; odchod s neuloženými zmenami; chyba servera → toast s chybou.
+
+### Z56 [A] — Ceny a sezóny a ďalšie zoznamy zbalené (pripomienka 35; pravidlo 4) — po Z55
+1. Sezóny ako zbalené riadky: názov, termíny, cena za noc, min. nocí; šípka rozbalí formulár; rozbalený riadok iný podklad.
+2. „Nová sezóna“ skrytá za „+ Pridať sezónu“ (otvorí sa navrchu). To isté pre ostatné zoznamy s formulárom „Nový …“ v administrácii
+   aj riadiacom centre (služby, poplatky a zľavy, rýchle odpovede, dokumenty, kanály iCal, katalóg modulov — klienti pri module).
+3. **Opakované sezóny bez roka:** pri „Opakovať každý rok“ zobrazuj a zadávaj deň a mesiac (23. 12. – 26. 12.), nie „2000“; uloženie
+   ostáva rovnaké (výpočet ceny vrátane prechodu cez Nový rok má test v `calculate.test.ts` — nesmie sa zmeniť).
+4. Katalóg modulov: veta pod klientmi, ktorá opakuje dátumy konca skúšky, preč.
+
+### Z57 [B] — Riadiace centrum: klienti v menu a zoznam klientov (pripomienky 31, 32)
+1. **Menu:** pod „Klienti“ ostávajú **naposledy otvorení klienti (max. 3)**, zapamätaní (cookie/DB pre správcu, nie len v pamäti stránky);
+   aktívny klient rozbalený s podstránkami (Prehľad, Moduly, Vzhľad, Domény, Ľudia, Záznam zmien), ostatní zbalení. Po kliknutí na
+   „Všetci klienti“ nezmiznú.
+2. **Zoznam klientov:** klik na riadok alebo názov = detail klienta; šípka vpravo = rozbalenie (ako dnes). Hľadanie (názov, e-mail, adresa
+   stránky) a filtre: stav (aktívny / skúška / pozastavený), modul, končiaca skúška, problém (synchronizácia, e-maily) — `ListSearch`,
+   `FilterPills`. **Dlaždice nerob** (Claude odporučil tabuľku). Stĺpec „Balík a moduly“ nesmie byť orezaný bez možnosti vidieť zvyšok
+   (počet + zoznam v rozbalení).
+3. **Chyba:** v zozname klientov aj v detaile sa zobrazuje kľúč `modules.messages.title` — doplň preklad (a nájdi, či chýba aj iný
+   kľúč modulu; test, ktorý porovná kľúče manifestov so `sk.json`).
+
+### Z58 [B] — Pobyty z iných portálov a Príchody zo všetkých kanálov (pripomienka 33)
+1. Nová podpoložka **Rezervácie → Z portálov** (Booking, Airbnb, ďalšie iCal kanály): zoznam pobytov z iCal oddelene od vlastných
+   rezervácií. Stĺpce: portál, príchod – odchod, noci, kód/odkaz rezervácie a posledné 4 číslice telefónu (Airbnb, ak sú v popise udalosti),
+   kolízia (odkaz na `/admin/collisions`), posledná synchronizácia kanála. Filtre: portál, budúce/minulé. Panel pobytu so všetkým, čo
+   o ňom vieme, a odkazom „Zobraziť v kalendári“. Nič sa nezapisuje do `reservations`.
+2. **Príchody:** zobrazujú príchody zo **všetkých** kanálov (vlastné + portály), pri portáloch štítok portálu — kvôli upratovaniu a odovzdaniu.
+3. Drobnosti zo snímky zoznamu rezervácií: „Ručná rezervácia“ dvakrát (horná lišta aj hlavička) → jedno miesto; dve hľadania (horná lišta
+   + zoznam) → vysvetli v Denníku, ak je horné globálne, inak jedno; **predvolené poradie** zoznamu podľa príchodu (najbližšie hore),
+   nie podľa vytvorenia.
+4. Testy na Ukážkovom klientovi (ukážkové iCal kanály); STRÖMY len čítaj.
+
+### Z59 [B] — Účet hosťa: navigácia (pripomienky 38, 39, 40) — po Z58
+1. **Aktuálny pobyt ako prvá karta:** karty `Aktuálny pobyt · Pobyty · Moje údaje`. Po prihlásení sa otvorí aktuálny pobyt (prebiehajúci,
+   inak najbližší budúci). Viac budúcich → najbližší + prepínač „Ďalší pobyt: 12. 2. 2027 ›“. Bez budúceho pobytu karta nie je
+   a otvorí sa zoznam Pobyty. Prístupový odkaz `/r/<kód>` ostáva ako je.
+2. **Detail minulého pobytu:** svieti karta Pobyty a nad nadpisom výrazný odkaz „← Všetky pobyty“ (nielen drobčeky).
+3. **„Môj účet“ v hlavičke** (stránka chaletu aj účet) = rozbaľovacie menu s rovnakými položkami ako karty (+ Odhlásiť sa); položky z jedného
+   zdroja. Na mobile v menu hlavičky.
+4. e2e hosť PC aj mobil (390 px): prihlásenie → aktuálny pobyt; minulý pobyt → späť; menu Môj účet.
+
+### Z60 [B] — Podpis v správach a vzhľad e-mailov hosťovi (pripomienka 34) — po Z59
+1. **Podpis:** `{podpis}` berie `tenant_settings.contact_name`, ktoré sa v administrácii nedá upraviť. Nastavenia → **Kontakt**: meno
+   kontaktnej osoby a **podpis správ** (viacriadkový, napr. „Jana Hladká · Chalet STRÖMY · +421…“; nový stĺpec migráciou, predvolene
+   meno kontaktu). `{podpis}` = podpis, inak meno, inak názov klienta. Pri tlačidlách „Vložiť“ v úprave správy riadok „Podpis upravíte
+   v Nastaveniach → Kontakt“ s odkazom.
+2. **Hlavička a päta všetkých e-mailov hosťovi** (`src/core/email/templates.ts`, `layout`): hlavička = logo klienta, ak ho téma má, inak
+   názov ubytovania; päta = kontakt (telefón, e-mail, WhatsApp, ak sú) a odkaz „Môj pobyt“ / do účtu. Telo správ ostáva jednoduché
+   (osobný list, nie newsletter). Fotka objektu len v potvrdení rezervácie (ak je hlavná fotka), s `alt` a pevnou šírkou.
+3. Náhľad v úprave automatickej správy ukazuje e-mail s hlavičkou a pätou; „Poslať skúšobne mne“ posiela rovnakú verziu.
+4. Testy: vitest pre `{podpis}` (podpis / meno / názov), snímka e-mailu (HTML) v testoch šablón.
+
+### Z61 [A] — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
+1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj
+   pravidlá 1–5 z `docs/pravidla-rozhrania.md`; nedostatky oprav (aj na obrazovkách z linky B). Zoznam skontrolovaných obrazoviek do Denníka.
+2. Celý e2e beh + axe; nestabilné testy oprav.
+3. Prehliadka „Čo je nové“: nové snímky a text o zmenách (lišta ukladania, potvrdenia, pobyty z portálov, aktuálny pobyt hosťa), zvýš `version`.
 
 ### Z51 ✅ [A] — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
 Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví podklad. Prepojenie s fakturačným nástrojom je neskorší platený modul — **nerob ho**.
@@ -422,6 +507,12 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Recenzie — schvaľovanie (pripomienka 37, 18. 10., čaká na rozhodnutie, nerobiť):** Martin chce, aby si ubytovateľ každú recenziu
+  schválil sám (bez automatického zverejnenia po 72 h). Je to v rozpore s rozhodnutím 2026-10-17 (zverejnia sa všetky, zamietnuť len
+  porušenie pravidiel — Omnibus: pri „overených recenziách“ a priemere nesmie majiteľ potichu vyberať len pozitívne). Možnosti:
+  (1) ponechať pravidlo, pri novej recenzii upozornenie „zverejní sa o 3 dni“ s tlačidlami Zverejniť hneď / Zamietnuť s dôvodom, príp. lehota 7 dní;
+  (2) ručný výber, ale bez priemeru a bez označenia „overené“ (= Referencie).
+- **Zoznam klientov — „kategórie“ (pripomienka 32):** stav / balík / modul / problém, alebo niečo iné (typ ubytovania)? Z57 zatiaľ robí filtre stav, modul, skúška, problém.
 - **Podklad na doklad (Z51) — faktúra na firmu a adresa:** podklad má odberateľa len s menom, e-mailom, telefónom a krajinou — **adresu,
   firmu, IČO, DIČ od hosťa nezbierame** (adresa je len v online check-ine, a to citlivo). Pri „faktúre na firmu“ ich klient musí dopísať
   ručne. Chceš v košíku voliteľné „Chcem faktúru na firmu“ (názov, IČO, DIČ/IČ DPH, adresa)? Mení to, čo vidí hosť, preto som ho nepridal.
