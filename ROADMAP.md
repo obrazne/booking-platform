@@ -60,7 +60,7 @@ Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví 
    do Otázok pre Martina (mení to, čo vidí hosť).
 5. Testy: vitest (zostavenie podkladu, súčty = cena rezervácie), Playwright na Ukážkovom klientovi (kopírovať, PDF, nahratie dokladu → hosť ho vidí), axe.
 
-### Z52 [B] — Príprava produkcie: stav záloh, export klienta, obnova jedného klienta (3f, A9)
+### Z52 [B] 🔄 — Príprava produkcie: stav záloh, export klienta, obnova jedného klienta (3f, A9)
 Nočná záloha stagingu už beží (Z50). Doplň zvyšok 3f — **nič neplatené, nič na produkcii, reálne dáta STRÖMY len čítaj**.
 1. **Stav záloh** v riadiacom centre (Stav systému): koniec workflow zálohy zapíše výsledok (čas, veľkosť, počty, výsledok overenia) do novej
    platformovej tabuľky (len správca platformy, RLS); zobraz poslednú zálohu, posledné skúšobné obnovenie a upozornenie správcovi,
