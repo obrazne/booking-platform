@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → Z55 (lišta ukladania, toasty) — *zabratá linkou A* → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
-  **B:** Z57 (riadiace centrum: klienti v menu a zoznam) → Z58 (pobyty z portálov, príchody) → Z59 (účet hosťa: navigácia) → Z60 (podpis a vzhľad e-mailov).
+  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -115,7 +115,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    zdroja. Na mobile v menu hlavičky.
 4. e2e hosť PC aj mobil (390 px): prihlásenie → aktuálny pobyt; minulý pobyt → späť; menu Môj účet.
 
-### Z60 [B] 🔄 — Podpis v správach a vzhľad e-mailov hosťovi (pripomienka 34) — po Z59
+### Z60 [B] ✅ — Podpis v správach a vzhľad e-mailov hosťovi (pripomienka 34) — po Z59
 1. **Podpis:** `{podpis}` berie `tenant_settings.contact_name`, ktoré sa v administrácii nedá upraviť. Nastavenia → **Kontakt**: meno
    kontaktnej osoby a **podpis správ** (viacriadkový, napr. „Jana Hladká · Chalet STRÖMY · +421…“; nový stĺpec migráciou, predvolene
    meno kontaktu). `{podpis}` = podpis, inak meno, inak názov klienta. Pri tlačidlách „Vložiť“ v úprave správy riadok „Podpis upravíte
@@ -572,6 +572,20 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z60 [linka B]: **podpis v správach a vzhľad e-mailov hosťovi** (pripomienka 34). (Claude Code)
+  - **Nastavenia → Kontakt** (nová karta, `#kontakt`): kontaktná osoba, telefón, WhatsApp a **podpis správ** (viac riadkov, nový
+    stĺpec `tenant_settings.message_signature`, migrácia `…160000`). `{podpis}` = podpis, inak meno kontaktu, inak názov klienta —
+    rovnako v DB (`message_rule_text`) aj v náhľade (`messageSignature`, test). Pri „Vložiť“ v úprave správy odkaz
+    „Podpis upravíte v Nastaveniach → Kontakt“.
+  - **Hlavička a päta všetkých e-mailov hosťovi** (`src/core/email/layout.ts`, `guestFrame`): hlavička = logo témy (ak je to https
+    adresa), inak názov ubytovania; päta = kontakt (telefón, e-mail objektu, WhatsApp) a „Môj pobyt →“; textová časť má pätu tiež.
+    Telo ostáva osobný list. **Hlavná fotka** (exteriér, inak prvá) len v potvrdení rezervácie, s `alt`, šírka 496 px. Kód na prihlásenie
+    má hlavičku s názvom klienta. E-maily majiteľovi bez zmeny.
+  - **Náhľad v úprave automatickej správy** = celý e-mail s hlavičkou a pätou (rámček `iframe`, rovnaká funkcia `guestMessageHtml`
+    ako skutočný e-mail); **„Poslať skúšobne mne“** posiela presne túto verziu.
+  - Testy: vitest `layout.test.ts` so snímkou HTML e-mailu, `rules.test.ts` (podpis); e2e `settings-contact.spec.ts`,
+    `messages-admin` (podpis v náhľade, odkaz na Kontakt), `admin` — prešli. Snímky `docs/snimky/z60/`.
+  - **Pre linku A (Z55):** karta Kontakt je v spoločnom formulári nastavení (`saveSettings`) — lišta ukladania ju pokryje sama.
 - 2026-10-18 — Z59 [linka B]: **účet hosťa — navigácia** (pripomienky 38, 39, 40). (Claude Code)
   - Karty **Aktuálny pobyt · Pobyty · Moje údaje** z jedného zdroja (`src/core/guest/account-nav.ts` + `account-nav-items.ts`),
     ten istý zoznam má **menu „Môj účet“ v hlavičke** (stránka chaletu aj účet; + Odhlásiť sa; neprihlásený → odkaz na prihlásenie).

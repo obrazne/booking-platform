@@ -137,6 +137,9 @@ cez `send_message` (aj `p_token`), automatika `messages_tick` (cron 5 min). Modu
 pri zapnutí (`onEnable`) — háčiky manifestu. Pri novom druhu e-mailu/upozornenia ber zoznam z poslednej migrácie (teraz `…290000`).
 Administrácia (Z46): `src/modules/messages/admin/` (dáta, akcie, konverzácia, `auto.tsx`), stránky `/admin/messages` (schránka) a
 `/admin/messages/auto`; karty panelu rezervácie dodávajú moduly cez `reservationTabs` (`PanelTabs`, `?tab=`), počítadlo v menu cez `navItems[].badge`.
+**E-maily hosťovi (Z60):** rozloženie a hlavička/päta klienta v `src/core/email/layout.ts` (`emailLayout`, `guestFrame`,
+`guestMessageHtml`) — používa ho worker (`templates.ts`, všetky `guest_*`) aj náhľad v administrácii; `{podpis}` =
+`tenant_settings.message_signature` → `contact_name` → názov klienta (DB `message_rule_text` a `messageSignature` — meniť spolu).
 **Zálohy a obnova (Z50, Z52):** nočná záloha `.github/workflows/backup-staging.yml` zapisuje výsledok do `platform_backups`
 (Stav systému → Zálohy, upozornenie `backup_stale` po 36 h); export klienta `/platform/tenants/<id>/export` (`src/core/export/`);
 obnova jedného klienta / vybraných záznamov `scripts/restore-tenant.mjs` (`restore_plan`, staging v schéme `private`) — postup
