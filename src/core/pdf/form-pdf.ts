@@ -24,13 +24,19 @@ export async function renderFormPdf(input: {
     { subset: true },
   );
   doc.setTitle(input.title);
-  const page = doc.addPage([595.28, 841.89]);
+  let page = doc.addPage([595.28, 841.89]);
   const ink = rgb(0.11, 0.11, 0.1);
   const muted = rgb(0.42, 0.42, 0.45);
   const line = rgb(0.85, 0.83, 0.79);
   let y = 790;
   const left = 56;
   const width = 595.28 - left * 2;
+  // Long content (e.g. many items of an invoice basis, Z51) continues on the next page.
+  const room = (height: number) => {
+    if (y - height >= 70) return;
+    page = doc.addPage([595.28, 841.89]);
+    y = 790;
+  };
 
   const wrap = (text: string, size: number, max: number): string[] => {
     const out: string[] = [];
@@ -56,9 +62,11 @@ export async function renderFormPdf(input: {
   }
   y -= 10;
   for (const section of input.sections) {
+    room(40);
     page.drawText(section.heading.toUpperCase(), { x: left, y, size: 8.5, font, color: muted });
     y -= 8;
     for (const [label, value] of section.rows) {
+      room(30);
       page.drawLine({
         start: { x: left, y },
         end: { x: left + width, y },
@@ -66,12 +74,15 @@ export async function renderFormPdf(input: {
         color: line,
       });
       y -= 15;
-      page.drawText(label, { x: left, y, size: 10, font, color: muted });
+      const labels = wrap(label, 10, width * 0.36);
+      labels.forEach((l, i) =>
+        page.drawText(l, { x: left, y: y - i * 12, size: 10, font, color: muted }),
+      );
       const lines = wrap(value || "—", 10.5, width * 0.6);
       lines.forEach((l, i) =>
         page.drawText(l, { x: left + width * 0.38, y: y - i * 13, size: 10.5, font, color: ink }),
       );
-      y -= 9 + (lines.length - 1) * 13;
+      y -= 9 + Math.max((lines.length - 1) * 13, (labels.length - 1) * 12);
     }
     page.drawLine({
       start: { x: left, y },
@@ -82,6 +93,7 @@ export async function renderFormPdf(input: {
     y -= 26;
   }
   if (input.signatures?.length) {
+    room(80);
     y -= 30;
     const w = (width - 30 * (input.signatures.length - 1)) / input.signatures.length;
     input.signatures.forEach((label, i) => {
@@ -90,6 +102,10 @@ export async function renderFormPdf(input: {
       page.drawText(label, { x, y: y - 13, size: 9, font, color: muted });
     });
   }
-  if (input.footer) page.drawText(input.footer, { x: left, y: 40, size: 8, font, color: muted });
+  if (input.footer)
+    for (const p of doc.getPages())
+      wrap(input.footer, 8, width).forEach((l, i) =>
+        p.drawText(l, { x: left, y: 40 - i * 10, size: 8, font, color: muted }),
+      );
   return doc.save();
 }

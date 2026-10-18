@@ -102,7 +102,7 @@ test("owner confirms, declines and settles orders on the stay account", async ({
     await loginOwner(page, ADMIN_URL);
     await page.goto(`${ADMIN_URL}/admin/reservations?panel=reservation:${res.id}`);
     const panel = page.getByRole("dialog");
-    await expect(panel.getByRole("heading", { name: "Účet pobytu" })).toBeVisible();
+    await expect(panel.getByRole("heading", { name: "Účet pobytu", exact: true })).toBeVisible();
     await expect(panel.getByText("Čaká na potvrdenie")).toBeVisible();
 
     await panel.getByRole("button", { name: `Potvrdiť — E2E kuchár ${stamp}` }).click();
@@ -130,6 +130,16 @@ test("owner confirms, declines and settles orders on the stay account", async ({
       .eq("purpose", "stay_account")
       .single();
     expect(payment).toEqual({ amount_cents: 5000, provider: "on_site", status: "received" });
+
+    // Podklad na doklad of the settlement (Z51): the confirmed order and its PDF.
+    const basis = panel
+      .getByRole("heading", { name: "Podklad na doklad — účet pobytu" })
+      .locator("..");
+    await expect(basis).toContainText("Zostáva zaplatiť");
+    const href = await basis.getByRole("link", { name: "Stiahnuť PDF" }).getAttribute("href");
+    expect(href).toContain("?zdroj=ucet");
+    const pdf = await page.request.get(`${ADMIN_URL}${href}`);
+    expect(pdf.headers()["content-type"]).toBe("application/pdf");
   } finally {
     const { data: orders } = await db
       .from("reservation_orders")

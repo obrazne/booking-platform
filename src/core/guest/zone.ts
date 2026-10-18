@@ -106,7 +106,7 @@ export async function stayDocuments(stay: Stay) {
   const { supabase } = await requireGuest();
   const { data } = await supabase
     .from("documents")
-    .select("id, title, storage_path, reservation_id, property_id")
+    .select("id, title, storage_path, reservation_id, property_id, kind")
     .or(`reservation_id.eq.${stay.id},property_id.eq.${stay.property_id}`);
   if (!data?.length) return [];
   const { data: signed } = await createAdminClient()
@@ -115,7 +115,12 @@ export async function stayDocuments(stay: Stay) {
       data.map((d) => d.storage_path),
       600,
     );
-  return data.map((d, i) => ({ id: d.id, title: d.title, url: signed?.[i]?.signedUrl ?? null }));
+  return data.map((d, i) => ({
+    id: d.id,
+    title: d.title,
+    kind: d.kind,
+    url: signed?.[i]?.signedUrl ?? null,
+  }));
 }
 
 /** Arrival instructions and codes — null until the rules of Z13 allow them. */

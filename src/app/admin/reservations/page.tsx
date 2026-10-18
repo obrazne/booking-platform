@@ -34,12 +34,21 @@ function renderVersion(): string {
   return String(Date.now());
 }
 
+/** "YYYY-MM" of the previous month (default of the monthly basis export). */
+function previousMonth(): string {
+  const d = new Date();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() - 1);
+  return d.toISOString().slice(0, 7);
+}
+
 export default async function ReservationsPage({ searchParams }: PageProps<"/admin/reservations">) {
   const active = await requireTenant();
-  const [t, tc, tv, locale, sp, tenant] = await Promise.all([
+  const [t, tc, tv, ti, locale, sp, tenant] = await Promise.all([
     getTranslations("reservations"),
     getTranslations("common"),
     getTranslations("adminV1.reservations"),
+    getTranslations("invoice"),
     getLocale(),
     searchParams,
     getTenantInfo(active.tenantId),
@@ -76,6 +85,28 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
                 <Download /> {tc("exportCsv")}
               </a>
             </Button>
+            {/* Podklady za mesiac for the accountant (Z51): the previous month is preselected. */}
+            <form
+              action="/admin/reservations/podklady"
+              method="get"
+              className="flex items-center gap-2"
+            >
+              <label htmlFor="basis-month" className="sr-only">
+                {ti("monthLabel")}
+              </label>
+              <input
+                id="basis-month"
+                type="month"
+                name="mesiac"
+                required
+                defaultValue={previousMonth()}
+                title={ti("monthLabel")}
+                className="border-input bg-background h-10 rounded-full border px-4 text-sm"
+              />
+              <Button type="submit" variant="outline">
+                <Download /> {ti("monthExport")}
+              </Button>
+            </form>
             <Button asChild className="font-bold">
               <Link href="/admin/reservations/new">
                 <Plus /> {t("new")}

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { PanelSection } from "@/core/admin/record-panel";
+import { InvoiceBasisSection } from "@/core/invoice/section";
 import { formatDate, formatMoney } from "@/core/format/format";
 import { money } from "@/core/money/money";
 import type { SlotProps } from "@/core/modules/types";
@@ -109,6 +110,15 @@ export async function StayAccountSection({ tenantId, locale, reservationId }: Sl
         <div className="flex justify-end">
           <SettleButton reservationId={reservationId} amountLabel={fmt(settleable, currency)} />
         </div>
+      ) : null}
+      {/* Basis for the document of the settlement (Z51): confirmed orders and their payments. */}
+      {list.some((o) => o.status === "confirmed") ? (
+        <InvoiceBasisSection
+          tenantId={tenantId}
+          reservationId={reservationId}
+          locale={locale}
+          source="stay_account"
+        />
       ) : null}
     </PanelSection>
   );

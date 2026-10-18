@@ -13,8 +13,11 @@ const input = z
     storagePath: z.string().min(1).max(300),
     title: z.string().trim().min(1).max(120),
     visibleWhen: z.enum(["always", "confirmed"]),
+    kind: z.enum(["document", "invoice"]).default("document"),
   })
-  .refine((v) => (v.propertyId === null) !== (v.reservationId === null));
+  .refine((v) => (v.propertyId === null) !== (v.reservationId === null))
+  // An issued document (invoice, Z51) belongs to one reservation.
+  .refine((v) => v.kind === "document" || v.reservationId !== null);
 
 /** Registers a file the owner uploaded to the private bucket (B10): per property or per reservation. */
 export async function registerDocument(raw: z.input<typeof input>): Promise<ActionResult> {
@@ -30,7 +33,9 @@ export async function registerDocument(raw: z.input<typeof input>): Promise<Acti
     reservation_id: v.reservationId,
     storage_path: v.storagePath,
     title: { sk: v.title },
-    visible_when: v.visibleWhen,
+    // The guest sees an issued document right away, in any state of the stay.
+    visible_when: v.kind === "invoice" ? "always" : v.visibleWhen,
+    kind: v.kind,
   });
   if (error) return fail(dbErrorKey(error));
   revalidatePath("/admin", "layout");

@@ -414,31 +414,52 @@ export async function StayDetail({
             />
           ) : null}
 
-          {docs.length > 0 && phase !== "cancelled" ? (
-            <section className="grid gap-3">
-              <h2 className="font-heading text-xl font-bold">{t("documents")}</h2>
-              <ul className="border-line divide-line grid divide-y border-y">
-                {docs.map((d) => (
-                  <li key={d.id}>
-                    {d.url ? (
-                      <a
-                        href={d.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-ink inline-flex min-h-11 items-center gap-2 py-2 hover:underline"
-                      >
-                        <FileText className="text-primary size-4" /> {tr(d.title, locale)}
-                      </a>
-                    ) : (
-                      <span className="inline-flex min-h-11 items-center gap-2 py-2">
-                        {tr(d.title, locale)}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
+          {/* Issued documents (invoices, Z51) — also for a cancelled stay; then the files for guests. */}
+          {[
+            {
+              key: "invoices",
+              list: docs.filter((d) => d.kind === "invoice"),
+              title: t("invoices"),
+              hint: t("invoicesHint", { name: tenant.name }),
+            },
+            {
+              key: "documents",
+              list: phase === "cancelled" ? [] : docs.filter((d) => d.kind !== "invoice"),
+              title: t("documents"),
+              hint: null,
+            },
+          ].map((group) =>
+            group.list.length > 0 ? (
+              <section
+                key={group.key}
+                id={group.key === "invoices" ? "doklady" : undefined}
+                className="grid gap-3"
+              >
+                <h2 className="font-heading text-xl font-bold">{group.title}</h2>
+                {group.hint ? <p className="text-[15px] text-[#5a6672]">{group.hint}</p> : null}
+                <ul className="border-line divide-line grid divide-y border-y">
+                  {group.list.map((d) => (
+                    <li key={d.id}>
+                      {d.url ? (
+                        <a
+                          href={d.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-ink inline-flex min-h-11 items-center gap-2 py-2 hover:underline"
+                        >
+                          <FileText className="text-primary size-4" /> {tr(d.title, locale)}
+                        </a>
+                      ) : (
+                        <span className="inline-flex min-h-11 items-center gap-2 py-2">
+                          {tr(d.title, locale)}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null,
+          )}
 
           {/* Change or cancellation: a short block and the window (only before the stay). */}
           {canRequestCancel ? (

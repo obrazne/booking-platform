@@ -6,6 +6,7 @@ import { CircleCheck, FileText, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { requireTenant } from "@/core/admin/action";
 import { DocumentsManager } from "@/core/admin/documents";
+import { InvoiceBasisSection } from "@/core/invoice/section";
 import {
   PanelCollapsible,
   PanelSection,
@@ -47,7 +48,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
   const [{ data: documents }, { data: propertyDocs }, { data: storno }] = await Promise.all([
     supabase
       .from("documents")
-      .select("id, title, visible_when")
+      .select("id, title, visible_when, kind")
       .eq("reservation_id", detail.id)
       .order("created_at"),
     supabase
@@ -305,6 +306,17 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
           ) : null}
         </PanelSection>
 
+        {/* What the client copies into their invoicing tool; the issued document is uploaded below (Z51). */}
+        {detail.status === "cancelled" &&
+        !detail.payments.some((p) => p.status === "received") ? null : (
+          <InvoiceBasisSection
+            tenantId={active.tenantId}
+            reservationId={detail.id}
+            locale={locale}
+            invoiceUploaded={(documents ?? []).some((d) => d.kind === "invoice")}
+          />
+        )}
+
         {/* Modules for one reservation, e.g. the stay account of upsell (Z35). */}
         <ModuleSlot
           name="booking.detail.tabs"
@@ -329,6 +341,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
               id: d.id,
               title: tr(d.title, locale),
               visibleWhen: d.visible_when,
+              kind: d.kind,
             }))}
           />
           {/* Property documents this guest gets as well (edited at the property). */}

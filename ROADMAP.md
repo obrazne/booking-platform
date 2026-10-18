@@ -11,7 +11,7 @@
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
-- **Ďalší krok pre Claude Code:** dve linky — **A:** **Z51** (podklad na doklad) — *zabratá linkou A* → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
+- **Ďalší krok pre Claude Code:** dve linky — **A:** ~~Z51 (podklad na doklad)~~ ✅ → **Z53** (pred ukážkou Jane: prehliadka, celkový test, kontrola STRÖMY); **B:** **Z52** (stav záloh, export klienta, obnova jedného klienta).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -47,7 +47,7 @@ Pravidlá spolupráce (platia pre obe):
 zóna hosťa, sekcie, captcha, ukážkové dáta, prehliadka „Čo je nové“, administrácia v1–v1.2 so štatistikami a upozorneniami,
 riadiace centrum v1.2) — detail v Denníku a histórii Gitu.*
 
-### Z51 [A] 🔄 — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
+### Z51 ✅ [A] — Podklad na doklad a doklady pre hosťa (3d, A5 — rozhodnutie 18. 10.)
 Doklady vystavuje klient ručne vo svojom nástroji; náš systém mu pripraví podklad. Prepojenie s fakturačným nástrojom je neskorší platený modul — **nerob ho**.
 1. **Panel rezervácie → sekcia „Podklad na doklad“:** odberateľ (meno, kontakt, adresa, ak ju máme), položky zo zmrazených riadkov
    rezervácie (noci, poplatky, služby, zľavy, daň za ubytovanie), sumy s DPH podľa nastavenia klienta, platby (dátum, spôsob, VS), dátum
@@ -422,6 +422,11 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Podklad na doklad (Z51) — faktúra na firmu a adresa:** podklad má odberateľa len s menom, e-mailom, telefónom a krajinou — **adresu,
+  firmu, IČO, DIČ od hosťa nezbierame** (adresa je len v online check-ine, a to citlivo). Pri „faktúre na firmu“ ich klient musí dopísať
+  ručne. Chceš v košíku voliteľné „Chcem faktúru na firmu“ (názov, IČO, DIČ/IČ DPH, adresa)? Mení to, čo vidí hosť, preto som ho nepridal.
+  Ďalej: export za mesiac berie pobyty **podľa dátumu odchodu** (potvrdené, prebiehajúce, ukončené) — vyhovuje to účtovníkovi, alebo
+  podľa dátumu platby? Text „Podklad — nie je daňový doklad. Doklad vystavte vo svojom fakturačnom nástroji.“ skontroluj.
 - **Správy (Z45) — tlačidlo „Odpovedať“ v e-maile hosťovi:** vedie na prístupový odkaz pobytu (`/r/<kód>#spravy`), ktorý hosťa pustí
   k pobytu bez hesla a **neexspiruje** (návrh B11 hovorí o prihlásení platnom 7 dní). Stačí to tak, alebo chceš jednorazové prihlásenie
   do účtu s platnosťou 7 dní (bezpečnejšie pri preposlanom e-maile, ale hosť bez účtu by si ho musel založiť)?
@@ -476,6 +481,19 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z51 [linka A]: **podklad na doklad a doklady pre hosťa** (3d, A5 — prepojenie s fakturačným nástrojom nerobené). (Claude Code)
+  - `src/core/invoice/basis.ts`: podklad len zo zmrazených riadkov rezervácie a prijatých platieb — súčet položiek = cena rezervácie,
+    vratná záloha zvlášť; pri platiteľovi DPH základ a DPH po sadzbách (ceny sú s DPH), inak „Bez DPH“. Text na kopírovanie (položky
+    „množstvo × cena = suma“, platby s dátumom, spôsobom a VS, zaplatené / zostáva). Vitest `basis.test.ts`.
+  - **Panel rezervácie → „Podklad na doklad“** (pod položkami): súhrn, **Kopírovať**, **Stiahnuť PDF** (`/admin/reservations/podklad/<id>`,
+    nápis „Podklad — nie je daňový doklad“; `renderFormPdf` vie ďalšie strany a dlhé popisy), náhľad textu, štítok **doklad nahratý / chýba**.
+    To isté pre **účet pobytu** (upsell, potvrdené objednávky a ich platby, `?zdroj=ucet`).
+  - **Nahratie dokladu:** pri dokumente rezervácie voľba Druh → „Doklad (faktúra)“ (migrácia `20261018120000_invoice_documents.sql`:
+    `documents.kind` document / invoice, doklad len pri rezervácii); hosť ho vidí hneď v pobyte v sekcii **Doklady** (účet aj prístupový
+    odkaz, aj pri zrušenom pobyte). Migrácia cez `db query` — verziu 20261018100000 medzitým použila linka B (zálohy).
+  - **Podklady za mesiac** v zozname rezervácií (`/admin/reservations/podklady?mesiac=RRRR-MM`, predvolený minulý mesiac): CSV pre účtovníka
+    podľa dátumu odchodu — položky, suma, DPH po sadzbách, zaplatené, zostáva, platby, stav dokladu. Firma / IČO / adresa → Otázky.
+  - Playwright `invoice-basis.spec.ts` (kopírovať, PDF, nahratie dokladu → hosť ho vidí, CSV, axe); `upsell.spec` overuje PDF účtu pobytu.
 - 2026-10-18 — Z50 [linka B]: **prvá ostrá záloha stagingu prešla** — Martin pridal tri tajné hodnoty (cez `gh secret set`;
   AVG najprv blokoval PowerShell, Martin ho odblokoval). Beh: 92 tabuliek obnovených a porovnaných, 38 súborov v 2 bucketoch,
   zašifrovaný artefakt `staging-2026-10-18.tar.gz.age` **8,0 MB** (14 dní). Ďalej beží každú noc o 1:00 UTC.

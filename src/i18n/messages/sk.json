@@ -1558,7 +1558,9 @@
         "deleteSend": "Odoslať žiadosť",
         "deleteSent": "Žiadosť o zrušenie účtu sme odoslali {date}. Ozveme sa vám e-mailom.",
         "deleteError": "Žiadosť sa nepodarilo odoslať. Skúste to znova."
-      }
+      },
+      "invoices": "Doklady",
+      "invoicesHint": "Doklady (faktúry), ktoré vám vystavil {name}."
     },
     "stay": {
       "hero": {
@@ -2142,7 +2144,14 @@
     "forAllGuests": "Pre všetkých hostí objektu ({count})",
     "editAtProperty": "upraviť pri objekte",
     "addDocument": "Nahrať dokument",
-    "propertyHint": "Tieto dokumenty dostanú všetci hostia objektu. Dokument pre jedného hosťa nahrajte v jeho rezervácii."
+    "propertyHint": "Tieto dokumenty dostanú všetci hostia objektu. Dokument pre jedného hosťa nahrajte v jeho rezervácii.",
+    "kind": "Druh",
+    "kinds": {
+      "document": "Dokument pre hosťa",
+      "invoice": "Doklad (faktúra)"
+    },
+    "invoiceHint": "Doklad hosť uvidí vo svojom pobyte v sekcii Doklady hneď po nahratí.",
+    "invoiceBadge": "doklad"
   },
   "sectionsAdmin": {
     "title": "Sekcie stránky objektu",
@@ -3082,5 +3091,67 @@
       "unrelated": "Nesúvisí s pobytom",
       "spam": "Spam alebo reklama"
     }
+  },
+  "invoice": {
+    "title": "Podklad na doklad",
+    "stayAccountTitle": "Podklad na doklad — účet pobytu",
+    "notTaxDocument": "Podklad — nie je daňový doklad. Doklad vystavte vo svojom fakturačnom nástroji.",
+    "buyer": "Odberateľ",
+    "stay": "Pobyt",
+    "items": "Položky",
+    "total": "Spolu",
+    "vatSummary": "DPH",
+    "vatRow": "Sadzba {rate}: základ {base}, DPH {vat}",
+    "noVat": "Bez DPH (nie ste platiteľ DPH — podľa Nastavení).",
+    "payments": "Platby",
+    "paid": "Zaplatené",
+    "open": "Zostáva zaplatiť",
+    "noPayments": "Zatiaľ žiadna prijatá platba.",
+    "deposit": "Vratná záloha (nie je súčasťou dokladu)",
+    "vs": "VS",
+    "providers": {
+      "bank_transfer": "prevodom",
+      "card": "kartou",
+      "on_site": "na mieste"
+    },
+    "lead": "Položky a platby na vloženie do vášho fakturačného nástroja. Doklad vystavíte tam a nahráte ho sem — hosť ho uvidí vo svojom pobyte.",
+    "copy": "Kopírovať",
+    "copied": "Podklad skopírovaný.",
+    "copyFailed": "Kopírovanie sa nepodarilo — označte text ručne.",
+    "download": "Stiahnuť PDF",
+    "invoiceUploaded": "doklad nahratý",
+    "invoiceMissing": "doklad chýba",
+    "preview": "Zobraziť text podkladu",
+    "pdfStay": "Pobyt {from} – {to}",
+    "pdfIssued": "Pripravené {date}",
+    "monthExport": "Podklady za mesiac",
+    "monthLabel": "Mesiac (podľa dátumu odchodu)",
+    "monthDownload": "Stiahnuť CSV",
+    "csv": {
+      "number": "Rezervácia",
+      "guest": "Hosť",
+      "email": "E-mail",
+      "property": "Objekt",
+      "checkIn": "Príchod",
+      "checkOut": "Odchod",
+      "items": "Položky",
+      "total": "Spolu",
+      "currency": "Mena",
+      "vat": "DPH podľa sadzieb",
+      "paid": "Zaplatené",
+      "payments": "Platby",
+      "open": "Zostáva",
+      "invoice": "Doklad",
+      "status": "Stav"
+    },
+    "vatShort": "základ {base} · DPH {vat}",
+    "name": "Meno",
+    "email": "E-mail",
+    "phone": "Telefón",
+    "country": "Krajina",
+    "property": "Objekt",
+    "unit": "Ubytovanie",
+    "dates": "Termín",
+    "supplier": "Pripravil {name}"
   }
 }

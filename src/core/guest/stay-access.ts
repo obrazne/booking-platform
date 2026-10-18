@@ -49,14 +49,22 @@ async function documentsOf(stay: Stay, tenantId: string) {
   const confirmed = ["confirmed", "in_progress", "completed"].includes(stay.status);
   const { data } = await admin
     .from("documents")
-    .select("id, title, storage_path, visible_when")
+    .select("id, title, storage_path, visible_when, kind")
     .eq("tenant_id", tenantId)
     .or(`reservation_id.eq.${stay.id},property_id.eq.${stay.property_id}`);
-  const list = (data ?? []).filter((d) => d.visible_when === "always" || confirmed);
+  // Issued documents (invoices, Z51) are the guest's in any state; files for guests by their visibility.
+  const list = (data ?? []).filter(
+    (d) => d.kind === "invoice" || d.visible_when === "always" || confirmed,
+  );
   if (!list.length) return [];
   const { data: signed } = await admin.storage.from("guest-documents").createSignedUrls(
     list.map((d) => d.storage_path),
     600,
   );
-  return list.map((d, i) => ({ id: d.id, title: d.title, url: signed?.[i]?.signedUrl ?? null }));
+  return list.map((d, i) => ({
+    id: d.id,
+    title: d.title,
+    kind: d.kind,
+    url: signed?.[i]?.signedUrl ?? null,
+  }));
 }
