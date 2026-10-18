@@ -84,7 +84,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    ostáva rovnaké (výpočet ceny vrátane prechodu cez Nový rok má test v `calculate.test.ts` — nesmie sa zmeniť).
 4. Katalóg modulov: veta pod klientmi, ktorá opakuje dátumy konca skúšky, preč.
 
-### Z57 [B] — Riadiace centrum: klienti v menu a zoznam klientov (pripomienky 31, 32)
+### Z57 [B] 🔄 — Riadiace centrum: klienti v menu a zoznam klientov (pripomienky 31, 32)
 1. **Menu:** pod „Klienti“ ostávajú **naposledy otvorení klienti (max. 3)**, zapamätaní (cookie/DB pre správcu, nie len v pamäti stránky);
    aktívny klient rozbalený s podstránkami (Prehľad, Moduly, Vzhľad, Domény, Ľudia, Záznam zmien), ostatní zbalení. Po kliknutí na
    „Všetci klienti“ nezmiznú.
