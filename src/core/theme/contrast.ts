@@ -60,3 +60,19 @@ export function surfaceForWhiteText(hex: string): string {
   }
   return toHex();
 }
+
+/**
+ * Focus ring of a client's theme (Z54, rule 1): the accent itself when it has 3 : 1 against white fields and cards,
+ * otherwise darkened step by step until it does — a light accent (yellow, mint) would leave the focus invisible.
+ */
+export function focusRingFor(hex: string): string {
+  let { r, g, b } = parseHex(hex);
+  const toHex = () =>
+    `#${[r, g, b].map((c) => Math.round(c).toString(16).padStart(2, "0")).join("")}`;
+  for (let i = 0; i < 40 && contrastRatio(toHex(), "#fafaf8") < 3; i++) {
+    r *= 0.92;
+    g *= 0.92;
+    b *= 0.92;
+  }
+  return toHex();
+}

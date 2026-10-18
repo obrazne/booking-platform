@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** Z54 (plochy, polia, hover) — *zabratá linkou A* → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
+  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → Z55 (lišta ukladania, toasty) → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
   **B:** Z57 (riadiace centrum: klienti v menu a zoznam) → Z58 (pobyty z portálov, príchody) → Z59 (účet hosťa: navigácia) → Z60 (podpis a vzhľad e-mailov).
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -55,7 +55,7 @@ na rozhodnutie → Otázky, nerob ju. **Rozdelenie, aby sa linky nebili:** linka
 ukladanie) a na konci prejde všetky obrazovky; linka **B** robí navigáciu a nové funkcie a **nemení vzhľad plôch, polí ani hover** —
 použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 to zjednotí).
 
-### Z54 [A] 🔄 — Plochy, polia a reakcia na myš naprieč aplikáciou (pripomienky 41, 42, 43; pravidlá 1–2)
+### Z54 ✅ [A] — Plochy, polia a reakcia na myš naprieč aplikáciou (pripomienky 41, 42, 43; pravidlá 1–2)
 1. Tokeny v `globals.css`: pozadie stránky, karta (odtieň alebo okraj — jeden spôsob), deliaca čiara, okraj poľa s kontrastom ≥ 3 : 1
    voči karte aj stránke; žiadne farby natvrdo v komponentoch. Funguje aj pri témach klientov (svetlé aj tmavé akcenty, `src/core/theme`).
 2. Spoločné komponenty (`src/components/ui/*`, `src/core/admin/*`): input, select, textarea, dátum/čas, checkbox, prepínač — biele
@@ -572,6 +572,24 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z54 [linka A]: **plochy, polia a reakcia na myš naprieč aplikáciou** (pripomienky 41–43, pravidlá 1–2). (Claude Code)
+  - **Tokeny** v `globals.css` (`:root`): `--page`, `--card-surface` + `--card-border` (karta = jemný odtieň **a** vlasová čiara — jeden
+    spôsob všade), `--divider`, `--field` (biela), `--field-border` `#86898e` (≥ 3 : 1 voči stránke, karte aj pásu stránky hosťa),
+    `--field-border-hover`, `--hover-row`, `--hover-card-border`. Test `src/core/theme/tokens.test.ts` (vitest) stráži kontrasty.
+  - **Polia všade biele s okrajom 3 : 1** — jedno pravidlo bez vrstvy v `globals.css` (vyhrá nad triedami jednotlivých obrazoviek):
+    input, select, textarea, select Radix, zaškrtávacie políčko, vypnutý prepínač; hover tmavší okraj. Pole vo vlastnom rámčeku
+    (vyhľadávanie s ikonou, písanie odpovede) = trieda `field-box`, vnútorné pole `data-field="bare"`.
+  - **Fokus pri témach klientov:** `--ring` = akcent, ak má voči bielej/karte 3 : 1, inak stmavený (`focusRingFor`).
+  - **Hover:** riadky zoznamov (odkazy panelu, `data-row-link`, riadky tabuliek) jemný podklad, klikateľné karty (`data-card-link`)
+    tmavší okraj, hlavné tlačidlo o odtieň tmavšie (predtým svetlejšie); 150 ms, nič sa nehýbe.
+  - **Kalendár administrácie:** náhľad pobytu pri prejdení myšou aj fokuse klávesnicou (hosť / portál, termín a noci, stav, suma);
+    na dotyk prvé ťuknutie ukáže náhľad, druhé otvorí detail. **Kalendár hosťa** už cenu noci ukazuje priamo pri dni aj v bubline — bez zmeny.
+  - **Karta v karte** preč: Online check-in v Objekt → Údaje a Doobjednanie pri službe sú oddelené čiarou. V detaile klienta chýbal
+    preklad názvu modulu Správy („modules.messages.title“) — doplnený.
+  - Snímky pred/po (PC 1440, mobil 390) `docs/snimky/z54/{pred,po}` cez `scripts/ui-screens.mjs` (dočasný testovací hosť, zmazaný).
+  - Playwright `ui-rules.spec.ts` (PC + mobil): polia biele s okrajom 3 : 1 v administrácii aj u hosťa, náhľad v kalendári myšou a ťuknutím.
+  - Celý e2e beh (PC + mobil, axe): 75 ok, 13 preskočených podľa projektu, 1 zlyhanie — `stay-states` na mobile (404 pri záťaži,
+    rovnako ako pri Z53), samostatne prešiel. Vitest 115/115.
 - 2026-10-18 — Z58 [linka B]: **pobyty z portálov a Príchody zo všetkých kanálov** (pripomienka 33). (Claude Code)
   - **Rezervácie › Z portálov** (`/admin/portal-stays`, v menu len s prepojeným kalendárom): pobyty z iCal (Booking, Airbnb, iné)
     oddelene od vlastných rezervácií — portál a kalendár, príchod – odchod, noci, ubytovanie, **kód / odkaz rezervácie a posledné

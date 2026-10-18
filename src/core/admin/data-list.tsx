@@ -201,7 +201,7 @@ export function ListSearch({
   return (
     <label
       className={cn(
-        "bg-muted text-muted-foreground flex min-h-10 items-center gap-2.5 rounded-full px-3.5 text-sm",
+        "field-box text-muted-foreground flex min-h-10 items-center gap-2.5 rounded-full px-3.5 text-sm",
         pending && "opacity-70",
         className,
       )}
@@ -213,6 +213,7 @@ export function ListSearch({
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
+        data-field="bare"
         className="text-ink min-w-0 flex-1 bg-transparent outline-none"
       />
     </label>

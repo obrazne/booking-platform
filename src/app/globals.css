@@ -60,6 +60,18 @@
 }
 
 :root {
+  /* Surfaces and fields (Z54, docs/pravidla-rozhrania.md 1–2): page → card → content, never a card in a card.
+     A card stands out by a soft shade AND a hairline; fields are white with an edge of at least 3 : 1 to anything
+     around them (WCAG 1.4.11) — checked by src/core/theme/tokens.test.ts. */
+  --page: #ffffff;
+  --card-surface: #fafaf8;
+  --card-border: #e2dfd7;
+  --divider: #ecebe6;
+  --field: #ffffff;
+  --field-border: #86898e;
+  --field-border-hover: #5f646b;
+  --hover-row: #f3f2ee;
+  --hover-card-border: #c8c4ba;
   --line: #e9e5db;
   --ink-soft: #84888e; /* second sentence of headings; 3:1 for large text (WCAG AA) */
   --tooltip: #11212f;
@@ -219,8 +231,8 @@
    Applied while a [data-admin-ui] element is on the page, so overlays rendered outside the tree (panels, menus) match. */
 :root:has([data-admin-ui]):not(.dark) {
   /* Surfaces v1.1 (rule 6): cards, sections and summaries on a very soft grey with a hairline — never white on white. */
-  --surface-card: #fafaf8;
-  --line-hair: #ecebe6;
+  --surface-card: var(--card-surface);
+  --line-hair: var(--divider);
   --card: var(--surface-card);
   --sidebar: #f7f6f2;
   --sidebar-border: var(--line);
@@ -235,7 +247,7 @@
 }
 /* Every card of the administration uses the surface token (also screens that were not on the canvas). */
 :root:has([data-admin-ui]) [data-slot="card"] {
-  border: 1px solid var(--line-hair, var(--border));
+  border: 1px solid var(--card-border);
   border-radius: 10px;
   --tw-ring-shadow: 0 0 #0000;
   box-shadow: none;
@@ -323,8 +335,8 @@
   }
   /* Card / section / summary surface (rule 6). */
   .surface {
-    background: var(--surface-card, #fafaf8);
-    border: 1px solid var(--line-hair, #ecebe6);
+    background: var(--surface-card, var(--card-surface));
+    border: 1px solid var(--card-border);
     border-radius: 10px;
   }
   .border-hair {
@@ -341,4 +353,83 @@
   .hatch-block {
     background: repeating-linear-gradient(45deg, #d6d3cb 0 3px, #f2f0eb 3px 6px);
   }
+}
+
+/* Fields everywhere (Z54, rule 1): white with a visible edge, whatever surface is around — unlayered, so it wins over
+   the utility classes of single screens. A field that sits inside its own bordered box opts out with data-field="bare". */
+:root:not(.dark)
+  :where(
+    input:not(
+      [type="checkbox"],
+      [type="radio"],
+      [type="range"],
+      [type="file"],
+      [type="hidden"],
+      [type="color"],
+      [type="submit"],
+      [type="button"],
+      [type="image"]
+    ),
+    select,
+    textarea,
+    [data-slot="select-trigger"]
+  ):not([data-field="bare"], :disabled) {
+  background-color: var(--field);
+  border-color: var(--field-border);
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+}
+:root:not(.dark)
+  :where(input, select, textarea, [data-slot="select-trigger"]):not(
+    [data-field="bare"],
+    :disabled,
+    :focus,
+    [aria-invalid="true"]
+  ):hover {
+  border-color: var(--field-border-hover);
+}
+/* Checkboxes and switches when off: the same edge (3 : 1); native ones take the accent. */
+:root:not(.dark) [data-slot="checkbox"]:not([data-state="checked"]) {
+  background-color: var(--field);
+  border-color: var(--field-border);
+}
+:root:not(.dark) [data-slot="switch"][data-state="unchecked"] {
+  background-color: var(--field-border);
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--primary);
+}
+/* Rows that open something (rule 2): a soft background over the whole row, no movement. */
+:root:not(.dark)
+  :is(a[data-panel-switch]:not([aria-current]), [data-row-link], [data-slot="table-row"]) {
+  transition: background-color 150ms;
+}
+:root:not(.dark)
+  :is(a[data-panel-switch]:not([aria-current]), [data-row-link], [data-slot="table-row"]):hover {
+  background-color: var(--hover-row);
+}
+/* Clickable cards: a darker edge. */
+:root:not(.dark) [data-card-link] {
+  transition: border-color 150ms;
+}
+:root:not(.dark) [data-card-link]:hover,
+:root:not(.dark) [data-card-link]:focus-visible {
+  border-color: var(--hover-card-border);
+}
+/* A box that is the field (search pill with an icon, composer with its button): the inner input is data-field="bare". */
+.field-box {
+  background-color: var(--field);
+  border: 1px solid var(--field-border);
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+}
+.field-box:hover {
+  border-color: var(--field-border-hover);
+}
+.field-box:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 35%, transparent);
 }

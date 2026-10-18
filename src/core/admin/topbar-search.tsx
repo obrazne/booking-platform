@@ -12,13 +12,14 @@ export function TopbarSearch({ label }: { label: string }) {
   if (pathname === "/admin/reservations") return <span className="flex-[0_1_380px]" aria-hidden />;
   return (
     <form action="/admin/reservations" className="flex-[0_1_380px]">
-      <label className="bg-muted text-muted-foreground flex min-h-[42px] items-center gap-2.5 rounded-full px-3.5 text-sm">
+      <label className="field-box text-muted-foreground flex min-h-[42px] items-center gap-2.5 rounded-full px-3.5 text-sm">
         <Search className="size-4" />
         <input
           type="search"
           name="q"
           placeholder={label}
           aria-label={label}
+          data-field="bare"
           className="text-ink min-w-0 flex-1 bg-transparent outline-none"
         />
       </label>

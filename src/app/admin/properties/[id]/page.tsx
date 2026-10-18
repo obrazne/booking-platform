@@ -307,8 +307,10 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
               </div>
               {checkin ? (
                 // Module checkin (Z36): when check-in opens, reminders, instructions only after check-in.
-                <fieldset className="border-line grid gap-3 rounded-[10px] border p-4">
-                  <legend className="label-mono px-1">{tc("propertyTitle")}</legend>
+                <fieldset className="border-hair grid gap-3 border-t pt-4">
+                  <legend className="label-mono float-left mb-3 w-full">
+                    {tc("propertyTitle")}
+                  </legend>
                   <input type="hidden" name="checkin" value="1" />
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Field label={tc("opens")} htmlFor="checkin_opens_days_before">

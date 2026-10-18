@@ -734,7 +734,8 @@
           "generic": "Správu sa nepodarilo odoslať. Skúste to znova."
         },
         "newMark": "{day} · nová správa"
-      }
+      },
+      "title": "Správy s hosťom"
     },
     "checkin": {
       "nav": "Príchody",
@@ -2583,7 +2584,10 @@
       "portalSub": "Termín prevzatý zo synchronizácie kalendára",
       "newStaySub": "Cena podľa cenníka, kontrola minima nocí a kolízií",
       "closedOnBooking": "Zavreté na Bookingu",
-      "closedSub": "Booking v kalendári nerozlišuje rezerváciu od ručne zavretého termínu a neposiela termíny prevzaté z iných kalendárov — podrobnosti sú v extranete Bookingu."
+      "closedSub": "Booking v kalendári nerozlišuje rezerváciu od ručne zavretého termínu a neposiela termíny prevzaté z iných kalendárov — podrobnosti sú v extranete Bookingu.",
+      "peekNights": "{count, plural, one {# noc} few {# noci} other {# nocí}}",
+      "peekTap": "Ťuknite znova pre detail.",
+      "peekCollision": "Kolízia — pozrite, s čím sa prekrýva."
     },
     "platform": {
       "numbers": "Čísla naprieč klientmi",

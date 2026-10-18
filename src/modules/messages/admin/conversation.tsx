@@ -195,7 +195,7 @@ export function ConversationPane(props: Props) {
             </Link>
           </div>
         ) : null}
-        <div className="border-line focus-within:border-ink flex items-end gap-2 rounded-xl border bg-white p-2">
+        <div className="field-box flex items-end gap-2 rounded-xl p-2">
           <textarea
             ref={area}
             rows={2}
@@ -204,6 +204,7 @@ export function ConversationPane(props: Props) {
             onChange={(e) => setDraft(e.target.value)}
             aria-label={t("replyLabel")}
             placeholder={t("replyPlaceholder")}
+            data-field="bare"
             className="min-h-[52px] flex-1 resize-y border-0 bg-transparent px-2 py-1.5 text-[15px] outline-none"
           />
           <button

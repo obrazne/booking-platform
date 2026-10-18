@@ -117,8 +117,8 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
         </Label>
         {upsell ? (
           // Module upsell (Z35): ordering the service after the reservation.
-          <fieldset className="border-line grid gap-3 rounded-[10px] border p-4">
-            <legend className="label-mono px-1">{tu("title")}</legend>
+          <fieldset className="border-hair grid gap-3 border-t pt-4">
+            <legend className="label-mono float-left mb-3 w-full">{tu("title")}</legend>
             <input type="hidden" name="upsell" value="1" />
             <p className="text-muted-foreground text-[13px]">{tu("hint")}</p>
             <Label className="font-normal">

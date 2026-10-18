@@ -84,6 +84,9 @@ export function CalendarView({
   const tr = useTranslations("reservations");
   const [selection, setSelection] = useState<Selection | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
+  // Preview of a stay under the mouse or keyboard focus (Z54, rule 2); on touch the first tap shows it, the second opens.
+  const [peek, setPeek] = useState<{ id: string; week: string; touch?: boolean } | null>(null);
+  const pointer = useRef<string>("mouse");
   const router = useRouter();
   const [quote, setQuote] = useState<StayQuote | null>(null);
   const [quoting, startQuote] = useTransition();
@@ -298,9 +301,32 @@ export function CalendarView({
                             key={e.id}
                             type="button"
                             data-panel-switch=""
-                            title={label}
                             aria-label={`${label}, ${longDate(e.checkIn)} – ${longDate(e.checkOut)}`}
+                            aria-describedby={
+                              peek?.id === e.id && peek.week === mon
+                                ? `peek-${e.id}-${mon}`
+                                : undefined
+                            }
+                            onPointerDown={(ev) => (pointer.current = ev.pointerType)}
+                            onPointerEnter={(ev) => {
+                              if (ev.pointerType === "mouse") setPeek({ id: e.id, week: mon });
+                            }}
+                            onPointerLeave={(ev) => {
+                              if (ev.pointerType === "mouse") setPeek(null);
+                            }}
+                            onFocus={(ev) => {
+                              // Keyboard focus only — a tap focuses the bar too, and decides in onClick.
+                              if (ev.currentTarget.matches(":focus-visible"))
+                                setPeek({ id: e.id, week: mon });
+                            }}
+                            onBlur={() => setPeek(null)}
                             onClick={() => {
+                              // Touch: the first tap only shows the preview.
+                              if (pointer.current !== "mouse" && peek?.id !== e.id) {
+                                setPeek({ id: e.id, week: mon, touch: true });
+                                return;
+                              }
+                              setPeek(null);
                               // A collision has its own panel: what it overlaps and what to do (Z42).
                               if (e.conflict) {
                                 router.push(`/admin/collisions?panel=collision:${e.id}`);
@@ -331,6 +357,50 @@ export function CalendarView({
                           </button>
                         );
                       })}
+                      {bars
+                        .filter(({ e }) => peek?.id === e.id && peek.week === mon)
+                        .map(({ e, s1 }) => (
+                          <StayPeek
+                            key={`peek-${e.id}`}
+                            id={`peek-${e.id}-${mon}`}
+                            event={e}
+                            fromRight={s1 > 3.5}
+                            col={s1}
+                            title={
+                              e.reservation
+                                ? e.reservation.guestName
+                                : closedOnPortal(e)
+                                  ? t("closedOnBooking")
+                                  : e.kind === "portal"
+                                    ? (PORTAL_NAMES[e.portal ?? ""] ?? e.label ?? t("portal"))
+                                    : (e.label ?? t("blockKind"))
+                            }
+                            dates={`${longDate(e.checkIn)} – ${longDate(e.checkOut)} · ${t(
+                              "peekNights",
+                              {
+                                count: diffDays(e.checkIn, e.checkOut),
+                              },
+                            )}`}
+                            status={
+                              e.conflict
+                                ? t("peekCollision")
+                                : e.reservation
+                                  ? tr(`statuses.${e.reservation.status as "confirmed"}`)
+                                  : e.kind === "portal"
+                                    ? t("portal")
+                                    : t("blockKind")
+                            }
+                            amount={
+                              e.reservation
+                                ? formatMoney(
+                                    money(e.reservation.totalCents, e.reservation.currency),
+                                    locale,
+                                  )
+                                : null
+                            }
+                            tapHint={peek?.touch ? t("peekTap") : null}
+                          />
+                        ))}
                     </div>
                   );
                 })}
@@ -485,6 +555,51 @@ export function CalendarView({
           ) : null}
         </div>
       </SidePanel>
+    </div>
+  );
+}
+
+/** Preview of one stay over the calendar (Z54): who or which portal, dates and nights, state, amount. */
+function StayPeek({
+  id,
+  event,
+  col,
+  fromRight,
+  title,
+  dates,
+  status,
+  amount,
+  tapHint,
+}: {
+  id: string;
+  event: OccupancyEvent;
+  col: number;
+  fromRight: boolean;
+  title: string;
+  dates: string;
+  status: string;
+  amount: string | null;
+  tapHint: string | null;
+}) {
+  return (
+    <div
+      id={id}
+      role="tooltip"
+      data-peek={event.id}
+      style={
+        fromRight
+          ? { right: `calc(${((7 - Math.min(7, col + 3)) / 7) * 100}% + 2px)` }
+          : { left: `calc(${(col / 7) * 100}% + 2px)` }
+      }
+      className="border-line pointer-events-none absolute top-[56px] z-20 grid w-max max-w-[260px] gap-0.5 rounded-[10px] border bg-white px-3.5 py-2.5 text-xs shadow-[0_8px_24px_rgb(17_33_47/0.12)] md:top-[66px]"
+    >
+      <span className="text-ink text-[13px] font-bold [overflow-wrap:anywhere]">{title}</span>
+      <span className="text-[#5a6672]">{dates}</span>
+      <span className="text-ink">
+        {status}
+        {amount ? ` · ${amount}` : ""}
+      </span>
+      {tapHint ? <span className="text-[#5a6672]">{tapHint}</span> : null}
     </div>
   );
 }

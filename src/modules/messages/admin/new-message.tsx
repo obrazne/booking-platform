@@ -69,7 +69,7 @@ export function NewMessageButton({ targets }: { targets: NewMessageTarget[] }) {
           </DialogTitle>
           <DialogDescription className="text-sm text-[#5a6672]">{t("newLead")}</DialogDescription>
         </div>
-        <label className="bg-muted text-muted-foreground flex min-h-11 items-center gap-2.5 rounded-full px-3.5 text-sm">
+        <label className="field-box text-muted-foreground flex min-h-11 items-center gap-2.5 rounded-full px-3.5 text-sm">
           <Search className="size-4 shrink-0" />
           <input
             type="search"
@@ -78,6 +78,7 @@ export function NewMessageButton({ targets }: { targets: NewMessageTarget[] }) {
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("newSearch")}
             aria-label={t("newSearch")}
+            data-field="bare"
             className="text-ink min-w-0 flex-1 bg-transparent outline-none"
           />
         </label>

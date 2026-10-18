@@ -1,4 +1,10 @@
-import { contrastRatio, isHexColor, readableTextOn, surfaceForWhiteText } from "./contrast";
+import {
+  contrastRatio,
+  focusRingFor,
+  isHexColor,
+  readableTextOn,
+  surfaceForWhiteText,
+} from "./contrast";
 
 /** Fonts a client can choose from (A12: limited set so the look cannot be broken). */
 export const FONT_KEYS = ["geist", "inter", "manrope", "lora", "playfair", "roboto"] as const;
@@ -60,7 +66,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
   return {
     "--primary": theme.primaryColor,
     "--primary-foreground": readableTextOn(theme.primaryColor),
-    "--ring": theme.primaryColor,
+    // The focus ring stays visible on white fields even with a light accent (Z54).
+    "--ring": focusRingFor(theme.primaryColor),
     "--sidebar-primary": theme.primaryColor,
     "--sidebar-primary-foreground": readableTextOn(theme.primaryColor),
     "--brand-secondary": theme.secondaryColor,
