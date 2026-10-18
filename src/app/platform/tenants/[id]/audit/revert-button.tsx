@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Undo2 } from "lucide-react";
 import {
   AlertDialog,
@@ -27,7 +28,12 @@ export function RevertButton({ id, summary }: { id: number; summary: string }) {
   const tf = useTranslations("history.fields");
   const [result, setResult] = useState<RevertResult | null>(null);
   const [pending, start] = useTransition();
-  const run = (force: boolean) => start(async () => setResult(await revertChange(id, force)));
+  const run = (force: boolean) =>
+    start(async () => {
+      const r = await revertChange(id, force);
+      setResult(r);
+      if (r.status === "ok") toast.success(t("done"));
+    });
   const field = (key: string) => (tf.has(key as never) ? tf(key as never) : key.replace(/_/g, " "));
 
   if (result?.status === "ok") {

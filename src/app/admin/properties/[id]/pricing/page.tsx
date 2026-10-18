@@ -61,7 +61,7 @@ export default async function PricingPage({ params }: PageProps<"/admin/properti
   if (!seasons.some((s) => s.is_default)) warnings.push(t("noDefault"));
 
   const seasonForm = (season?: (typeof seasons)[number]) => (
-    <ActionForm action={saveSeason}>
+    <ActionForm action={saveSeason} bar={Boolean(season)}>
       <input type="hidden" name="id" value={season?.id ?? ""} />
       <input type="hidden" name="property_id" value={property.id} />
       <div className="grid gap-4 sm:grid-cols-[2fr_1fr_1fr_1fr]">

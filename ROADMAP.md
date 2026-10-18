@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → Z55 (lišta ukladania, toasty) — *zabratá linkou A* → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
+  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → ~~Z55 (lišta ukladania, toasty)~~ ✅ → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
   **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -67,7 +67,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    účet hosťa → detail pobytu (konverzácia, formuláre), Moje údaje. Snímky pred/po do `docs/snimky/z54/` (bez osobných údajov).
 6. Test kontrastu tokenov (vitest), axe bez nových chýb, e2e dotknutých obrazoviek.
 
-### Z55 [A] 🔄 — Ukladanie: lišta neuložených zmien a toasty všade (pripomienky 36, 44; pravidlo 3) — po Z54
+### Z55 [A] ✅ — Ukladanie: lišta neuložených zmien a toasty všade (pripomienky 36, 44; pravidlo 3) — po Z54
 1. Spoločný formulárový obal: sleduje zmeny polí, **Uložiť tiché, kým nie je zmena**, potom pripnutá lišta dole „Máte neuložené zmeny ·
    Zahodiť · Uložiť“; zmenené pole označené; potvrdenie pri odchode zo stránky (aj interná navigácia).
 2. Spoločný pomocník pre serverové akcie → toast vpravo dole pri úspechu aj chybe (`sonner`), text z prekladov.
@@ -572,6 +572,18 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-18 — Z55 [linka A]: **ukladanie — lišta neuložených zmien a toasty** (pripomienky 36, 44, pravidlo 3). (Claude Code)
+  - `src/core/forms/unsaved.tsx`: `useUnsavedForm` sleduje polia formulára voči stavu po načítaní/uložení, zmenené pole dostane
+    `data-changed` (oranžový okraj); `UnsavedBar` (v koreňovom layoute) = jedna pripnutá lišta „Máte neuložené zmeny · Zahodiť · Uložiť“
+    pre všetky zmenené formuláre stránky. Odchod: `beforeunload` + otázka pri kliknutí na internú linku.
+  - `ActionForm` (administrácia aj riadiace centrum): `bar` zapnutý pre úpravy — vlastné Uložiť sa skryje (zostane skryté submit pre
+    Enter), po úspechu toast „Zmeny uložené.“, pri chybe toast s chybou. Vypnutý pre vytváranie (nový objekt, nová rezervácia, pridanie
+    poplatku/zľavy/sezóny/jednotky/služby/referencie) a storno. Toasty aj pri obnove z koša, vrátení zmeny, push nastaveniach,
+    formulároch riadiaceho centra; účet hosťa: Moje údaje s lištou, súhlas s marketingom toastom.
+  - Správy (súbor linky B, len farby): bublina hosťa sivá `#eeefec` a naplánovaná správa s plochou karty a tmavším čiarkovaným
+    okrajom — predtým biele na bielom paneli.
+  - e2e `save-bar.spec.ts` (zmena → lišta → uložiť → toast; zahodiť; odchod; chyba servera). Celý beh: 4 pády pod záťažou
+    (history, admin-v1 mobil, messages-guest mobil, stay-states mobil), samostatne všetky prešli.
 - 2026-10-18 — Z60 [linka B]: **podpis v správach a vzhľad e-mailov hosťovi** (pripomienka 34). (Claude Code)
   - **Nastavenia → Kontakt** (nová karta, `#kontakt`): kontaktná osoba, telefón, WhatsApp a **podpis správ** (viac riadkov, nový
     stĺpec `tenant_settings.message_signature`, migrácia `…160000`). `{podpis}` = podpis, inak meno kontaktu, inak názov klienta —

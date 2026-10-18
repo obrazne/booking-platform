@@ -58,7 +58,7 @@ export default async function ExtrasPage({ params }: PageProps<"/admin/propertie
   const feeForm = (fee?: (typeof fees)[number]) => {
     const k = fee?.id ?? "new-fee";
     return (
-      <ActionForm action={saveFee}>
+      <ActionForm action={saveFee} bar={Boolean(fee)}>
         <input type="hidden" name="id" value={fee?.id ?? ""} />
         <input type="hidden" name="property_id" value={property.id} />
         <div className="grid gap-4 sm:grid-cols-[2fr_1fr_1fr_1fr]">
@@ -127,7 +127,7 @@ export default async function ExtrasPage({ params }: PageProps<"/admin/propertie
       </Field>
     );
     return (
-      <ActionForm action={saveDiscount}>
+      <ActionForm action={saveDiscount} bar={Boolean(d)}>
         <input type="hidden" name="id" value={d?.id ?? ""} />
         <input type="hidden" name="property_id" value={property.id} />
         <div className="grid gap-4 sm:grid-cols-4">

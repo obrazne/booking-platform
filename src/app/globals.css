@@ -72,6 +72,8 @@
   --field-border-hover: #5f646b;
   --hover-row: #f3f2ee;
   --hover-card-border: #c8c4ba;
+  /* A changed field that is not saved yet (Z55): warm, not an error. */
+  --changed: #b5651d;
   --line: #e9e5db;
   --ink-soft: #84888e; /* second sentence of headings; 3:1 for large text (WCAG AA) */
   --tooltip: #11212f;
@@ -432,4 +434,15 @@ input[type="radio"] {
 .field-box:focus-within {
   border-color: var(--ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 35%, transparent);
+}
+/* Changed and not saved yet (Z55, rule 3): a warm edge and a thin stripe on the left. */
+:root:not(.dark) [data-changed] {
+  border-color: var(--changed);
+  box-shadow: inset 3px 0 0 var(--changed);
+}
+:root:not(.dark) input[type="checkbox"][data-changed],
+:root:not(.dark) input[type="radio"][data-changed] {
+  outline: 2px solid var(--changed);
+  outline-offset: 2px;
+  box-shadow: none;
 }

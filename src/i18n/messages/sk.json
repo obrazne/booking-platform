@@ -923,7 +923,7 @@
     }
   },
   "forms": {
-    "saved": "Uložené.",
+    "saved": "Zmeny uložené.",
     "deleted": "Zmazané.",
     "save": "Uložiť",
     "add": "Pridať",
@@ -941,6 +941,13 @@
       "invalid": "Skontrolujte vyplnené údaje.",
       "upload": "Fotku sa nepodarilo nahrať.",
       "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5."
+    },
+    "unsaved": {
+      "label": "Neuložené zmeny",
+      "text": "Máte neuložené zmeny",
+      "discard": "Zahodiť",
+      "save": "Uložiť",
+      "leave": "Máte neuložené zmeny. Naozaj odísť bez uloženia?"
     }
   },
   "priceModels": {
@@ -1576,7 +1583,10 @@
       "invoicesHint": "Doklady (faktúry), ktoré vám vystavil {name}.",
       "allStays": "Všetky pobyty",
       "nextStay": "Ďalší pobyt: {date}",
-      "menuOpen": "Môj účet — menu"
+      "menuOpen": "Môj účet — menu",
+      "saveFailed": "Údaje sa nepodarilo uložiť. Skúste to znova.",
+      "marketingOnToast": "Novinky vám budeme posielať.",
+      "marketingOffToast": "Novinky vám už posielať nebudeme."
     },
     "stay": {
       "hero": {
@@ -3102,7 +3112,9 @@
       "backup_stale": "Záloha neprebehla (36 h)"
     },
     "pageTitle": "Upozornenia",
-    "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia."
+    "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia.",
+    "savedToast": "Upozornenia uložené.",
+    "removedToast": "Zariadenie odobraté."
   },
   "reviews": {
     "title": "Recenzie",

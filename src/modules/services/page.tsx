@@ -45,7 +45,7 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
   const form = (s?: NonNullable<typeof services>[number]) => {
     const k = s?.id ?? "new";
     return (
-      <ActionForm action={saveService}>
+      <ActionForm action={saveService} bar={Boolean(s)}>
         <input type="hidden" name="id" value={s?.id ?? ""} />
         <div className="grid gap-4 sm:grid-cols-2">
           <LocalizedField

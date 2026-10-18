@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { BellRing, Send, Smartphone, Trash2 } from "lucide-react";
@@ -138,6 +139,7 @@ export function PushSettings({
         const result = await savePushDevice(scope, sub.toJSON(), deviceName(), [...defaultKinds]);
         if (!result.ok) throw new Error("save");
         setEndpoint(sub.endpoint);
+        toast.success(t("savedToast"));
       } catch {
         setMessage(t("failed"));
       }
@@ -147,6 +149,7 @@ export function PushSettings({
     start(async () => {
       setMessage(null);
       await removePushDevice(scope, id);
+      toast.success(t("removedToast"));
     });
 
   const toggleKind = (kind: string, on: boolean) => {
@@ -154,6 +157,7 @@ export function PushSettings({
     const next = on ? [...current.kinds, kind] : current.kinds.filter((k) => k !== kind);
     start(async () => {
       await updatePushKinds(scope, current.id, next);
+      toast.success(t("savedToast"), { id: "push-kinds" });
     });
   };
 

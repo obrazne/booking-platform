@@ -1,7 +1,15 @@
 "use client";
 
-import { startTransition, useActionState, useState, type FormEvent } from "react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +38,16 @@ function keepValues(action: (data: FormData) => void) {
 
 function FormMessage({ state }: { state: FormState }) {
   const t = useTranslations();
+  // Toast after each save too (rule 3, Z55); the message stays next to the form.
+  const first = useRef(state);
+  useEffect(() => {
+    if (state === first.current) return;
+    if (state.error)
+      toast.error(
+        t(state.error === "error" ? "common.error" : (`platform.${state.error}` as const)),
+      );
+    else if (state.ok) toast.success(t("common.saved"), { id: "form-saved" });
+  }, [state, t]);
   if (state.error) {
     const key = state.error === "error" ? "common.error" : (`platform.${state.error}` as const);
     return (

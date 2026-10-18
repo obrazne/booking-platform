@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,9 @@ import {
   updateGuestContact,
   type FormState,
 } from "@/core/guest/actions";
+import { useUnsavedForm } from "@/core/forms/unsaved";
+
+const INITIAL: FormState = { ok: false, error: false };
 
 export function ContactForm({
   guest,
@@ -19,12 +23,19 @@ export function ContactForm({
   guest: { name: string | null; phone: string | null; country: string | null };
 }) {
   const t = useTranslations("guest.account");
-  const [state, action, pending] = useActionState<FormState, FormData>(updateGuestContact, {
-    ok: false,
-    error: false,
-  });
+  const [state, action] = useActionState<FormState, FormData>(updateGuestContact, INITIAL);
+  // Saved through the bar of unsaved changes, confirmed by a toast (Z55, rule 3).
+  const form = useRef<HTMLFormElement>(null);
+  const { saved } = useUnsavedForm(form);
+  useEffect(() => {
+    if (state === INITIAL) return;
+    if (state.ok) {
+      toast.success(t("saved"), { id: "form-saved" });
+      saved();
+    } else toast.error(t("saveFailed"));
+  }, [state, t, saved]);
   return (
-    <form action={action} className="grid gap-3">
+    <form ref={form} action={action} className="grid gap-3">
       <div className="grid gap-1.5">
         <Label htmlFor="z-name">{t("name")}</Label>
         <Input id="z-name" name="name" defaultValue={guest.name ?? ""} required maxLength={120} />
@@ -37,12 +48,7 @@ export function ContactForm({
         <Label htmlFor="z-country">{t("country")}</Label>
         <Input id="z-country" name="country" defaultValue={guest.country ?? ""} maxLength={2} />
       </div>
-      <div className="flex items-center gap-3">
-        <Button type="submit" variant="outline" className="rounded-full" disabled={pending}>
-          {t("save")}
-        </Button>
-        {state.ok ? <span className="text-muted-foreground text-sm">{t("saved")}</span> : null}
-      </div>
+      <button type="submit" hidden aria-hidden tabIndex={-1} />
     </form>
   );
 }
@@ -58,7 +64,13 @@ export function MarketingToggle({ granted }: { granted: boolean }) {
         variant="outline"
         className="justify-self-start rounded-full"
         disabled={pending}
-        onClick={() => start(() => setGuestMarketing(!granted))}
+        onClick={() =>
+          start(async () => {
+            // An instant switch: saved right away and confirmed by a toast (rule 3).
+            await setGuestMarketing(!granted);
+            toast.success(t(granted ? "marketingOffToast" : "marketingOnToast"));
+          })
+        }
       >
         {t(granted ? "marketingRevoke" : "marketingGrant")}
       </Button>

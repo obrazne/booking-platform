@@ -37,7 +37,7 @@ export default async function TestimonialsPage() {
 
   const form = (selected?: (typeof list)[number]) => (
     <div className="grid gap-4">
-      <ActionForm action={saveTestimonial}>
+      <ActionForm action={saveTestimonial} bar={Boolean(selected)}>
         <input type="hidden" name="id" value={selected?.id ?? ""} />
         <Field label={t("text")} htmlFor="body">
           <Textarea

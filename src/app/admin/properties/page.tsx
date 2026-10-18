@@ -90,7 +90,7 @@ export default async function PropertiesPage() {
             <CardTitle>{t("new")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ActionForm action={createProperty}>
+            <ActionForm action={createProperty} bar={false}>
               <Field label={t("fields.name")} htmlFor="name">
                 <Input id="name" name="name" required maxLength={120} />
               </Field>

@@ -107,7 +107,7 @@ export function CancelReservationButton({ id, label }: { id: string; label: stri
           <AlertDialogTitle>{t("cancelTitle", { label })}</AlertDialogTitle>
           <AlertDialogDescription>{t("cancelText")}</AlertDialogDescription>
         </AlertDialogHeader>
-        <ActionForm action={action}>
+        <ActionForm action={action} bar={false}>
           <Textarea
             name="reason"
             rows={2}

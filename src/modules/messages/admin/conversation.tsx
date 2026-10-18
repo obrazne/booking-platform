@@ -108,7 +108,7 @@ export function ConversationPane(props: Props) {
                   className={cn(
                     "rounded-2xl border px-4 py-3 text-[15px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line",
                     m.sender === "guest" &&
-                      "rounded-bl-sm border-[#e9e5db] bg-white text-[#11212f]",
+                      "rounded-bl-sm border-transparent bg-[#eeefec] text-[#11212f]",
                     m.sender === "staff" &&
                       "bg-primary border-primary text-primary-foreground rounded-br-sm",
                     m.sender === "auto" &&
@@ -290,7 +290,7 @@ function Scheduled({
           </span>
         </div>
       ) : (
-        <div className="rounded-2xl rounded-br-sm border border-dashed border-[#b9c8bf] bg-white px-4 py-3 text-[15px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line text-[#3b3d42]">
+        <div className="rounded-2xl rounded-br-sm border border-dashed border-[#7f9a8c] bg-[var(--card-surface)] px-4 py-3 text-[15px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-line text-[#3b3d42]">
           {s.body}
         </div>
       )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Toaster } from "@/components/ui/sonner";
+import { UnsavedBar } from "@/core/forms/unsaved";
 import { ColorModeProvider } from "@/core/theme/color-mode-provider";
 import { fontVariableClasses } from "@/core/theme/fonts";
 import "./globals.css";
@@ -22,7 +23,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <NextIntlClientProvider>
           <ColorModeProvider>
             {children}
-            <Toaster position="top-center" />
+            {/* Rule 3 (Z55): toasts bottom right, the bar of unsaved changes for any form of the page. */}
+            <Toaster position="bottom-right" />
+            <UnsavedBar />
           </ColorModeProvider>
         </NextIntlClientProvider>
       </body>

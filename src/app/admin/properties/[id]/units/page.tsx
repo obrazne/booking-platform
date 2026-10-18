@@ -16,7 +16,7 @@ export default async function UnitsPage({ params }: PageProps<"/admin/properties
   const { property, units } = await getPropertyForEdit(id);
 
   const form = (unit?: (typeof units)[number]) => (
-    <ActionForm action={saveUnit} className="sm:grid-cols-[2fr_1fr_auto_auto] sm:items-end">
+    <ActionForm action={saveUnit} bar={Boolean(unit)} className="sm:grid-cols-[2fr_1fr_auto_auto] sm:items-end">
       <input type="hidden" name="id" value={unit?.id ?? ""} />
       <input type="hidden" name="property_id" value={property.id} />
       <Field label={t("name")} htmlFor={`name-${unit?.id ?? "new"}`}>

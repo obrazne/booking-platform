@@ -65,7 +65,7 @@ export default async function ManualReservationPage({
           <CardDescription>{t("manual.hint")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ActionForm action={createManualReservation}>
+          <ActionForm action={createManualReservation} bar={false}>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={t("manual.unit")} htmlFor="unit_id" className="sm:col-span-2">
                 <select

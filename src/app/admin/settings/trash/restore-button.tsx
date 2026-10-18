@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { restoreFromTrash, type RestoreResult } from "./actions";
@@ -18,7 +19,15 @@ export function RestoreButton({ id, label }: { id: number; label: string }) {
         variant="outline"
         disabled={pending || result === "ok"}
         aria-label={`${t("restore")}: ${label}`}
-        onClick={() => start(async () => setResult(await restoreFromTrash(id)))}
+        onClick={() =>
+          start(async () => {
+            const r = await restoreFromTrash(id);
+            setResult(r);
+            // Toast too (rule 3); the reason of a refusal stays at the row.
+            if (r === "ok") toast.success(t("restored"));
+            else toast.error(t(`errors.${r}`));
+          })
+        }
       >
         <RotateCcw /> {t("restore")}
       </Button>
