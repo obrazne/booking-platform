@@ -115,7 +115,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    zdroja. Na mobile v menu hlavičky.
 4. e2e hosť PC aj mobil (390 px): prihlásenie → aktuálny pobyt; minulý pobyt → späť; menu Môj účet.
 
-### Z60 [B] — Podpis v správach a vzhľad e-mailov hosťovi (pripomienka 34) — po Z59
+### Z60 [B] 🔄 — Podpis v správach a vzhľad e-mailov hosťovi (pripomienka 34) — po Z59
 1. **Podpis:** `{podpis}` berie `tenant_settings.contact_name`, ktoré sa v administrácii nedá upraviť. Nastavenia → **Kontakt**: meno
    kontaktnej osoby a **podpis správ** (viacriadkový, napr. „Jana Hladká · Chalet STRÖMY · +421…“; nový stĺpec migráciou, predvolene
    meno kontaktu). `{podpis}` = podpis, inak meno, inak názov klienta. Pri tlačidlách „Vložiť“ v úprave správy riadok „Podpis upravíte
