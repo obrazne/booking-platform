@@ -185,7 +185,7 @@ Ten istý komponent a výpočet ako v mesačnom výpise (Z62, `tenant_monthly_re
 s prepínačom **Tento mesiac / Ďalší mesiac** (dopredu = voľné noci, ktoré treba predať); klik na úsek → kalendár na daný mesiac.
 Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
 
-### Z67 [B] — Hľadanie (Ctrl K) a Pomoc (pripomienky 48, 50; dosky 15, 16) — po Z65
+### Z67 [B] 🔄 — Hľadanie (Ctrl K) a Pomoc (pripomienky 48, 50; dosky 15, 16) — po Z65
 1. **Hľadanie v hornej lište** (administrácia; v riadiacom centre klienti a nastavenia platformy): zástupný text „Hľadať hostí, rezervácie,
    nastavenia aj pomoc…“, Ctrl K / Cmd K, po kliknutí do prázdneho poľa príklady a posledné hľadania; výsledky v skupinách Nastavenia
    a stránky / Pomoc / Rezervácie a hostia; klávesnica (šípky, Enter, Esc). **Register nastavení a stránok** (názov, synonymá, cesta,
