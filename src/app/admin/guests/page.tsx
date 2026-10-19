@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { requireTenant } from "@/core/admin/action";
 import { FilterPills, ListSearch, Pagination, SortHeader } from "@/core/admin/data-list";
 import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
+import { readPaging } from "@/core/admin/paging";
 import { PanelLink, UrlPanel } from "@/core/admin/record-panel";
 import { formatDate, formatMoney } from "@/core/format/format";
-import { guestCounts, guestListParams, PAGE_SIZES, queryGuests } from "@/core/guests/query";
+import { guestCounts, guestListParams, queryGuests } from "@/core/guests/query";
 import { helpHref } from "@/core/help/faqs";
 import { money } from "@/core/money/money";
 import { getTenantInfo } from "@/core/tenant/info";
@@ -30,7 +30,8 @@ const COLS =
 export default async function GuestsPage({ searchParams }: PageProps<"/admin/guests">) {
   const active = await requireTenant();
   const sp = await searchParams;
-  const p = guestListParams(sp);
+  const paging = await readPaging(sp, "hostia");
+  const p = { ...guestListParams(sp), page: paging.page, pageSize: paging.size };
   const [t, locale, tenant, list, counts] = await Promise.all([
     getTranslations("guests"),
     getLocale(),
@@ -39,15 +40,6 @@ export default async function GuestsPage({ searchParams }: PageProps<"/admin/gue
     guestCounts(active.tenantId),
   ]);
   const date = (d: string) => formatDate(d, locale, "short");
-  const sizeHref = (size: number) => {
-    const q = new URLSearchParams(
-      Object.entries(sp).flatMap(([k, v]) =>
-        k === "page" || k === "size" || v === undefined ? [] : [[k, String(v)]],
-      ),
-    );
-    if (size !== 20) q.set("size", String(size));
-    return `/admin/guests${q.size ? `?${q}` : ""}`;
-  };
 
   return (
     <div data-bleed>
@@ -147,25 +139,8 @@ export default async function GuestsPage({ searchParams }: PageProps<"/admin/gue
                 </PanelLink>
               ))}
             </div>
-            <div className="border-hair flex flex-wrap items-center justify-between gap-3 border-t px-5 py-3 text-[13px] text-[#5a6672]">
-              <span>
-                {t("pageSize")}:{" "}
-                {PAGE_SIZES.map((s, i) => (
-                  <span key={s}>
-                    {i ? " · " : ""}
-                    {s === p.pageSize ? (
-                      <strong className="text-ink font-medium">{s}</strong>
-                    ) : (
-                      <Link href={sizeHref(s)} className="hover:underline">
-                        {s}
-                      </Link>
-                    )}
-                  </span>
-                ))}
-              </span>
-              {list.total > p.pageSize ? (
-                <Pagination page={p.page} pageSize={p.pageSize} total={list.total} />
-              ) : null}
+            <div className="border-hair border-t px-5 py-2">
+              <Pagination page={p.page} pageSize={p.pageSize} total={list.total} list="hostia" />
             </div>
           </div>
         ) : (

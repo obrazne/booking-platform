@@ -403,7 +403,7 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 - 2026-10-19 — Z68 [linka B]: **Hostia — zoznam, karta hosťa, súhlasy a export** (pripomienky 52, 53; doska 17, v1.6). (Claude Code)
   - **Rezervácie › Hostia** (jadro): stĺpce Hosť · Telefón · Pobyty · Posledný/budúci pobyt · Spolu (priame rezervácie + objednávky
     služieb) · Ponuky; filtre Všetci / Vracajú sa / So súhlasom / S budúcim pobytom s počtami, hľadanie, triedenie a stránkovanie
-    20/50/100 v DB (`guest_list`, `guest_list_counts`). Hostia z portálov tam nie sú (veta pod zoznamom). ⓘ pri nadpise s odkazom do Pomoci.
+    20/50/100 v DB (`guest_list`, `guest_list_counts`; spoločné stránkovanie Z63 `readPaging`, aj na Podpore). Hostia z portálov tam nie sú (veta pod zoznamom). ⓘ pri nadpise s odkazom do Pomoci.
   - **Karta hosťa** (`?panel=guest:<id>`): kontakt (Upraviť: meno, telefón, krajina, jazyk, adresa — kto a kedy ju doplnil zapíše DB),
     súhlasy s históriou, pobyty s odkazmi na rezervácie, poznámka tímu (`guest_notes`, hosť ju nečíta, `record_history` platí);
     Napísať správu (karta Správy poslednej rezervácie / e-mail), Nová rezervácia (predvyplnený hosť), Údaje hosťa (JSON pre žiadosť

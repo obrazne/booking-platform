@@ -3,17 +3,16 @@ import { parseListParams, type ListParams } from "@/core/admin/list-params";
 import { createClient } from "@/lib/supabase/server";
 
 export const GUEST_FILTERS = ["returning", "consent", "upcoming"] as const;
-export const PAGE_SIZES = [20, 50, 100] as const;
-
-/** Rezervácie › Hostia (Z68): filter, search, sort and page from the URL — all of it done in the database (rule 7). */
+/**
+ * Rezervácie › Hostia (Z68): filter, search and sort from the URL — done in the database (rule 7); the page and its size
+ * come from `readPaging` (the common paging, Z63).
+ */
 export function guestListParams(sp: Record<string, string | string[] | undefined>): ListParams {
-  const size = Number(Array.isArray(sp.size) ? sp.size[0] : sp.size);
   return parseListParams(sp, {
     sortable: ["name", "stays", "last_stay", "spent"],
     defaultSort: "last_stay",
     defaultDir: "desc",
     filters: { filter: GUEST_FILTERS },
-    pageSize: (PAGE_SIZES as readonly number[]).includes(size) ? size : 20,
   });
 }
 

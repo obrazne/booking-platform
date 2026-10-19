@@ -1,14 +1,13 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronDown, Paperclip } from "lucide-react";
 import { FilterPills, Pagination } from "@/core/admin/data-list";
+import { readPaging } from "@/core/admin/paging";
 import { formatDateTime } from "@/core/format/format";
 import { CORE_FAQS } from "@/core/help/faqs";
 import { listModules } from "@/core/modules/registry";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { DoneButton } from "./done-button";
-
-const PAGE_SIZE = 20;
 
 /**
  * Control center › Podpora (Z67): requests from "Nenašli ste odpoveď?" (newest first, collapsed rows, the picture
@@ -22,7 +21,7 @@ export default async function SupportPage({ searchParams }: PageProps<"/platform
     searchParams,
   ]);
   const status = sp.status === "done" ? "done" : sp.status === "all" ? "all" : "new";
-  const page = Math.max(1, Number(sp.page) || 1);
+  const paging = await readPaging(sp, "podpora");
   const supabase = await createClient();
   let query = supabase
     .from("support_requests")
@@ -31,7 +30,7 @@ export default async function SupportPage({ searchParams }: PageProps<"/platform
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
-    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    .range(paging.from, paging.to);
   if (status !== "all") query = query.eq("status", status);
   const [{ data: requests, count }, { data: stats }] = await Promise.all([
     query,
@@ -149,8 +148,8 @@ export default async function SupportPage({ searchParams }: PageProps<"/platform
         ) : (
           <p className="text-muted-foreground text-sm">{t("empty")}</p>
         )}
-        {(count ?? 0) > PAGE_SIZE ? (
-          <Pagination page={page} pageSize={PAGE_SIZE} total={count ?? 0} />
+        {count ? (
+          <Pagination page={paging.page} pageSize={paging.size} total={count} list="podpora" />
         ) : null}
       </section>
 
