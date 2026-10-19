@@ -32,7 +32,7 @@ export default async function GuestProfilePage() {
         </section>
         <section className={section}>
           <h2 className="text-ink text-base font-bold">{t("marketingTitle")}</h2>
-          <MarketingToggle granted={guest.marketing_consent} />
+          <MarketingToggle granted={guest.marketing_consent} name={tenant.name} />
         </section>
         <section className={section}>
           <h2 className="text-ink text-base font-bold">{tp("dataTitle")}</h2>

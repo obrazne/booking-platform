@@ -51,7 +51,7 @@ test("guest books the demo chalet: calendar, 3-step cart, service, consents, pay
     .click();
 
   // Step 3: consents (marketing stays unchecked) and the binding button.
-  await expect(cart.getByRole("checkbox", { name: /novinky/ })).not.toBeChecked();
+  await expect(cart.getByRole("checkbox", { name: /ponuky a zľavy/ })).not.toBeChecked();
   await cart.getByRole("checkbox", { name: /obchodnými podmienkami/ }).check();
   await cart.getByRole("checkbox", { name: /storno podmienky/ }).check();
   // The signed form token arrives with step 3 (the button is enabled then); the form refuses submissions

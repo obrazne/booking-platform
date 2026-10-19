@@ -12,7 +12,10 @@ import { isModuleEnabled } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 import { createManualReservation } from "../actions";
 
-/** Manual reservation; the calendar pre-fills the unit and dates (`?unit=&check_in=&check_out=`). */
+/**
+ * Manual reservation; the calendar pre-fills the unit and dates (`?unit=&check_in=&check_out=`), the guest card the guest
+ * (`?guest_name=&guest_email=&guest_phone=`, Z68).
+ */
 export default async function ManualReservationPage({
   searchParams,
 }: PageProps<"/admin/reservations/new">) {
@@ -113,13 +116,29 @@ export default async function ManualReservationPage({
               </Field>
               <div />
               <Field label={tb("name")} htmlFor="guest_name">
-                <Input id="guest_name" name="guest_name" required />
+                <Input
+                  id="guest_name"
+                  name="guest_name"
+                  required
+                  defaultValue={pre("guest_name", /^.{1,120}$/)}
+                />
               </Field>
               <Field label={tb("email")} htmlFor="guest_email">
-                <Input id="guest_email" name="guest_email" type="email" required />
+                <Input
+                  id="guest_email"
+                  name="guest_email"
+                  type="email"
+                  required
+                  defaultValue={pre("guest_email", /^[^\s@]+@[^\s@]+$/)}
+                />
               </Field>
               <Field label={tb("phone")} htmlFor="guest_phone">
-                <Input id="guest_phone" name="guest_phone" type="tel" />
+                <Input
+                  id="guest_phone"
+                  name="guest_phone"
+                  type="tel"
+                  defaultValue={pre("guest_phone", /^[+\d ()-]{3,40}$/)}
+                />
               </Field>
               <Field label={t("manual.statusLabel")} htmlFor="status">
                 <select id="status" name="status" defaultValue="confirmed" className={selectClass}>

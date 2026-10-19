@@ -17,6 +17,7 @@ export type RegistryEntry = {
 export const ADMIN_REGISTRY: readonly RegistryEntry[] = [
   { id: "overview", href: "/admin" },
   { id: "reservations", href: "/admin/reservations" },
+  { id: "guests", href: "/admin/guests" },
   { id: "newReservation", href: "/admin/reservations/new" },
   { id: "calendar", href: "/admin/calendar" },
   { id: "blocks", href: "/admin/blocks" },

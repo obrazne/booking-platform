@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { consentRequestMail } from "./consent-request";
 import { loadEmailContext } from "./context";
 import { monthlyReportMail } from "./monthly-report";
 import { supportRequestMail } from "./support-request";
@@ -40,6 +41,30 @@ export async function processEmailQueue(
           await admin
             .from("email_outbox")
             .update({ status: "skipped", last_error: "no recipient" })
+            .eq("id", job.id);
+          stats.skipped += 1;
+          continue;
+        }
+        const result = await sendEmail(mail);
+        await admin.rpc("finish_email_job", {
+          p_id: job.id,
+          p_ok: result.ok,
+          p_provider_id: result.ok ? result.id : "",
+          p_error: result.ok ? "" : result.error,
+          p_to: mail.to,
+        });
+        if (result.ok) stats.sent += 1;
+        else stats.failed += 1;
+        continue;
+      }
+      if (job.kind === "guest_consent_request") {
+        // Request for the consent with offers (Z68): the link with a one-time token, made here.
+        const requestId = (job.payload as { request_id?: string } | null)?.request_id ?? "";
+        const mail = requestId ? await consentRequestMail(requestId) : null;
+        if (!mail) {
+          await admin
+            .from("email_outbox")
+            .update({ status: "skipped", last_error: "no request, public address or token" })
             .eq("id", job.id);
           stats.skipped += 1;
           continue;

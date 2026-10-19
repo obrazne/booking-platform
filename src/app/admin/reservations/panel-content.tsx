@@ -34,11 +34,12 @@ import { ExtendDueButton, MarkPaidButton } from "./quick-actions";
  */
 export async function reservationPanel(id: string): Promise<PanelContent> {
   const active = await requireTenant();
-  const [t, tc, tv, td, locale, tenant, detail] = await Promise.all([
+  const [t, tc, tv, td, tg, locale, tenant, detail] = await Promise.all([
     getTranslations("reservations"),
     getTranslations("common"),
     getTranslations("adminV1.reservations"),
     getTranslations("documents"),
+    getTranslations("guests"),
     getLocale(),
     getTenantInfo(active.tenantId),
     getReservationDetail(active.tenantId, id),
@@ -163,6 +164,18 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
                       <a href={`tel:${detail.guest_phone}`} className="hover:underline">
                         {detail.guest_phone}
                       </a>
+                    </>
+                  ) : null}
+                  {/* Z68: the card of the guest (contact, consents, all stays). */}
+                  {detail.guest_id ? (
+                    <>
+                      {" · "}
+                      <Link
+                        href={`/admin/guests?panel=guest:${detail.guest_id}`}
+                        className="text-ink font-medium underline underline-offset-4"
+                      >
+                        {tg("card.open")}
+                      </Link>
                     </>
                   ) : null}
                 </>

@@ -864,7 +864,7 @@ function StepPayment({
           ["consent_terms_text", t("booking.consentTerms")],
           ["consent_cancellation_text", cancellation],
           ["privacy_text", t("booking.privacy")],
-          ["consent_marketing_text", t("booking.consentMarketing")],
+          ["consent_marketing_text", t("booking.consentMarketing", { name: data.propertyName })],
         ] as const
       ).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={String(value)} />
@@ -975,7 +975,7 @@ function StepPayment({
         </Label>
         <Label className="items-start font-normal">
           <Checkbox name="consent_marketing" className="mt-0.5" />
-          <span>{t("booking.consentMarketing")}</span>
+          <span>{t("booking.consentMarketing", { name: data.propertyName })}</span>
         </Label>
         <p className="text-muted-foreground text-xs">
           {data.settings.privacyUrl ? (

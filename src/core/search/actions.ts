@@ -69,8 +69,8 @@ export async function searchRecords(query: string): Promise<RecordHit[]> {
       id: `g:${g.id}`,
       title: g.name || g.email,
       where: t("guestRow", { email: g.email }),
-      // The guest card comes with Z68; until then the reservations of the guest.
-      href: `/admin/reservations?q=${encodeURIComponent(g.email)}`,
+      // The guest card (Z68).
+      href: `/admin/guests?panel=guest:${g.id}`,
     });
   }
   for (const n of notes.data ?? []) {

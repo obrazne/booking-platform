@@ -111,6 +111,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         badge: (waiting ?? 0) + collisions.open,
         children: [
           { href: "/admin/reservations", label: t("nav.list"), badge: waiting ?? 0 },
+          // Z68: Hostia — core, the guests of direct reservations.
+          { href: "/admin/guests", label: t("nav.guests") },
           { href: "/admin/calendar", label: t("nav.calendar") },
           { href: "/admin/blocks", label: t("nav.blocks") },
           ...(portalChannels ? [{ href: "/admin/portal-stays", label: t("nav.portalStays") }] : []),

@@ -148,6 +148,11 @@ v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazn
 (q, steps[], go), moduly cez manifest `helpFaqs`; odkaz na otázku `helpHref(id)` (pre ⓘ). Žiadosti „Nenašli ste odpoveď?“:
 DB `support_request_create` → `support_requests`, zvonček správcu, e-mail `platform_support_request` na `NEXT_PUBLIC_SUPPORT_EMAIL`;
 riadiace centrum `/platform/support`. Zoznam otázok na kontrolu `docs/pomoc-otazky.md` (pri zmene textov pregenerovať).
+**Hostia (Z68):** jadro, Rezervácie › Hostia `/admin/guests` (DB `guest_list` / `guest_list_counts` — počty, útrata, stránkovanie
+v DB), karta `?panel=guest:<id>` (`src/app/admin/guests/panel-content.tsx`), dáta `src/core/guests/`. **Súhlas s ponukami zapína len
+hosť** (košík, Moje údaje, odkaz `/suhlas/<token>` zo žiadosti `guest_consent_request` → e-mail `guest_consent_request`, token robí
+worker, v DB len haš); tím ho len odvolá (`guest_consent_revoke`, dôvod) — stĺpce súhlasu tím nezapíše (granty). Poznámka tímu
+v `guest_notes` (hosť ju nečíta). Exporty `/admin/guests/export`, `/admin/guests/<id>/data` → `guest_export_log` (záznam zmien).
 **E-maily hosťovi (Z60):** rozloženie a hlavička/päta klienta v `src/core/email/layout.ts` (`emailLayout`, `guestFrame`,
 `guestMessageHtml`) — používa ho worker (`templates.ts`, všetky `guest_*`) aj náhľad v administrácii; `{podpis}` =
 `tenant_settings.message_signature` → `contact_name` → názov klienta (DB `message_rule_text` a `messageSignature` — meniť spolu).

@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → **Z66 (vysvetlivky ⓘ)** — *zabratá linkou A* → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67~~ ✅ → **Z68 (Hostia — karta, súhlasy, export)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ — fronta linky B je prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -211,7 +211,7 @@ Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
    do riadiaceho centra (zoznam + upozornenie v zvončeku správcu). Doba odpovede: **žiadny sľub v texte**, kým ju Martin neurčí (Otázky).
 4. Odkazy z vysvetliviek ⓘ (Z66) na príslušné otázky v Pomoci.
 
-### Z68 [B] 🔄 — Hostia: zoznam, karta hosťa, súhlasy a export (pripomienky 52, 53; doska 17) — po Z67
+### Z68 [B] ✅ — Hostia: zoznam, karta hosťa, súhlasy a export (pripomienky 52, 53; doska 17) — po Z67
 Návrh `docs/vizual-administracia.md` → **v1.6** (prečítaj celé), doska 17 `Hostia`. Jadro, nie modul. Dáta: `guests`, `guest_consent_events`, rezervácie.
 1. **Rezervácie › Hostia:** zoznam so stĺpcami, filtrami, hľadaním a stránkovaním v DB (pravidlo 7); karta hosťa ako `RecordPanel`
    (`?panel=guest:<id>`), odkaz na hosťa aj z panelu rezervácie a z hľadania (Z67 — skupina Rezervácie a hostia).
@@ -400,6 +400,26 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z68 [linka B]: **Hostia — zoznam, karta hosťa, súhlasy a export** (pripomienky 52, 53; doska 17, v1.6). (Claude Code)
+  - **Rezervácie › Hostia** (jadro): stĺpce Hosť · Telefón · Pobyty · Posledný/budúci pobyt · Spolu (priame rezervácie + objednávky
+    služieb) · Ponuky; filtre Všetci / Vracajú sa / So súhlasom / S budúcim pobytom s počtami, hľadanie, triedenie a stránkovanie
+    20/50/100 v DB (`guest_list`, `guest_list_counts`). Hostia z portálov tam nie sú (veta pod zoznamom). ⓘ pri nadpise s odkazom do Pomoci.
+  - **Karta hosťa** (`?panel=guest:<id>`): kontakt (Upraviť: meno, telefón, krajina, jazyk, adresa — kto a kedy ju doplnil zapíše DB),
+    súhlasy s históriou, pobyty s odkazmi na rezervácie, poznámka tímu (`guest_notes`, hosť ju nečíta, `record_history` platí);
+    Napísať správu (karta Správy poslednej rezervácie / e-mail), Nová rezervácia (predvyplnený hosť), Údaje hosťa (JSON pre žiadosť
+    o prístup). Odkaz „Karta hosťa“ z panelu rezervácie a z hľadania (Z67).
+  - **+ Pridať hosťa** ručne (`source = manual`, bez súhlasu — DB to inak nedovolí). Duplicity som nezlučoval ani nenašiel.
+  - **Súhlas s ponukami zapína len hosť** — pravidlá v DB: tím nemá právo na stĺpce súhlasu; `guest_consent_revoke` (s dôvodom a kto),
+    `guest_consent_request` (najviac raz za 12 mesiacov, nie po odvolaní) → e-mail s tlačidlom; jednorazový token robí worker (v DB
+    len haš, platnosť 30 dní), stránka `/suhlas/<token>` zapíše súhlas až po kliknutí hosťa (zdroj `owner_request`; samotné otvorenie
+    odkazu nič nemení). Nový text súhlasu v košíku a v Moje údaje (v1.6) s názvom ubytovania, nezaškrtnutý.
+  - **Export CSV** (Len so súhlasom — s dátumom a zdrojom súhlasu / Všetci) a Údaje hosťa sa zapíšu do záznamu zmien (`guest_export`,
+    bez „Vrátiť“). Export klienta (`AREAS`) má aj poznámky a žiadosti o súhlas (bez hašu tokenu). Dve otázky do Pomoci.
+  - Migrácia `…19130000_guests_card` (len pridáva). Testy: pgTAP `guests_card.test.sql` (tím súhlas nezapne, odvolanie, žiadosť,
+    potvrdenie, poznámka, počty), vitest `csv.test.ts`, e2e `guests.spec.ts` (PC + mobil, axe; `guest.spec.ts` — nový text súhlasu).
+    Snímky `docs/snimky/z68/` (len ukážkové adresy). Na mobile sa tabuľka hostí posúva vodorovne vo svojom rámčeku (ako ostatné zoznamy).
+  - Pri pushi migrácie na staging boli na stagingu dve migrácie linky A mimo gitu (`…19150000_audit_search`, `…19160000_message_inbox_counts`)
+    — dočasne skopírované, push `--include-all`, kópie zmazané; `database.types.ts` preto obsahuje aj ich typy.
 - 2026-10-19 — Z63 [linka A]: **šírka obsahu a stránkovanie v databáze** (pripomienky 46, 51, pravidlá 6–7). (Claude Code)
   - **Šírka:** zoznamy, záznamy a prehľady idú cez celú šírku — preč pevné `max-w` (1180 / 980 / 880 px) na Prehľade, Štatistikách,
     Audite, detaile klienta, katalógu modulov a skúškach, koši a upozorneniach riadiaceho centra; úvodné texty `max-w-prose`.

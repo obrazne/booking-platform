@@ -94,7 +94,8 @@
     "connections": "Prepojenia",
     "general": "Všeobecné",
     "notifications": "E-maily a upozornenia",
-    "trash": "Nedávno zmazané"
+    "trash": "Nedávno zmazané",
+    "guests": "Hostia"
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
@@ -1356,7 +1357,7 @@
       "consentTerms": "Súhlasím s obchodnými podmienkami",
       "consentCancellation": "Beriem na vedomie storno podmienky",
       "privacy": "Osobné údaje spracúvame na účely rezervácie podľa zásad ochrany osobných údajov.",
-      "consentMarketing": "Chcem dostávať novinky a ponuky e-mailom (nepovinné)",
+      "consentMarketing": "Chcem dostávať ponuky a zľavy {name} e-mailom — aj na voľné termíny mimo sezóny. Odhlásiť sa dá jedným klikom.",
       "submit": "Rezervovať s povinnosťou platby",
       "submitting": "Odosielam…",
       "payNote": "Platba bankovým prevodom do {hours} hodín. Termín vám dovtedy podržíme.",
@@ -1587,8 +1588,8 @@
       "save": "Uložiť",
       "saved": "Uložené.",
       "marketingTitle": "Novinky e-mailom",
-      "marketingOn": "Posielame vám novinky a ponuky. Odhlásiť sa môžete jedným klikom.",
-      "marketingOff": "Novinky vám neposielame.",
+      "marketingOn": "Posielame vám ponuky a zľavy {name} e-mailom — aj na voľné termíny mimo sezóny. Odhlásiť sa môžete jedným klikom.",
+      "marketingOff": "Ponuky vám neposielame. Ak chcete dostávať ponuky a zľavy {name} e-mailom — aj na voľné termíny mimo sezóny —, zapnite si ich. Odhlásiť sa dá jedným klikom.",
       "marketingRevoke": "Odhlásiť z noviniek",
       "marketingGrant": "Chcem dostávať novinky",
       "signOut": "Odhlásiť sa",
@@ -3047,7 +3048,9 @@
       "messages": "Správa",
       "message_rules": "Automatická správa",
       "message_overrides": "Úprava automatickej správy",
-      "quick_replies": "Rýchla odpoveď"
+      "quick_replies": "Rýchla odpoveď",
+      "guest_export": "Export hostí",
+      "guest_notes": "Poznámka o hosťovi"
     },
     "ops": {
       "insert": "pridané",
@@ -3583,6 +3586,11 @@
         "where": "Rezervácie › Zoznam",
         "terms": "objednávky pobyty zoznam hostia"
       },
+      "guests": {
+        "title": "Hostia",
+        "where": "Rezervácie › Hostia — kontakty, súhlasy, export",
+        "terms": "hostia kontakty zákazníci súhlas ponuky newsletter export ecomail csv"
+      },
       "newReservation": {
         "title": "Nová rezervácia",
         "where": "Ručná rezervácia — napr. po telefóne",
@@ -4041,7 +4049,171 @@
           "Obnoviť sa dajú služby, sezóny, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre a miesta v okolí. Rezervácie sa nemažú, len rušia."
         ],
         "go": "Otvoriť Nedávno zmazané"
+      },
+      "exportContacts": {
+        "q": "Ako exportujem kontakty do Ecomailu alebo SmartEmailingu?",
+        "steps": [
+          "Otvorte Rezervácie › Hostia a kliknite na Export.",
+          "Vyberte „Len so súhlasom s ponukami“ — stiahne sa súbor CSV pre Excel aj s dátumom a zdrojom súhlasu.",
+          "Súbor nahrajte do Ecomailu alebo SmartEmailingu ako nový zoznam kontaktov. Každý export sa zapíše do záznamu zmien.",
+          "Hosťom bez súhlasu ponuky neposielajte — export „Všetci hostia“ je len na vlastnú evidenciu."
+        ],
+        "go": "Otvoriť Hostí"
+      },
+      "consentOn": {
+        "q": "Prečo nemôžem hosťovi zapnúť súhlas s ponukami?",
+        "steps": [
+          "Súhlas musí dať hosť sám — v košíku pri rezervácii, vo svojom účte v Moje údaje alebo kliknutím v e-maile so žiadosťou o súhlas. Tak to vyžaduje GDPR.",
+          "Na karte hosťa môžete hosťovi poslať žiadosť o súhlas e-mailom (najviac raz za 12 mesiacov, nie hosťovi, ktorý súhlas odvolal). Súhlas sa zapíše až po jeho kliknutí.",
+          "Ak vás hosť požiada o odhlásenie, súhlas na karte hosťa odvoláte za neho — zapíše sa aj dôvod a kto to urobil."
+        ],
+        "go": "Otvoriť Hostí"
       }
+    }
+  },
+  "guests": {
+    "title": "Hostia",
+    "lead": "Každý, kto u vás rezervoval priamo, má tu kartu so všetkým, čo o ňom viete. Patria vám.",
+    "infoLabel": "Čo sú Hostia?",
+    "info": "Kontakty z priamych rezervácií a ručne pridaní hostia. Súhlas s ponukami zapína len hosť sám — vy ho môžete odvolať v jeho mene alebo mu poslať žiadosť. Na newsletter exportujte len hostí so súhlasom.",
+    "infoMore": "Ako exportovať do Ecomailu ›",
+    "add": "Pridať hosťa",
+    "addTitle": "Nový hosť",
+    "addHint": "Napr. hosť z Bookingu, ktorý vám kontakt dal sám. Súhlas s ponukami nemá, kým ho nedá on.",
+    "create": "Pridať hosťa",
+    "created": "Hosť pridaný.",
+    "exists": "Hosť s týmto e-mailom už existuje.",
+    "invalid": "Skontrolujte e-mail a ostatné polia.",
+    "export": "Export",
+    "exportTitle": "Export hostí",
+    "exportConsent": "Len so súhlasom s ponukami · {count}",
+    "exportConsentHint": "Na newsletter a ponuky (Ecomail, SmartEmailing…). Pribudne stĺpec s dátumom a zdrojom súhlasu.",
+    "exportAll": "Všetci hostia · {count}",
+    "exportAllHint": "Na vlastnú evidenciu a zálohu. Hosťom bez súhlasu neposielajte ponuky.",
+    "exportNote": "CSV pre Excel · export sa zapíše do záznamu zmien",
+    "filterLabel": "Filter hostí",
+    "filters": {
+      "all": "Všetci",
+      "returning": "Vracajú sa",
+      "consent": "So súhlasom s ponukami",
+      "upcoming": "S budúcim pobytom"
+    },
+    "search": "Hľadať hosťa — meno, e-mail, telefón",
+    "cols": {
+      "guest": "Hosť",
+      "phone": "Telefón",
+      "stays": "Pobyty",
+      "last": "Posledný pobyt",
+      "spent": "Spolu",
+      "consent": "Ponuky"
+    },
+    "yes": "Áno",
+    "next": "príde {date}",
+    "portalNote": "Hostia z Bookingu a Airbnb tu nie sú — portály ich kontakty nedávajú. Pridať ich môžete ručne, ak vám kontakt dali sami.",
+    "empty": "Zatiaľ žiadni hostia. Pribudnú s prvou priamou rezerváciou.",
+    "emptyFilter": "Týmto podmienkam nezodpovedá žiadny hosť.",
+    "pageSize": "Na stránku",
+    "card": {
+      "label": "Karta hosťa",
+      "tags": {
+        "returning": "Vracia sa · {count, plural, few {# pobyty} other {# pobytov}}",
+        "consent": "Súhlas s ponukami",
+        "new": "Nový hosť",
+        "manual": "Pridaný ručne"
+      },
+      "contact": "Kontakt",
+      "edit": "Upraviť",
+      "save": "Uložiť",
+      "cancel": "Zrušiť",
+      "saved": "Kontakt uložený.",
+      "fields": {
+        "name": "Meno",
+        "email": "E-mail",
+        "phone": "Telefón",
+        "country": "Krajina (kód, napr. SK)",
+        "language": "Jazyk (kód, napr. sk)",
+        "address": "Adresa"
+      },
+      "countryShort": "Krajina",
+      "languageShort": "Jazyk",
+      "addressUnknown": "nevieme — doplníte v Upraviť",
+      "addressSource": {
+        "guest": "od hosťa",
+        "owner": "doplnil tím"
+      },
+      "consents": "Súhlasy",
+      "consentOn": "Súhlas s ponukami od {date}.",
+      "consentAtBooking": "Daný pri rezervácii {number}.",
+      "consentOff": "Bez súhlasu s ponukami — ponuky mu neposielajte.",
+      "cantEnable": "Súhlas môže zapnúť len hosť sám — v košíku, vo svojom účte alebo kliknutím v žiadosti.",
+      "history": "História súhlasu",
+      "granted": "súhlas daný",
+      "revoked": "súhlas odvolaný",
+      "sources": {
+        "guest_zone": "v účte hosťa",
+        "owner": "tímom v mene hosťa",
+        "owner_request": "cez žiadosť e-mailom",
+        "booking": "pri rezervácii"
+      },
+      "reason": "dôvod: {reason}",
+      "revoke": "Odvolať súhlas v mene hosťa",
+      "revokeReason": "Dôvod",
+      "revokeReasonPlaceholder": "Napr. hosť ma požiadal o odhlásenie",
+      "revokeConfirm": "Odvolať súhlas",
+      "revokedToast": "Súhlas odvolaný.",
+      "request": "Poslať žiadosť o súhlas",
+      "requestHint": "Hosťovi príde e-mail s tlačidlom. Súhlas sa zapíše až po jeho kliknutí.",
+      "requested": "Žiadosť odoslaná na {email}.",
+      "block": {
+        "has_consent": "Hosť súhlas už má.",
+        "revoked": "Hosť súhlas odvolal — žiadosť mu už neposielame.",
+        "recent": "Žiadosť sme poslali {date} — ďalšiu najskôr o 12 mesiacov.",
+        "no_email": "Hosť nemá e-mail."
+      },
+      "stays": "Pobyty · {count}",
+      "staysEmpty": "Zatiaľ žiadny pobyt.",
+      "stayMeta": "{number} · {guests, plural, one {# hosť} few {# hostia} other {# hostí}} · {status}",
+      "note": "Poznámka (vidíte len vy a váš tím)",
+      "notePlaceholder": "Napr. chodia s deťmi, radi si objednajú raňajky…",
+      "noteSave": "Uložiť poznámku",
+      "noteSaved": "Poznámka uložená.",
+      "message": "Napísať správu",
+      "newReservation": "Nová rezervácia",
+      "data": "Údaje hosťa (export)",
+      "failed": "Nepodarilo sa. Skúste to znova.",
+      "open": "Karta hosťa"
+    },
+    "consentPage": {
+      "title": "Ponuky od {tenant}",
+      "lead": "Chcete dostávať ponuky a zľavy {tenant} e-mailom — aj na voľné termíny mimo sezóny? Odhlásiť sa dá jedným klikom.",
+      "confirm": "Áno, chcem dostávať ponuky",
+      "done": "Ďakujeme, súhlas sme zapísali. Odhlásiť sa môžete kedykoľvek vo svojom účte.",
+      "expired": "Platnosť odkazu vypršala. Ak chcete dostávať ponuky, zapnete si ich vo svojom účte.",
+      "invalid": "Odkaz nie je platný."
+    },
+    "email": {
+      "subject": "{tenant}: chcete dostávať naše ponuky?",
+      "title": "Chcete dostávať naše ponuky?",
+      "body": "Dobrý deň{name}, boli ste u nás hosťom. Ak chcete, budeme vám posielať ponuky a zľavy e-mailom — aj na voľné termíny mimo sezóny. Odhlásiť sa dá jedným klikom.",
+      "button": "Áno, chcem dostávať ponuky",
+      "ignore": "Ak nechcete, nič nerobte — bez vášho kliknutia vám ponuky posielať nebudeme. Odkaz platí 30 dní."
+    },
+    "csv": {
+      "email": "E-mail",
+      "name": "Meno",
+      "phone": "Telefón",
+      "country": "Krajina",
+      "language": "Jazyk",
+      "stays": "Pobyty",
+      "last": "Posledný pobyt",
+      "next": "Budúci pobyt",
+      "spent": "Spolu",
+      "consent": "Súhlas s ponukami",
+      "consentAt": "Súhlas od",
+      "consentSource": "Zdroj súhlasu",
+      "added": "Pridaný ručne",
+      "yes": "áno",
+      "no": "nie"
     }
   }
 }

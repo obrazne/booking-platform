@@ -130,7 +130,8 @@ export async function loadHistory(
       actor: r.changed_by ? (name.get(r.changed_by) ?? null) : null,
       source: r.source as HistoryEntry["source"],
       fields: r.table_name === "ical_sync" ? [] : changes(oldRow, newRow, "sk", currency),
-      revertable: r.source === "user" && r.table_name !== "ical_sync",
+      // Records of what happened (synchronisation, exports) are not changes of data — nothing to revert.
+      revertable: r.source === "user" && !["ical_sync", "guest_export"].includes(r.table_name),
       sync: r.table_name === "ical_sync" ? syncSummary(newRow) : null,
     };
   });

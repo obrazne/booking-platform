@@ -20,7 +20,7 @@ const AREAS: Record<string, readonly string[]> = {
     "reservation_consents",
     "occupancy",
   ],
-  hostia: ["guests", "guest_consent_events"],
+  hostia: ["guests", "guest_consent_events", "guest_consent_requests", "guest_notes"],
   platby: ["payments"],
   objednavky: ["reservation_orders"],
   spravy: ["messages", "message_threads", "message_overrides", "message_rules", "quick_replies"],
@@ -93,6 +93,11 @@ export async function buildTenantExport(tenantId: string): Promise<{
     for (const table of tables) {
       let rows = await allRows(table, tenantId);
       if (table === "checkin_guests") rows = rows.map(maskCheckinGuest);
+      // Z68: the hash of a one-time link is no data of the client.
+      if (table === "guest_consent_requests")
+        rows = rows.map((r) =>
+          Object.fromEntries(Object.entries(r).filter(([k]) => k !== "token_hash")),
+        );
       counts[table] = rows.length;
       entries.push(
         { name: `${area}/${table}.json`, data: JSON.stringify(rows, null, 2) },

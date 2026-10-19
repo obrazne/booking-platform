@@ -53,12 +53,15 @@ export function ContactForm({
   );
 }
 
-export function MarketingToggle({ granted }: { granted: boolean }) {
+/** News by e-mail (Z68: the text of the consent v1.6 with the name of the accommodation). */
+export function MarketingToggle({ granted, name }: { granted: boolean; name: string }) {
   const t = useTranslations("guest.account");
   const [pending, start] = useTransition();
   return (
     <div className="grid gap-3">
-      <p className="text-muted-foreground text-sm">{t(granted ? "marketingOn" : "marketingOff")}</p>
+      <p className="text-muted-foreground text-sm">
+        {t(granted ? "marketingOn" : "marketingOff", { name })}
+      </p>
       <Button
         type="button"
         variant="outline"

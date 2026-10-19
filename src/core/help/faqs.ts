@@ -35,6 +35,8 @@ export const CORE_FAQS: readonly HelpFaq[] = [
     field: "cleaning_gap_days",
   },
   { id: "phoneBooking", topic: "guests", href: "/admin/reservations/new" },
+  { id: "exportContacts", topic: "guests", href: "/admin/guests" },
+  { id: "consentOn", topic: "guests", href: "/admin/guests" },
   {
     id: "arrivalInfo",
     topic: "guests",
