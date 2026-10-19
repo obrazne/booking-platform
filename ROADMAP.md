@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) — *zabratá linkou A* → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
-  **B:** ~~Z57–Z60, Z62, Z64~~ ✅ → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65~~ ✅ → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -180,7 +180,7 @@ návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pr
 4. Zbalené riadky (kto, čo, kedy jedným riadkom; klik rozbalí rozdiel), filtre bez tlačidla „Filtrovať“ (`FilterPills` / okamžite).
    Platí pre Záznam zmien v riadiacom centre aj pre Nedávno zmazané / históriu u majiteľa, ak používajú to isté zobrazenie.
 
-### Z65 [B] 🔄 — Pruh „Kde sa predali noci“ na Prehľade (pripomienka 49) — po Z64
+### Z65 [B] ✅ — Pruh „Kde sa predali noci“ na Prehľade (pripomienka 49) — po Z64
 Ten istý komponent a výpočet ako v mesačnom výpise (Z62, `tenant_monthly_report` / `monthly-view.ts` — jeden zdroj). Na Prehľade
 s prepínačom **Tento mesiac / Ďalší mesiac** (dopredu = voľné noci, ktoré treba predať); klik na úsek → kalendár na daný mesiac.
 Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
@@ -674,6 +674,11 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z65 [linka B]: **Pruh „Kde sa predali noci“ na Prehľade** (pripomienka 49). (Claude Code)
+  - Jeden komponent `src/core/reports/nights-bar.tsx` pre mesačný výpis aj Prehľad, čísla z `tenant_monthly_report` cez
+    `reportView` (jeden zdroj = výpis = Štatistiky). Na Prehľade prepínač **Tento mesiac / Ďalší mesiac** (oba mesiace sa
+    načítajú na serveri, prepnutie je okamžité); každý úsek pruhu otvorí kalendár daného mesiaca; počty aj v legende (text).
+  - Test e2e `overview-nights.spec.ts` (PC + mobil, axe): súčty = výpis a `tenant_monthly_stats`. Snímky `docs/snimky/z65/`.
 - 2026-10-19 — Z64 [linka B]: **Záznam zmien čitateľný** (pripomienka 45). (Claude Code)
   - **Synchronizácia kalendárov** (migrácia `…19110000_history_readable`, len pridáva): obsadenosť zo synchronizácie iCal sa už
     nezapisuje po riadkoch — `ical_apply` zapíše **jeden súhrn za beh kanála** (`table_name 'ical_sync'`: pridané / zmenené /

@@ -7,6 +7,7 @@ import { PageHeader } from "@/core/admin/page-header";
 import { todayIso } from "@/core/pricing/dates";
 import { loadMonthlyReport } from "@/core/reports/monthly";
 import { monthParam, reportView, shiftMonth } from "@/core/reports/monthly-view";
+import { NightsBar } from "@/core/reports/nights-bar";
 import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -46,12 +47,6 @@ export default async function MonthlyReportPage({
   const prev = month > first ? shiftMonth(month, -1) : null;
   const next = month < thisMonth ? shiftMonth(month, 1) : null;
   const q = (m: string) => `/admin/statistics/report?month=${m.slice(0, 7)}`;
-  const tone: Record<string, string> = {
-    direct: "bg-primary text-primary-foreground",
-    booking: "bg-[#8fb5a5] text-[#11212f]",
-    airbnb: "bg-[#c9ddd4] text-[#11212f]",
-    other: "bg-[#dfe7e3] text-[#11212f]",
-  };
 
   return (
     <div data-bleed>
@@ -215,40 +210,11 @@ export default async function MonthlyReportPage({
             {v.channelsTitle}
           </h2>
           <p className="text-[13px] text-[#5a6672]">{t("channelsHint")}</p>
-          <div className="flex h-10 overflow-hidden rounded-lg" aria-hidden>
-            {v.channels.map((c) => (
-              <span
-                key={c.key}
-                style={{ flex: `${c.nights} 1 0` }}
-                className={cn(
-                  "flex items-center border-r border-white px-3 text-[13px] font-bold",
-                  tone[c.key],
-                )}
-              >
-                {c.nights}
-              </span>
-            ))}
-            {v.freeNights ? (
-              <span
-                style={{ flex: `${v.freeNights} 1 0` }}
-                className="flex items-center bg-[#f4f3ef] px-3 text-[13px] font-bold text-[#5a6672]"
-              >
-                {v.freeNights}
-              </span>
-            ) : null}
-          </div>
-          <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-[13px]">
-            {v.channels.map((c) => (
-              <li key={c.key} className="flex items-center gap-2">
-                <span className={cn("size-3.5 rounded border border-[#c9c5ba]", tone[c.key])} />
-                {c.name} · {t("nightsCount", { count: c.nights })}
-              </li>
-            ))}
-            <li className="flex items-center gap-2">
-              <span className="size-3.5 rounded border border-[#c9c5ba] bg-[#f4f3ef]" />
-              {t("channel.free")} · {t("nightsCount", { count: v.freeNights })}
-            </li>
-          </ul>
+          <NightsBar
+            view={v}
+            freeLabel={t("channel.free")}
+            nightsLabel={(count) => t("nightsCount", { count })}
+          />
         </section>
 
         <section aria-labelledby="next-title" className="surface grid gap-5 p-6 md:grid-cols-3">

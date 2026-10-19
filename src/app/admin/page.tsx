@@ -14,12 +14,17 @@ import { MiniRevenueChart } from "@/core/stats/mini-chart";
 import { addDays, diffDays, isoWeekday, todayIso } from "@/core/pricing/dates";
 import { getActiveMembership } from "@/core/tenant/active";
 import { getTenantInfo } from "@/core/tenant/info";
-import { shiftMonth } from "@/core/reports/monthly-view";
+import { loadMonthlyReport } from "@/core/reports/monthly";
+import { reportView, shiftMonth } from "@/core/reports/monthly-view";
+import { NightsBar } from "@/core/reports/nights-bar";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { NightsSwitch } from "./nights-switch";
 import { MarkPaidButton } from "./reservations/quick-actions";
 
 const OPEN = ["pending_payment", "confirmed", "in_progress"];
+
+type ReportT = (key: string, values?: Record<string, string | number>) => string;
 
 function hourIn(timeZone: string): number {
   return Number(
@@ -60,6 +65,8 @@ export default async function AdminDashboard() {
     sync,
     lastMonths,
     yearMonths,
+    nightsNow,
+    nightsNext,
   ] = await Promise.all([
     user
       ? supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle()
@@ -113,6 +120,9 @@ export default async function AdminDashboard() {
     })(),
     // Revenue of the year by date of stay — the same numbers as Statistics.
     loadMonthlyStats(tenant.id, `${year}-01-01`, `${year}-12-01`),
+    // Z65: nights of this and the next month — the same calculation as the monthly report.
+    loadMonthlyReport(tenant.id, `${today.slice(0, 7)}-01`),
+    loadMonthlyReport(tenant.id, shiftMonth(`${today.slice(0, 7)}-01`, 1)),
   ]);
 
   const first = (profile.data?.full_name ?? "").split(" ")[0] || null;
@@ -159,6 +169,32 @@ export default async function AdminDashboard() {
     timeZone: "UTC",
   }).format(new Date(`${reportMonth}T00:00:00Z`));
   const trep = await getTranslations("report");
+  const nightsTabs = [
+    { key: "now", raw: nightsNow, label: t("nights.thisMonth"), hint: t("nights.thisHint") },
+    { key: "next", raw: nightsNext, label: t("nights.nextMonth"), hint: t("nights.nextHint") },
+  ].map(({ key, raw, label, hint }) => {
+    const v = reportView(raw, trep as unknown as ReportT, locale, tenant.currency);
+    return {
+      key,
+      label,
+      content: (
+        <div className="grid gap-3">
+          <p className="text-ink text-[15px] font-bold">
+            {v.channelsTitle}
+            <span className="text-muted-foreground font-normal"> · {v.monthLabel}</span>
+          </p>
+          <NightsBar
+            view={v}
+            freeLabel={trep("channel.free")}
+            nightsLabel={(count) => trep("nightsCount", { count })}
+            href={`/admin/calendar?month=${raw.month.slice(0, 7)}`}
+            openLabel={t("nights.open")}
+          />
+          <p className="text-[13px] text-[#5a6672]">{hint}</p>
+        </div>
+      ),
+    };
+  });
 
   return (
     <div data-bleed>
@@ -290,6 +326,13 @@ export default async function AdminDashboard() {
             note={t("statOccupiedNote", { busy, total: nightsTotal })}
             className="border-line border-t border-l lg:border-t-0"
           />
+        </section>
+
+        <section aria-labelledby="nights-title" className="surface grid gap-4 p-5 md:p-6">
+          <h2 id="nights-title" className="text-ink text-xl font-extrabold tracking-tight">
+            {t("nights.title")}
+          </h2>
+          <NightsSwitch label={t("nights.title")} tabs={nightsTabs} />
         </section>
 
         <MiniRevenueChart

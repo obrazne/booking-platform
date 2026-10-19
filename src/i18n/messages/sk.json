@@ -2512,6 +2512,14 @@
       "setUp": "Nastaviť"
     },
     "overview": {
+      "nights": {
+        "title": "Kde sa predali noci",
+        "thisMonth": "Tento mesiac",
+        "nextMonth": "Ďalší mesiac",
+        "thisHint": "Rovnaké čísla ako v mesačnom výpise. Klik na pruh otvorí kalendár mesiaca.",
+        "nextHint": "Voľné noci ešte môžete predať — klik na pruh otvorí kalendár mesiaca.",
+        "open": "otvoriť kalendár mesiaca"
+      },
       "search": "Hľadať hosťa, číslo rezervácie…",
       "guestPage": "Stránka pre hostí",
       "greeting": {
