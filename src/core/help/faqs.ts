@@ -20,13 +20,23 @@ export type HelpFaq = {
 
 export const CORE_FAQS: readonly HelpFaq[] = [
   { id: "blockDates", topic: "calendar", href: "/admin/blocks" },
-  { id: "connectPortal", topic: "calendar", href: "/admin/ical" },
+  { id: "connectPortal", topic: "calendar", href: "/admin/settings?tab=prepojenia" },
   { id: "collision", topic: "calendar", href: "/admin/collisions" },
   { id: "portalGuests", topic: "calendar", href: "/admin/portal-stays" },
   { id: "transferPaid", topic: "payments", href: "/admin/reservations" },
-  { id: "unpaid", topic: "payments", href: "/admin/settings", field: "payment_due_hours" },
-  { id: "iban", topic: "payments", href: "/admin/settings", field: "iban" },
-  { id: "cancelRequest", topic: "payments", href: "/admin/settings", field: "cancellation_policy" },
+  {
+    id: "unpaid",
+    topic: "payments",
+    href: "/admin/settings?tab=platby",
+    field: "payment_due_hours",
+  },
+  { id: "iban", topic: "payments", href: "/admin/settings?tab=platby", field: "iban" },
+  {
+    id: "cancelRequest",
+    topic: "payments",
+    href: "/admin/settings?tab=pravidla",
+    field: "cancellation_policy",
+  },
   { id: "seasonPrice", topic: "pricing", href: "/admin/properties/{property}/pricing" },
   {
     id: "cleaningGap",
@@ -40,15 +50,15 @@ export const CORE_FAQS: readonly HelpFaq[] = [
   {
     id: "arrivalInfo",
     topic: "guests",
-    href: "/admin/settings",
+    href: "/admin/settings?tab=upozornenia",
     field: "arrival_email_days_before",
   },
   { id: "monthlyReport", topic: "settings", href: "/admin/statistics/report" },
-  { id: "team", topic: "settings", href: "/admin/team" },
+  { id: "team", topic: "settings", href: "/admin/settings?tab=tim" },
   {
     id: "pushPhone",
     topic: "settings",
-    href: "/admin/settings/notifications",
+    href: "/admin/settings?tab=upozornenia",
     module: "push",
   },
   { id: "deleted", topic: "settings", href: "/admin/settings/trash" },

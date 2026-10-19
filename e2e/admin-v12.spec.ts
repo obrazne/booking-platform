@@ -42,10 +42,11 @@ test("menu with groups: a group opens its first page, only the active group is o
   let menu = await openMenu();
   const group = menu.getByRole("link", { name: /^Rezervácie/ });
   await expect(group).toHaveAttribute("aria-expanded", "false");
-  // Prepojenia has one sub-page: an ordinary item without the chevron.
-  const connections = menu.getByRole("link", { name: "Prepojenia" });
-  await expect(connections).toHaveAttribute("href", "/admin/ical");
-  await expect(connections).not.toHaveAttribute("aria-expanded", /.*/);
+  // Z69 (v1.7): no Prepojenia in the menu; Nastavenia is one item without sub-items (its parts are tabs).
+  await expect(menu.getByRole("link", { name: "Prepojenia" })).toHaveCount(0);
+  const settings = menu.getByRole("link", { name: "Nastavenia" });
+  await expect(settings).toHaveAttribute("href", "/admin/settings");
+  await expect(settings).not.toHaveAttribute("aria-expanded", /.*/);
   // Click on the group = its first page (Zoznam), the group expands.
   await group.click();
   await page.waitForURL(/\/admin\/reservations$/);
@@ -72,7 +73,7 @@ test("breadcrumbs: only from the second level, the parent on a phone", async ({ 
   const mobile = info.project.name === "mobile";
   await page.goto(`${ADMIN_URL}/admin/statistics`);
   await expect(page.getByRole("navigation", { name: "Drobčeková navigácia" })).toHaveCount(0);
-  await page.goto(`${ADMIN_URL}/admin/settings/notifications`);
+  await page.goto(`${ADMIN_URL}/admin/settings/trash`);
   const crumbs = page.getByRole("navigation", { name: "Drobčeková navigácia" });
   if (mobile) {
     await expect(crumbs.getByRole("link", { name: "Späť na Nastavenia" })).toBeVisible();
@@ -81,7 +82,7 @@ test("breadcrumbs: only from the second level, the parent on a phone", async ({ 
       "href",
       "/admin/settings",
     );
-    await expect(crumbs.getByText("E-maily a upozornenia")).toHaveAttribute("aria-current", "page");
+    await expect(crumbs.getByText("Nedávno zmazané")).toHaveAttribute("aria-current", "page");
     await page.goto(`${ADMIN_URL}/admin/properties/${TENANT_PROPERTY}/pricing`);
     const property = page.getByRole("navigation", { name: "Drobčeková navigácia" });
     await expect(property.getByRole("link", { name: "Objekt" })).toBeVisible();

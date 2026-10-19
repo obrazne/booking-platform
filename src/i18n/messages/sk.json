@@ -988,7 +988,8 @@
       "forbidden": "Na túto zmenu nemáte oprávnenie.",
       "invalid": "Skontrolujte vyplnené údaje.",
       "upload": "Fotku sa nepodarilo nahrať.",
-      "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5."
+      "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5.",
+      "onePaymentMethod": "Aspoň jeden spôsob platby musí ostať zapnutý — inak by hostia nemali ako zaplatiť."
     },
     "unsaved": {
       "label": "Neuložené zmeny",
@@ -1231,7 +1232,47 @@
         "order": "Objednávka doplnkovej služby (min)"
       },
       "accountant": "E-mail účtovníka",
-      "accountantHint": "Pre tlačidlo „Poslať účtovníkovi“ — výpis príde v PDF."
+      "accountantHint": "Pre tlačidlo „Poslať účtovníkovi“ — výpis príde v PDF.",
+      "open": "Otvoriť mesačný výpis ›"
+    },
+    "tabsLabel": "Časti nastavení",
+    "tabs": {
+      "vseobecne": "Všeobecné",
+      "platby": "Platby",
+      "pravidla": "Pravidlá pobytu",
+      "prepojenia": "Prepojenia",
+      "upozornenia": "E-maily a upozornenia",
+      "tim": "Tím",
+      "vypis": "Mesačný výpis"
+    },
+    "business": "Podnikanie",
+    "guestLinks": "Recenzie a správy",
+    "trashLink": "Nedávno zmazané — obnoviť do 30 dní ›",
+    "methods": {
+      "title": "Spôsoby platby",
+      "lead": "Hosť si v košíku vyberie z tých, ktoré máte zapnuté. Rozbaľte spôsob, ktorý chcete upraviť.",
+      "on": "Zapnuté",
+      "off": "Vypnuté",
+      "soon": "Pripravujeme",
+      "transfer": "Prevod na účet s QR",
+      "transferOn": "Ponúkať hosťom prevod na účet",
+      "noIban": "bez IBAN",
+      "due": "lehota {hours} h",
+      "transferHow": "Hosť dostane QR kód (PAY by square) a variabilný symbol = číslo rezervácie. Keď nezaplatí v lehote, rezervácia sa sama zruší. Platbu potvrdíte v rezervácii tlačidlom „Platba prijatá“.",
+      "card": "Platba kartou (Stripe)",
+      "cardSummary": "karta, Apple Pay, Google Pay",
+      "cardHow": "Hosť zaplatí kartou, Apple Pay alebo Google Pay hneď pri rezervácii — termín je potvrdený bez čakania a nemusíte nič kontrolovať na účte. Peniaze prídu na váš účet cez Stripe; Stripe si berie poplatok za každú platbu.",
+      "connectStripe": "Prepojiť so Stripe",
+      "cardSoon": "Pripravujeme — dáme vám vedieť, keď bude k dispozícii.",
+      "stayAccount": "Na účet pobytu",
+      "stayAccountSummary": "najviac {amount}",
+      "stayAccountHow": "Doplnkové služby objednané počas pobytu hosť zaplatí pri odchode — na mieste alebo prevodom.",
+      "deposit": "Záloha a doplatok",
+      "depositHow": "Napríklad 30 % pri rezervácii a zvyšok 14 dní pred príchodom. Pripravujeme spolu s platbou kartou."
+    },
+    "connections": {
+      "more": "Ďalšie prepojenia",
+      "moreHow": "E-mail marketing (napr. Ecomail) a fakturačný nástroj pribudnú ako platené moduly."
     }
   },
   "blocks": {
@@ -1459,7 +1500,12 @@
       "stayWithServices": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {services}",
       "selectDates": "Vyberte termín",
       "guestsCount": "{count, plural, one {# hosť} few {# hostia} other {# hostí}}",
-      "paySub": "Platíte až potom."
+      "paySub": "Platíte až potom.",
+      "payMethods": "Ako zaplatíte:",
+      "payMethod": {
+        "bank_transfer": "prevodom na účet — QR kód a pokyny dostanete hneď po rezervácii, zaplatiť treba do {hours} h.",
+        "card": "kartou, Apple Pay alebo Google Pay."
+      }
     },
     "sections": {
       "highlights": {
@@ -4168,6 +4214,24 @@
       "settings": {
         "title": "Čo sú Nastavenia",
         "text": "Platba (účet, splatnosť), storno podmienky, kontakt a podpis správ, e-maily hosťom a mesačný výpis — spoločné pre všetky vaše objekty. Zmeny uložíte lištou dole."
+      },
+      "settingsPayments": {
+        "title": "Platby",
+        "text": "Ako vám hostia platia za rezerváciu. Dnes prevodom na účet s QR kódom — hosť ho dostane po rezervácii a platbu potvrdíte v rezervácii. Platba kartou cez Stripe sa pripravuje; aspoň jeden spôsob musí ostať zapnutý.",
+        "faq": "iban",
+        "more": "Kde zmením účet ›"
+      },
+      "settingsRules": {
+        "title": "Pravidlá pobytu",
+        "text": "Storno podmienky, ako dlho košík drží termín počas rezervácie a odkazy na obchodné podmienky a ochranu údajov. Hosť ich vidí v košíku a pri rezervácii s nimi súhlasí; zmena platí pre nové rezervácie.",
+        "faq": "cancelRequest",
+        "more": "Čo keď hosť chce zrušiť ›"
+      },
+      "settingsReport": {
+        "title": "Mesačný výpis",
+        "text": "Koľko minút by úkony trvali ručne (z toho výpis počíta „Za vás odpracované“) a e-mail účtovníka pre tlačidlo „Poslať účtovníkovi“. Výpis chodí 1. dňa v mesiaci.",
+        "faq": "monthlyReport",
+        "more": "Kto dostane mesačný výpis ›"
       },
       "notifications": {
         "title": "Čo sú E-maily a upozornenia",

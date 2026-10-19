@@ -151,7 +151,7 @@ export async function loadSyncState(tenantId: string): Promise<SyncState> {
       ? collisions.onlyId
         ? `/admin/collisions?panel=collision:${collisions.onlyId}`
         : "/admin/collisions"
-      : "/admin/ical";
+      : "/admin/settings?tab=prepojenia";
   const minutesAgo = last
     ? Math.max(0, Math.round((Date.now() - new Date(last).getTime()) / 60_000))
     : null;

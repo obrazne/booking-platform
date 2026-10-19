@@ -458,7 +458,7 @@ export function CalendarView({
             </>
           ) : event?.kind === "portal" ? (
             <Button asChild variant="outline">
-              <Link href="/admin/ical">{t("syncSettings")}</Link>
+              <Link href="/admin/settings?tab=prepojenia">{t("syncSettings")}</Link>
             </Button>
           ) : undefined
         }

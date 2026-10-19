@@ -25,7 +25,7 @@ async function scopeTenant(scope: PushScope): Promise<string | null | undefined>
 
 function refresh(scope: PushScope) {
   revalidatePath(
-    scope === "platform" ? "/platform/notifications" : "/admin/settings/notifications",
+    scope === "platform" ? "/platform/notifications" : "/admin/settings?tab=upozornenia",
   );
 }
 
@@ -114,7 +114,7 @@ export async function sendTestPush(
   const status = await sendToDevice(device, {
     title: t("testTitle"),
     body: t("testBody", { name: platformBrand.name }),
-    url: scope === "platform" ? "/platform/notifications" : "/admin/settings/notifications",
+    url: scope === "platform" ? "/platform/notifications" : "/admin/settings?tab=upozornenia",
     tag: "test",
   });
   refresh(scope);

@@ -1,3 +1,4 @@
+import { offeredMethods } from "@/core/payments/methods";
 import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
@@ -139,15 +140,19 @@ export const getPublicProperty = cache(async (tenant: PublicTenant, slug: string
   };
 });
 
-/** Public part of the tenant settings (payment deadline, cancellation policy, legal links). */
+/** Public part of the tenant settings (payment deadline and methods, cancellation policy, legal links). */
 export const getGuestSettings = cache(async (tenantId: string) => {
   const admin = createAdminClient();
   const { data } = await admin
     .from("tenant_settings")
-    .select("payment_due_hours, hold_minutes, cancellation_policy, terms_url, privacy_url")
+    .select(
+      "payment_due_hours, hold_minutes, cancellation_policy, terms_url, privacy_url, iban, bank_transfer_enabled, card_enabled, stripe_account_id",
+    )
     .eq("tenant_id", tenantId)
     .maybeSingle();
   return {
+    /** Ways the guest can pay (Z69): switched on and ready — never the account itself. */
+    paymentMethods: offeredMethods(data ?? {}),
     paymentDueHours: data?.payment_due_hours ?? 24,
     holdMinutes: data?.hold_minutes ?? 30,
     cancellationPolicy: (data?.cancellation_policy ?? {}) as Record<string, string>,

@@ -12,7 +12,6 @@ import {
   LifeBuoy,
   MessageCircle,
   Plus,
-  RefreshCw,
   Settings,
   Shield,
 } from "lucide-react";
@@ -162,23 +161,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           { href: "/admin/statistics/report", label: t("report.title") },
         ],
       },
-      {
-        label: t("nav.connections"),
-        icon: <RefreshCw />,
-        children: [{ href: "/admin/ical", label: t("nav.ical") }, ...extra.connections],
-      },
-      {
-        label: t("nav.settings"),
-        icon: <Settings />,
-        section: "bottom",
-        children: [
-          { href: "/admin/settings", label: t("nav.general") },
-          { href: "/admin/team", label: t("nav.team") },
-          { href: "/admin/settings/notifications", label: t("nav.notifications") },
-          { href: "/admin/settings/trash", label: t("nav.trash") },
-          ...extra.settings,
-        ],
-      },
+      // Z69 (v1.7): no Prepojenia in the menu — the calendars of the portals are Nastavenia › Prepojenia; Nastavenia is
+      // one item, its parts are tabs on the page.
+      { href: "/admin/settings", label: t("nav.settings"), icon: <Settings />, section: "bottom" },
       // Z67: Pomoc at the bottom, next to "Čo je nové" of the user block.
       { href: "/admin/help", label: t("help.nav"), icon: <LifeBuoy />, section: "bottom" },
     );
@@ -215,7 +200,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <NotificationBell
         scope="tenant"
         initial={bell}
-        settingsHref="/admin/settings/notifications"
+        settingsHref="/admin/settings?tab=upozornenia"
         media={media}
       />
     ) : null;

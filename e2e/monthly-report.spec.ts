@@ -70,7 +70,7 @@ test("monthly report: numbers as Štatistiky, months, PDF, accountant", async ({
 
     // Without the accountant's e-mail the button leads to the settings.
     await page.getByRole("link", { name: "Nastaviť účtovníka" }).click();
-    await page.waitForURL(/\/admin\/settings#vypis$/);
+    await page.waitForURL(/\/admin\/settings\?tab=vypis#vypis$/);
     await expect(page.getByLabel("E-mail účtovníka")).toBeVisible();
     await expect(page.getByLabel(/Rezervácia dokončená hosťom/)).toHaveValue(/\d+/);
   } finally {

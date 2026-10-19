@@ -15,7 +15,7 @@ export function AccountantButton({ month, email }: { month: string; email: strin
   if (!email)
     return (
       <Button asChild variant="outline">
-        <Link href="/admin/settings#vypis">
+        <Link href="/admin/settings?tab=vypis#vypis">
           <Send /> {t("accountantSetup")}
         </Link>
       </Button>

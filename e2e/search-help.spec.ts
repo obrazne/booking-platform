@@ -48,7 +48,8 @@ test("search: Ctrl K, settings with the field, help, reservations, Esc", async (
     "Kde zmením bankový účet (IBAN) pre platby?",
   );
   await box.press("Enter");
-  await page.waitForURL(/\/admin\/settings\?hl=iban/);
+  // Z69: the field is on the Platby tab of Nastavenia.
+  await page.waitForURL(/\/admin\/settings\?tab=platby&hl=iban/);
   await expect(page.locator("#iban")).toBeFocused();
   await expect(page.locator(".search-hl")).toHaveCount(1);
 

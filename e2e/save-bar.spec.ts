@@ -58,7 +58,8 @@ test("bar of unsaved changes: change → bar → save → toast; discard; leave;
       .toBe((before?.max_guests ?? 10) + 1);
 
     // Server error → a toast with the error, the change stays.
-    await page.goto(`${ADMIN_URL}/admin/settings`);
+    // Z69: the account is on the Platby tab; the search address opens its row.
+    await page.goto(`${ADMIN_URL}/admin/settings?tab=platby&hl=iban`);
     const iban = page.locator('input[name="iban"]');
     const ibanBefore = await iban.inputValue();
     await iban.fill("XX12");

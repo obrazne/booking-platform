@@ -63,6 +63,10 @@ describe("search register and Pomoc (Z67)", () => {
     expect(entryHref({ href: "/admin/settings", field: "iban" }, "")).toBe(
       "/admin/settings?hl=iban",
     );
+    // Nastavenia with tabs (Z69): the tab stays in the address.
+    expect(entryHref({ href: "/admin/settings?tab=platby", field: "iban" }, "")).toBe(
+      "/admin/settings?tab=platby&hl=iban",
+    );
     expect(entryHref({ href: "/admin/properties/{property}", field: "door_code" }, "p1")).toBe(
       "/admin/properties/p1?hl=door_code",
     );

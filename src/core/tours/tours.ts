@@ -32,7 +32,7 @@ export const TOURS: Record<TourKey, Tour> = {
       // v1.2: menu with groups, Statistics, bell.
       { id: "menu", href: "/admin" },
       { id: "statistics", href: "/admin/statistics" },
-      { id: "notifications", href: "/admin/settings/notifications" },
+      { id: "notifications", href: "/admin/settings?tab=upozornenia" },
       { id: "dashboard", href: "/admin" },
       { id: "reservations", href: "/admin/reservations" },
       { id: "payment", href: "/admin/reservations?status=pending_payment" },
@@ -40,7 +40,7 @@ export const TOURS: Record<TourKey, Tour> = {
       { id: "manual", href: "/admin/reservations/new" },
       { id: "property", href: "/admin/properties" },
       { id: "services", href: "/admin/services" },
-      { id: "ical", href: "/admin/ical" },
+      { id: "ical", href: "/admin/settings?tab=prepojenia" },
       { id: "settings", href: "/admin/settings" },
     ],
   },

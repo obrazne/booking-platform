@@ -1,5 +1,6 @@
 "use client";
 
+import type { PaymentMethodKey } from "@/core/payments/methods";
 import {
   createContext,
   useCallback,
@@ -39,6 +40,8 @@ export type BookingData = {
   reviewsUrl: string | null;
   settings: {
     paymentDueHours: number;
+    /** Ways to pay that are on (Z69); the cart lists them. */
+    paymentMethods: PaymentMethodKey[];
     holdMinutes: number;
     cancellationPolicy: string;
     /** First sentence of the policy for the side panel. */

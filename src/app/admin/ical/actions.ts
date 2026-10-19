@@ -24,14 +24,14 @@ export async function addChannel(_: ActionResult, form: FormData): Promise<Actio
     .from("ical_channels")
     .insert({ ...parsed.data, tenant_id: active.tenantId });
   if (error) return fail(dbErrorKey(error));
-  revalidatePath("/admin/ical");
+  revalidatePath("/admin/settings");
   return ok();
 }
 
 export async function deleteChannel(id: string) {
   const supabase = await createClient();
   await supabase.from("ical_channels").delete().eq("id", id);
-  revalidatePath("/admin/ical");
+  revalidatePath("/admin/settings");
   revalidatePath("/admin/calendar");
 }
 
@@ -48,7 +48,7 @@ export async function syncNow(): Promise<ActionResult> {
     mine.length,
     mine.map((c) => c.id),
   );
-  revalidatePath("/admin/ical");
+  revalidatePath("/admin/settings");
   revalidatePath("/admin/calendar");
   return ok();
 }

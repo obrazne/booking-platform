@@ -28,6 +28,7 @@ export function ExpandableList({
   addLabel,
   newRow,
   empty,
+  defaultOpen,
 }: {
   heading?: ReactNode;
   description?: ReactNode;
@@ -36,10 +37,14 @@ export function ExpandableList({
   /** Content of the new row (the add form); title shown in its header. */
   newRow?: { title: ReactNode; content: ReactNode };
   empty?: ReactNode;
+  /** Row open from the start — e.g. the one with the field the search highlights (`?hl=`). */
+  defaultOpen?: string | null;
 }) {
-  const [open, setOpen] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(defaultOpen ?? null);
   // Rows opened once stay mounted while collapsed — unsaved changes of their form keep the save bar (rule 3).
-  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
+  const [seen, setSeen] = useState<ReadonlySet<string>>(
+    () => new Set(defaultOpen ? [defaultOpen] : []),
+  );
   const toggle = (id: string) => {
     setOpen(open === id ? null : id);
     if (!seen.has(id)) setSeen(new Set(seen).add(id));

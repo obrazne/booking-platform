@@ -880,6 +880,15 @@ function StepPayment({
         <BackPill onClick={() => b.setStep(2)}>{t("cart.back")}</BackPill>
       </div>
       <SectionTitle title={t("cart.payTitle")} sub={t("cart.paySub")} />
+      {/* Z69: only the ways to pay the owner has switched on (today the bank transfer with QR). */}
+      {data.settings.paymentMethods.length ? (
+        <p className="text-ink text-sm">
+          <span className="font-bold">{t("cart.payMethods")}</span>{" "}
+          {data.settings.paymentMethods
+            .map((m) => t(`cart.payMethod.${m}`, { hours: data.settings.paymentDueHours }))
+            .join(" · ")}
+        </p>
+      ) : null}
       {failed ? <p className="text-sm text-[#b5532f]">{t("booking.takenNow")}</p> : null}
       {/* The summary on the right has the breakdown; phones see it here. */}
       <dl className="grid gap-2 text-sm lg:hidden">

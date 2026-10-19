@@ -11,6 +11,6 @@ export async function setMonthlyReportEmail(on: boolean): Promise<{ ok: boolean 
   const { error } = await supabase
     .from("tenant_settings")
     .upsert({ tenant_id: active.tenantId, monthly_report_email: Boolean(on) });
-  revalidatePath("/admin/settings/notifications");
+  revalidatePath("/admin/settings");
   return { ok: !error };
 }

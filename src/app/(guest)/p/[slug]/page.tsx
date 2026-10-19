@@ -180,6 +180,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         reviewsUrl: detail.reviewsUrl,
         settings: {
           paymentDueHours: settings.paymentDueHours,
+          paymentMethods: settings.paymentMethods,
           holdMinutes: settings.holdMinutes,
           cancellationPolicy: policy,
           cancellationShort: policyFirst || null,

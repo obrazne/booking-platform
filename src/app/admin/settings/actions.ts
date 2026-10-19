@@ -6,6 +6,7 @@ import { dbErrorKey, fail, ok, requireTenant } from "@/core/admin/action";
 import type { ActionResult } from "@/core/admin/form";
 import { parseMinorUnits } from "@/core/format/format";
 import { localizedFromForm } from "@/core/i18n/localized";
+import { keepsOneMethod } from "@/core/payments/methods";
 import { getTenantInfo } from "@/core/tenant/info";
 import { bandsToJson, parseBands, type CancellationBand } from "@/core/booking/cancellation";
 import { WORK_KEYS } from "@/core/reports/monthly-view";
@@ -87,10 +88,26 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
           }
           return days.sort((a, b) => b - a);
         }),
+      // Payment methods (Z69): checkboxes, present only on the Platby tab (marker `has_payment_methods`).
+      bank_transfer_enabled: z.preprocess((v) => v === "on", z.boolean()),
     })
-    .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
+    // Z69: Nastavenia has tabs, each with its own form — only the fields of the form are saved; the others stay.
+    .partial()
+    .safeParse({
+      ...Object.fromEntries(form),
+      vat_payer: form.has("has_vat_payer") ? form.get("vat_payer") : undefined,
+      bank_transfer_enabled: form.has("has_payment_methods")
+        ? form.get("bank_transfer_enabled")
+        : undefined,
+    });
   if (!parsed.success) return fail("invalid");
-  const { stay_account_limit, upsell_offer_days, ...settings } = parsed.data;
+  const { stay_account_limit, upsell_offer_days, ...fields } = parsed.data;
+  const settings = Object.fromEntries(
+    Object.entries(fields).filter(([, v]) => v !== undefined),
+  ) as Partial<typeof fields>;
+  // At least one way to pay a reservation stays on (also a rule of the database).
+  if (form.has("has_payment_methods") && !keepsOneMethod({ ...settings, card_enabled: false }))
+    return fail("onePaymentMethod");
   // Minutes per task of the monthly report (Z62) — only when the form had them.
   let reportMinutes: Record<string, number> | undefined;
   if (form.has("minutes_email")) {
@@ -102,6 +119,8 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     }
   }
   // Storno bands (after Z44): rows with both values; an empty row is skipped, a half-filled one is an error.
+  // Only on the tab with the cancellation policy (Z69).
+  const hasRules = form.has("band_days_0");
   const bands: CancellationBand[] = [];
   for (let i = 0; i < 4; i++) {
     const d = String(form.get(`band_days_${i}`) ?? "").trim();
@@ -152,8 +171,12 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     ...(google?.success ? { google_review_url: google.data } : {}),
     ...(stay_account_limit === undefined ? {} : { stay_account_limit_cents: stay_account_limit }),
     ...(upsell_offer_days === undefined ? {} : { upsell_offer_days }),
-    cancellation_bands: bandsToJson(bands),
-    cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
+    ...(hasRules
+      ? {
+          cancellation_bands: bandsToJson(bands),
+          cancellation_policy: localizedFromForm(form, "cancellation_policy", tenant.locales),
+        }
+      : {}),
   });
   if (error) return fail(dbErrorKey(error));
   revalidatePath("/admin/settings");

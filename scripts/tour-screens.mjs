@@ -224,7 +224,7 @@ try {
     manual: ["/admin/reservations/new"],
     property: [`/admin/properties/${PROPERTY}/page`],
     services: ["/admin/services"],
-    ical: ["/admin/ical"],
+    ical: ["/admin/settings?tab=prepojenia"],
     settings: ["/admin/settings"],
   };
   for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, ...shots[s.id]);

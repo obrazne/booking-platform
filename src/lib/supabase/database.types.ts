@@ -3100,9 +3100,11 @@ export type Database = {
           account_holder: string | null
           accountant_email: string | null
           arrival_email_days_before: number
+          bank_transfer_enabled: boolean
           bic: string | null
           cancellation_bands: Json
           cancellation_policy: Json
+          card_enabled: boolean
           checkin_retention_days: number
           city_tax_cents: number
           city_tax_exempt_under: number
@@ -3122,6 +3124,7 @@ export type Database = {
           report_minutes: Json
           reviews_url: string | null
           stay_account_limit_cents: number
+          stripe_account_id: string | null
           tenant_id: string
           terms_url: string | null
           updated_at: string
@@ -3134,9 +3137,11 @@ export type Database = {
           account_holder?: string | null
           accountant_email?: string | null
           arrival_email_days_before?: number
+          bank_transfer_enabled?: boolean
           bic?: string | null
           cancellation_bands?: Json
           cancellation_policy?: Json
+          card_enabled?: boolean
           checkin_retention_days?: number
           city_tax_cents?: number
           city_tax_exempt_under?: number
@@ -3156,6 +3161,7 @@ export type Database = {
           report_minutes?: Json
           reviews_url?: string | null
           stay_account_limit_cents?: number
+          stripe_account_id?: string | null
           tenant_id: string
           terms_url?: string | null
           updated_at?: string
@@ -3168,9 +3174,11 @@ export type Database = {
           account_holder?: string | null
           accountant_email?: string | null
           arrival_email_days_before?: number
+          bank_transfer_enabled?: boolean
           bic?: string | null
           cancellation_bands?: Json
           cancellation_policy?: Json
+          card_enabled?: boolean
           checkin_retention_days?: number
           city_tax_cents?: number
           city_tax_exempt_under?: number
@@ -3190,6 +3198,7 @@ export type Database = {
           report_minutes?: Json
           reviews_url?: string | null
           stay_account_limit_cents?: number
+          stripe_account_id?: string | null
           tenant_id?: string
           terms_url?: string | null
           updated_at?: string

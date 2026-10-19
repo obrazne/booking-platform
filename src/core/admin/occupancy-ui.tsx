@@ -34,7 +34,7 @@ export async function SyncLine({ sync }: { sync: SyncState }) {
         <span className="size-2 rounded-full bg-[#c9cdd2]" />
         {t("none")}{" "}
         <Link
-          href="/admin/ical"
+          href="/admin/settings?tab=prepojenia"
           className="text-ink font-medium underline-offset-4 hover:underline"
         >
           {t("setUp")}
