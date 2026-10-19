@@ -200,7 +200,7 @@ Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
    do riadiaceho centra (zoznam + upozornenie v zvončeku správcu). Doba odpovede: **žiadny sľub v texte**, kým ju Martin neurčí (Otázky).
 4. Odkazy z vysvetliviek ⓘ (Z66) na príslušné otázky v Pomoci.
 
-### Z68 [B] — Hostia: zoznam, karta hosťa, súhlasy a export (pripomienky 52, 53; doska 17) — po Z67
+### Z68 [B] 🔄 — Hostia: zoznam, karta hosťa, súhlasy a export (pripomienky 52, 53; doska 17) — po Z67
 Návrh `docs/vizual-administracia.md` → **v1.6** (prečítaj celé), doska 17 `Hostia`. Jadro, nie modul. Dáta: `guests`, `guest_consent_events`, rezervácie.
 1. **Rezervácie › Hostia:** zoznam so stĺpcami, filtrami, hľadaním a stránkovaním v DB (pravidlo 7); karta hosťa ako `RecordPanel`
    (`?panel=guest:<id>`), odkaz na hosťa aj z panelu rezervácie a z hľadania (Z67 — skupina Rezervácie a hostia).
