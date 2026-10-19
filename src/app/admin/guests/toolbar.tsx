@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Download, Info, Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,30 +16,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { ActionForm, Field } from "@/core/admin/form";
 import { createGuest } from "./actions";
-
-/** ⓘ next to the title: what Hostia are, with the question of Pomoc (Z66 will bring one component for all pages). */
-export function GuestsInfo({ helpHref }: { helpHref: string }) {
-  const t = useTranslations("guests");
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label={t("infoLabel")}
-          className="inline-flex size-6 items-center justify-center rounded-full text-[#5a6672] transition-colors hover:bg-[#e6efeb] hover:text-[#2f5d50]"
-        >
-          <Info className="size-[18px]" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="grid w-80 gap-2 text-sm leading-relaxed">
-        <p>{t("info")}</p>
-        <Link href={helpHref} className="text-ink font-medium underline underline-offset-4">
-          {t("infoMore")}
-        </Link>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 /** "+ Pridať hosťa" and Export (two choices with counts, CSV). */
 export function GuestsActions({ consent, all }: { consent: number; all: number }) {

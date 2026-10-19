@@ -37,6 +37,7 @@ const OWNER_PAGES = [
   "/admin/settings",
   "/admin/settings/notifications",
   "/admin/settings/trash",
+  "/admin/guests",
   "/admin/properties",
   `/admin/properties/${TENANT_PROPERTY}`,
   `/admin/properties/${TENANT_PROPERTY}/pricing`,

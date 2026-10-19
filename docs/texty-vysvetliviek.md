@@ -21,6 +21,11 @@ Odkaz: Ako potvrdiť zaplatenie prevodom › → Pomoc: „Hosť zaplatil prevod
 **Ručná rezervácia** — Pre hosťa, ktorý sa ozval telefonicky alebo e-mailom. Termín sa hneď zavrie na vašej stránke, portály ho zavrú pri svojej najbližšej synchronizácii. Do tržieb sa počíta rovnako ako priama rezervácia.
 Odkaz: Ako zapísať rezerváciu z telefónu › → Pomoc: „Ako zapíšem rezerváciu, ktorú mi hosť dohodol telefonicky?“
 
+### Rezervácie › Hostia `guests`
+
+**Čo sú Hostia** — Kontakty z priamych rezervácií a ručne pridaní hostia. Súhlas s ponukami zapína len hosť sám — vy ho môžete odvolať v jeho mene alebo mu poslať žiadosť. Na newsletter exportujte len hostí so súhlasom.
+Odkaz: Ako exportovať do Ecomailu › → Pomoc: „Ako exportujem kontakty do Ecomailu alebo SmartEmailingu?“
+
 ### Rezervácie › Príchody  `arrivals`
 **Čo sú Príchody** — Najbližšie príchody hostí so stavom online check-inu a hlásenia cudzincov. Cudzinca treba nahlásiť do 5 dní od ubytovania — tu vidíte, komu ešte chýba, a stiahnete podklad na hlásenie.
 

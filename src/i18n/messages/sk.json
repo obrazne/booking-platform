@@ -4095,6 +4095,12 @@
         "faq": "phoneBooking",
         "more": "Ako zapísať rezerváciu z telefónu ›"
       },
+      "guests": {
+        "title": "Čo sú Hostia",
+        "text": "Kontakty z priamych rezervácií a ručne pridaní hostia. Súhlas s ponukami zapína len hosť sám — vy ho môžete odvolať v jeho mene alebo mu poslať žiadosť. Na newsletter exportujte len hostí so súhlasom.",
+        "faq": "exportContacts",
+        "more": "Ako exportovať do Ecomailu ›"
+      },
       "arrivals": {
         "title": "Čo sú Príchody",
         "text": "Najbližšie príchody hostí so stavom online check-inu a hlásenia cudzincov. Cudzinca treba nahlásiť do 5 dní od ubytovania — tu vidíte, komu ešte chýba, a stiahnete podklad na hlásenie."

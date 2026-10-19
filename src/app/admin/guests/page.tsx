@@ -7,12 +7,11 @@ import { readPaging } from "@/core/admin/paging";
 import { PanelLink, UrlPanel } from "@/core/admin/record-panel";
 import { formatDate, formatMoney } from "@/core/format/format";
 import { guestCounts, guestListParams, queryGuests } from "@/core/guests/query";
-import { helpHref } from "@/core/help/faqs";
 import { money } from "@/core/money/money";
 import { getTenantInfo } from "@/core/tenant/info";
 import { cn } from "@/lib/utils";
 import { loadGuestPanel } from "./panel-loader";
-import { GuestsActions, GuestsInfo } from "./toolbar";
+import { GuestsActions } from "./toolbar";
 
 /** Changes with every server render — tells the open panel to load its card again after a change. */
 function renderVersion(): string {
@@ -45,11 +44,8 @@ export default async function GuestsPage({ searchParams }: PageProps<"/admin/gue
     <div data-bleed>
       <PageHeader
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
-        title={
-          <span className="inline-flex items-center gap-2.5">
-            {t("title")} <GuestsInfo helpHref={helpHref("exportContacts")} />
-          </span>
-        }
+        title={t("title")}
+        help="guests"
         actions={<GuestsActions consent={counts.consent} all={counts.all} />}
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
