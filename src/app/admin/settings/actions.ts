@@ -8,6 +8,7 @@ import { parseMinorUnits } from "@/core/format/format";
 import { localizedFromForm } from "@/core/i18n/localized";
 import { getTenantInfo } from "@/core/tenant/info";
 import { bandsToJson, parseBands, type CancellationBand } from "@/core/booking/cancellation";
+import { WORK_KEYS } from "@/core/reports/monthly-view";
 import { createClient } from "@/lib/supabase/server";
 
 const text = (max: number) =>
@@ -47,6 +48,8 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         .transform((v) => v.replace(/\r\n?/g, "\n").trim())
         .pipe(z.string().max(500))
         .transform((v) => v || null),
+      // Mesačný výpis (Z62): the accountant's e-mail ("Poslať účtovníkovi").
+      accountant_email: z.union([z.email(), z.literal("")]).transform((v) => v || null),
       arrival_email_days_before: z.coerce.number().int().min(0).max(30),
       vat_payer: z.preprocess((v) => v === "on", z.boolean()),
       // Percent in the form, basis points in the database.
@@ -88,6 +91,16 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
     .safeParse({ ...Object.fromEntries(form), vat_payer: form.get("vat_payer") });
   if (!parsed.success) return fail("invalid");
   const { stay_account_limit, upsell_offer_days, ...settings } = parsed.data;
+  // Minutes per task of the monthly report (Z62) — only when the form had them.
+  let reportMinutes: Record<string, number> | undefined;
+  if (form.has("minutes_email")) {
+    reportMinutes = {};
+    for (const k of WORK_KEYS) {
+      const n = Number(form.get(`minutes_${k}`));
+      if (!Number.isInteger(n) || n < 0 || n > 600) return fail("invalid");
+      reportMinutes[k] = n;
+    }
+  }
   // Storno bands (after Z44): rows with both values; an empty row is skipped, a half-filled one is an error.
   const bands: CancellationBand[] = [];
   for (let i = 0; i < 4; i++) {
@@ -133,6 +146,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
   const { error } = await supabase.from("tenant_settings").upsert({
     tenant_id: tenant.id,
     ...settings,
+    ...(reportMinutes ? { report_minutes: reportMinutes } : {}),
     ...checkin,
     ...(topics ? { message_topics: topics.length ? topics.map((sk) => ({ sk })) : null } : {}),
     ...(google?.success ? { google_review_url: google.data } : {}),

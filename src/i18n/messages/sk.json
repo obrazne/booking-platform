@@ -1152,6 +1152,19 @@
       "whatsapp": "WhatsApp (číslo s predvoľbou)",
       "signature": "Podpis správ",
       "signatureHint": "Vloží sa do správ hosťom namiesto premennej Podpis, napr. „Jana Hladká · Chalet STRÖMY · +421 900 000 000“. Prázdne = meno kontaktnej osoby."
+    },
+    "report": {
+      "title": "Mesačný výpis",
+      "hint": "Koľko minút by úkon trval ručne — z toho sa počíta „Za vás odpracované“. Výpis chodí e-mailom 1. dňa v mesiaci (vypnete ho v E-maily a upozornenia).",
+      "minutes": {
+        "email": "E-mail hosťovi odoslaný automaticky (min)",
+        "booking": "Rezervácia dokončená hosťom bez zásahu (min)",
+        "sync": "Zosúladenie kalendárov po rezervácii (min)",
+        "checkin": "Dokončený online check-in (min)",
+        "order": "Objednávka doplnkovej služby (min)"
+      },
+      "accountant": "E-mail účtovníka",
+      "accountantHint": "Pre tlačidlo „Poslať účtovníkovi“ — výpis príde v PDF."
     }
   },
   "blocks": {
@@ -2908,7 +2921,12 @@
         "account_deletion": "Hosť žiada zrušiť účet",
         "message_new": "Nová správa od hosťa (e-mail o 15 min, ak ju nikto neotvoril)"
       },
-      "onlyExpired": "len pri neuhradení"
+      "onlyExpired": "len pri neuhradení",
+      "reportEmail": "Mesačný výpis e-mailom",
+      "reportEmailHint": "1. deň v mesiaci ráno za predchádzajúci mesiac, s PDF v prílohe.",
+      "reportEmailOn": "Mesačný výpis budete dostávať e-mailom.",
+      "reportEmailOff": "Mesačný výpis e-mailom nebude chodiť.",
+      "reportEmailFailed": "Nastavenie sa nepodarilo uložiť."
     }
   },
   "history": {
@@ -3267,5 +3285,111 @@
     "closed": "Termín zavretý na portáli (nie pobyt)",
     "portalBadge": "z portálu",
     "phoneLabel": "Telefón hosťa (posledné 4 číslice)"
+  },
+  "report": {
+    "title": "Mesačný výpis",
+    "kicker": "Mesačný výpis · {month}",
+    "headline": "Priamo {revenue}. Bez provízie.",
+    "headlineNone": "Tento mesiac bez priamych pobytov.",
+    "sub": "{tenant} · výpis príde aj e-mailom každý 1. deň v mesiaci",
+    "prev": "Predchádzajúci mesiac",
+    "next": "Nasledujúci mesiac",
+    "pdf": "Stiahnuť PDF",
+    "accountant": "Poslať účtovníkovi",
+    "accountantSetup": "Nastaviť účtovníka",
+    "accountantSent": "Výpis sme poslali na {email}.",
+    "accountantFailed": "Výpis sa nepodarilo poslať.",
+    "kpi": {
+      "revenue": "Tržby priamo",
+      "occupancy": "Obsadenosť",
+      "avg": "Priemer za noc",
+      "stays": "Pobyty"
+    },
+    "vsLastYear": "oproti {month}",
+    "noLastYear": "minulý rok bez údajov",
+    "points": "b.",
+    "occupancyNote": "{occupied} z {available} nocí, aj portály",
+    "avgNote": "priame pobyty",
+    "staysNote": "{direct} priame · {portal} z portálov",
+    "savedTitle": "Ušetrené na províziách",
+    "savedText": "Toľko by si z {count, plural, one {vášho # priameho pobytu} few {vašich # priamych pobytov} other {vašich # priamych pobytov}} vzal portál pri provízii {commission}. Zostali vám.",
+    "savedNone": "Tento mesiac nebol priamy pobyt — nebolo z čoho platiť províziu.",
+    "savedNoCommission": "Províziu portálu máte v nastaveniach 0 % — úsporu nepočítame.",
+    "sinceJanuary": "Od januára {year}",
+    "shareLabel": "Podiel priamych nocí",
+    "shareWithLastYear": "{share} · v {month}: {before}",
+    "contactsLabel": "Vlastné kontakty na hostí",
+    "contactsValue": "{count} · +{added} tento mesiac",
+    "commissionLink": "Províziu portálu upravíte v Nastaveniach ›",
+    "workTitle": "{time} urobil systém sám.",
+    "workLabel": "Za vás odpracované",
+    "work": {
+      "email": "{count, plural, one {# e-mail hosťom} few {# e-maily hosťom} other {# e-mailov hosťom}}",
+      "emailDetail": "potvrdenia, pripomienky platby, pokyny k príchodu, správy",
+      "booking": "{count, plural, one {# rezervácia bez telefonátu} few {# rezervácie bez telefonátu} other {# rezervácií bez telefonátu}}",
+      "bookingDetail": "termín, cenu a služby si hostia vybrali sami",
+      "sync": "Kalendáre zosúladené",
+      "syncDetail": "po rezerváciách na webe aj na portáloch",
+      "checkin": "{count, plural, one {# online check-in} few {# online check-iny} other {# online check-inov}}",
+      "checkinDetail": "údaje hostí vyplnené vopred",
+      "order": "{count, plural, one {# objednávka služby} few {# objednávky služieb} other {# objednávok služieb}}",
+      "orderDetail": "prijaté a pripísané na účet pobytu"
+    },
+    "human": {
+      "payments": "{count, plural, one {# klik „Platba prijatá“} few {# kliky „Platba prijatá“} other {# klikov „Platba prijatá“}}",
+      "replies": "{count, plural, one {# odpoveď hosťovi} few {# odpovede hosťom} other {# odpovedí hosťom}}",
+      "collisions": "{count, plural, one {# vyriešená kolízia} few {# vyriešené kolízie} other {# vyriešených kolízií}}",
+      "manual": "{count, plural, one {# ručná rezervácia} few {# ručné rezervácie} other {# ručných rezervácií}}"
+    },
+    "humanList": "Potrebovalo vás: {list}.",
+    "humanNone": "Potrebovalo vás: nič.",
+    "workHint": "Odhad: koľko minút by daný úkon trval ručne. Časy sú v Nastaveniach → Mesačný výpis.",
+    "workNone": "Tento mesiac systém nemal čo robiť za vás.",
+    "channelsTitle": "Kde sa predalo {sold} z {total} nocí",
+    "channelsHint": "Booking a Airbnb sú len termíny z ich kalendárov — ceny od nich nemáme.",
+    "channel": {
+      "direct": "Priamo",
+      "other": "Iné kalendáre",
+      "free": "Voľné"
+    },
+    "nightsCount": "{count, plural, one {# noc} few {# noci} other {# nocí}}",
+    "nextTitle": "Výhľad · {month}",
+    "nextRevenue": "{revenue} potvrdené",
+    "nextDetail": "{count, plural, one {# priamy pobyt} few {# priame pobyty} other {# priamych pobytov}} · obsadenosť zatiaľ {occupancy}",
+    "weekendsLabel": "Voľné víkendy",
+    "weekendsHint": "ešte sa dajú ponúknuť hosťom, ktorí už boli",
+    "noWeekends": "žiadne — víkendy sú obsadené",
+    "waitingLabel": "Čaká na vás",
+    "waitingNone": "Nič",
+    "waitingNoneHint": "všetky platby a žiadosti sú vybavené",
+    "waiting": {
+      "unpaid": "{count, plural, one {# nezaplatená rezervácia} few {# nezaplatené rezervácie} other {# nezaplatených rezervácií}}",
+      "cancel_requests": "{count, plural, one {# žiadosť o zrušenie} few {# žiadosti o zrušenie} other {# žiadostí o zrušenie}}",
+      "collisions": "{count, plural, one {# kolízia kalendárov} few {# kolízie kalendárov} other {# kolízií kalendárov}}",
+      "messages": "{count, plural, one {# správa hosťa bez odpovede} few {# správy hostí bez odpovede} other {# správ hostí bez odpovede}}"
+    },
+    "note": "Tržby = priame rezervácie podľa dátumu pobytu (noci v mesiaci {month}), vrátane služieb v rezervácii, bez dane z ubytovania. Obsadenosť počíta aj noci z Bookingu a Airbnb. Úspora = tržby z priamych pobytov × provízia portálu {commission} z vašich nastavení. Podklad, nie účtovný doklad.",
+    "duration": {
+      "hm": "{h} h {m} min",
+      "h": "{h} {h, plural, one {hodina} few {hodiny} other {hodín}}",
+      "m": "{m} min"
+    },
+    "empty": "Pre tento mesiac zatiaľ nie sú žiadne údaje.",
+    "ready": "Výpis za {month} je pripravený",
+    "readyLink": "Otvoriť výpis →",
+    "navOverview": "Čísla",
+    "emailSubject": "Váš {month}: {revenue} priamo, {saved} ušetrených na províziách",
+    "emailSubjectNone": "Váš {month}: mesačný výpis",
+    "emailGreeting": "Dobrý deň, {name}, takto vyzeral {month}:",
+    "emailGreetingNoName": "Dobrý deň, takto vyzeral {month}:",
+    "emailSaved": "Od januára {ytd}.",
+    "emailShare": "Podiel priamych nocí {share}.",
+    "emailOccupancy": "Obsadenosť",
+    "emailAvg": "Priemerná cena za noc",
+    "emailStays": "Pobyty",
+    "emailWork": "Za vás odpracované",
+    "emailOutlook": "V mesiaci {month} máte zatiaľ {revenue} potvrdených. Voľné víkendy: {weekends}.",
+    "emailButton": "Otvoriť celý výpis",
+    "emailFoot": "Výpis v PDF je v prílohe — môžete ho rovno preposlať účtovníkovi. Úspora = tržby z priamych pobytov × provízia {commission} z vašich nastavení. Výpis chodí 1. dňa v mesiaci; vypnúť ho môžete v Nastaveniach → E-maily a upozornenia."
   }
 }

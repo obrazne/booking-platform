@@ -2899,6 +2899,7 @@ export type Database = {
       tenant_settings: {
         Row: {
           account_holder: string | null
+          accountant_email: string | null
           arrival_email_days_before: number
           bic: string | null
           cancellation_bands: Json
@@ -2914,10 +2915,12 @@ export type Database = {
           iban: string | null
           message_signature: string | null
           message_topics: Json | null
+          monthly_report_email: boolean
           owner_notification_email: string | null
           payment_due_hours: number
           portal_commission_bp: number
           privacy_url: string | null
+          report_minutes: Json
           reviews_url: string | null
           stay_account_limit_cents: number
           tenant_id: string
@@ -2930,6 +2933,7 @@ export type Database = {
         }
         Insert: {
           account_holder?: string | null
+          accountant_email?: string | null
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_bands?: Json
@@ -2945,10 +2949,12 @@ export type Database = {
           iban?: string | null
           message_signature?: string | null
           message_topics?: Json | null
+          monthly_report_email?: boolean
           owner_notification_email?: string | null
           payment_due_hours?: number
           portal_commission_bp?: number
           privacy_url?: string | null
+          report_minutes?: Json
           reviews_url?: string | null
           stay_account_limit_cents?: number
           tenant_id: string
@@ -2961,6 +2967,7 @@ export type Database = {
         }
         Update: {
           account_holder?: string | null
+          accountant_email?: string | null
           arrival_email_days_before?: number
           bic?: string | null
           cancellation_bands?: Json
@@ -2976,10 +2983,12 @@ export type Database = {
           iban?: string | null
           message_signature?: string | null
           message_topics?: Json | null
+          monthly_report_email?: boolean
           owner_notification_email?: string | null
           payment_due_hours?: number
           portal_commission_bp?: number
           privacy_url?: string | null
+          report_minutes?: Json
           reviews_url?: string | null
           stay_account_limit_cents?: number
           tenant_id?: string
@@ -3609,6 +3618,7 @@ export type Database = {
       messages_review_rule: { Args: { p_tenant_id: string }; Returns: string }
       messages_tick: { Args: never; Returns: number }
       messages_waiting: { Args: { p_tenant_id: string }; Returns: number }
+      monthly_reports_tick: { Args: never; Returns: number }
       my_review_eligibility: {
         Args: { p_reservation_id: string }
         Returns: string
@@ -3914,6 +3924,10 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      tenant_monthly_report: {
+        Args: { p_month: string; p_tenant_id: string }
+        Returns: Json
       }
       tenant_monthly_stats: {
         Args: { p_from: string; p_tenant_id: string; p_to: string }

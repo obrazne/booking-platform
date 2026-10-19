@@ -11,6 +11,11 @@ import { getTenantInfo } from "@/core/tenant/info";
 import { isModuleEnabled } from "@/core/modules/registry";
 import { parseBands } from "@/core/booking/cancellation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  DEFAULT_MINUTES,
+  WORK_KEYS as REPORT_TASKS,
+  type WorkKey,
+} from "@/core/reports/monthly-view";
 import { saveSettings } from "./actions";
 
 export default async function SettingsPage() {
@@ -35,6 +40,8 @@ export default async function SettingsPage() {
     .eq("tenant_id", tenant.id)
     .maybeSingle();
   const bands = parseBands(s?.cancellation_bands);
+  const minutes = (s?.report_minutes ?? {}) as Partial<Record<WorkKey, number>>;
+  const minutesOf = (k: WorkKey) => minutes[k] ?? DEFAULT_MINUTES[k];
 
   return (
     <div className="grid max-w-3xl gap-6">
@@ -267,6 +274,39 @@ export default async function SettingsPage() {
                 />
               </Field>
             </div>
+          </CardContent>
+        </Card>
+        {/* Mesačný výpis (Z62): minutes per task of "Za vás odpracované" and the accountant's e-mail. */}
+        <Card id="vypis" className="scroll-mt-24">
+          <CardHeader>
+            <CardTitle>{t("report.title")}</CardTitle>
+            <CardDescription>{t("report.hint")}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            {REPORT_TASKS.map((k) => (
+              <Field key={k} label={t(`report.minutes.${k}`)} htmlFor={`minutes_${k}`}>
+                <Input
+                  id={`minutes_${k}`}
+                  name={`minutes_${k}`}
+                  type="number"
+                  min={0}
+                  max={600}
+                  defaultValue={minutesOf(k)}
+                />
+              </Field>
+            ))}
+            <Field
+              label={t("report.accountant")}
+              htmlFor="accountant_email"
+              hint={t("report.accountantHint")}
+            >
+              <Input
+                id="accountant_email"
+                name="accountant_email"
+                type="email"
+                defaultValue={s?.accountant_email ?? ""}
+              />
+            </Field>
           </CardContent>
         </Card>
         <Card>

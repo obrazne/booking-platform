@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadEmailContext } from "./context";
+import { monthlyReportMail } from "./monthly-report";
 import { isReservedRecipient, sendEmail } from "./send";
 import { renderEmail, renderIcalConflict, type EmailKind } from "./templates";
 
@@ -38,6 +39,32 @@ export async function processEmailQueue(
           await admin
             .from("email_outbox")
             .update({ status: "skipped", last_error: "no recipient" })
+            .eq("id", job.id);
+          stats.skipped += 1;
+          continue;
+        }
+        const result = await sendEmail(mail);
+        await admin.rpc("finish_email_job", {
+          p_id: job.id,
+          p_ok: result.ok,
+          p_provider_id: result.ok ? result.id : "",
+          p_error: result.ok ? "" : result.error,
+          p_to: mail.to,
+        });
+        if (result.ok) stats.sent += 1;
+        else stats.failed += 1;
+        continue;
+      }
+      if (job.kind === "owner_monthly_report") {
+        // The monthly report of the previous month (Z62): to the owner, with the PDF.
+        const month = (job.payload as { month?: string } | null)?.month ?? "";
+        const mail = /^\d{4}-\d{2}-01$/.test(month)
+          ? await monthlyReportMail(job.tenant_id, month)
+          : null;
+        if (!mail) {
+          await admin
+            .from("email_outbox")
+            .update({ status: "skipped", last_error: "no recipient or switched off" })
             .eq("id", job.id);
           stats.skipped += 1;
           continue;

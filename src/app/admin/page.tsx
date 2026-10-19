@@ -14,6 +14,7 @@ import { MiniRevenueChart } from "@/core/stats/mini-chart";
 import { addDays, diffDays, isoWeekday, todayIso } from "@/core/pricing/dates";
 import { getActiveMembership } from "@/core/tenant/active";
 import { getTenantInfo } from "@/core/tenant/info";
+import { shiftMonth } from "@/core/reports/monthly-view";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { MarkPaidButton } from "./reservations/quick-actions";
@@ -151,6 +152,14 @@ export default async function AdminDashboard() {
     timeZone: tenant.timezone,
   });
 
+  // Z62: the report of the previous month (card in the first days of the month).
+  const reportMonth = shiftMonth(`${today.slice(0, 7)}-01`, -1);
+  const reportMonthLabel = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    timeZone: "UTC",
+  }).format(new Date(`${reportMonth}T00:00:00Z`));
+  const trep = await getTranslations("report");
+
   return (
     <div data-bleed>
       <div className="grid w-full max-w-[1180px] gap-9 px-5 pt-7 pb-14 md:px-10 md:pt-9">
@@ -167,6 +176,17 @@ export default async function AdminDashboard() {
             </span>
           </h1>
         </div>
+
+        {/* Z62: the monthly report of the previous month is ready — the first 7 days of the month. */}
+        {Number(today.slice(8, 10)) <= 7 ? (
+          <Link
+            href={`/admin/statistics/report?month=${reportMonth.slice(0, 7)}`}
+            className="surface flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition-colors hover:border-[#c9c5ba]"
+          >
+            <span className="text-ink font-bold">{trep("ready", { month: reportMonthLabel })}</span>
+            <span className="text-primary text-sm font-bold">{trep("readyLink")}</span>
+          </Link>
+        ) : null}
 
         {pending.length + asks.length ? (
           <section aria-label={t("waitingLabel")} className="grid gap-2.5">

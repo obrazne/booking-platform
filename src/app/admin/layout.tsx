@@ -146,7 +146,15 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         icon: <Gift />,
         children: [...extra.offer, { href: "/admin/testimonials", label: t("nav.testimonials") }],
       },
-      { href: "/admin/statistics", label: t("nav.statistics"), icon: <ChartLine /> },
+      {
+        label: t("nav.statistics"),
+        icon: <ChartLine />,
+        // Z62: Štatistiky › Mesačný výpis.
+        children: [
+          { href: "/admin/statistics", label: t("report.navOverview") },
+          { href: "/admin/statistics/report", label: t("report.title") },
+        ],
+      },
       {
         label: t("nav.connections"),
         icon: <RefreshCw />,

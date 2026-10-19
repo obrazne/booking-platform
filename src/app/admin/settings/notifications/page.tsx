@@ -9,6 +9,7 @@ import { loadPushState } from "@/core/push/load";
 import { PushSettings } from "@/core/push/push-settings";
 import { DEFAULT_PUSH_KINDS } from "@/core/push/recipients";
 import { createClient } from "@/lib/supabase/server";
+import { ReportEmailSwitch } from "./report-email";
 
 /**
  * Settings → E-maily a upozornenia (v1.2): which events show in the bell and which come by e-mail too (read only), and
@@ -24,7 +25,7 @@ export default async function NotificationSettingsPage() {
   const [{ data: settings }, push] = await Promise.all([
     supabase
       .from("tenant_settings")
-      .select("owner_notification_email")
+      .select("owner_notification_email, monthly_report_email")
       .eq("tenant_id", active.tenantId)
       .maybeSingle(),
     loadPushState("tenant", active.tenantId),
@@ -41,6 +42,7 @@ export default async function NotificationSettingsPage() {
       />
       <PageBody className="grid max-w-[880px] gap-5">
         <p className="text-muted-foreground max-w-prose">{t("intro")}</p>
+        <ReportEmailSwitch initial={settings?.monthly_report_email ?? true} />
         <div className="bg-card overflow-x-auto rounded-[10px] border">
           <table className="w-full text-sm">
             <thead>
