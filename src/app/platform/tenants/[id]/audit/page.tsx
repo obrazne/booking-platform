@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { DateRangePill, FilterPills, Pagination } from "@/core/admin/data-list";
+import { ParamSelect } from "@/core/admin/param-select";
 import { formatDateTime } from "@/core/format/format";
-import { historyQuery, loadHistory, parseHistoryParams } from "@/core/history/load";
+import { formatRange } from "@/core/history/diff";
+import { loadHistory, parseHistoryParams, type HistoryEntry } from "@/core/history/load";
 import { loadTenantDetail, TenantHeader } from "../tenant-header";
 import { RevertButton } from "./revert-button";
 
+const PORTALS: Record<string, string> = { booking: "Booking.com", airbnb: "Airbnb" };
+const PAGE_SIZE = 50;
+
 /**
- * Client detail — Záznam zmien (Z31): every change in the client's data with "before → after" in words and
- * "Vrátiť túto zmenu". Filters: period, kind of record, person. The audit (sign-ins, modules) is one click away.
+ * Client detail — Záznam zmien (Z31, Z64): every change in the client's data as one collapsed row (who · what · when),
+ * a click opens "before → after" in words. The synchronisation of portal calendars is one summary per run and hidden
+ * by default; filters apply at once. "Vrátiť túto zmenu" only for changes made by people.
  */
 export default async function TenantHistory({
   params,
@@ -25,17 +32,29 @@ export default async function TenantHistory({
     getTranslations("history.ops"),
     getTranslations("history.sources"),
     getLocale(),
-    loadHistory(id, parseHistoryParams(sp), tenant.currency),
+    loadHistory(id, p, tenant.currency),
   ]);
   const table = (key: string) => (tt.has(key as never) ? tt(key as never) : key);
   const field = (key: string) => (tf.has(key as never) ? tf(key as never) : key.replace(/_/g, " "));
-  const base = `/platform/tenants/${tenant.id}/audit`;
-  const control = "border-line bg-background text-ink min-h-10 rounded-full border px-3.5 text-sm";
+  const who = (e: HistoryEntry) =>
+    e.actor ? `${e.actor}${e.source === "guest" ? ` (${ts("guest")})` : ""}` : ts(e.source);
+  const syncTitle = (s: NonNullable<HistoryEntry["sync"]>) => {
+    const parts = [
+      s.added ? t("syncAdded", { count: s.added }) : null,
+      s.removed ? t("syncRemoved", { count: s.removed }) : null,
+      s.updated ? t("syncUpdated", { count: s.updated }) : null,
+      s.conflicts ? t("syncConflicts", { count: s.conflicts }) : null,
+    ].filter(Boolean);
+    return t("syncSummary", {
+      channel: PORTALS[s.source] ? `${PORTALS[s.source]} (${s.channel})` : s.channel,
+      parts: parts.join(", "),
+    });
+  };
 
   return (
     <div data-bleed>
       <TenantHeader tenant={tenant} tab="audit" />
-      <div className="grid max-w-[1180px] gap-4 px-5 pt-6 pb-14 md:px-10">
+      <div className="grid gap-4 px-5 pt-6 pb-14 md:px-10">
         <p className="text-muted-foreground max-w-prose text-sm">
           {t("intro")}{" "}
           <Link
@@ -45,113 +64,122 @@ export default async function TenantHistory({
             {t("auditLink")}
           </Link>
         </p>
-        <form method="get" action={base} className="surface grid gap-3 p-4">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="grid gap-1 text-[13px]">
-              <span className="label-mono">{ta("from")}</span>
-              <input
-                type="date"
-                name="from"
-                aria-label={ta("from")}
-                defaultValue={p.from ?? ""}
-                className={control}
-              />
-            </label>
-            <label className="grid gap-1 text-[13px]">
-              <span className="label-mono">{ta("to")}</span>
-              <input
-                type="date"
-                name="to"
-                aria-label={ta("to")}
-                defaultValue={p.to ?? ""}
-                className={control}
-              />
-            </label>
-            <label className="grid gap-1 text-[13px]">
-              <span className="label-mono">{t("kind")}</span>
-              <select
-                name="table"
-                aria-label={t("kind")}
-                defaultValue={p.table ?? ""}
-                className={control}
-              >
-                <option value="">{ta("all")}</option>
-                {history.tables.map((x) => (
-                  <option key={x} value={x}>
-                    {table(x)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-1 text-[13px]">
-              <span className="label-mono">{ta("person")}</span>
-              <select
-                name="actor"
-                aria-label={ta("person")}
-                defaultValue={p.actor ?? ""}
-                className={control}
-              >
-                <option value="">{ta("allPeople")}</option>
-                {history.people.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Button type="submit" className="font-bold">
-              {ta("filter")}
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href={base}>{ta("reset")}</Link>
-            </Button>
-            <span className="text-muted-foreground ml-auto text-sm" role="status">
-              {ta("count", { count: history.total })}
-            </span>
-          </div>
-        </form>
+
+        {/* Filters apply at once (rule 4). */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <DateRangePill
+            label={t("period")}
+            allLabel={t("allDates")}
+            fromLabel={ta("from")}
+            toLabel={ta("to")}
+            applyLabel={t("apply")}
+            clearLabel={t("clear")}
+          />
+          <FilterPills
+            param="source"
+            label={t("who")}
+            options={[
+              { value: "", label: t("whoAll") },
+              { value: "user", label: t("whoUser") },
+              { value: "guest", label: t("whoGuest") },
+              { value: "system", label: t("whoSystem") },
+            ]}
+          />
+          <FilterPills
+            param="sync"
+            label={t("sync")}
+            options={[
+              { value: "", label: t("syncHide") },
+              { value: "1", label: t("syncShow") },
+            ]}
+          />
+          <ParamSelect
+            param="table"
+            label={t("kind")}
+            allLabel={t("allKinds")}
+            options={history.tables.map((x) => ({ value: x, label: table(x) }))}
+          />
+          {history.people.length ? (
+            <ParamSelect
+              param="actor"
+              label={ta("person")}
+              allLabel={t("allPeople")}
+              options={history.people.map((x) => ({ value: x.id, label: x.name }))}
+            />
+          ) : null}
+          <span className="text-muted-foreground ml-auto text-sm" role="status">
+            {ta("count", { count: history.total })}
+          </span>
+        </div>
 
         {history.entries.length ? (
-          <ul className="surface overflow-hidden">
+          <ul className="surface overflow-hidden" aria-label={t("kind")}>
             {history.entries.map((e) => {
-              const title = `${table(e.table)}${e.name ? ` · ${e.name}` : ""} — ${to(e.op)}`;
+              const what = e.sync
+                ? syncTitle(e.sync)
+                : `${table(e.table)}${e.name ? ` · ${e.name}` : ""} — ${to(e.op)}`;
+              const when = formatDateTime(e.at, locale, tenant.timezone, "short");
               return (
-                <li
-                  key={e.id}
-                  className="border-hair grid gap-2 border-b px-4 py-3.5 text-sm last:border-b-0"
-                >
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <span className="text-ink font-medium">{title}</span>
-                    <span className="text-xs text-[#5a6672]">
-                      {formatDateTime(e.at, locale, tenant.timezone, "short")} ·{" "}
-                      {e.actor ?? ts(e.source)}
-                      {e.actor && e.source === "guest" ? ` (${ts("guest")})` : ""}
-                    </span>
-                  </div>
-                  {e.fields.length ? (
-                    <dl className="grid gap-0.5 text-[13px]">
-                      {e.fields.slice(0, 10).map((f) => (
-                        <div key={f.field} className="flex flex-wrap gap-x-1.5">
-                          <dt className="text-muted-foreground">{field(f.field)}:</dt>
-                          <dd>
-                            {e.op === "update" ? (
-                              <>
-                                <span className="line-through opacity-70">{f.before}</span> →{" "}
-                                {f.after}
-                              </>
-                            ) : e.op === "insert" ? (
-                              f.after
-                            ) : (
-                              f.before
-                            )}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : null}
-                  <RevertButton id={e.id} summary={title} />
+                <li key={e.id} className="border-hair border-b last:border-b-0">
+                  <details className="group">
+                    <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto_20px] items-center gap-x-4 gap-y-1 px-4 py-3 text-sm transition-colors hover:bg-[#faf9f6] [&::-webkit-details-marker]:hidden">
+                      <span className="grid min-w-0 gap-0.5">
+                        <span className="text-ink truncate font-medium">{what}</span>
+                        <span className="truncate text-xs text-[#5a6672]">{who(e)}</span>
+                      </span>
+                      <span className="text-xs whitespace-nowrap text-[#5a6672]">{when}</span>
+                      <ChevronDown
+                        aria-hidden
+                        className="size-4 text-[#5a6672] transition-transform group-open:rotate-180"
+                      />
+                    </summary>
+                    <div className="grid gap-2 bg-[#faf9f6] px-4 pt-1 pb-4 text-[13px]">
+                      {e.sync ? (
+                        <ul className="grid gap-0.5">
+                          {e.sync.events.map((ev, i) => {
+                            const [bs, be] = ev.before?.split("|") ?? [];
+                            return (
+                              <li key={i}>
+                                <span className="text-muted-foreground">
+                                  {t(`syncEvent.${ev.op as "add"}`)}:
+                                </span>{" "}
+                                {formatRange(ev.start, ev.end)}
+                                {ev.label ? ` · ${ev.label}` : ""}
+                                {bs && be
+                                  ? ` · ${t("syncWas", { range: formatRange(bs, be) })}`
+                                  : ""}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : e.fields.length ? (
+                        <dl className="grid gap-0.5">
+                          {e.fields.slice(0, 20).map((f) => (
+                            <div key={f.field} className="flex flex-wrap gap-x-1.5">
+                              <dt className="text-muted-foreground">{field(f.field)}:</dt>
+                              <dd>
+                                {e.op === "update" ? (
+                                  <>
+                                    <span className="line-through opacity-70">{f.before}</span> →{" "}
+                                    {f.after}
+                                  </>
+                                ) : e.op === "insert" ? (
+                                  f.after
+                                ) : (
+                                  f.before
+                                )}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : null}
+                      {e.revertable ? (
+                        <RevertButton id={e.id} summary={what} />
+                      ) : (
+                        <p className="text-xs text-[#5a6672]">{t("noRevert", { who: who(e) })}</p>
+                      )}
+                    </div>
+                  </details>
                 </li>
               );
             })}
@@ -160,28 +188,8 @@ export default async function TenantHistory({
           <p className="text-muted-foreground">{t("empty")}</p>
         )}
 
-        {history.pages > 1 ? (
-          <nav className="flex flex-wrap items-center justify-between gap-3 text-sm">
-            <span className="text-muted-foreground">
-              {ta("page", { page: history.page, pages: history.pages })}
-            </span>
-            <span className="flex gap-2">
-              {history.page > 1 ? (
-                <Button asChild variant="outline">
-                  <Link href={`${base}${historyQuery(p, { page: history.page - 1 })}`}>
-                    {ta("previous")}
-                  </Link>
-                </Button>
-              ) : null}
-              {history.page < history.pages ? (
-                <Button asChild variant="outline">
-                  <Link href={`${base}${historyQuery(p, { page: history.page + 1 })}`}>
-                    {ta("next")}
-                  </Link>
-                </Button>
-              ) : null}
-            </span>
-          </nav>
+        {history.total > PAGE_SIZE ? (
+          <Pagination page={history.page} pageSize={PAGE_SIZE} total={history.total} />
         ) : null}
       </div>
     </div>

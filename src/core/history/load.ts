@@ -7,6 +7,10 @@ export type HistoryParams = {
   to: string | null;
   table: string | null;
   actor: string | null;
+  /** Who made the change (Z64): people of the client, guests, the system. */
+  source: "user" | "guest" | "system" | null;
+  /** Show the synchronisation of portal calendars too (hidden by default, Z64). */
+  sync: boolean;
   page: number;
 };
 
@@ -22,6 +26,9 @@ export function parseHistoryParams(
     to: date(sp.to),
     table: typeof sp.table === "string" && /^[a-z_]{1,40}$/.test(sp.table) ? sp.table : null,
     actor: typeof sp.actor === "string" && /^[0-9a-f-]{36}$/.test(sp.actor) ? sp.actor : null,
+    source:
+      sp.source === "user" || sp.source === "guest" || sp.source === "system" ? sp.source : null,
+    sync: sp.sync === "1",
     page: Number.isInteger(page) && page > 0 ? page : 1,
   };
 }
@@ -36,6 +43,8 @@ export function historyQuery(
     to: p.to,
     table: p.table,
     actor: p.actor,
+    source: p.source,
+    sync: p.sync ? "1" : null,
     ...extra,
   })) {
     if (v !== null && v !== "" && v !== undefined) q.set(k, String(v));
@@ -53,6 +62,18 @@ export type HistoryEntry = {
   actor: string | null;
   source: "user" | "guest" | "system";
   fields: FieldChange[];
+  /** "Vrátiť túto zmenu" — only changes made by people (Z64). */
+  revertable: boolean;
+  /** One run of the synchronisation of a portal calendar (Z64). */
+  sync: null | {
+    channel: string;
+    source: string;
+    added: number;
+    updated: number;
+    removed: number;
+    conflicts: number;
+    events: { op: string; start: string; end: string; label: string | null; before?: string }[];
+  };
 };
 
 /**
@@ -74,6 +95,8 @@ export async function loadHistory(tenantId: string, p: HistoryParams, currency: 
   if (p.to) query = query.lte("changed_at", `${p.to}T23:59:59.999`);
   if (p.table) query = query.eq("table_name", p.table);
   if (p.actor) query = query.eq("changed_by", p.actor);
+  if (p.source) query = query.eq("source", p.source);
+  if (!p.sync) query = query.eq("is_sync", false);
   const [{ data, count }, { data: tables }] = await Promise.all([
     query,
     supabase
@@ -100,7 +123,9 @@ export async function loadHistory(tenantId: string, p: HistoryParams, currency: 
       at: r.changed_at,
       actor: r.changed_by ? (name.get(r.changed_by) ?? null) : null,
       source: r.source as HistoryEntry["source"],
-      fields: changes(oldRow, newRow, "sk", currency),
+      fields: r.table_name === "ical_sync" ? [] : changes(oldRow, newRow, "sk", currency),
+      revertable: r.source === "user" && r.table_name !== "ical_sync",
+      sync: r.table_name === "ical_sync" ? syncSummary(newRow) : null,
     };
   });
   const total = count ?? 0;
@@ -111,5 +136,29 @@ export async function loadHistory(tenantId: string, p: HistoryParams, currency: 
     pages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
     tables: [...new Set((tables ?? []).map((r) => r.table_name))].sort(),
     people: actorIds.map((id) => ({ id, name: name.get(id) ?? id })),
+  };
+}
+
+/** The summary row of one run of a portal calendar (written by ical_apply). */
+function syncSummary(row: Record<string, unknown> | null): HistoryEntry["sync"] {
+  const n = (v: unknown) => (typeof v === "number" ? v : 0);
+  const events = Array.isArray(row?.events) ? (row.events as Record<string, unknown>[]) : [];
+  return {
+    channel: String(row?.channel ?? "iCal"),
+    source: String(row?.source ?? "other"),
+    added: n(row?.added),
+    updated: n(row?.updated),
+    removed: n(row?.removed),
+    conflicts: n(row?.conflicts),
+    events: events.map((e) => ({
+      op: String(e.op ?? ""),
+      start: String(e.start ?? ""),
+      end: String(e.end ?? ""),
+      label: typeof e.label === "string" ? e.label : null,
+      before:
+        typeof e.before_start === "string" && typeof e.before_end === "string"
+          ? `${e.before_start}|${e.before_end}`
+          : undefined,
+    })),
   };
 }

@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) — *zabratá linkou A* → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
-  **B:** ~~Z57–Z60, Z62~~ ✅ → **Z64 (záznam zmien čitateľný)** → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
+  **B:** ~~Z57–Z60, Z62, Z64~~ ✅ → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -170,7 +170,7 @@ návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pr
    nadpismi presuň do ⓘ. Zoznam textov daj do `docs/texty-vysvetliviek.md`, aby ich Martin mohol prečítať naraz.
 3. Odkaz „Viac v Pomoci ›“ až keď existuje Pomoc (Z67) — dovtedy bez odkazu.
 
-### Z64 [B] 🔄 — Záznam zmien čitateľný (pripomienka 45)
+### Z64 [B] ✅ — Záznam zmien čitateľný (pripomienka 45)
 1. **Synchronizácia kalendárov nezaplaví históriu:** zmeny obsadenosti zo synchronizácie iCal (`kind = 'ical'`, systém) nezapisuj po jednom
    riadku — jeden súhrnný záznam za beh kanála („Airbnb: 1 pridané, 1 zmazané, 1 zmenené“) s rozbalením na detail; existujúce záznamy
    zo synchronizácie predvolene skry filtrom „Synchronizácia kalendárov“ (vypnutý). Úprava `record_history` len pridávajúcou migráciou.
@@ -662,6 +662,17 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z64 [linka B]: **Záznam zmien čitateľný** (pripomienka 45). (Claude Code)
+  - **Synchronizácia kalendárov** (migrácia `…19110000_history_readable`, len pridáva): obsadenosť zo synchronizácie iCal sa už
+    nezapisuje po riadkoch — `ical_apply` zapíše **jeden súhrn za beh kanála** (`table_name 'ical_sync'`: pridané / zmenené /
+    zmazané / kolízie + udalosti na rozbalenie, max. 200). Stĺpec `is_sync` označí súhrny aj staré riadkové záznamy; stránka ich
+    predvolene skrýva (filter „Aj synchronizácia kalendárov“).
+  - **Vrátiť zmenu len pri zmenách od ľudí** — v rozhraní aj v DB (`platform_revert_change` → chyba 22023 pri systéme/synchronizácii).
+  - Zbalené riadky (čo · kto · kedy), klik rozbalí „pred → po“; ľudské názvy polí a tabuliek, dátumy `16. 10. 2026`, rozsahy
+    `16.–20. 10. 2026`, technické polia skryté; filtre bez tlačidla (obdobie, kto, synchronizácia, typ, človek — `ParamSelect`),
+    stránkovanie po 50. Iné zobrazenie histórie (u majiteľa) zatiaľ nie je.
+  - Testy: pgTAP `history_readable.test.sql`, vitest `diff.test.ts`, e2e `history.spec.ts` (test vrátenia upravený — zmena ako od
+    člena tímu; nový test súhrnu). Snímky `docs/snimky/z64/`.
 - 2026-10-19 — Z62 [linka B]: **Mesačný výpis** (predajný argument č. 1, v1.4, dosky 12–13) — jadro, nie modul. (Claude Code)
   - **Výpočet v DB** `tenant_monthly_report(tenant, mesiac)` (migrácia `…19100000_monthly_report`): tržby a obsadenosť z
     `tenant_monthly_stats` (jedno miesto výpočtu), porovnanie s rovnakým mesiacom minulého roka (bez dát = null), úspora

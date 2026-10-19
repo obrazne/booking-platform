@@ -112,7 +112,8 @@ v `src/core/stats/compute.ts`. **Upozornenia:** vznikajú len v databáze (`noti
 deduplikované cez `dedupe_key`; zvonček `src/core/notifications/`. Nový druh = pridať do kontroly `kind`, trigger, text `notifications.kinds.*`.
 **História zmien a kôš (Z31):** každá tabuľka s `tenant_id` má trigger `record_history` (nová tabuľka ho dostane len novou migráciou —
 pridaj `create trigger record_history … record_history_capture(<pk stĺpce>)`). Mazanie súborov fotiek a dokumentov nerob v akcii — rieši
-ho job worker po 30 dňoch (`purgeTrashFiles`). Obnova a vrátenie: `owner_restore`, `platform_revert_change` (databáza).
+ho job worker po 30 dňoch (`purgeTrashFiles`). Obnova a vrátenie: `owner_restore`, `platform_revert_change` (databáza; vrátiť sa dá len zmena od človeka, Z64).
+Synchronizácia iCal sa nezapisuje po riadkoch — `ical_apply` dá jeden súhrn `ical_sync` za beh (`is_sync`); zobrazenie `src/core/history/` (Z64).
 **Push (Z33, modul `push`):** zariadenia `push_subscriptions`, fronta `push_queue` z triggeru na `notifications` → pg_net `/api/push/run`
 (+ záloha v job workeri); kód `src/core/push/` (výber príjemcov, odoslanie cez `web-push`, nastavenia). Kľúče `NEXT_PUBLIC_VAPID_PUBLIC_KEY`,
 `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`. Endpointy `*.test` sa neodosielajú. Nový druh upozornenia = doplniť aj kontrolu `kinds` v `push_subscriptions`.

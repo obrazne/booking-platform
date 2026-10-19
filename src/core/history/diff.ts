@@ -14,7 +14,31 @@ const HIDDEN = new Set([
   "last_error",
   "access_token_hash",
   "access_token_enc",
+  // Z64: technical columns nobody reads (ids of the portal, expiry of a hold, details of the portal).
+  "ical_uid",
+  "expires_at",
+  "ical_details",
+  "is_sync",
+  "storage_path",
+  "dedupe_key",
 ]);
+
+const MONTH_DAY = (d: string) => {
+  const [y, m, day] = d.split("-").map(Number);
+  return { y: y!, m: m!, d: day! };
+};
+
+/** "16.–20. 10. 2026", "30. 10.–2. 11. 2026", "30. 12. 2026–2. 1. 2027" — a stay from the first night to departure. */
+export function formatRange(from: string, to: string): string {
+  const a = MONTH_DAY(from);
+  const b = MONTH_DAY(to);
+  if (a.y !== b.y) return `${a.d}. ${a.m}. ${a.y}–${b.d}. ${b.m}. ${b.y}`;
+  if (a.m !== b.m) return `${a.d}. ${a.m}.–${b.d}. ${b.m}. ${b.y}`;
+  return `${a.d}.–${b.d}. ${b.m}. ${b.y}`;
+}
+
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const TIMESTAMP = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/;
 
 export type FieldChange = { field: string; before: string; after: string };
 
@@ -37,7 +61,21 @@ export function formatValue(key: string, value: unknown, locale = "sk", currency
     return truncate(value.map((v) => formatValue(key, v, locale, currency)).join(", "));
   if (typeof value === "string" && /^\[(\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})\)$/.test(value)) {
     const [, a, b] = /^\[(.+),(.+)\)$/.exec(value)!;
-    return `${a} – ${b}`;
+    return formatRange(a!, b!);
+  }
+  if (typeof value === "string" && DATE.test(value)) {
+    const v = MONTH_DAY(value);
+    return `${v.d}. ${v.m}. ${v.y}`;
+  }
+  if (typeof value === "string" && TIMESTAMP.test(value) && !Number.isNaN(Date.parse(value))) {
+    return new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "Europe/Bratislava",
+    }).format(new Date(value));
   }
   return truncate(String(value));
 }

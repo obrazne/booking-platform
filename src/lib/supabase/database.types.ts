@@ -1896,6 +1896,7 @@ export type Database = {
           changed_by: string | null
           files_purged_at: string | null
           id: number
+          is_sync: boolean | null
           new_row: Json | null
           old_row: Json | null
           op: string
@@ -1911,6 +1912,7 @@ export type Database = {
           changed_by?: string | null
           files_purged_at?: string | null
           id?: never
+          is_sync?: boolean | null
           new_row?: Json | null
           old_row?: Json | null
           op: string
@@ -1926,6 +1928,7 @@ export type Database = {
           changed_by?: string | null
           files_purged_at?: string | null
           id?: never
+          is_sync?: boolean | null
           new_row?: Json | null
           old_row?: Json | null
           op?: string
