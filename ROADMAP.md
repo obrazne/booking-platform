@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) — *zabratá linkou A* → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) — *zabratá linkou A* → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
   **B:** ~~Z57–Z60, Z62, Z64~~ ✅ → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -214,6 +214,18 @@ Návrh `docs/vizual-administracia.md` → **v1.6** (prečítaj celé), doska 17 
    súhlasy, správy) pre žiadosť hosťa o prístup. Doplň Hostí do exportu klienta (`AREAS` v `tenant-export.ts`), ak tam nie sú celé.
 6. ⓘ text a otázky do Pomoci (Ako exportujem kontakty do Ecomailu?, Prečo nemôžem hosťovi zapnúť súhlas?). Testy: vitest, pgTAP (RLS,
    súhlas), e2e na Ukážkovom klientovi; STRÖMY len čítaj.
+
+### Z69 [A] — Nastavenia s kartami, Prepojenia do Nastavení, spôsoby platby (pripomienky 54, 55; doska 18) — po Z66
+Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 `NastaveniaPlatby`, upravený `Sidebar`.
+1. Bočné menu bez Prepojení; Nastavenia jedna položka. Stránka Nastavenia s kartami (Všeobecné · Platby · Pravidlá pobytu · Prepojenia ·
+   E-maily a upozornenia · Tím · Mesačný výpis), karta v adrese; rozdeľ súčasný obsah nastavení do kariet (ceny/storno/podmienky →
+   Pravidlá pobytu, platobné údaje → Platby, iCal → Prepojenia). Staré adresy presmeruj. Lišta Uložiť (Z55) a ⓘ (Z66) platia na každej karte.
+2. **Spôsoby platby** ako zbalené riadky podľa v1.7: prevod s QR (zapnúť/vypnúť, IBAN, majiteľ, lehota), karta Stripe „Pripravujeme“
+   (neaktívne), účet pobytu len pri module upsell, „Záloha a doplatok — pripravujeme“. Nastavenie spôsobov per klient (nové stĺpce alebo
+   tabuľka len pridávajúcou migráciou, RLS, `record_history`); košík ukazuje len zapnuté; aspoň jeden spôsob platby rezervácie zapnutý (DB + rozhranie).
+   Stripe **neimplementuj** — len miesto a dátový základ, aby sa pridal bez prestavby (rozhranie poskytovateľa platby v kóde).
+3. Úprav odkazy, ktoré viedli na staré stránky (Prehľad — zdravie kalendárov, Kolízie, Pomoc a hľadanie z Z67 — register nastavení).
+4. Testy: e2e karty a presmerovania, vypnutie prevodu pri jedinom spôsobe → chyba, košík bez vypnutého spôsobu; axe.
 
 ### Z61 [A] — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
 1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj

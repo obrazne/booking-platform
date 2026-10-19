@@ -300,3 +300,21 @@ v riadiacom centre). Zdroj = existujúca tabuľka `guests` (každý priamy hosť
 - **Adresa sa nepreberá z online check-inu** (iný účel — kniha ubytovaných, zákonná povinnosť). Hostia z portálov v zozname nie sú.
 - **Text súhlasu v košíku a v Moje údaje:** „Chcem dostávať ponuky a zľavy {ubytovanie} e-mailom — aj na voľné termíny mimo sezóny.
   Odhlásiť sa dá jedným klikom.“ Nezaškrtnuté, nepovinné.
+
+## v1.7 — Nastavenia s kartami a spôsoby platby (pripomienky 54–55, schválené 19. 10.)
+
+Doska **18 `NastaveniaPlatby`** a upravené **`Sidebar`** v `docs/navrhy/administracia/`.
+- **Bočné menu:** položka **Prepojenia** zrušená (Booking/Airbnb sa nastavujú raz; problémy hlási zvonček, Prehľad a Kolízie).
+  **Nastavenia** = jedna položka bez podpoložiek.
+- **Nastavenia** = stránka s kartami hore: **Všeobecné · Platby · Pravidlá pobytu · Prepojenia · E-maily a upozornenia · Tím · Mesačný výpis**
+  (karta v adrese `?tab=`; karty modulov pribudnú len pri zapnutom module). Pravidlá pobytu = storno, podmienky, lehoty, VOP;
+  Prepojenia = kalendáre Booking/Airbnb (iCal) + miesto pre budúce prepojenia (e-mail marketing, fakturácia — platené moduly).
+  Staré adresy (`/admin/ical`, podstránky nastavení) presmerovať na príslušnú kartu.
+- **Platby → Spôsoby platby:** zbalené riadky (ikona, názov, štítok Zapnuté / Vypnuté / Pripravujeme, jednoriadkový súhrn), po rozbalení nastavenia:
+  - **Prevod na účet s QR** — zapnúť/vypnúť, IBAN, majiteľ účtu, lehota na zaplatenie; vysvetlenie (QR PAY by square, VS = číslo rezervácie, automatické zrušenie, „Platba prijatá“).
+  - **Platba kartou (Stripe)** — štítok **Pripravujeme**, neaktívne „Prepojiť so Stripe“, krátky popis prínosu. Nič nefunkčné sa netvári ako funkčné.
+  - **Na účet pobytu** — len pri zapnutom module upsell; limit.
+  - Pod tým **Záloha a doplatok — pripravujeme**.
+  Hosť v košíku vidí len zapnuté spôsoby. **Aspoň jeden spôsob platby rezervácie musí ostať zapnutý** (pravidlo v DB aj v rozhraní).
+- Dátový základ pre ďalších poskytovateľov: `payments.provider` už pozná `bank_transfer | card | on_site`; nastavenia spôsobov per klient
+  (zapnuté, konfigurácia bez tajomstiev v DB — kľúče Stripe neskôr cez prepojenie účtu, nie vpisované do poľa).

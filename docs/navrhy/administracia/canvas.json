@@ -159,6 +159,15 @@
       "title": "17 Hostia — zoznam a karta hosťa, export (so súhlasom / všetci) — klikací",
       "expand": "fill",
       "is_interactive": true
+    },
+    "NastaveniaPlatby.dc.html": {
+      "x": 1520,
+      "y": 3920,
+      "w": 1440,
+      "h": 1100,
+      "title": "18 Nastavenia — karty hore, Platby: spôsoby platby zbalené (prevod, Stripe pripravujeme, účet pobytu); Prepojenia presunuté sem",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "order": [
@@ -179,7 +188,8 @@
     "Vysvetlivky.dc.html",
     "Hladanie.dc.html",
     "Pomoc.dc.html",
-    "Hostia.dc.html"
+    "Hostia.dc.html",
+    "NastaveniaPlatby.dc.html"
   ],
   "notes": {
     "titul": {
