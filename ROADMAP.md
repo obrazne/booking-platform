@@ -126,7 +126,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
 3. Náhľad v úprave automatickej správy ukazuje e-mail s hlavičkou a pätou; „Poslať skúšobne mne“ posiela rovnakú verziu.
 4. Testy: vitest pre `{podpis}` (podpis / meno / názov), snímka e-mailu (HTML) v testoch šablón.
 
-### Z62 [B] — Mesačný výpis: stránka, e-mail 1. dňa v mesiaci, PDF (predajný argument č. 1, Martin 18. 10.)
+### Z62 [B] 🔄 — Mesačný výpis: stránka, e-mail 1. dňa v mesiaci, PDF (predajný argument č. 1, Martin 18. 10.)
 Návrh: dosky **12 `Vypis`** a **13 `VypisEmail`** v `docs/navrhy/administracia/`, pravidlá výpočtu v **`docs/vizual-administracia.md` → v1.4**
 (prečítaj celé). **Jadro, nie modul** (ARCHITEKTURA A14). Pravidlá rozhrania `docs/pravidla-rozhrania.md` platia.
 1. **Úkony, ktoré systém urobil:** zisti, čo už sa dá spočítať z existujúcich tabuliek (odoslané e-maily z outboxu, rezervácie vytvorené
