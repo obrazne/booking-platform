@@ -1,3 +1,4 @@
+import { PageHelp } from "@/core/admin/page-help";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronDown, Paperclip } from "lucide-react";
 import { FilterPills, Pagination } from "@/core/admin/data-list";
@@ -54,10 +55,12 @@ export default async function SupportPage({ searchParams }: PageProps<"/platform
   return (
     <div className="grid gap-8">
       <div className="grid gap-1.5">
-        <h1 className="text-ink text-2xl font-extrabold tracking-tight md:text-3xl">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground max-w-prose text-sm">{t("intro")}</p>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-ink text-2xl font-extrabold tracking-tight md:text-3xl">
+            {t("title")}
+          </h1>
+          <PageHelp id="platformSupport" />
+        </div>
       </div>
 
       <section aria-labelledby="requests-title" className="grid gap-3">

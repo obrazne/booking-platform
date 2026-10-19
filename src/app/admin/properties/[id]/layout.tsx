@@ -1,3 +1,5 @@
+import { tabHelpItems } from "@/core/admin/page-help";
+import { TabHelp } from "@/core/admin/tab-help";
 import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { getPropertyForEdit } from "../data";
@@ -35,6 +37,19 @@ export default async function PropertyLayout({
         />
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-heading text-2xl font-semibold tracking-tight">{property.name}</h1>
+          <TabHelp
+            base={base}
+            items={await tabHelpItems({
+              "": "propertyDetails",
+              photos: "propertyPhotos",
+              page: "propertyPage",
+              location: "propertyLocation",
+              pricing: "propertyPricing",
+              extras: "propertyExtras",
+              documents: "propertyDocuments",
+              units: "propertyUnits",
+            })}
+          />
           <Badge variant={property.status === "published" ? "default" : "secondary"}>
             {t(`status.${property.status as "draft" | "published" | "archived"}`)}
           </Badge>

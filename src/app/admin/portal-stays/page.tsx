@@ -52,11 +52,11 @@ export default async function PortalStaysPage({ searchParams }: PageProps<"/admi
   return (
     <div data-bleed>
       <PageHeader
+        help="portalStays"
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
-        <p className="text-muted-foreground max-w-prose text-sm">{t("lead")}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-3">
           <FilterPills
             param="when"

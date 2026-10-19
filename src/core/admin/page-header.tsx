@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Breadcrumbs, type Crumb } from "./breadcrumbs";
+import { PageHelp } from "./page-help";
 
 /**
  * Page header of the administration (rule 3): copper kicker (accommodation or "Riadiace centrum") + H1 32 px,
@@ -9,12 +10,15 @@ export function PageHeader({
   kicker,
   breadcrumbs,
   title,
+  help,
   actions,
 }: {
   kicker?: ReactNode;
   /** Second-level pages (common rule v1.2): shown instead of the kicker. */
   breadcrumbs?: Crumb[];
   title: ReactNode;
+  /** Id of the page's ⓘ (`help.pages.<id>`, rule 8) — shown right after the title. */
+  help?: string;
   actions?: ReactNode;
 }) {
   return (
@@ -25,9 +29,12 @@ export function PageHeader({
         ) : kicker ? (
           <span className="kicker text-brand-secondary">{kicker}</span>
         ) : null}
-        <h1 className="text-ink text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[32px]">
-          {title}
-        </h1>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-ink text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[32px]">
+            {title}
+          </h1>
+          {help ? <PageHelp id={help} /> : null}
+        </div>
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2.5">{actions}</div> : null}
     </header>

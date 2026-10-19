@@ -37,11 +37,11 @@ export default async function NotificationSettingsPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="notifications"
         breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
         title={t("title")}
       />
       <PageBody className="grid max-w-[880px] gap-5">
-        <p className="text-muted-foreground max-w-prose">{t("intro")}</p>
         <ReportEmailSwitch initial={settings?.monthly_report_email ?? true} />
         <div className="bg-card overflow-x-auto rounded-[10px] border">
           <table className="w-full text-sm">

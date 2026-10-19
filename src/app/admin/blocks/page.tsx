@@ -1,3 +1,4 @@
+import { FieldHelp } from "@/core/admin/page-help";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Input } from "@/components/ui/input";
 import { requireTenant } from "@/core/admin/action";
@@ -45,6 +46,7 @@ export default async function BlocksPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="blocks"
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
       />
@@ -92,7 +94,7 @@ export default async function BlocksPage() {
                   <Field label={t("from")} htmlFor="from">
                     <Input id="from" name="from" type="date" required />
                   </Field>
-                  <Field label={t("to")} htmlFor="to">
+                  <Field label={t("to")} htmlFor="to" info={<FieldHelp id="blockTo" />}>
                     <Input id="to" name="to" type="date" required />
                   </Field>
                 </div>

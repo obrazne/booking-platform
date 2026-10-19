@@ -51,6 +51,7 @@ export default async function MonthlyReportPage({
   return (
     <div data-bleed>
       <PageHeader
+        help="monthlyReport"
         breadcrumbs={[
           { label: tn("statistics"), href: "/admin/statistics" },
           { label: t("title") },

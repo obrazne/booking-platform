@@ -18,6 +18,7 @@ export default async function PlatformAudit({ searchParams }: PageProps<"/platfo
   return (
     <div data-bleed>
       <PageHeader
+        help="platformAudit"
         kicker={
           <span className="inline-flex items-center gap-1.5">
             <Shield className="size-3.5" /> {t("title")}
@@ -26,7 +27,6 @@ export default async function PlatformAudit({ searchParams }: PageProps<"/platfo
         title={tp("title")}
       />
       <PageBody className="grid gap-4">
-        <p className="text-muted-foreground max-w-prose text-sm">{tp("intro")}</p>
         <AuditView
           params={{ ...parseAuditParams(sp), page: paging.page }}
           pageSize={paging.size}

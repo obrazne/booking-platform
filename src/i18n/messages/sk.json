@@ -4069,6 +4069,234 @@
         ],
         "go": "Otvoriť Hostí"
       }
+    },
+    "pages": {
+      "label": "Vysvetlivka: {title}",
+      "moreDefault": "Viac v Pomoci ›",
+      "overview": {
+        "title": "Čo je Prehľad",
+        "text": "Prvá stránka po prihlásení. Hore je, čo čaká na vás — napríklad rezervácia, ktorá ešte nie je zaplatená, alebo žiadosť hosťa o zrušenie. Pod tým čísla roka, najbližšie pobyty a pruh, koľko nocí tohto a ďalšieho mesiaca ste predali priamo a koľko cez portály."
+      },
+      "calendar": {
+        "title": "Čo je Kalendár",
+        "text": "Všetky pobyty, blokácie a obsadenosť z Bookingu a Airbnb na jednom mieste, po mesiacoch. Pobyt ukáže pod myšou hosťa, termín a sumu, klik otvorí detail. Keď označíte voľné dni (príchod, potom odchod), môžete ich rovno zablokovať alebo na ne zapísať rezerváciu.",
+        "faq": "blockDates",
+        "more": "Ako blokovať termín ›"
+      },
+      "reservations": {
+        "title": "Čo sú Rezervácie",
+        "text": "Priame rezervácie z vašej stránky a tie, ktoré ste zapísali ručne — napríklad po telefóne. Riadok otvorí detail s platbou, hosťom a správami. Pobyty z Bookingu a Airbnb sú v Rezervácie › Z portálov.",
+        "faq": "transferPaid",
+        "more": "Ako potvrdiť zaplatenie prevodom ›"
+      },
+      "reservationNew": {
+        "title": "Ručná rezervácia",
+        "text": "Pre hosťa, ktorý sa ozval telefonicky alebo e-mailom. Termín sa hneď zavrie na vašej stránke, portály ho zavrú pri svojej najbližšej synchronizácii. Do tržieb sa počíta rovnako ako priama rezervácia.",
+        "faq": "phoneBooking",
+        "more": "Ako zapísať rezerváciu z telefónu ›"
+      },
+      "arrivals": {
+        "title": "Čo sú Príchody",
+        "text": "Najbližšie príchody hostí so stavom online check-inu a hlásenia cudzincov. Cudzinca treba nahlásiť do 5 dní od ubytovania — tu vidíte, komu ešte chýba, a stiahnete podklad na hlásenie."
+      },
+      "portalStays": {
+        "title": "Čo sú pobyty z portálov",
+        "text": "Pobyty, ktoré prišli z kalendárov Bookingu, Airbnb a ďalších portálov. Sú to len obsadené termíny — rezervácia, platba a kontakt na hosťa ostávajú na portáli a platforma ich nemení. Ak portál pošle kód rezervácie alebo koniec telefónneho čísla, uvidíte ich tu.",
+        "faq": "portalGuests",
+        "more": "Prečo tu nie sú mená hostí z portálov ›"
+      },
+      "collisions": {
+        "title": "Čo sú kolízie",
+        "text": "Termín, ktorý Booking, Airbnb alebo iný kalendár hlási ako obsadený, ale u vás je už rezervovaný alebo zablokovaný. Nič sa neprepísalo — pozrite, s čím sa termín prekrýva, a rozhodnite, čo s tým.",
+        "faq": "collision",
+        "more": "Čo robiť pri kolízii ›"
+      },
+      "blocks": {
+        "title": "Čo je blokácia",
+        "text": "Zavrie termín, keď v objekte nemajú byť hostia — veľké upratovanie, oprava sauny, váš vlastný pobyt. Hostia ho na vašej stránke uvidia ako obsadený a Booking a Airbnb ho zavrú pri svojej najbližšej synchronizácii s vaším kalendárom. Blokácia nemá hosťa ani cenu, poznámku vidíte len vy.",
+        "faq": "blockDates",
+        "more": "Ako blokovať termín ›"
+      },
+      "ical": {
+        "title": "Čo sú kalendáre portálov",
+        "text": "Prepojenie s Bookingom, Airbnb a ďalšími cez kalendár iCal: ich obsadené termíny sa zavrú u vás a vaše rezervácie a blokácie sa zavrú u nich. Portály si váš kalendár načítavajú samy, zvyčajne raz za pár hodín. Pri kolízii sa nič neprepíše — dostanete upozornenie.",
+        "faq": "connectPortal",
+        "more": "Ako prepojiť Booking alebo Airbnb ›"
+      },
+      "messages": {
+        "title": "Čo sú Správy",
+        "text": "Konverzácie s hosťami priamych rezervácií — jedna rezervácia, jedna konverzácia. Hosť píše vo svojom účte a vašu odpoveď dostane aj e-mailom. S hosťami z Bookingu a Airbnb sa píše na portáli."
+      },
+      "autoMessages": {
+        "title": "Čo sú automatické správy",
+        "text": "Správy, ktoré sa pošlú samy každému hosťovi s priamou rezerváciou — napríklad poďakovanie po potvrdení alebo pokyny 3 dni pred príchodom. Hosť ich dostane v účte aj e-mailom ako správu od vás; pri konkrétnom hosťovi ich v konverzácii môžete upraviť alebo vynechať. Dole sú rýchle odpovede na časté otázky."
+      },
+      "reviews": {
+        "title": "Čo sú recenzie",
+        "text": "Overené recenzie hostí po pobyte. Zverejnia sa samy 72 hodín po odoslaní, ak nezasiahnete — môžete ich zamietnuť alebo na ne odpovedať. Hodnotenia z iných zdrojov pridáte v Ponuka › Referencie."
+      },
+      "services": {
+        "title": "Čo sú doplnkové služby",
+        "text": "Služby, ktoré si hosť pridá k pobytu — raňajky, šéfkuchár, transfer. Cena sa počíta za pobyt, noc, osobu alebo kus a pripočíta sa k rezervácii. Vypnutú službu hostia nevidia, nič sa nezmaže."
+      },
+      "testimonials": {
+        "title": "Čo sú referencie",
+        "text": "Hodnotenia hostí, ktoré ukážete na stránke a v košíku — aj z Bookingu, Google či návštevnej knihy. Celé meno len so súhlasom hosťa, inak meno a iniciála."
+      },
+      "statistics": {
+        "title": "Čo sú Štatistiky",
+        "text": "Tržby z priamych rezervácií, počet rezervácií, obsadenosť (aj s Bookingom a Airbnb) a priemerná cena za noc po mesiacoch. Porovnáte rok s predošlým a klik na mesiac ukáže jeho rezervácie. Úspora na províziách je odhad podľa percenta v Nastaveniach."
+      },
+      "monthlyReport": {
+        "title": "Čo je Mesačný výpis",
+        "text": "Zhrnutie mesiaca na jednu stranu: tržby, obsadenosť, úspora na províziách a čo za vás systém urobil. Príde vám e-mailom 1. dňa v mesiaci, tlačidlom ho pošlete účtovníkovi. Je to podklad, nie účtovný doklad.",
+        "faq": "monthlyReport",
+        "more": "Kto dostane mesačný výpis ›"
+      },
+      "team": {
+        "title": "Čo je Tím",
+        "text": "Kto má prístup do administrácie a s akou rolou — Majiteľ, Recepcia, Upratovanie. Nového člena tímu zatiaľ pridávame my: napíšte nám jeho e-mail a rolu.",
+        "faq": "team",
+        "more": "Ako pridať kolegu ›"
+      },
+      "settings": {
+        "title": "Čo sú Nastavenia",
+        "text": "Platba (účet, splatnosť), storno podmienky, kontakt a podpis správ, e-maily hosťom a mesačný výpis — spoločné pre všetky vaše objekty. Zmeny uložíte lištou dole."
+      },
+      "notifications": {
+        "title": "Čo sú E-maily a upozornenia",
+        "text": "Čo sa ukáže v zvončeku vpravo hore a čo príde aj e-mailom. Prečítanie je osobné — každý z tímu má svoje. Upozornenia môžu chodiť aj do mobilu, keď ich na ňom zapnete.",
+        "faq": "pushPhone",
+        "more": "Ako dostávať upozornenia do mobilu ›"
+      },
+      "trash": {
+        "title": "Čo je Nedávno zmazané",
+        "text": "Zmazané služby, sezóny s cenami, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre a miesta v okolí obnovíte do 30 dní. Rezervácie sa nemažú, len rušia.",
+        "faq": "deleted",
+        "more": "Ako obnoviť zmazané ›"
+      },
+      "properties": {
+        "title": "Čo sú objekty",
+        "text": "Ubytovania, ktoré prenajímate — chalet, apartmány, izby. Každý má vlastnú stránku pre hostí, ceny, fotky a pravidlá pobytu."
+      },
+      "propertyDetails": {
+        "title": "Údaje objektu",
+        "text": "Základ pre stránku aj rezervácie: názov, kapacita, čas príchodu a odchodu, upratovacie dni medzi pobytmi a miestny poplatok. Kým objekt nie je zverejnený, hostia ho nevidia.",
+        "faq": "cleaningGap",
+        "more": "Ako nechať deň na upratovanie ›"
+      },
+      "propertyPhotos": {
+        "title": "Fotky",
+        "text": "Fotky na stránke pre hostí. Prvá je hlavná — ukáže sa hore na stránke a v potvrdení rezervácie. Pred nahraním sa zmenšia na 2 000 px."
+      },
+      "propertyPage": {
+        "title": "Stránka pre hostí",
+        "text": "Poradie a texty sekcií na stránke objektu. Ceny, storno, príchod či vybavenie sa dosadzujú z nastavení — tu sa nepíšu, takže sa nikde nerozídu."
+      },
+      "propertyLocation": {
+        "title": "Poloha a okolie",
+        "text": "Kde objekt je a čo je v okolí — napríklad lanovka 5 minút autom. Pri približnej polohe uvidí hosť len oblasť a presnú adresu dostane po potvrdení rezervácie."
+      },
+      "propertyPricing": {
+        "title": "Sezóny a ceny",
+        "text": "Cena za noc a minimum nocí podľa termínu. Predvolená sezóna platí pre všetky dni mimo ostatných; pri prekryve sezón platí tá s vyššou prioritou. Zmena platí pre nové rezervácie — potvrdené ostávajú za pôvodnú cenu.",
+        "faq": "seasonPrice",
+        "more": "Ako zmeniť cenu na sviatky ›"
+      },
+      "propertyExtras": {
+        "title": "Poplatky a zľavy",
+        "text": "Poplatky sa pripočítajú k pobytu — vždy (upratovanie), na výber hosťa alebo za zviera; vratná kaucia sa nepočíta do tržieb. Zľavy sa nesčítavajú: hosť dostane tú najvýhodnejšiu, napríklad za 7 a viac nocí alebo s promo kódom."
+      },
+      "propertyDocuments": {
+        "title": "Dokumenty pre hostí",
+        "text": "Domáci poriadok, návod na saunu, mapa — dostanú ich všetci hostia objektu v svojom účte, podľa nastavenia hneď alebo až po potvrdení. Dokument pre jedného hosťa nahrajte v jeho rezervácii."
+      },
+      "propertyUnits": {
+        "title": "Jednotky",
+        "text": "Apartmány alebo izby, ktoré sa rezervujú samostatne — každá má svoju kapacitu, kalendár a ceny. Vypnutú jednotku hostia nevidia."
+      },
+      "platformClients": {
+        "title": "Čo sú Klienti",
+        "text": "Ubytovatelia na platforme s modulmi, stavom a počtom rezervácií za 30 dní. Riadok otvorí klienta, šípka jeho náhľad. Riadiace centrum nevidí mená ani kontakty hostí — len počty."
+      },
+      "platformNew": {
+        "title": "Nový klient",
+        "text": "Založí ubytovateľa: názov, adresu, doménu, krajinu a menu. Majiteľa do tímu a moduly pridáte potom v detaile klienta."
+      },
+      "platformAudit": {
+        "title": "Čo je Audit",
+        "text": "Kto, kedy a čo zmenil naprieč klientmi: prihlásenia, vstup do administrácie klienta, moduly, tím, nastavenia. Heslá ani zadané e-maily sa nikdy nezapisujú. Export CSV vezme všetko, čo vyhovuje filtru."
+      },
+      "platformModules": {
+        "title": "Čo je Katalóg modulov",
+        "text": "Hotové moduly zapínate klientom natrvalo alebo na skúšku; moduly v príprave sú tu, aby bolo vidieť, čo pribudne. Každá zmena sa zapíše do auditu."
+      },
+      "platformTrials": {
+        "title": "Čo sú skúšky",
+        "text": "Moduly na skúšku zoradené podľa konca. Po skončení sa modul klientovi len skryje — nič sa nezmaže."
+      },
+      "platformStatus": {
+        "title": "Čo je Stav systému",
+        "text": "Synchronizácia kalendárov, neodoslané e-maily a zálohy naprieč klientmi. Keď je niečo zlé, ukáže sa to aj v číslach na stránke Klienti."
+      },
+      "platformNotifications": {
+        "title": "Upozornenia riadiaceho centra",
+        "text": "Ktoré upozornenia zo zvončeka vám prídu aj do mobilu alebo počítača — aj keď administráciu nemáte otvorenú."
+      },
+      "platformSupport": {
+        "title": "Čo je Podpora",
+        "text": "Žiadosti klientov z „Nenašli ste odpoveď?“ v Pomoci a návody, pri ktorých klienti odpovedali, že im nepomohli. Odpovedáte e-mailom — žiadosť príde aj na adresu podpory."
+      },
+      "tenantOverview": {
+        "title": "Prehľad klienta",
+        "text": "Stav klienta a jeho čísla, bez údajov hostí. Odtiaľ vstúpite do jeho administrácie — vstup sa zapíše do auditu."
+      },
+      "tenantModules": {
+        "title": "Moduly klienta",
+        "text": "Zapnutý modul vidí majiteľ v administrácii aj hostia na stránke. Po vypnutí sa len skryje, nič sa nezmaže."
+      },
+      "tenantPeople": {
+        "title": "Ľudia klienta",
+        "text": "Kto má prístup do administrácie klienta, s akou rolou a kedy sa naposledy prihlásil."
+      },
+      "tenantDomains": {
+        "title": "Domény klienta",
+        "text": "Adresy, na ktorých hostia nájdu stránku klienta; hlavná sa používa v odkazoch. Adresy *.localhost slúžia len na vývoj."
+      },
+      "tenantTheme": {
+        "title": "Vzhľad klienta",
+        "text": "Farby, písmo a zaoblenie stránky pre hostí s náhľadom. Pri nízkom kontraste tlačidiel sa ukáže varovanie."
+      },
+      "tenantHistory": {
+        "title": "Čo je Záznam zmien",
+        "text": "Každá zmena v dátach klienta za posledných 180 dní — pred a po, kto a kedy. Zmenu, ktorú urobil človek, môžete vrátiť; synchronizácia kalendárov je zhrnutá po behoch a predvolene skrytá."
+      }
+    },
+    "fields": {
+      "blockTo": {
+        "title": "Do (deň odchodu)",
+        "text": "Deň, keď je objekt znova voľný. Blokácia 6.–8. 4. zavrie noci 6. a 7. apríla, 8. apríla už môže prísť hosť."
+      },
+      "seasonPriority": {
+        "title": "Priorita sezóny",
+        "text": "Keď sa dve sezóny prekrývajú, platí tá s vyššou prioritou. Napríklad Vianoce s prioritou 20 vyhrajú nad Zimou s prioritou 10."
+      },
+      "cleaningGap": {
+        "title": "Upratovacie dni medzi pobytmi",
+        "text": "Toľko dní po každom odchode sa nebude dať rezervovať nový príchod. Pri jednom dni: hosť odíde v sobotu, ďalší môže prísť najskôr v nedeľu.",
+        "faq": "cleaningGap",
+        "more": "Viac o upratovacích dňoch ›"
+      },
+      "portalCommission": {
+        "title": "Provízia portálov",
+        "text": "Koľko percent by ste zaplatili Bookingu alebo Airbnb. Z tohto čísla Prehľad a výpis odhadujú, koľko ste ušetrili na priamych rezerváciách — nič sa tým neúčtuje."
+      },
+      "reportMinutes": {
+        "title": "Minúty vo výpise",
+        "text": "Koľko minút by úkon trval ručne. Výpis z nich počíta „Za vás odpracované“ — napríklad 40 automatických e-mailov po 3 minúty sú 2 hodiny. Výpis chodí e-mailom 1. dňa v mesiaci.",
+        "faq": "monthlyReport",
+        "more": "Čo je mesačný výpis ›"
+      }
     }
   },
   "guests": {

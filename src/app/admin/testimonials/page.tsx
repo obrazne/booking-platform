@@ -132,6 +132,7 @@ export default async function TestimonialsPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="testimonials"
         breadcrumbs={await groupCrumbs("offer", t("title"), active.tenantId)}
         title={t("title")}
       />

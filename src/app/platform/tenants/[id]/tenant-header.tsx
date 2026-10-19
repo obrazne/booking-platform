@@ -1,3 +1,4 @@
+import { PageHelp } from "@/core/admin/page-help";
 import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
@@ -12,6 +13,16 @@ import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 export type TenantTab = "overview" | "modules" | "theme" | "domains" | "people" | "audit";
+
+/** ⓘ of each tab (rule 8). */
+const TAB_HELP: Record<TenantTab, string> = {
+  overview: "tenantOverview",
+  modules: "tenantModules",
+  theme: "tenantTheme",
+  domains: "tenantDomains",
+  people: "tenantPeople",
+  audit: "tenantHistory",
+};
 type TenantStatus = "onboarding" | "active" | "suspended";
 
 const TAB_PATH: Record<TenantTab, string> = {
@@ -75,17 +86,20 @@ export async function TenantHeader({ tenant, tab }: { tenant: TenantDetail; tab:
       />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1.5">
-          <h1 className="text-ink flex flex-wrap items-center gap-3 text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[32px]">
-            {tenant.name}
-            <span
-              className={cn(
-                "inline-flex rounded-full px-2.5 py-1 text-xs font-bold tracking-normal",
-                STATUS_PILL[tenant.status as TenantStatus],
-              )}
-            >
-              {tp(`statuses.${tenant.status as TenantStatus}`)}
-            </span>
-          </h1>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-ink flex flex-wrap items-center gap-3 text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[32px]">
+              {tenant.name}
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-2.5 py-1 text-xs font-bold tracking-normal",
+                  STATUS_PILL[tenant.status as TenantStatus],
+                )}
+              >
+                {tp(`statuses.${tenant.status as TenantStatus}`)}
+              </span>
+            </h1>
+            <PageHelp id={TAB_HELP[tab]} />
+          </div>
           <p className="text-muted-foreground text-sm">
             {tenant.slug} · {tenant.country} · {tenant.currency} · {tenant.timezone}
           </p>

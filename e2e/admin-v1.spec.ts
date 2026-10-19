@@ -141,7 +141,10 @@ test("05 control center: own menu, clients, client panel without guest data", as
   const panel = page.getByRole("region", { name: TENANT_NAME });
   await expect(panel).toContainText("Tržby priamo tento mesiac");
   await expect(panel).toContainText("Moduly");
-  await expect(page.getByText("Riadiace centrum nevidí mená ani kontakty hostí")).toBeVisible();
+  // Exact: the same sentence is also in the page's ⓘ (Z66).
+  await expect(
+    page.getByText("Riadiace centrum nevidí mená ani kontakty hostí — len počty.", { exact: true }),
+  ).toBeVisible();
   expect.soft(await serious(page, "riadiace centrum")).toEqual([]);
   await noHorizontalScroll(page);
 });

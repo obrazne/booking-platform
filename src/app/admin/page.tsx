@@ -1,3 +1,4 @@
+import { PageHelp } from "@/core/admin/page-help";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Clock } from "lucide-react";
@@ -203,14 +204,19 @@ export default async function AdminDashboard() {
           <span className="kicker text-brand-secondary first-letter:uppercase">
             {longDate.format(new Date())}
           </span>
-          <h1 className="text-ink text-[28px] leading-[1.1] font-extrabold tracking-[-0.03em] md:text-4xl">
-            {t(`greeting.${part}`, { name: first ?? "none" })}{" "}
-            <span className="text-ink-soft">
-              {pending.length + asks.length
-                ? t("waitingCount", { count: pending.length + asks.length })
-                : t("allDone")}
+          <div className="flex items-start gap-2.5">
+            <h1 className="text-ink text-[28px] leading-[1.1] font-extrabold tracking-[-0.03em] md:text-4xl">
+              {t(`greeting.${part}`, { name: first ?? "none" })}{" "}
+              <span className="text-ink-soft">
+                {pending.length + asks.length
+                  ? t("waitingCount", { count: pending.length + asks.length })
+                  : t("allDone")}
+              </span>
+            </h1>
+            <span className="pt-2 md:pt-2.5">
+              <PageHelp id="overview" />
             </span>
-          </h1>
+          </div>
         </div>
 
         {/* Z62: the monthly report of the previous month is ready — the first 7 days of the month. */}

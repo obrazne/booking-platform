@@ -1,3 +1,5 @@
+import { FieldHelp } from "@/core/admin/page-help";
+import { PageHelp } from "@/core/admin/page-help";
 import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -45,7 +47,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="grid max-w-3xl gap-6">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex items-center gap-2.5">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <PageHelp id="settings" />
+      </div>
       <ActionForm action={saveSettings} className="gap-6">
         <Card>
           <CardHeader>
@@ -116,7 +121,7 @@ export default async function SettingsPage() {
             <Field
               label={t("portalCommission")}
               htmlFor="portal_commission_bp"
-              hint={t("portalCommissionHint")}
+              info={<FieldHelp id="portalCommission" />}
             >
               <Input
                 id="portal_commission_bp"
@@ -279,8 +284,9 @@ export default async function SettingsPage() {
         {/* Mesačný výpis (Z62): minutes per task of "Za vás odpracované" and the accountant's e-mail. */}
         <Card id="vypis" className="scroll-mt-24">
           <CardHeader>
-            <CardTitle>{t("report.title")}</CardTitle>
-            <CardDescription>{t("report.hint")}</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              {t("report.title")} <FieldHelp id="reportMinutes" />
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             {REPORT_TASKS.map((k) => (

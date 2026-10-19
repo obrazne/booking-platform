@@ -77,6 +77,7 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
   return (
     <div data-bleed>
       <PageHeader
+        help="reservations"
         kicker={tenant.name}
         title={t("title")}
         actions={

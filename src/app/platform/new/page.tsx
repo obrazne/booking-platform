@@ -10,6 +10,7 @@ export default async function NewTenantPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="platformNew"
         breadcrumbs={[{ label: tn("clients"), href: "/platform" }, { label: tn("newClient") }]}
         title={t("newTenant")}
       />

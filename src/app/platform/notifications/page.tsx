@@ -18,6 +18,7 @@ export default async function PlatformNotifications() {
   return (
     <div data-bleed>
       <PageHeader
+        help="platformNotifications"
         kicker={
           <span className="inline-flex items-center gap-1.5">
             <Shield className="size-3.5" /> {t("title")}

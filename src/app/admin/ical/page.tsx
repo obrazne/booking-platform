@@ -1,3 +1,4 @@
+import { PageHelp } from "@/core/admin/page-help";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -46,8 +47,10 @@ export default async function IcalPage() {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm">{t("lead")}</p>
+          <div className="flex items-center gap-2.5">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
+            <PageHelp id="ical" />
+          </div>
         </div>
         <SyncButton action={syncNow} />
       </div>

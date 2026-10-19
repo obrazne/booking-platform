@@ -24,6 +24,7 @@ export default async function TeamPage({ searchParams }: PageProps<"/admin/team"
   return (
     <div data-bleed>
       <PageHeader
+        help="team"
         breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
         title={t("title")}
         actions={

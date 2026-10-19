@@ -40,6 +40,7 @@ export default async function PlatformStatus() {
   return (
     <div data-bleed>
       <PageHeader
+        help="platformStatus"
         kicker={
           <span className="inline-flex items-center gap-1.5">
             <Shield className="size-3.5" /> {t("title")}

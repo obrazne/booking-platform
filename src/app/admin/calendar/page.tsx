@@ -86,6 +86,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/admin/c
   return (
     <div data-bleed>
       <PageHeader
+        help="calendar"
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
         actions={

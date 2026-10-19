@@ -79,11 +79,11 @@ export default async function CollisionsPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="collisions"
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
       />
       <div className="grid gap-10 px-5 pb-14 md:px-10">
-        <p className="text-muted-foreground max-w-3xl text-sm font-normal">{t("lead")}</p>
         <section className="grid gap-2" aria-labelledby="collisions-open">
           <h2 id="collisions-open" className="label-mono">
             {t("openTitle", { count: open.length })}

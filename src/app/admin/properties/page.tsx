@@ -1,3 +1,4 @@
+import { PageHelp } from "@/core/admin/page-help";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,10 @@ export default async function PropertiesPage() {
 
   return (
     <div className="grid gap-6">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <div className="flex items-center gap-2.5">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <PageHelp id="properties" />
+      </div>
       <div className="border-border overflow-x-auto rounded-xl border">
         <Table>
           <TableHeader>

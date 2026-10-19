@@ -37,6 +37,7 @@ export default async function PlatformModules() {
   return (
     <div data-bleed>
       <PageHeader
+        help="platformModules"
         breadcrumbs={[
           { label: tn("modules"), href: "/platform/modules" },
           { label: tn("catalog") },
@@ -44,7 +45,6 @@ export default async function PlatformModules() {
         title={tc("title")}
       />
       <PageBody className="grid gap-4">
-        <p className="text-muted-foreground max-w-prose text-sm">{tc("intro")}</p>
         <ExpandableList
           rows={catalog.map((m) => {
             const users = list.flatMap((x) =>

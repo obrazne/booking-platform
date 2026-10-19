@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → **Z66 (vysvetlivky ⓘ)** — *zabratá linkou A* → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ — fronta linky B je prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -172,7 +172,7 @@ návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pr
    a záznam zmien; nasadiť na všetky zoznamy z pravidla 7 (administrácia aj riadiace centrum). Hľadanie a filtre v SQL, nie v pamäti.
 3. Zmeraj pred/po (čas načítania Záznamu zmien STRÖMY a Rezervácií) a zapíš do Denníka.
 
-### Z66 [A] 🔄 — Vysvetlivky ⓘ na všetkých stránkach (pripomienka 47; pravidlo 8; doska 14) — po Z63
+### Z66 [A] ✅ — Vysvetlivky ⓘ na všetkých stránkach (pripomienka 47; pravidlo 8; doska 14) — po Z63
 1. Spoločný komponent ⓘ (myš, fokus, ťuknutie; klik nechá otvorené; Esc / klik mimo zatvorí; `aria-describedby`) a miesto v `PageHeader`
    hneď za nadpisom; menšia verzia pri popise poľa.
 2. **Texty pre každú stránku** administrácie a riadiaceho centra (`help.*` v prekladoch): čo to je a kedy to použiť, 2–3 vety, ľudsky,
@@ -400,6 +400,19 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z66 [linka A]: **vysvetlivky ⓘ na všetkých stránkach** (pripomienka 47, pravidlo 8, doska 14). (Claude Code)
+  - Spoločný komponent `src/core/admin/info-tip.tsx` (Radix Popover bez portálu): zatvorený, otvorí sa pod myšou, fokusom
+    klávesnice aj ťuknutím; klik ho nechá otvorený, Esc / klik mimo zatvorí; text je `aria-describedby` tlačidla aj zatvorený.
+    Serverové obaly `PageHelp` / `FieldHelp` / `tabHelpItems` (`page-help.tsx`), `TabHelp` pri záložkách objektu.
+  - **43 stránok** administrácie aj riadiaceho centra má ⓘ hneď za nadpisom (`PageHeader help="…"`, vlastné nadpisy, záložky
+    objektu a klienta vysvetľujú otvorenú záložku). Texty `help.pages.*` — čo stránka je a kedy ju použiť, s príkladom; kde je
+    otázka v Pomoci (Z67), odkaz „… ›“ na ňu (`/admin/help?open=…`). Dlhé úvodné odseky pod nadpismi (príchody, kolízie, z
+    portálov, recenzie, upozornenia, kôš, automatické správy, kalendáre portálov, audit, katalóg, skúšky, podpora) presunuté do ⓘ.
+  - **ⓘ pri poliach** (`Field info=…`): Do (deň odchodu) pri blokácii, Priorita sezóny, Upratovacie dni medzi pobytmi,
+    Provízia portálov, minúty Mesačného výpisu.
+  - **Všetky texty na prečítanie naraz: `docs/texty-vysvetliviek.md`** (vygenerované z prekladov).
+  - e2e `info-tips.spec.ts` (ⓘ na 23 stránkach majiteľa a 11 riadiaceho centra, myš / klávesnica / klik / Esc / klik mimo,
+    odkaz do Pomoci, ⓘ pri poli, ťuknutie na mobile a okraj obrazovky, axe). Snímky `docs/snimky/z66/`.
 - 2026-10-19 — Z68 [linka B]: **Hostia — zoznam, karta hosťa, súhlasy a export** (pripomienky 52, 53; doska 17, v1.6). (Claude Code)
   - **Rezervácie › Hostia** (jadro): stĺpce Hosť · Telefón · Pobyty · Posledný/budúci pobyt · Spolu (priame rezervácie + objednávky
     služieb) · Ponuky; filtre Všetci / Vracajú sa / So súhlasom / S budúcim pobytom s počtami, hľadanie, triedenie a stránkovanie

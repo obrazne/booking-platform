@@ -107,6 +107,7 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/admin
   return (
     <div data-bleed>
       <PageHeader
+        help="statistics"
         kicker={tenant.name}
         title={t("title")}
         actions={

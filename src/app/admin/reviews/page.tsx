@@ -43,11 +43,11 @@ export default async function ReviewsPage({ searchParams }: PageProps<"/admin/re
   return (
     <div data-bleed>
       <PageHeader
+        help="reviews"
         breadcrumbs={await groupCrumbs("offer", t("title"), active.tenantId)}
         title={t("title")}
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
-        <p className="text-muted-foreground max-w-prose text-sm">{t("lead")}</p>
         <p className="text-ink text-sm font-semibold" role="status">
           {summary && summary.count > 0
             ? t("summary", {

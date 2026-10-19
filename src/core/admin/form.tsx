@@ -96,19 +96,29 @@ export function SubmitButton({
 export function Field({
   label,
   hint,
+  info,
   htmlFor,
   children,
   className,
 }: {
   label: ReactNode;
   hint?: ReactNode;
+  /** Smaller ⓘ next to the label (rule 8) — `<FieldHelp id="…" />`. */
+  info?: ReactNode;
   htmlFor?: string;
   children: ReactNode;
   className?: string;
 }) {
   return (
     <div className={cn("grid gap-1.5", className)}>
-      <Label htmlFor={htmlFor}>{label}</Label>
+      {info ? (
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor={htmlFor}>{label}</Label>
+          {info}
+        </div>
+      ) : (
+        <Label htmlFor={htmlFor}>{label}</Label>
+      )}
       {children}
       {hint ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
     </div>

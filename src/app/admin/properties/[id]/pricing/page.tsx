@@ -1,3 +1,4 @@
+import { FieldHelp } from "@/core/admin/page-help";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AlertTriangle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -118,7 +119,7 @@ export default async function PricingPage({ params }: PageProps<"/admin/properti
         </Field>
         <Field
           label={t("priority")}
-          hint={t("priorityHint")}
+          info={<FieldHelp id="seasonPriority" />}
           htmlFor={`prio-${season?.id ?? "new"}`}
         >
           <Input

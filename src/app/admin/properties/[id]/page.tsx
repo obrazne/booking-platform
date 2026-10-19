@@ -1,3 +1,4 @@
+import { FieldHelp } from "@/core/admin/page-help";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -146,7 +147,11 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
                   defaultValue={property.check_out_until.slice(0, 5)}
                 />
               </Field>
-              <Field label={t("fields.cleaningGap")} htmlFor="cleaning_gap_days">
+              <Field
+                label={t("fields.cleaningGap")}
+                htmlFor="cleaning_gap_days"
+                info={<FieldHelp id="cleaningGap" />}
+              >
                 <Input
                   id="cleaning_gap_days"
                   name="cleaning_gap_days"

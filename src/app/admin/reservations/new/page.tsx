@@ -1,6 +1,7 @@
+import { PageHelp } from "@/core/admin/page-help";
 import { Breadcrumbs } from "@/core/admin/breadcrumbs";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,8 +65,9 @@ export default async function ManualReservationPage({
       />
       <Card>
         <CardHeader>
-          <CardTitle>{t("manual.title")}</CardTitle>
-          <CardDescription>{t("manual.hint")}</CardDescription>
+          <CardTitle className="flex items-center gap-2.5">
+            {t("manual.title")} <PageHelp id="reservationNew" />
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ActionForm action={createManualReservation} bar={false}>

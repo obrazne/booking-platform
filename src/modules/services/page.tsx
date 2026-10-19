@@ -164,7 +164,7 @@ export async function ServicesPage({ tenant }: { tenant: TenantInfo }) {
   // Rule 7: compact rows (name · price and how it is counted · state), the form opens in place.
   return (
     <div data-bleed>
-      <PageHeader kicker={tenant.name} title={t("title")} />
+      <PageHeader help="services" kicker={tenant.name} title={t("title")} />
       <div className="px-5 pb-14 md:px-10">
         <ExpandableList
           rows={(services ?? []).map((s) => ({

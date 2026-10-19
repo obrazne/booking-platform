@@ -21,11 +21,11 @@ export default async function TrashPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="trash"
         breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
         title={t("title")}
       />
       <PageBody className="grid gap-4">
-        <p className="text-muted-foreground max-w-prose text-sm">{t("intro")}</p>
         {error ? (
           <p className="text-muted-foreground">{t("ownerOnly")}</p>
         ) : rows.length ? (

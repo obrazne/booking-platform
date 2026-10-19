@@ -102,6 +102,7 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
   return (
     <div data-bleed>
       <PageHeader
+        help="platformClients"
         kicker={
           <span className="inline-flex items-center gap-1.5">
             <Shield className="size-3.5" /> {t("title")}

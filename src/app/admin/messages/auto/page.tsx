@@ -88,11 +88,11 @@ export default async function AutoMessagesPage() {
   return (
     <div data-bleed>
       <PageHeader
+        help="autoMessages"
         breadcrumbs={[{ label: tn("nav"), href: "/admin/messages" }, { label: tn("navAuto") }]}
         title={t("auto.title")}
       />
       <div className="grid max-w-4xl gap-8 px-5 pb-14 md:px-10">
-        <p className="text-muted-foreground max-w-prose text-sm">{t("auto.lead")}</p>
         <AutoMessages
           locale={locale}
           rules={list}

@@ -75,12 +75,12 @@ export default async function ArrivalsPage({ searchParams }: PageProps<"/admin/a
   return (
     <div data-bleed>
       <PageHeader
+        help="arrivals"
         breadcrumbs={await groupCrumbs("reservations", t("title"), active.tenantId)}
         title={t("title")}
       />
       <div className="grid gap-8 px-5 pb-14 md:px-10">
         <section className="grid gap-3">
-          <p className="text-muted-foreground max-w-prose text-sm">{t("lead")}</p>
           {rows.length ? (
             <ul aria-label={t("title")} className="border-line border-t">
               {rows.map((row) =>

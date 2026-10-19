@@ -94,6 +94,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
   return (
     <div data-bleed>
       <PageHeader
+        help="messages"
         breadcrumbs={[{ label: tn("nav"), href: "/admin/messages" }, { label: tn("navInbox") }]}
         title={t("inbox.title")}
         actions={
