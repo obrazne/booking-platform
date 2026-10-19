@@ -5,7 +5,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = public, extensions;
 
-select plan(17);
+select plan(18);
 
 insert into auth.users (id, email, aud, role, instance_id) values
   ('00000000-0000-0000-0000-0000000000a1', 'owner-a@test.local', 'authenticated', 'authenticated', '00000000-0000-0000-0000-000000000000'),
@@ -61,9 +61,10 @@ reset role;
 select ok(public.guest_consent_request_token(
   (select id from public.guest_consent_requests where guest_id = '50000000-0000-0000-0000-00000000000b'), 'hash-b'),
   'the worker stores the hash');
-select ok(public.guest_consent_confirm('hash-b') and
-  (select marketing_consent from public.guests where id = '50000000-0000-0000-0000-00000000000b'),
-  'the click writes the consent');
+select ok(public.guest_consent_confirm('hash-b'), 'the click confirms the request');
+-- A statement of its own: the one above sees the data as they were when it started.
+select ok((select marketing_consent from public.guests where id = '50000000-0000-0000-0000-00000000000b'),
+  'the guest has the consent');
 select is((select source from public.guest_consent_events where guest_id = '50000000-0000-0000-0000-00000000000b'),
   'owner_request', 'with the source owner_request');
 
