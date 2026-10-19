@@ -180,7 +180,7 @@ návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pr
 4. Zbalené riadky (kto, čo, kedy jedným riadkom; klik rozbalí rozdiel), filtre bez tlačidla „Filtrovať“ (`FilterPills` / okamžite).
    Platí pre Záznam zmien v riadiacom centre aj pre Nedávno zmazané / históriu u majiteľa, ak používajú to isté zobrazenie.
 
-### Z65 [B] — Pruh „Kde sa predali noci“ na Prehľade (pripomienka 49) — po Z64
+### Z65 [B] 🔄 — Pruh „Kde sa predali noci“ na Prehľade (pripomienka 49) — po Z64
 Ten istý komponent a výpočet ako v mesačnom výpise (Z62, `tenant_monthly_report` / `monthly-view.ts` — jeden zdroj). Na Prehľade
 s prepínačom **Tento mesiac / Ďalší mesiac** (dopredu = voľné noci, ktoré treba predať); klik na úsek → kalendár na daný mesiac.
 Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
