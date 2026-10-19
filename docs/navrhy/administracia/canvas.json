@@ -150,6 +150,15 @@
       "title": "16 Pomoc — otázky podľa tém, postup krok za krokom, „Nenašli ste odpoveď?“ (klikací)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Hostia.dc.html": {
+      "x": 0,
+      "y": 3920,
+      "w": 1440,
+      "h": 1100,
+      "title": "17 Hostia — zoznam a karta hosťa, export (so súhlasom / všetci) — klikací",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "order": [
@@ -169,7 +178,8 @@
     "VypisEmail.dc.html",
     "Vysvetlivky.dc.html",
     "Hladanie.dc.html",
-    "Pomoc.dc.html"
+    "Pomoc.dc.html",
+    "Hostia.dc.html"
   ],
   "notes": {
     "titul": {
@@ -220,6 +230,13 @@
       "w": 1100,
       "fill": "blue",
       "text": "Vysvetlivky (návrh 19. 10.): ⓘ vždy hneď za nadpisom stránky — vysvetlí, čo stránka je a kedy ju použiť (2–3 vety + odkaz na návod). Pri zložitých poliach malé ⓘ pri popise poľa. Otvorí sa prejdením myšou, ťuknutím aj klávesnicou; kliknutie ho nechá otvorené."
+    },
+    "hostia": {
+      "x": 0,
+      "y": 3740,
+      "w": 1100,
+      "fill": "teal",
+      "text": "Hostia (návrh 19. 10.): karta každého priameho hosťa — kontakt, súhlasy, pobyty, útrata, poznámka. Export oddelene: so súhlasom s ponukami (na marketing) / všetci (vlastná evidencia). Adresa sa dopĺňa len od hosťa (Moje údaje) alebo majiteľom — údaje z online check-inu sa sem nekopírujú. Hostia z portálov tu nie sú (kontakty nemáme), dajú sa pridať ručne."
     }
   },
   "designSystems": []

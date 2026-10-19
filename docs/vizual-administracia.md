@@ -280,3 +280,23 @@ Dosky **14 `Vysvetlivky`**, **15 `Hladanie`**, **16 `Pomoc`** v `docs/navrhy/adm
 - **Pomoc** = položka dole v bočnom menu (vedľa „Čo je nové“), nie v Nastaveniach: hľadanie, témy, otázky s postupom krok za krokom
   a tlačidlom na danú stránku, „Pomohlo vám to? Áno / Nie“, vpravo „Nenašli ste odpoveď?“ — formulár, ktorý pošle aj klienta, používateľa
   a stránku, odkiaľ píše. Odkaz z ⓘ („Ako blokovať termín ›“) vedie na príslušnú otázku — jeden zdroj odpovedí.
+
+## v1.6 — Hostia (pripomienky 52–53, 19. 10.)
+
+Doska **17 `Hostia`** v `docs/navrhy/administracia/`. Položka menu **Rezervácie › Hostia** (nie „Klienti“ — tak sa volajú ubytovatelia
+v riadiacom centre). Zdroj = existujúca tabuľka `guests` (každý priamy hosť, prepojený s rezerváciami) + história súhlasov `guest_consent_events`.
+- **Zoznam:** meno + e-mail, telefón, počet pobytov, posledný pobyt, útrata spolu (priame rezervácie + objednávky), súhlas s ponukami
+  (Áno / —). Filtre: Všetci · Vracajú sa (2+ pobyty) · So súhlasom s ponukami · S budúcim pobytom; hľadanie; stránkovanie (pravidlo 7).
+- **Karta hosťa** (bočný panel): kontakt (e-mail, telefón, krajina, jazyk, adresa — pri adrese zdroj: od hosťa / doplnil majiteľ, dátum),
+  súhlasy s históriou (kedy, odkiaľ), pobyty (odkaz na rezerváciu), poznámka viditeľná len pre tím; akcie Napísať správu, Nová rezervácia,
+  Údaje hosťa (export pre žiadosť o prístup podľa GDPR).
+- **Súhlas s ponukami nemôže zapnúť majiteľ** — len hosť (košík, Moje údaje, potvrdzovací odkaz v e-maile). Majiteľ môže súhlas len
+  **odvolať** v mene hosťa („hosť ma požiadal o odhlásenie“, zapíše sa s dôvodom a kto) a môže hosťovi **poslať žiadosť o súhlas**
+  (e-mail s tlačidlom „Áno, chcem dostávať ponuky“ — súhlas sa zapíše až po kliknutí hosťa, zdroj `owner_request`). Žiadosť nanajvýš raz
+  za 12 mesiacov na hosťa, nie hosťom, ktorí súhlas odvolali.
+- **Export (CSV):** „Len so súhlasom s ponukami“ (pre e-mail marketing, so stĺpcom dátum a zdroj súhlasu) / „Všetci“ (vlastná evidencia,
+  s upozornením). Každý export sa zapíše do záznamu zmien.
+- **Ručne pridaný hosť** (napr. z Bookingu, ak kontakt dal sám): bez súhlasu, kým ho nedá hosť.
+- **Adresa sa nepreberá z online check-inu** (iný účel — kniha ubytovaných, zákonná povinnosť). Hostia z portálov v zozname nie sú.
+- **Text súhlasu v košíku a v Moje údaje:** „Chcem dostávať ponuky a zľavy {ubytovanie} e-mailom — aj na voľné termíny mimo sezóny.
+  Odhlásiť sa dá jedným klikom.“ Nezaškrtnuté, nepovinné.

@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
-  **B:** ~~Z57–Z60, Z62~~ ✅ → **Z64 (záznam zmien čitateľný)** → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)**.
+  **B:** ~~Z57–Z60, Z62~~ ✅ → **Z64 (záznam zmien čitateľný)** → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -199,6 +199,21 @@ Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
    klient, používateľ, stránka, z ktorej prišiel. Pošle e-mail na `NEXT_PUBLIC_SUPPORT_EMAIL` (Reply-To = používateľ) a zapíše žiadosť
    do riadiaceho centra (zoznam + upozornenie v zvončeku správcu). Doba odpovede: **žiadny sľub v texte**, kým ju Martin neurčí (Otázky).
 4. Odkazy z vysvetliviek ⓘ (Z66) na príslušné otázky v Pomoci.
+
+### Z68 [B] — Hostia: zoznam, karta hosťa, súhlasy a export (pripomienky 52, 53; doska 17) — po Z67
+Návrh `docs/vizual-administracia.md` → **v1.6** (prečítaj celé), doska 17 `Hostia`. Jadro, nie modul. Dáta: `guests`, `guest_consent_events`, rezervácie.
+1. **Rezervácie › Hostia:** zoznam so stĺpcami, filtrami, hľadaním a stránkovaním v DB (pravidlo 7); karta hosťa ako `RecordPanel`
+   (`?panel=guest:<id>`), odkaz na hosťa aj z panelu rezervácie a z hľadania (Z67 — skupina Rezervácie a hostia).
+2. Úprava kontaktu majiteľom (meno, telefón, krajina, jazyk, adresa so zdrojom a dátumom, poznámka pre tím — nové stĺpce len pridávajúcou
+   migráciou; `record_history` platí). „+ Pridať hosťa“ ručne (bez súhlasu). Zlúčenie duplicít nerob — ak narazíš, zapíš do Otázok.
+3. **Súhlas s ponukami:** majiteľ ho **nemôže zapnúť**; môže ho odvolať v mene hosťa (dôvod + kto, do `guest_consent_events`) a poslať
+   hosťovi žiadosť o súhlas e-mailom (potvrdzovací odkaz s tokenom; zapíše sa až po kliknutí, zdroj `owner_request`; max. 1× za 12 mesiacov,
+   nie po odvolaní). Pravidlá v DB, nie len v rozhraní; pgTAP test, že tím súhlas zapnúť nevie.
+4. Nový text súhlasu v košíku a v Moje údaje (v1.6) s názvom ubytovania, nezaškrtnutý.
+5. **Export CSV** — dve voľby (so súhlasom / všetci), zápis do záznamu zmien; „Údaje hosťa“ = export jedného hosťa (kontakt, pobyty,
+   súhlasy, správy) pre žiadosť hosťa o prístup. Doplň Hostí do exportu klienta (`AREAS` v `tenant-export.ts`), ak tam nie sú celé.
+6. ⓘ text a otázky do Pomoci (Ako exportujem kontakty do Ecomailu?, Prečo nemôžem hosťovi zapnúť súhlas?). Testy: vitest, pgTAP (RLS,
+   súhlas), e2e na Ukážkovom klientovi; STRÖMY len čítaj.
 
 ### Z61 [A] — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
 1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj

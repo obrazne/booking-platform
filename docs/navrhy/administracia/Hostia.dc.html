@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Hostia — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f7f6f2}
+.row{transition:background 150ms ease}
+.row:hover{background:#faf9f6 !important}
+.btn{transition:background 150ms ease,border-color 150ms ease}
+.btn:hover{background:#efede7 !important;border-color:#b9b4a7 !important}
+.lnk:hover{text-decoration:underline}
+.ib:hover{background:#e6efeb !important;color:#2f5d50 !important}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1100px; background: #f7f6f2; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="rezervacie" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; position: relative;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e3e1da; background: #ffffff;">
+<label style="flex: 0 1 460px; display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; color: #5a6672;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" placeholder="Hľadať hostí, rezervácie, nastavenia aj pomoc…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 14px; color: #11212f; outline: none;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; padding: 3px 7px; border-radius: 6px; border: 1px solid #c9c5ba; color: #5a6672;">Ctrl K</span></label>
+</div>
+
+<div style="padding: 28px 40px 48px; display: flex; flex-direction: column; gap: 20px; margin-right: {{panelGap}};">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #ad5a2b;">Chalet STRÖMY</span>
+<div style="display: flex; align-items: center; gap: 10px;"><h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Hostia</h1><button type="button" class="ib" aria-label="Čo sú Hostia?" style="width: 24px; height: 24px; padding: 0; border-radius: 9999px; border: 1.5px solid #8b929b; background: #ffffff; color: #5a6672; font-family: Georgia, serif; font-style: italic; font-size: 14px; font-weight: 700; cursor: pointer;">i</button></div>
+<span style="font-size: 14px; color: #5a6672;">Každý, kto u vás rezervoval priamo, má tu kartu so všetkým, čo o ňom viete. Patria vám.</span>
+</div>
+<div style="display: flex; gap: 10px; position: relative;">
+<button type="button" class="btn" style="min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">+ Pridať hosťa</button>
+<button type="button" class="btn" onClick="{{toggleExport}}" aria-expanded="{{exportAttr}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="M7 10l5 5 5-5"></path><path d="M5 20h14"></path></svg>Export</button>
+<sc-if value="{{exportOpen}}" hint-placeholder-val="{{false}}"><div role="dialog" aria-label="Export hostí" style="position: absolute; top: 50px; right: 0; z-index: 6; width: 380px; display: flex; flex-direction: column; gap: 4px; padding: 10px; background: #ffffff; border: 1px solid #c9c5ba; border-radius: 12px; box-shadow: 0 24px 60px -24px rgba(17,33,47,0.4);">
+<button type="button" class="row" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border: none; border-radius: 8px; background: #ffffff; text-align: left; font-family: inherit; cursor: pointer;"><span style="font-size: 14px; font-weight: 700; color: #11212f;">Len so súhlasom s ponukami · 31</span><span style="font-size: 12.5px; line-height: 1.45; color: #5a6672;">Na newsletter a ponuky (Ecomail, SmartEmailing…). Pribudne stĺpec s dátumom súhlasu.</span></button>
+<button type="button" class="row" style="display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border: none; border-radius: 8px; background: #ffffff; text-align: left; font-family: inherit; cursor: pointer;"><span style="font-size: 14px; font-weight: 700; color: #11212f;">Všetci hostia · 46</span><span style="font-size: 12.5px; line-height: 1.45; color: #5a6672;">Na vlastnú evidenciu a zálohu. Hosťom bez súhlasu neposielajte ponuky.</span></button>
+<span style="padding: 6px 14px 4px; font-size: 12px; color: #5a6672;">CSV pre Excel · export sa zapíše do záznamu zmien</span>
+</div></sc-if>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{f.pick}}" aria-pressed="{{f.on}}" style="{{f.style}}">{{f.label}} <span style="opacity: 0.7;">{{f.count}}</span></button></sc-for>
+</div>
+
+<section aria-label="Zoznam hostí" style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px; overflow: hidden;">
+<div style="display: grid; grid-template-columns: minmax(200px, 2.2fr) 1.3fr 0.7fr 1fr 1fr 0.8fr; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #ecebe6; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;"><span>Hosť</span><span>Telefón</span><span>Pobyty</span><span>Posledný pobyt</span><span style="text-align: right;">Spolu</span><span>Ponuky</span></div>
+<sc-for list="{{guests}}" as="g" hint-placeholder-count="8"><button type="button" class="row" onClick="{{g.open}}" style="{{g.style}}"><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 14.5px; font-weight: 500; color: #11212f;">{{g.name}}</span><span style="font-size: 12.5px; color: #5a6672; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{g.email}}</span></span><span style="font-size: 14px; color: #3b3d42;">{{g.phone}}</span><span style="font-size: 14px; color: #11212f;">{{g.stays}}</span><span style="font-size: 14px; color: #3b3d42;">{{g.last}}</span><span style="text-align: right; font-size: 14px; font-weight: 500; color: #11212f;">{{g.total}}</span><span style="{{g.consentStyle}}">{{g.consent}}</span></button></sc-for>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; font-size: 13px; color: #5a6672;"><span>1–8 z 46</span><span>Na stránku: <strong style="font-weight: 500; color: #11212f;">20</strong> · 50 · 100</span></div>
+</section>
+<p style="margin: 0; font-size: 12.5px; line-height: 1.55; color: #5a6672;">Hostia z Bookingu a Airbnb tu nie sú — portály ich kontakty nedávajú. Pridať ich môžete ručne, ak vám kontakt dali sami.</p>
+</div>
+
+<aside aria-label="Karta hosťa" style="position: absolute; top: 0; right: 0; bottom: 0; width: 520px; box-sizing: border-box; display: flex; flex-direction: column; background: #ffffff; border-left: 1px solid #e3e1da; box-shadow: -24px 0 60px -40px rgba(17,33,47,0.35); overflow: hidden;">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 24px 28px 18px; border-bottom: 1px solid #ecebe6;">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">{{sel.name}}</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{sel.tags}}" as="t" hint-placeholder-count="2"><span style="padding: 3px 10px; border-radius: 9999px; background: #e6efeb; color: #2f5d50; font-size: 12px; font-weight: 700;">{{t}}</span></sc-for></span>
+</div>
+<button type="button" aria-label="Zavrieť" class="btn" style="width: 36px; height: 36px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; cursor: pointer; font-size: 16px; color: #11212f;">×</button>
+</div>
+<div style="flex: 1 1 auto; overflow-y: auto; padding: 8px 28px 24px; display: flex; flex-direction: column;">
+
+<div style="display: flex; flex-direction: column; padding: 16px 0; border-bottom: 1px solid #ecebe6;">
+<div style="display: flex; justify-content: space-between; align-items: baseline;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Kontakt</span><a href="#" class="lnk" style="font-size: 13px; font-weight: 500; color: #11212f;">Upraviť</a></div>
+<sc-for list="{{sel.contact}}" as="c" hint-placeholder-count="5"><div style="display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 8px 0; font-size: 14px;"><span style="color: #5a6672;">{{c.k}}</span><span style="{{c.vStyle}}">{{c.v}}</span></div></sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px 0; border-bottom: 1px solid #ecebe6;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Súhlasy</span>
+<span style="font-size: 14px; line-height: 1.5; color: #11212f;">{{sel.consent}}</span>
+</div>
+
+<div style="display: flex; flex-direction: column; padding: 16px 0; border-bottom: 1px solid #ecebe6;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Pobyty · {{sel.stays}}</span>
+<sc-for list="{{sel.history}}" as="h" hint-placeholder-count="2"><a href="#" class="row" style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; text-decoration: none; border-bottom: 1px solid #f2f1ec;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{h.dates}}</span><span style="font-size: 12.5px; color: #5a6672;">{{h.meta}}</span></span><span style="font-size: 14px; color: #11212f;">{{h.sum}}</span></a></sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 16px 0;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #5a6672;">Poznámka (vidíte len vy)</span>
+<textarea rows="3" style="box-sizing: border-box; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #b9b4a7; background: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; color: #11212f; resize: vertical;">{{sel.note}}</textarea>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 28px; border-top: 1px solid #ecebe6; background: #fafaf8;">
+<button type="button" style="min-height: 42px; padding: 0 18px; border-radius: 9999px; border: none; background: {{accent}}; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;">Napísať správu</button>
+<button type="button" class="btn" style="min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Nová rezervácia</button>
+<button type="button" class="btn" style="min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Údaje hosťa (export)</button>
+</div>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f"]},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: 0, filter: 'all', exportOpen: false }; }
+  renderVals() {
+    var self = this;
+    var a = this.props.accent ?? '#2f5d50';
+    var all = [
+      { name: 'Tomáš Kováč', email: 'tomas.kovac@example.sk', phone: '+421 9•• ••• 214', stays: 3, last: '22. 12. 2026', total: '9 850 €', consent: true, ret: true,
+        tags: ['Vracia sa · 3 pobyty', 'Súhlas s ponukami'], country: 'Slovensko', lang: 'slovenčina', address: 'Hlavná 12, 811 01 Bratislava', addrSrc: 'doplnila Jana 14. 9. 2026',
+        consentText: 'Súhlas s ponukami od 2. 3. 2025 (pri rezervácii 2026-0091). Obchodné podmienky a ochrana údajov pri každej rezervácii.',
+        history: [ { dates: '22.–26. 12. 2026', meta: '2026-0648 · 4 dospelí · Potvrdená', sum: '4 450 €' }, { dates: '14.–17. 8. 2025', meta: '2025-0177 · 2 dospelí + 2 deti · Ukončená', sum: '2 700 €' }, { dates: '2.–5. 3. 2025', meta: '2025-0091 · 2 dospelí · Ukončená', sum: '2 700 €' } ],
+        note: 'Chodia s dvoma deťmi, radi si objednajú raňajky. Na Vianoce chceli nahriatu saunu pri príchode.' },
+      { name: 'Katarína Horváthová', email: 'katarina.h@example.sk', phone: '+421 9•• ••• 870', stays: 1, last: '10. 2. 2027', total: '2 940 €', consent: false, ret: false, tags: ['Nový hosť'], country: 'Slovensko', lang: 'slovenčina', address: '', addrSrc: '', consentText: 'Bez súhlasu s ponukami — ponuky jej neposielajte.', history: [ { dates: '10.–13. 2. 2027', meta: '2026-0647 · 4 + 2 deti · Zrušená', sum: '2 940 €' } ], note: '' },
+      { name: 'Simona Tóthová', email: 'simona.toth@example.sk', phone: '+421 9•• ••• 031', stays: 2, last: '3. 1. 2027', total: '4 650 €', consent: true, ret: true, tags: ['Vracia sa · 2 pobyty'], country: 'Slovensko', lang: 'slovenčina', address: '', addrSrc: '', consentText: 'Súhlas s ponukami od 21. 6. 2026.', history: [], note: '' },
+      { name: 'Andrea Polakovičová', email: 'andrea.p@example.sk', phone: '+421 9•• ••• 552', stays: 1, last: '12. 12. 2026', total: '3 500 €', consent: true, ret: false, tags: [], country: 'Slovensko', lang: 'slovenčina', address: '', addrSrc: '', consentText: '', history: [], note: '' },
+      { name: 'Veronika Lukáčová', email: 'veronika.l@example.cz', phone: '+420 7•• ••• 118', stays: 1, last: '15. 1. 2027', total: '4 250 €', consent: false, ret: false, tags: [], country: 'Česko', lang: 'čeština', address: '', addrSrc: '', consentText: '', history: [], note: '' },
+      { name: 'Marek Benko', email: 'marek.benko@example.sk', phone: '+421 9•• ••• 407', stays: 1, last: '9. 1. 2027', total: '3 400 €', consent: true, ret: false, tags: [], country: 'Slovensko', lang: 'slovenčina', address: '', addrSrc: '', consentText: '', history: [], note: '' },
+      { name: 'Jakub Šimko', email: 'jakub.simko@example.sk', phone: '+421 9•• ••• 690', stays: 2, last: '3. 12. 2026', total: '5 600 €', consent: true, ret: true, tags: [], country: 'Slovensko', lang: 'slovenčina', address: '', addrSrc: '', consentText: '', history: [], note: '' },
+      { name: 'Eva Krajčírová', email: 'eva.k@example.at', phone: '+43 6•• ••• 225', stays: 1, last: '9. 11. 2026', total: '2 100 €', consent: false, ret: false, tags: [], country: 'Rakúsko', lang: 'nemčina', address: '', addrSrc: '', consentText: '', history: [], note: '' }
+    ];
+    var f = this.state.filter;
+    var list = all.map(function (g, i) { return Object.assign({ i: i }, g); }).filter(function (g) { return f === 'all' || (f === 'ret' && g.ret) || (f === 'consent' && g.consent) || (f === 'upcoming' && /2027|12\. 2026/.test(g.last)); });
+    var defs = [['all', 'Všetci', 46], ['ret', 'Vracajú sa', 9], ['consent', 'So súhlasom s ponukami', 31], ['upcoming', 'S budúcim pobytom', 12]];
+    var s = all[this.state.sel] || all[0];
+    var contact = [
+      { k: 'E-mail', v: s.email }, { k: 'Telefón', v: s.phone.replace(/•/g, '0') }, { k: 'Krajina', v: s.country }, { k: 'Jazyk', v: s.lang },
+      { k: 'Adresa', v: s.address ? s.address + ' · ' + s.addrSrc : 'nevieme — doplníte v Upraviť' }
+    ].map(function (c) { return Object.assign(c, { vStyle: 'color: ' + (/nevieme/.test(c.v) ? '#5a6672' : '#11212f') + ';' }); });
+    return {
+      accent: a, panelGap: '520px',
+      exportOpen: this.state.exportOpen, exportAttr: this.state.exportOpen ? 'true' : 'false',
+      toggleExport: function () { self.setState({ exportOpen: !self.state.exportOpen }); },
+      filters: defs.map(function (d) { var on = d[0] === f; return { label: d[1], count: d[2], on: on ? 'true' : 'false', pick: function () { self.setState({ filter: d[0] }); },
+        style: 'min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid ' + (on ? '#11212f' : '#c9c5ba') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + '; font-family: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer;' }; }),
+      guests: list.map(function (g) { var on = g.i === self.state.sel; return Object.assign({}, g, {
+        open: function () { self.setState({ sel: g.i }); },
+        style: 'display: grid; grid-template-columns: minmax(200px, 2.2fr) 1.3fr 0.7fr 1fr 1fr 0.8fr; gap: 16px; align-items: center; width: 100%; padding: 12px 24px; border: none; border-bottom: 1px solid #ecebe6; background: ' + (on ? '#f1f5f3' : '#ffffff') + '; box-shadow: ' + (on ? 'inset 3px 0 0 ' + a : 'none') + '; text-align: left; font-family: inherit; cursor: pointer;',
+        consent: g.consent ? 'Áno' : '—', consentStyle: 'font-size: 13px; font-weight: 500; color: ' + (g.consent ? '#2b6a50' : '#5a6672') + ';' }); }),
+      sel: { name: s.name, tags: s.tags.length ? s.tags : ['Hosť'], contact: contact, consent: s.consentText || (s.consent ? 'Súhlas s ponukami.' : 'Bez súhlasu s ponukami.'), stays: s.stays,
+        history: s.history.length ? s.history : [ { dates: 'Posledný pobyt ' + s.last, meta: s.stays + ' pobyt(y) spolu', sum: s.total } ], note: s.note }
+    };
+  }
+}
+</script>
+</body>
+</html>
