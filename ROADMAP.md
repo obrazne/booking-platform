@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → ~~Z55 (lišta ukladania, toasty)~~ ✅ → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
-  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ → **Z62 (mesačný výpis — predajný argument č. 1, dosky 12–13)**.
+  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ → ~~Z62 (mesačný výpis)~~ ✅ — fronta linky B prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -126,7 +126,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
 3. Náhľad v úprave automatickej správy ukazuje e-mail s hlavičkou a pätou; „Poslať skúšobne mne“ posiela rovnakú verziu.
 4. Testy: vitest pre `{podpis}` (podpis / meno / názov), snímka e-mailu (HTML) v testoch šablón.
 
-### Z62 [B] 🔄 — Mesačný výpis: stránka, e-mail 1. dňa v mesiaci, PDF (predajný argument č. 1, Martin 18. 10.)
+### Z62 [B] ✅ — Mesačný výpis: stránka, e-mail 1. dňa v mesiaci, PDF (predajný argument č. 1, Martin 18. 10.)
 Návrh: dosky **12 `Vypis`** a **13 `VypisEmail`** v `docs/navrhy/administracia/`, pravidlá výpočtu v **`docs/vizual-administracia.md` → v1.4**
 (prečítaj celé). **Jadro, nie modul** (ARCHITEKTURA A14). Pravidlá rozhrania `docs/pravidla-rozhrania.md` platia.
 1. **Úkony, ktoré systém urobil:** zisti, čo už sa dá spočítať z existujúcich tabuliek (odoslané e-maily z outboxu, rezervácie vytvorené
@@ -595,6 +595,30 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z62 [linka B]: **Mesačný výpis** (predajný argument č. 1, v1.4, dosky 12–13) — jadro, nie modul. (Claude Code)
+  - **Výpočet v DB** `tenant_monthly_report(tenant, mesiac)` (migrácia `…19100000_monthly_report`): tržby a obsadenosť z
+    `tenant_monthly_stats` (jedno miesto výpočtu), porovnanie s rovnakým mesiacom minulého roka (bez dát = null), úspora
+    = priame tržby × `portal_commission_bp`, úspora od januára, podiel priamych nocí, vlastné kontakty (hostia so súhlasom),
+    noci podľa portálu, výhľad ďalšieho mesiaca (potvrdené tržby, obsadenosť, voľné víkendy pi–ne — aspoň jedna jednotka voľná),
+    „Čaká na vás“. Prístup: člen klienta / správca platformy / server; iný klient chyba 42501 (pgTAP `monthly_report.test.sql`).
+  - **Zmena v Štatistikách:** tržby **bez dane z ubytovania a zálohy** (riadky `tax`, `deposit`) — podľa v1.4; platí aj pre
+    stránku Štatistiky a graf v Prehľade (jedno miesto výpočtu).
+  - **Úkony** — všetko sa dá spočítať z existujúcich dát, nová tabuľka úkonov netreba (počty sú úplné od začiatku platformy):
+    e-maily hosťom = odoslané `guest_*` v outboxe (bez správ písaných človekom) + automatické správy; rezervácia hosťom =
+    priame potvrdené vytvorené v mesiaci; zosúladenie kalendárov = rezervácie + pobyty z portálov (ak má klient kalendár);
+    check-iny dokončené hosťom; objednávky hostí. Človek: „Platba prijatá“ (`received_by`), odpovede hosťom, vyriešené kolízie,
+    ručné rezervácie. Minúty na úkon v **Nastavenia → Mesačný výpis** (`report_minutes`, predvolené 5/45/15/30/15).
+  - **Stránka** Štatistiky › Mesačný výpis (Štatistiky sú teraz skupina: Čísla · Mesačný výpis): prepínač mesiacov od prvého
+    mesiaca s dátami, **Stiahnuť PDF** (Geist, rovnaký obsah), **Poslať účtovníkovi** (PDF na `accountant_email`; bez adresy
+    vedie do nastavení). Karta v Prehľade „Výpis za {mesiac} je pripravený“ prvých 7 dní v mesiaci.
+  - **E-mail 1. dňa v mesiaci** (cron `monthly-reports` 05:00 UTC → outbox `owner_monthly_report`, jeden na klienta a mesiac,
+    len s pobytom v mesiaci): predmet s tržbami a úsporou, skratka stránky, PDF v prílohe, „Otvoriť celý výpis“; komu =
+    e-mail pre upozornenia, inak majiteľ. Vypínač v Nastaveniach → E-maily a upozornenia (`monthly_report_email`, predvolene zapnutý).
+  - Hraničné stavy: 0 priamych tržieb („Tento mesiac bez priamych pobytov.“), bez minulého roka (bez porovnania, nikde „∞“),
+    provízia 0 %, bez kalendárov portálov. Texty a čísla pre stránku, PDF aj e-mail z jedného miesta `src/core/reports/monthly-view.ts`.
+  - Testy: vitest (výpočet zobrazenia, snímka HTML e-mailu), pgTAP (súčty = Štatistiky, RLS, e-mail len s pobytom),
+    e2e `monthly-report.spec.ts` (PC aj mobil, PDF, prepínanie, účtovník), `admin-v12`, `settings-contact` — prešli. Snímky `docs/snimky/z62/`.
+  - **Pre linku A (Z61):** do prehliadky „Čo je nové“ pridať Mesačný výpis (snímka `docs/snimky/z62/vypis-pc.png` alebo nová).
 - 2026-10-18 — Z55 [linka A]: **ukladanie — lišta neuložených zmien a toasty** (pripomienky 36, 44, pravidlo 3). (Claude Code)
   - `src/core/forms/unsaved.tsx`: `useUnsavedForm` sleduje polia formulára voči stavu po načítaní/uložení, zmenené pole dostane
     `data-changed` (oranžový okraj); `UnsavedBar` (v koreňovom layoute) = jedna pripnutá lišta „Máte neuložené zmeny · Zahodiť · Uložiť“
