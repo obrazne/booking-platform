@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Vysvetlivky — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f7f6f2}
+.tipw{position:relative;display:inline-flex}
+.tipw:hover .tip,.tipw:focus-within .tip{display:flex !important}
+.ib{transition:background 150ms ease,color 150ms ease,border-color 150ms ease}
+.ib:hover,.ib:focus-visible{background:#e6efeb !important;color:#2f5d50 !important;border-color:#8fb5a5 !important}
+.ib:focus-visible{outline:2px solid #2f5d50;outline-offset:2px}
+.row{transition:background 150ms ease}
+.row:hover{background:#faf9f6}
+.btn{transition:background 150ms ease,border-color 150ms ease}
+.btn:hover{background:#efede7 !important;border-color:#b9b4a7 !important}
+.lnk:hover{text-decoration:underline}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #f7f6f2; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="blokacie" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e3e1da; background: #ffffff;">
+<label style="flex: 0 1 380px; display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; color: #5a6672;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" placeholder="Hľadať hosťa, číslo rezervácie…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 14px; color: #11212f; outline: none;"></label>
+<button type="button" class="btn" aria-label="Upozornenia" style="width: 42px; height: 42px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#11212f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg></button>
+</div>
+
+<div style="padding: 28px 40px 48px; display: flex; flex-direction: column; gap: 24px;">
+<nav aria-label="Drobčeky" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5a6672;"><a href="#" class="lnk" style="color: #5a6672; text-decoration: none;">Rezervácie</a><span aria-hidden="true">›</span><span style="color: #11212f; font-weight: 500;">Blokácie</span></nav>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #ad5a2b;">Chalet STRÖMY</span>
+<div style="display: flex; align-items: center; gap: 10px;">
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Blokácie</h1>
+<span class="tipw">
+<button type="button" class="ib" onClick="{{togglePage}}" aria-expanded="{{pageOpenAttr}}" aria-describedby="tip-page" aria-label="Čo je blokácia?" style="{{ibStyle}}">i</button>
+<span id="tip-page" role="tooltip" class="tip" style="{{pageTipStyle}}">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Čo je blokácia</span>
+<span style="font-size: 14px; line-height: 1.55; color: #3b3d42;">Zavrie termín, keď v chalete nemajú byť hostia — veľké upratovanie, oprava sauny, váš vlastný pobyt. Hostia ho na vašej stránke uvidia ako obsadený a pri najbližšej synchronizácii sa zavrie aj na Bookingu a Airbnb.</span>
+<span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Blokácia nemá hosťa ani cenu. Poznámku vidíte len vy.</span>
+<a href="#" class="lnk" style="font-size: 13px; font-weight: 500; color: {{accent}}; text-decoration: none;">Ako blokovať termín ›</a>
+</span>
+</span>
+</div>
+</div>
+<button type="button" class="btn" style="display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">+ Pridať blokáciu</button>
+</div>
+
+<section aria-label="Nová blokácia" style="display: flex; flex-direction: column; gap: 18px; padding: 22px 24px; border-radius: 12px; background: #ffffff; border: 1px solid #e3e1da;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">Nová blokácia</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+<label style="display: flex; flex-direction: column; gap: 6px; min-width: 0;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Objekt</span><select style="{{fieldStyle}}"><option>Celý chalet</option></select></label>
+<label style="display: flex; flex-direction: column; gap: 6px; min-width: 0;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Od (prvá noc)</span><input type="text" value="6. 4. 2027" style="{{fieldStyle}}"></label>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+<span style="display: flex; align-items: center; gap: 6px;"><label for="do" style="font-size: 13px; font-weight: 500; color: #11212f;">Do (deň odchodu)</label>
+<span class="tipw">
+<button type="button" class="ib" onClick="{{toggleField}}" aria-expanded="{{fieldOpenAttr}}" aria-describedby="tip-field" aria-label="Čo znamená deň odchodu?" style="{{ibSmall}}">i</button>
+<span id="tip-field" role="tooltip" class="tip" style="{{fieldTipStyle}}"><span style="font-size: 13.5px; line-height: 1.5; color: #3b3d42;">Deň, keď je chalet znova voľný. Blokácia 6.–8. 4. zavrie noci 6. a 7. apríla, 8. apríla už môže prísť hosť.</span></span>
+</span></span>
+<input id="do" type="text" value="8. 4. 2027" style="{{fieldStyle}}">
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; min-width: 0;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Poznámka (vidíte len vy)</span><input type="text" value="Jarné upratovanie" style="{{fieldStyle}}"></label>
+</div>
+<div style="display: flex; gap: 10px;"><button type="button" style="min-height: 42px; padding: 0 20px; border-radius: 9999px; border: none; background: {{accent}}; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;">Blokovať</button><button type="button" class="btn" style="min-height: 42px; padding: 0 18px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 14px; font-weight: 500; color: #11212f; cursor: pointer;">Zrušiť</button></div>
+</section>
+
+<section aria-label="Blokácie" style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px; overflow: hidden;">
+<div style="display: grid; grid-template-columns: 2fr 2fr 1fr 1.4fr 90px; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #ecebe6; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #5a6672;"><span>Poznámka</span><span>Termín</span><span>Noci</span><span>Objekt</span><span></span></div>
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="3"><div class="row" style="display: grid; grid-template-columns: 2fr 2fr 1fr 1.4fr 90px; gap: 16px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #ecebe6; cursor: pointer;"><span style="font-size: 14px; font-weight: 500; color: #11212f;">{{b.note}}</span><span style="font-size: 14px; color: #3b3d42;">{{b.dates}}</span><span style="font-size: 14px; color: #3b3d42;">{{b.nights}}</span><span style="font-size: 14px; color: #3b3d42;">Celý chalet</span><a href="#" class="lnk" style="justify-self: end; font-size: 13px; font-weight: 500; color: #11212f;">Upraviť</a></div></sc-for>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { page: false, field: false }; }
+  renderVals() {
+    var self = this;
+    var a = this.props.accent ?? '#2f5d50';
+    var tip = function (open, w, left) {
+      return 'display: ' + (open ? 'flex' : 'none') + '; flex-direction: column; gap: 8px; position: absolute; top: calc(100% + 10px); left: ' + left + '; z-index: 5; width: ' + w + 'px; box-sizing: border-box; padding: 16px 18px; border-radius: 12px; background: #ffffff; border: 1px solid #c9c5ba; box-shadow: 0 18px 44px -18px rgba(17,33,47,0.35); text-align: left; font-weight: 400;';
+    };
+    var ib = function (s) {
+      return 'width: ' + s + 'px; height: ' + s + 'px; padding: 0; border-radius: 9999px; border: 1.5px solid #8b929b; background: #ffffff; color: #5a6672; font-family: Georgia, serif; font-style: italic; font-size: ' + (s * 0.6) + 'px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;';
+    };
+    return {
+      accent: a,
+      ibStyle: ib(24), ibSmall: ib(18),
+      pageTipStyle: tip(this.state.page, 360, '-8px'),
+      fieldTipStyle: tip(this.state.field, 280, '-8px'),
+      pageOpenAttr: this.state.page ? 'true' : 'false',
+      fieldOpenAttr: this.state.field ? 'true' : 'false',
+      togglePage: function () { self.setState({ page: !self.state.page }); },
+      toggleField: function () { self.setState({ field: !self.state.field }); },
+      fieldStyle: 'min-height: 42px; box-sizing: border-box; width: 100%; padding: 0 14px; border-radius: 10px; border: 1px solid #b9b4a7; background: #ffffff; font-family: inherit; font-size: 14px; color: #11212f;',
+      blocks: [
+        { note: 'Oprava sauny', dates: '12. – 13. 11. 2026', nights: '1 noc' },
+        { note: 'Vlastný pobyt', dates: '2. – 5. 1. 2027', nights: '3 noci' },
+        { note: 'Jarné upratovanie', dates: '6. – 8. 4. 2027', nights: '2 noci' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

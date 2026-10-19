@@ -268,3 +268,15 @@ koľko ušetril oproti portálu, koľko práce za neho urobil systém a čo potr
 
 **E-mail** (1. deň v mesiaci ráno, za predchádzajúci mesiac): predmet „Váš {mesiac}: {tržby} priamo, {úspora} ušetrených na províziách“,
 skratka stránky, PDF v prílohe, tlačidlo „Otvoriť celý výpis“; vypínateľný v Nastaveniach → E-maily a upozornenia (predvolene zapnutý pre majiteľa).
+
+## v1.5 — Vysvetlivky, hľadanie, Pomoc (pripomienky 45–51, schválené 19. 10.)
+
+Dosky **14 `Vysvetlivky`**, **15 `Hladanie`**, **16 `Pomoc`** v `docs/navrhy/administracia/`. Pravidlá ⓘ, šírky a stránkovania:
+`docs/pravidla-rozhrania.md` (6–8).
+- **Hľadanie (Ctrl K)** v hornej lište každej stránky (nie v bočnom menu — menu sa zbaľuje a na mobile je skryté; na mobile ikona lupy).
+  Zástupný text „Hľadať hostí, rezervácie, nastavenia aj pomoc…“; po kliknutí do prázdneho poľa príklady a posledné hľadania.
+  Výsledky v skupinách **Nastavenia a stránky** (klik otvorí stránku a zvýrazní pole) · **Pomoc** · **Rezervácie a hostia**; šípky, Enter, Esc.
+  Pri ⓘ vedľa poľa netreba (Martin súhlasil).
+- **Pomoc** = položka dole v bočnom menu (vedľa „Čo je nové“), nie v Nastaveniach: hľadanie, témy, otázky s postupom krok za krokom
+  a tlačidlom na danú stránku, „Pomohlo vám to? Áno / Nie“, vpravo „Nenašli ste odpoveď?“ — formulár, ktorý pošle aj klienta, používateľa
+  a stránku, odkiaľ píše. Odkaz z ⓘ („Ako blokovať termín ›“) vedie na príslušnú otázku — jeden zdroj odpovedí.

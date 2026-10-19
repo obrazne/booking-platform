@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Hľadanie — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f7f6f2}
+.res{transition:background 150ms ease}
+.res:hover,.res:focus-visible{background:#f1f5f3 !important;outline:none}
+.lnk:hover{text-decoration:underline}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1000px; background: #f7f6f2; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="prehlad" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; position: relative;">
+
+<div style="position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e3e1da; background: #ffffff;">
+<div style="flex: 0 1 560px; position: relative;">
+<label style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 9999px; border: 1.5px solid {{accent}}; background: #ffffff; color: #5a6672; box-shadow: 0 0 0 4px rgba(47,93,80,0.12);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="search" value="upratov" aria-label="Hľadať v administrácii" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 15px; color: #11212f; outline: none;"><span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; padding: 3px 7px; border-radius: 6px; border: 1px solid #c9c5ba; color: #5a6672;">Ctrl K</span></label>
+
+<div role="listbox" aria-label="Výsledky hľadania" style="position: absolute; top: 54px; left: 0; width: 620px; max-width: calc(100vw - 340px); background: #ffffff; border: 1px solid #c9c5ba; border-radius: 14px; box-shadow: 0 28px 70px -28px rgba(17,33,47,0.45); overflow: hidden;">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px solid #ecebe6;">
+<span style="padding: 4px 20px 6px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: {{g.color}};">{{g.title}}</span>
+<sc-for list="{{g.items}}" as="r" hint-placeholder-count="2"><a href="#" role="option" class="res" style="{{r.style}}"><span style="{{r.iconBox}}">{{r.icon}}</span><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span style="font-size: 14.5px; font-weight: 500; color: #11212f;">{{r.title}}</span><span style="font-size: 13px; color: #5a6672;">{{r.where}}</span></span><span style="margin-left: auto; flex-shrink: 0; font-size: 13px; color: #5a6672;">{{r.go}}</span></a></sc-for>
+</div></sc-for>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; background: #fafaf8; font-size: 13px; color: #5a6672;">
+<span>↑ ↓ vybrať · Enter otvoriť · Esc zavrieť</span>
+<a href="#" class="lnk" style="font-weight: 500; color: #11212f; text-decoration: none;">Nenašli ste? Napíšte nám ›</a>
+</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" style="position: absolute; inset: 77px 0 0 0; z-index: 2; background: rgba(17,33,47,0.06);"></div>
+<div style="padding: 28px 40px; display: flex; flex-direction: column; gap: 20px; opacity: 0.55;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #ad5a2b;">Chalet STRÖMY</span>
+<h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Dobrý deň, Jana.</h1>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px; height: 120px;"></div>
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;"><div style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px; height: 360px;"></div><div style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 12px; height: 360px;"></div></div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var a = this.props.accent ?? '#2f5d50';
+    var row = function (r, first) {
+      return Object.assign({}, r, {
+        style: 'display: flex; align-items: center; gap: 14px; padding: 10px 20px; text-decoration: none; background: ' + (first ? '#f1f5f3' : '#ffffff') + ';',
+        iconBox: 'flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px; background: #f4f3ef; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; color: #3b3d42;'
+      });
+    };
+    return {
+      accent: a,
+      groups: [
+        { title: 'Nastavenia a stránky', color: '#2f5d50', items: [
+          row({ icon: '⚙', title: 'Upratovacie dni medzi pobytmi', where: 'Objekt › Údaje — otvorí sa a pole sa zvýrazní', go: 'Otvoriť ›' }, true),
+          row({ icon: '▦', title: 'Blokácie', where: 'Rezervácie › Blokácie — zavrie termín, keď idete upratovať', go: 'Otvoriť ›' }, false)
+        ] },
+        { title: 'Pomoc', color: '#ad5a2b', items: [
+          row({ icon: '?', title: 'Ako zablokujem termín, keď idem upratovať?', where: 'Pomoc › Kalendár a portály', go: 'Čítať ›' }, false),
+          row({ icon: '?', title: 'Ako nechám deň voľna na upratovanie medzi hosťami?', where: 'Pomoc › Ceny a pravidlá pobytu', go: 'Čítať ›' }, false)
+        ] },
+        { title: 'Rezervácie a hostia', color: '#5a6672', items: [
+          row({ icon: '#', title: 'Poznámka „upratovanie po psíkovi“', where: '2026-0688 · Tomáš Mráz · 8.–10. 10. 2026', go: 'Otvoriť ›' }, false)
+        ] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

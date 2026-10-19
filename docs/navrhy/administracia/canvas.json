@@ -124,6 +124,32 @@
       "w": 640,
       "h": 1040,
       "title": "13 Mesačný výpis — e-mail majiteľovi (1. deň v mesiaci)"
+    },
+    "Vysvetlivky.dc.html": {
+      "x": 5280,
+      "y": 2440,
+      "w": 1440,
+      "h": 1000,
+      "title": "14 Vysvetlivky ⓘ — za nadpisom stránky a pri poliach (myš, ťuknutie, klávesnica)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Hladanie.dc.html": {
+      "x": 6800,
+      "y": 2440,
+      "w": 1440,
+      "h": 1000,
+      "title": "15 Hľadanie v administrácii (Ctrl K) — nastavenia, pomoc, rezervácie na jednom mieste",
+      "expand": "fill"
+    },
+    "Pomoc.dc.html": {
+      "x": 8320,
+      "y": 2440,
+      "w": 1440,
+      "h": 1240,
+      "title": "16 Pomoc — otázky podľa tém, postup krok za krokom, „Nenašli ste odpoveď?“ (klikací)",
+      "expand": "fill",
+      "is_interactive": true
     }
   },
   "order": [
@@ -140,7 +166,10 @@
     "Spravy.dc.html",
     "SpravyAuto.dc.html",
     "Vypis.dc.html",
-    "VypisEmail.dc.html"
+    "VypisEmail.dc.html",
+    "Vysvetlivky.dc.html",
+    "Hladanie.dc.html",
+    "Pomoc.dc.html"
   ],
   "notes": {
     "titul": {
@@ -184,6 +213,13 @@
       "w": 1100,
       "fill": "teal",
       "text": "Mesačný výpis (návrh 18. 10., predajný argument č. 1): jedna stránka ako od správcu investície — tržby, ušetrené provízie oproti Bookingu, čo systém urobil za majiteľa (v hodinách) a čo potrebovalo človeka. Príde e-mailom 1. dňa v mesiaci, dá sa stiahnuť ako PDF a poslať účtovníkovi. Čísla sú ilustračné."
+    },
+    "vysvetlivky": {
+      "x": 5280,
+      "y": 2260,
+      "w": 1100,
+      "fill": "blue",
+      "text": "Vysvetlivky (návrh 19. 10.): ⓘ vždy hneď za nadpisom stránky — vysvetlí, čo stránka je a kedy ju použiť (2–3 vety + odkaz na návod). Pri zložitých poliach malé ⓘ pri popise poľa. Otvorí sa prejdením myšou, ťuknutím aj klávesnicou; kliknutie ho nechá otvorené."
     }
   },
   "designSystems": []

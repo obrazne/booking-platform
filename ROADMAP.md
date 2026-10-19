@@ -12,8 +12,8 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54 (plochy, polia, hover)~~ ✅ → ~~Z55 (lišta ukladania, toasty)~~ ✅ → Z56 (zbalené sezóny a zoznamy) → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“);
-  **B:** ~~Z57~~ ✅ → ~~Z58~~ ✅ → ~~Z59~~ ✅ → ~~Z60~~ ✅ → ~~Z62 (mesačný výpis)~~ ✅ — fronta linky B prázdna.
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
+  **B:** ~~Z57–Z60, Z62~~ ✅ → **Z64 (záznam zmien čitateľný)** → **Z65 (pruh nocí na Prehľade)** → **Z67 (hľadanie Ctrl K a Pomoc)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -148,6 +148,57 @@ Návrh: dosky **12 `Vypis`** a **13 `VypisEmail`** v `docs/navrhy/administracia/
 6. Prázdne a hraničné stavy: 0 priamych tržieb (iný nadpis, žiadne „+∞ %“), bez minulého roka, provízia 0 %, mesiac bez iCal kanálov.
 7. Testy: výpočet (vitest + pgTAP vrátane RLS — iný klient výpis nevidí), e2e na Ukážkovom klientovi (stránka, PDF, prepínanie mesiacov),
    snímka e-mailu v testoch šablón, axe. STRÖMY len čítaj. Na konci do prehliadky „Čo je nové“ (spoločne so Z61 — ak už Z61 prebehla, pridaj snímku sám).
+
+**Pripomienky 45–51 (Martin 19. 10.) → Z63–Z67.** Pravidlá 6–8 doplnené v `docs/pravidla-rozhrania.md` (šírka, stránkovanie, vysvetlivky),
+návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pri Z54–Z61: **A** spoločné komponenty, **B** obrazovky a funkcie.
+
+### Z63 [A] — Šírka obsahu, pretekanie polí a stránkovanie v databáze (pripomienky 46, 51; pravidlá 6–7) — po Z56
+1. Zruš pevné obmedzenie šírky (~1080 px) pri zoznamoch, tabuľkách, kalendári, záznamoch a prehľadoch v administrácii aj riadiacom
+   centre; obmedz len text na čítanie a jednoduché formuláre. Oprav pretekanie polí (napr. filter Záznamu zmien — pole „Osoba“ mimo karty).
+   E2E kontrola pretečenia na 1280 / 1440 / 1920 px.
+2. Spoločné stránkovanie: `Pagination` s „1–20 z N“ a voľbou 20 / 50 / 100 (predvolene 20, zapamätané na používateľa a zoznam),
+   stav v adrese. **Načítanie len jednej stránky z databázy + počet** — oprav `audit-query.ts` (dnes načíta až `MAX_ROWS` a delí v pamäti)
+   a záznam zmien; nasadiť na všetky zoznamy z pravidla 7 (administrácia aj riadiace centrum). Hľadanie a filtre v SQL, nie v pamäti.
+3. Zmeraj pred/po (čas načítania Záznamu zmien STRÖMY a Rezervácií) a zapíš do Denníka.
+
+### Z66 [A] — Vysvetlivky ⓘ na všetkých stránkach (pripomienka 47; pravidlo 8; doska 14) — po Z63
+1. Spoločný komponent ⓘ (myš, fokus, ťuknutie; klik nechá otvorené; Esc / klik mimo zatvorí; `aria-describedby`) a miesto v `PageHeader`
+   hneď za nadpisom; menšia verzia pri popise poľa.
+2. **Texty pre každú stránku** administrácie a riadiaceho centra (`help.*` v prekladoch): čo to je a kedy to použiť, 2–3 vety, ľudsky,
+   s príkladom (vzor: Blokácie na doske 14 — over, čo stránka naozaj robí, a nič nesľubuj navyše). ⓘ pri zložitých poliach
+   (deň odchodu, priorita sezóny, upratovacie dni medzi pobytmi, provízia portálu, minúty mesačného výpisu…). Dlhé úvodné odseky pod
+   nadpismi presuň do ⓘ. Zoznam textov daj do `docs/texty-vysvetliviek.md`, aby ich Martin mohol prečítať naraz.
+3. Odkaz „Viac v Pomoci ›“ až keď existuje Pomoc (Z67) — dovtedy bez odkazu.
+
+### Z64 [B] — Záznam zmien čitateľný (pripomienka 45)
+1. **Synchronizácia kalendárov nezaplaví históriu:** zmeny obsadenosti zo synchronizácie iCal (`kind = 'ical'`, systém) nezapisuj po jednom
+   riadku — jeden súhrnný záznam za beh kanála („Airbnb: 1 pridané, 1 zmazané, 1 zmenené“) s rozbalením na detail; existujúce záznamy
+   zo synchronizácie predvolene skry filtrom „Synchronizácia kalendárov“ (vypnutý). Úprava `record_history` len pridávajúcou migráciou.
+2. **Ľudské názvy polí a hodnôt** (preklady; `conflict` → „Kolízia“, `is_blocking` → „Blokuje termín“…), dátumy a časy cez `Intl`,
+   rozsahy „16.–20. 10. 2026“; technické polia (uid, expires_at, interné id) skry.
+3. **„Vrátiť túto zmenu“ len pri zmenách od ľudí** (nie pri systéme a synchronizácii).
+4. Zbalené riadky (kto, čo, kedy jedným riadkom; klik rozbalí rozdiel), filtre bez tlačidla „Filtrovať“ (`FilterPills` / okamžite).
+   Platí pre Záznam zmien v riadiacom centre aj pre Nedávno zmazané / históriu u majiteľa, ak používajú to isté zobrazenie.
+
+### Z65 [B] — Pruh „Kde sa predali noci“ na Prehľade (pripomienka 49) — po Z64
+Ten istý komponent a výpočet ako v mesačnom výpise (Z62, `tenant_monthly_report` / `monthly-view.ts` — jeden zdroj). Na Prehľade
+s prepínačom **Tento mesiac / Ďalší mesiac** (dopredu = voľné noci, ktoré treba predať); klik na úsek → kalendár na daný mesiac.
+Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
+
+### Z67 [B] — Hľadanie (Ctrl K) a Pomoc (pripomienky 48, 50; dosky 15, 16) — po Z65
+1. **Hľadanie v hornej lište** (administrácia; v riadiacom centre klienti a nastavenia platformy): zástupný text „Hľadať hostí, rezervácie,
+   nastavenia aj pomoc…“, Ctrl K / Cmd K, po kliknutí do prázdneho poľa príklady a posledné hľadania; výsledky v skupinách Nastavenia
+   a stránky / Pomoc / Rezervácie a hostia; klávesnica (šípky, Enter, Esc). **Register nastavení a stránok** (názov, synonymá, cesta,
+   kotva poľa) v kóde vedľa menu — nová stránka/pole = riadok v registri; klik otvorí stránku a pole na chvíľu zvýrazní. Rezervácie
+   a hostia cez DB (RLS, limit). Na mobile ikona lupy.
+2. **Stránka Pomoc** (položka dole v bočnom menu vedľa „Čo je nové“): hľadanie, témy, otázky s postupom krok za krokom a tlačidlom
+   na stránku, „Pomohlo vám to? Áno / Nie“ (uložiť počty — Martin uvidí v riadiacom centre, ktoré návody nepomáhajú). Obsah verzovaný
+   v kóde a prekladoch (ako prehliadka „Čo je nové“), prvá sada ~15 otázok o tom, čo systém **naozaj** robí (vzor na doske 16) —
+   zoznam aj do `docs/pomoc-otazky.md` na kontrolu Martinom. Moduly môžu pridať vlastné otázky (háčik manifestu), zobrazia sa len pri zapnutom module.
+3. **„Nenašli ste odpoveď?“** — formulár: text + voliteľný obrázok (nahratie súboru; **nie** automatická snímka obrazovky), automaticky
+   klient, používateľ, stránka, z ktorej prišiel. Pošle e-mail na `NEXT_PUBLIC_SUPPORT_EMAIL` (Reply-To = používateľ) a zapíše žiadosť
+   do riadiaceho centra (zoznam + upozornenie v zvončeku správcu). Doba odpovede: **žiadny sľub v texte**, kým ju Martin neurčí (Otázky).
+4. Odkazy z vysvetliviek ⓘ (Z66) na príslušné otázky v Pomoci.
 
 ### Z61 [A] — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
 1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj
@@ -530,6 +581,7 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 - [ ] Prepojenie s aplikáciou: rovnaké farby a písma, odkaz na ukážkového klienta, kalkulačka úspor ako widget z aplikácie 🔧
 
 ## Otázky pre Martina
+- **Pomoc (Z67) — doba odpovede:** do akej doby odpovieš na otázku z formulára „Nenašli ste odpoveď?“ (napr. „do 1 pracovného dňa“)? Kým to neurčíš, text nič nesľubuje.
 - **Recenzie — schvaľovanie (pripomienka 37, 18. 10., čaká na rozhodnutie, nerobiť):** Martin chce, aby si ubytovateľ každú recenziu
   schválil sám (bez automatického zverejnenia po 72 h). Je to v rozpore s rozhodnutím 2026-10-17 (zverejnia sa všetky, zamietnuť len
   porušenie pravidiel — Omnibus: pri „overených recenziách“ a priemere nesmie majiteľ potichu vyberať len pozitívne). Možnosti:

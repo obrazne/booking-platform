@@ -1,4 +1,4 @@
-# Pravidlá rozhrania — platia všade (v1.4, 18. 10. 2026)
+# Pravidlá rozhrania — platia všade (v1.5, 19. 10. 2026)
 
 Z Martinových pripomienok 31–44. **Platia naprieč celou aplikáciou:** administrácia majiteľa, riadiace centrum aj stránka a účet hosťa.
 Keď pripomienka padla pri jednej časti, uplatní sa všade, kde dáva zmysel (Martin 18. 10.: „spravíme to všade, chcem, aby si takto premýšľal“).
@@ -46,6 +46,26 @@ Vizuál ostáva podľa `docs/vizual-administracia.md` a `docs/vizual-stranka-hos
   odkaz späť („← Všetky pobyty“), nielen drobčeky.
 - Položka, ktorá sa v menu objaví len pri otvorení (klient v riadiacom centre), **nesmie po odchode zmiznúť** — pozri Z57.
 - Tá istá navigácia môže byť na dvoch miestach (karty účtu + podmenu „Môj účet“) — obsah musí byť rovnaký z jedného zdroja.
+
+## 6. Šírka a pretekanie (č. 46)
+- **Zoznamy, tabuľky, kalendár, záznamy a prehľady idú cez celú šírku** obsahu (nie natvrdo ~1080 px). Obmedzuje sa len text na čítanie
+  (~70 znakov na riadok) a jednoduchý formulár (rozumná max. šírka podľa obsahu, nie celá stránka).
+- **Pole nikdy nepretečie svoju kartu ani riadok:** mriežka s `minmax(…, 1fr)` a zalamovaním, `min-width: 0`, `box-sizing: border-box`.
+  E2E test pretečenia (prvok širší ako rodič) na 1280, 1440 a 1920 px na hlavných obrazovkách.
+
+## 7. Dlhé zoznamy a stránkovanie (č. 51)
+- Každý zoznam, ktorý môže narásť (rezervácie, pobyty z portálov, recenzie, správy v schránke, záznam zmien, audit, klienti, upozornenia),
+  **stránkuje databáza** — načíta len jednu stránku (`range`/`limit`) a celkový počet; žiadne načítanie všetkého a delenie v pamäti.
+- Pod zoznamom: „1–20 z 8 149“, stránky, **počet na stránku 20 / 50 / 100** (predvolene 20, zapamätané pre používateľa a zoznam).
+  Stránka, počet, filtre a hľadanie sú v adrese (návrat z detailu na tú istú stránku). Zmena filtra = späť na 1. stranu.
+- Výnimky: kalendár (bez stránkovania), konverzácia (tlačidlo „Načítať staršie“).
+
+## 8. Vysvetlivky ⓘ (č. 47, doska 14)
+- **Každá stránka administrácie** (aj riadiaceho centra) má ⓘ **hneď za nadpisom**: čo stránka je a kedy ju použiť (2–3 vety, ľudsky,
+  s príkladom z praxe) + odkaz na otázku v Pomoci. Dlhé úvodné odseky pod nadpismi presunúť do ⓘ, pod nadpisom nanajvýš jedna veta.
+- **Pri zložitých poliach** menšie ⓘ pri popise poľa (napr. „Do (deň odchodu)“, „Priorita“ sezóny, „Upratovacie dni medzi pobytmi“).
+- **Predvolene zatvorené**, otvorí sa prejdením myšou, fokusom klávesnice aj ťuknutím; klik ho nechá otvorené, Esc / klik mimo zatvorí.
+  `aria-describedby`, jeden spoločný komponent, texty v prekladoch (`help.*`). Na mobile ťuknutím.
 
 ## Kontrola
 Pri každej úlohe, ktorá mení obrazovku: snímka PC 1440 px aj mobil 390 px pred a po, axe bez nových chýb, a prejdenie pravidiel 1–5 na
