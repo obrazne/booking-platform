@@ -634,6 +634,38 @@ export type Database = {
           },
         ]
       }
+      help_feedback: {
+        Row: {
+          faq_id: string
+          helpful: boolean
+          tenant_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          faq_id: string
+          helpful: boolean
+          tenant_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          faq_id?: string
+          helpful?: boolean
+          tenant_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "help_feedback_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ical_channels: {
         Row: {
           active: boolean
@@ -2818,6 +2850,59 @@ export type Database = {
           },
         ]
       }
+      support_requests: {
+        Row: {
+          attachment_path: string | null
+          created_at: string
+          done_at: string | null
+          id: string
+          message: string
+          page: string | null
+          status: string
+          tenant_id: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          attachment_path?: string | null
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          message: string
+          page?: string | null
+          status?: string
+          tenant_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          attachment_path?: string | null
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          message?: string
+          page?: string | null
+          status?: string
+          tenant_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_domains: {
         Row: {
           created_at: string
@@ -3518,6 +3603,15 @@ export type Database = {
         Args: { p_reservation_id: string; p_token?: string }
         Returns: Json
       }
+      help_feedback_stats: {
+        Args: never
+        Returns: {
+          faq_id: string
+          last_at: string
+          no: number
+          yes: number
+        }[]
+      }
       history_columns: { Args: { p_table: string }; Returns: string }
       history_current: { Args: { p_pk: Json; p_table: string }; Returns: Json }
       history_noise: { Args: { p_row: Json }; Returns: Json }
@@ -3913,6 +4007,16 @@ export type Database = {
           p_rating: number
           p_ratings?: Json
           p_reservation_id: string
+        }
+        Returns: string
+      }
+      support_request_create: {
+        Args: {
+          p_attachment_path: string
+          p_message: string
+          p_page: string
+          p_tenant_id: string
+          p_user_agent: string
         }
         Returns: string
       }

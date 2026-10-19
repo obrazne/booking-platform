@@ -13,6 +13,7 @@ import {
   Clock,
   ConciergeBell,
   DatabaseBackup,
+  LifeBuoy,
   MessageCircle,
   Plus,
   RefreshCw,
@@ -50,6 +51,7 @@ const ICONS: Record<string, { icon: LucideIcon; tone: "accent" | "warn" | "neutr
   account_deletion: { icon: UserX, tone: "warn" },
   message_new: { icon: MessageCircle, tone: "accent" },
   backup_stale: { icon: DatabaseBackup, tone: "warn" },
+  support_request: { icon: LifeBuoy, tone: "accent" },
 };
 
 const TONE = {

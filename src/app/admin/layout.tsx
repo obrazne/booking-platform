@@ -9,6 +9,7 @@ import {
   Gift,
   House,
   LayoutDashboard,
+  LifeBuoy,
   MessageCircle,
   Plus,
   RefreshCw,
@@ -20,9 +21,11 @@ import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { openCollisions } from "@/core/admin/collisions";
 import { TenantSwitcher, UserMenu } from "@/core/admin/topbar";
-import { TopbarSearch } from "@/core/admin/topbar-search";
 import { getCurrentUser, getMemberships, isPlatformAdmin } from "@/core/auth/session";
 import { getEnabledModules } from "@/core/modules/registry";
+import { helpHref } from "@/core/help/faqs";
+import { loadAdminIndex } from "@/core/search/load";
+import { SearchBox } from "@/core/search/search-box";
 import type { NavGroupKey } from "@/core/modules/types";
 import { getActiveMembership } from "@/core/tenant/active";
 import { getGuestSiteUrl } from "@/core/tenant/info";
@@ -72,6 +75,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   // Side menu v1.2: groups with sub-items; modules join a group through their manifest.
   const items: ShellNavItem[] = [];
+  const modules = active ? await getEnabledModules(active.tenantId) : [];
+  let search: Awaited<ReturnType<typeof loadAdminIndex>> | null = null;
   if (active) {
     const { data: properties } = await supabase
       .from("properties")
@@ -87,7 +92,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       connections: [],
       settings: [],
     };
-    for (const m of await getEnabledModules(active.tenantId)) {
+    for (const m of modules) {
       for (const nav of m.navItems ?? []) {
         // Module labels live in the module's own namespace; key is checked when the module is written.
         const label = t(`${m.messages}.${nav.labelKey}` as Parameters<typeof t>[0]);
@@ -172,7 +177,16 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           ...extra.settings,
         ],
       },
+      // Z67: Pomoc at the bottom, next to "Čo je nové" of the user block.
+      { href: "/admin/help", label: t("help.nav"), icon: <LifeBuoy />, section: "bottom" },
     );
+    // Z67: the register of pages and settings and the questions of Pomoc for the search of the top bar.
+    search = await loadAdminIndex({
+      modules,
+      property: single ? single.split("/").pop()! : null,
+      portals: Boolean(portalChannels),
+      collisions: collisions.any,
+    });
   }
   if (admin) {
     items.push({
@@ -182,6 +196,14 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       section: "bottom",
     });
   }
+  // Questions of Pomoc lead to Pomoc with the question open.
+  const searchHelp = (search?.help ?? []).map(({ id, title, where, terms }) => ({
+    id,
+    title,
+    where,
+    terms,
+    href: helpHref(id),
+  }));
   const tourNew = active ? await tourIsNewForUser("owner") : false;
   const [bell, guestUrl] = active
     ? await Promise.all([loadBell("tenant"), getGuestSiteUrl(active.tenantId)])
@@ -237,7 +259,15 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       topbar={
         active ? (
           <>
-            <TopbarSearch label={t("adminV1.overview.search")} />
+            {search ? (
+              <SearchBox
+                variant="desktop"
+                scope="admin"
+                pages={search.pages}
+                help={searchHelp}
+                helpHref="/admin/help"
+              />
+            ) : null}
             <div className="ml-auto flex items-center gap-2.5">
               {guestUrl ? (
                 <Button asChild variant="outline">
@@ -257,6 +287,17 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         ) : undefined
       }
       mobileBell={bellFor("mobile")}
+      mobileSearch={
+        search ? (
+          <SearchBox
+            variant="mobile"
+            scope="admin"
+            pages={search.pages}
+            help={searchHelp}
+            helpHref="/admin/help"
+          />
+        ) : undefined
+      }
       mobileTitle={active?.tenantName ?? platformBrand.name}
       addHref={active ? "/admin/reservations/new" : undefined}
       addLabel={t("reservations.new")}
@@ -264,11 +305,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <ThemeStyle theme={DEFAULT_THEME} scope="page" />
       {children}
       {active ? (
-        <TourDialog
-          tourKey="owner"
-          autoOpen={tourNew}
-          modules={(await getEnabledModules(active.tenantId)).map((m) => m.key)}
-        />
+        <TourDialog tourKey="owner" autoOpen={tourNew} modules={modules.map((m) => m.key)} />
       ) : null}
     </AdminShell>
   );

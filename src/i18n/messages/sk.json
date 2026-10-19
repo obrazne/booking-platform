@@ -168,7 +168,8 @@
       "status": "Stav systému",
       "audit": "Audit",
       "notifications": "Upozornenia",
-      "breadcrumbs": "Drobčeková navigácia"
+      "breadcrumbs": "Drobčeková navigácia",
+      "support": "Podpora"
     },
     "tabs": {
       "overview": "Prehľad",
@@ -308,6 +309,28 @@
       "noClient": "bez klienta",
       "system": "systém",
       "csvHeader": "Čas;Klient;Osoba;Udalosť"
+    },
+    "support": {
+      "title": "Podpora",
+      "intro": "Žiadosti z „Nenašli ste odpoveď?“ v Pomoci a ktoré návody klientom nepomáhajú. Odpovedáte e-mailom — žiadosť príde aj na adresu podpory.",
+      "requests": "Žiadosti o pomoc",
+      "status": "Stav",
+      "statusNew": "Nové",
+      "statusDone": "Vybavené",
+      "statusAll": "Všetky",
+      "picture": "S obrázkom",
+      "openPicture": "Otvoriť obrázok",
+      "email": "E-mail",
+      "page": "Stránka",
+      "browser": "Prehliadač",
+      "markDone": "Vybavené",
+      "empty": "Žiadne žiadosti.",
+      "guides": "Hodnotenie návodov",
+      "guidesHint": "„Pomohlo vám to?“ pri otázkach Pomoci — najprv tie, pri ktorých ľudia odpovedali Nie.",
+      "guidesEmpty": "Zatiaľ nikto návody nehodnotil.",
+      "question": "Otázka",
+      "yes": "Áno",
+      "no": "Nie"
     }
   },
   "modules": {
@@ -735,6 +758,16 @@
           "generic": "Správu sa nepodarilo odoslať. Skúste to znova."
         },
         "newMark": "{day} · nová správa"
+      },
+      "help": {
+        "replyGuest": {
+          "q": "Ako odpoviem hosťovi na správu?",
+          "steps": [
+            "Nové správy uvidíte v Správy › Schránka (číslo pri položke menu) aj v paneli rezervácie na karte Správy.",
+            "Otvorte konverzáciu, napíšte odpoveď a odošlite. Hosť ju uvidí vo svojom pobyte a dostane ju aj e-mailom."
+          ],
+          "go": "Otvoriť Schránku"
+        }
       }
     },
     "checkin": {
@@ -919,6 +952,16 @@
         "signature": "Podpis ubytovaného",
         "signatureProvider": "Podpis ubytovateľa",
         "date": "Dátum"
+      },
+      "help": {
+        "foreigners": {
+          "q": "Kde nájdem údaje hostí z online check-inu?",
+          "steps": [
+            "Rezervácie › Príchody ukazuje, kto už check-in vyplnil a kto je pripravený na príchod.",
+            "Odtiaľ stiahnete tlačivo pre cudzincov a podklad k dani za ubytovanie. Údaje sa po lehote z Nastavení samy vymažú."
+          ],
+          "go": "Otvoriť Príchody"
+        }
       }
     }
   },
@@ -2882,6 +2925,10 @@
         "title": "Záloha neprebehla viac ako 36 hodín",
         "text": "Posledná úspešná záloha: {last} — pozrite Stav systému"
       },
+      "support_request": {
+        "title": "Žiadosť o pomoc — {tenant}",
+        "text": "Píše {user} — pozrite Podpora"
+      },
       "other": {
         "title": "Upozornenie",
         "text": ""
@@ -3228,7 +3275,8 @@
       "client_emails_failed": "Klientovi sa neodosielajú e-maily",
       "client_trial_ending": "Klientovi končí skúšobná doba modulu",
       "client_new": "Nový klient",
-      "backup_stale": "Záloha neprebehla (36 h)"
+      "backup_stale": "Záloha neprebehla (36 h)",
+      "support_request": "Žiadosť o pomoc od klienta"
     },
     "pageTitle": "Upozornenia",
     "adminView": "Upozornenia klienta do mobilu dostávajú členovia jeho tímu. Platformové upozornenia si zapnete v riadiacom centre → Upozornenia.",
@@ -3492,5 +3540,504 @@
     "emailOutlook": "V mesiaci {month} máte zatiaľ {revenue} potvrdených. Voľné víkendy: {weekends}.",
     "emailButton": "Otvoriť celý výpis",
     "emailFoot": "Výpis v PDF je v prílohe — môžete ho rovno preposlať účtovníkovi. Úspora = tržby z priamych pobytov × provízia {commission} z vašich nastavení. Výpis chodí 1. dňa v mesiaci; vypnúť ho môžete v Nastaveniach → E-maily a upozornenia."
+  },
+  "search": {
+    "placeholder": "Hľadať hostí, rezervácie, nastavenia aj pomoc…",
+    "placeholderPlatform": "Hľadať klientov a stránky riadiaceho centra…",
+    "label": "Hľadať v administrácii",
+    "open": "Hľadať",
+    "close": "Zavrieť hľadanie",
+    "results": "Výsledky hľadania",
+    "examples": "Skúste napríklad",
+    "examplesList": "upratovanie|IBAN|storno|Booking|kód od dverí",
+    "recent": "Posledné hľadania",
+    "clearRecent": "Vymazať",
+    "groups": {
+      "pages": "Nastavenia a stránky",
+      "help": "Pomoc",
+      "records": "Rezervácie a hostia",
+      "clients": "Klienti"
+    },
+    "go": "Otvoriť ›",
+    "read": "Čítať ›",
+    "nothing": "Nič sme nenašli pre „{q}“.",
+    "keys": "↑ ↓ vybrať · Enter otvoriť · Esc zavrieť",
+    "notFound": "Nenašli ste? Napíšte nám ›",
+    "searching": "Hľadáme…",
+    "guestRow": "Hosť · {email}",
+    "reservationRow": "Rezervácia {number} · {dates}",
+    "noteRow": "Poznámka pri {number} · {guest}",
+    "clientRow": "Klient · {slug}",
+    "entries": {
+      "overview": {
+        "title": "Prehľad",
+        "where": "Hlavná stránka administrácie",
+        "terms": "domov úvod dashboard"
+      },
+      "reservations": {
+        "title": "Rezervácie",
+        "where": "Rezervácie › Zoznam",
+        "terms": "objednávky pobyty zoznam hostia"
+      },
+      "newReservation": {
+        "title": "Nová rezervácia",
+        "where": "Ručná rezervácia — napr. po telefóne",
+        "terms": "pridať rezerváciu telefón ručná zapísať"
+      },
+      "calendar": {
+        "title": "Kalendár",
+        "where": "Rezervácie › Kalendár obsadenosti",
+        "terms": "obsadenosť voľné termíny"
+      },
+      "blocks": {
+        "title": "Blokácie",
+        "where": "Rezervácie › Blokácie — zavrie termín, napr. keď idete upratovať",
+        "terms": "zablokovať termín upratovanie údržba osobné použitie zavrieť"
+      },
+      "portalStays": {
+        "title": "Z portálov",
+        "where": "Rezervácie › Pobyty z Bookingu a Airbnb",
+        "terms": "booking airbnb portál hostia z portálov"
+      },
+      "collisions": {
+        "title": "Kolízie",
+        "where": "Rezervácie › Kolízie kalendárov",
+        "terms": "konflikt prekrytie dvojitá rezervácia booking airbnb"
+      },
+      "statistics": {
+        "title": "Štatistiky",
+        "where": "Tržby a obsadenosť po mesiacoch",
+        "terms": "tržby obsadenosť čísla graf"
+      },
+      "report": {
+        "title": "Mesačný výpis",
+        "where": "Štatistiky › Mesačný výpis — aj PDF pre účtovníka",
+        "terms": "výpis účtovník pdf mesiac úspora provízia"
+      },
+      "ical": {
+        "title": "Booking a Airbnb (kalendáre iCal)",
+        "where": "Prepojenia › Booking a Airbnb",
+        "terms": "booking airbnb synchronizácia ical prepojenie portál kalendár"
+      },
+      "testimonials": {
+        "title": "Referencie",
+        "where": "Ponuka › Referencie na stránke",
+        "terms": "hodnotenia recenzie referencie"
+      },
+      "help": {
+        "title": "Pomoc",
+        "where": "Návody krok za krokom a otázky",
+        "terms": "návod otázky podpora kontakt"
+      },
+      "propertyData": {
+        "title": "Údaje objektu",
+        "where": "Objekt › Údaje",
+        "terms": "objekt chata názov adresa popis"
+      },
+      "propertyName": {
+        "title": "Názov objektu",
+        "where": "Objekt › Údaje",
+        "terms": "meno chaty názov"
+      },
+      "maxGuests": {
+        "title": "Maximálny počet hostí",
+        "where": "Objekt › Údaje",
+        "terms": "kapacita osoby hostia lôžka"
+      },
+      "checkInTimes": {
+        "title": "Čas príchodu a odchodu",
+        "where": "Objekt › Údaje",
+        "terms": "check-in check-out príchod odchod hodina"
+      },
+      "cleaningGap": {
+        "title": "Upratovacie dni medzi pobytmi",
+        "where": "Objekt › Údaje — otvorí sa a pole sa zvýrazní",
+        "terms": "upratovanie medzera voľný deň medzi hosťami"
+      },
+      "houseRules": {
+        "title": "Domáci poriadok",
+        "where": "Objekt › Údaje",
+        "terms": "pravidlá poriadok fajčenie hluk"
+      },
+      "pets": {
+        "title": "Domáce zvieratá",
+        "where": "Objekt › Údaje",
+        "terms": "pes psík mačka zvieratá"
+      },
+      "wifi": {
+        "title": "Wi-Fi",
+        "where": "Objekt › Údaje — hosť ho uvidí v pokynoch",
+        "terms": "wifi internet heslo sieť"
+      },
+      "doorCode": {
+        "title": "Kód od dverí",
+        "where": "Objekt › Údaje — hosť ho dostane v pokynoch k príchodu",
+        "terms": "kód dvere kľúč schránka vstup"
+      },
+      "photos": {
+        "title": "Fotky",
+        "where": "Objekt › Fotky",
+        "terms": "obrázky galéria fotografie"
+      },
+      "pricing": {
+        "title": "Ceny a sezóny",
+        "where": "Objekt › Ceny a sezóny",
+        "terms": "cena sezóna vianoce silvester minimum nocí zľava poplatok"
+      },
+      "page": {
+        "title": "Stránka pre hostí",
+        "where": "Objekt › Stránka — sekcie a texty",
+        "terms": "web stránka sekcie texty"
+      },
+      "documents": {
+        "title": "Dokumenty",
+        "where": "Objekt › Dokumenty pre hostí",
+        "terms": "súbory pdf dokumenty poriadok"
+      },
+      "settings": {
+        "title": "Nastavenia",
+        "where": "Nastavenia › Všeobecné",
+        "terms": "nastavenia"
+      },
+      "iban": {
+        "title": "Bankový účet (IBAN)",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "iban účet banka qr platba číslo účtu"
+      },
+      "accountHolder": {
+        "title": "Príjemca platby",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "majiteľ účtu príjemca"
+      },
+      "paymentDue": {
+        "title": "Lehota na zaplatenie",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "splatnosť lehota nezaplatená hodiny"
+      },
+      "holdMinutes": {
+        "title": "Dočasná blokácia počas rezervácie",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "košík minúty držanie termínu"
+      },
+      "commission": {
+        "title": "Provízia portálov",
+        "where": "Nastavenia — z nej sa počíta úspora",
+        "terms": "provízia booking airbnb percento úspora"
+      },
+      "cancellation": {
+        "title": "Storno podmienky",
+        "where": "Nastavenia › Storno podmienky a pásma",
+        "terms": "storno zrušenie vrátenie peňazí pásma"
+      },
+      "terms": {
+        "title": "Obchodné podmienky",
+        "where": "Nastavenia › Právne dokumenty",
+        "terms": "vop podmienky odkaz"
+      },
+      "privacy": {
+        "title": "Ochrana osobných údajov",
+        "where": "Nastavenia › Právne dokumenty",
+        "terms": "gdpr súkromie osobné údaje"
+      },
+      "contact": {
+        "title": "Kontakt pre hostí",
+        "where": "Nastavenia › Kontakt",
+        "terms": "telefón kontaktná osoba kontakt"
+      },
+      "whatsapp": {
+        "title": "WhatsApp",
+        "where": "Nastavenia › Kontakt",
+        "terms": "whatsapp mobil číslo"
+      },
+      "signature": {
+        "title": "Podpis správ",
+        "where": "Nastavenia › Kontakt",
+        "terms": "podpis správy e-mail"
+      },
+      "accountant": {
+        "title": "E-mail účtovníka",
+        "where": "Nastavenia › Mesačný výpis",
+        "terms": "účtovník účtovníčka výpis"
+      },
+      "ownerEmail": {
+        "title": "E-mail pre nové rezervácie",
+        "where": "Nastavenia › Upozornenia",
+        "terms": "e-mail upozornenie nová rezervácia"
+      },
+      "arrivalEmail": {
+        "title": "Pokyny k príchodu — koľko dní vopred",
+        "where": "Nastavenia › Upozornenia",
+        "terms": "pokyny príchod e-mail dni vopred kód"
+      },
+      "stayAccountLimit": {
+        "title": "Limit účtu pobytu",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "účet pobytu limit doobjednanie"
+      },
+      "upsellDays": {
+        "title": "Ponuka služieb pred príchodom",
+        "where": "Nastavenia › Platba prevodom",
+        "terms": "doobjednanie služby ponuka dni"
+      },
+      "messageTopics": {
+        "title": "Témy správ",
+        "where": "Nastavenia › Právne dokumenty",
+        "terms": "správy témy hosť"
+      },
+      "googleReview": {
+        "title": "Odkaz na hodnotenie Google",
+        "where": "Nastavenia › Právne dokumenty",
+        "terms": "google recenzia hodnotenie"
+      },
+      "cityTax": {
+        "title": "Daň za ubytovanie",
+        "where": "Nastavenia › Online check-in",
+        "terms": "daň mesto obec poplatok za ubytovanie"
+      },
+      "checkinRetention": {
+        "title": "Ako dlho uchovať údaje z check-inu",
+        "where": "Nastavenia › Online check-in",
+        "terms": "check-in doklady uchovanie dni"
+      },
+      "team": {
+        "title": "Tím",
+        "where": "Nastavenia › Tím",
+        "terms": "ľudia upratovačka recepcia členovia"
+      },
+      "notifications": {
+        "title": "E-maily a upozornenia",
+        "where": "Nastavenia › Upozornenia",
+        "terms": "upozornenia push mobil e-maily zvonček"
+      },
+      "trash": {
+        "title": "Nedávno zmazané",
+        "where": "Nastavenia › Nedávno zmazané — obnova do 30 dní",
+        "terms": "kôš obnoviť zmazané vrátiť"
+      },
+      "pClients": {
+        "title": "Klienti",
+        "where": "Riadiace centrum › Všetci klienti",
+        "terms": "klienti ubytovatelia zoznam"
+      },
+      "pNewClient": {
+        "title": "Nový klient",
+        "where": "Riadiace centrum › Klienti",
+        "terms": "pridať klienta založiť"
+      },
+      "pCatalog": {
+        "title": "Katalóg modulov",
+        "where": "Riadiace centrum › Moduly",
+        "terms": "moduly katalóg"
+      },
+      "pTrials": {
+        "title": "Skúšky modulov",
+        "where": "Riadiace centrum › Moduly",
+        "terms": "skúšky trial"
+      },
+      "pStatus": {
+        "title": "Stav systému",
+        "where": "Riadiace centrum",
+        "terms": "stav zdravie chyby synchronizácia e-maily"
+      },
+      "pBackups": {
+        "title": "Zálohy",
+        "where": "Riadiace centrum › Stav systému",
+        "terms": "záloha obnova backup"
+      },
+      "pAudit": {
+        "title": "Audit",
+        "where": "Riadiace centrum",
+        "terms": "audit prihlásenia zmeny"
+      },
+      "pNotifications": {
+        "title": "Upozornenia",
+        "where": "Riadiace centrum",
+        "terms": "upozornenia push"
+      },
+      "pSupport": {
+        "title": "Podpora",
+        "where": "Riadiace centrum › Žiadosti o pomoc a hodnotenie návodov",
+        "terms": "podpora žiadosti pomoc návody"
+      }
+    }
+  },
+  "help": {
+    "nav": "Pomoc",
+    "kicker": "Pomoc",
+    "title": "S čím vám pomôžeme?",
+    "titleSoft": "Väčšinu nájdete tu.",
+    "searchLabel": "Hľadať v pomoci",
+    "searchPlaceholder": "Napíšte, čo hľadáte — napr. upratovanie, platba, Booking…",
+    "topicsLabel": "Témy",
+    "all": "Všetko",
+    "topics": {
+      "calendar": "Kalendár a portály",
+      "payments": "Platby",
+      "pricing": "Ceny a pravidlá pobytu",
+      "guests": "Hostia a správy",
+      "settings": "Nastavenia"
+    },
+    "questions": "Otázky",
+    "none": "K tomuto sme návod nenašli. Napíšte nám vpravo — doplníme ho.",
+    "helped": "Pomohlo vám to?",
+    "yes": "Áno",
+    "no": "Nie",
+    "thanks": "Ďakujeme, zapísali sme si to.",
+    "thanksNo": "Ďakujeme. Napíšte nám, čo vám chýbalo — návod upravíme.",
+    "form": {
+      "title": "Nenašli ste odpoveď?",
+      "lead": "Napíšte nám. Odpovieme e-mailom.",
+      "message": "S čím potrebujete pomôcť?",
+      "placeholder": "Popíšte, čo ste chceli urobiť a čo sa stalo…",
+      "image": "Priložiť obrázok (nepovinné)",
+      "imageHint": "Napr. snímka obrazovky — JPG, PNG alebo WebP do 5 MB.",
+      "context": "Pošle sa aj, aby sme sa nemuseli dopytovať:",
+      "contextLine": "{tenant} · {user} · stránka {page}",
+      "send": "Odoslať",
+      "sent": "Odoslané. Odpoveď príde na {email}.",
+      "tooLong": "Text je príliš dlhý (najviac 5 000 znakov).",
+      "empty": "Napíšte, s čím potrebujete pomôcť.",
+      "badImage": "Obrázok musí byť JPG, PNG alebo WebP do 5 MB.",
+      "tooMany": "Dnes ste nám už poslali veľa žiadostí. Skúste to zajtra alebo nám napíšte e-mail.",
+      "failed": "Odoslanie sa nepodarilo. Skúste to znova."
+    },
+    "faqs": {
+      "blockDates": {
+        "q": "Ako zablokujem termín, keď idem upratovať?",
+        "steps": [
+          "V menu otvorte Rezervácie › Blokácie a kliknite na „Pridať blokáciu“.",
+          "Vyberte prvú noc a deň, keď je objekt znova voľný. Poznámku (napr. „jarné upratovanie“) vidíte len vy.",
+          "Kliknite na Blokovať. Na vašej stránke je termín hneď obsadený, Booking a Airbnb ho uvidia pri svojej najbližšej synchronizácii s vaším kalendárom."
+        ],
+        "go": "Otvoriť Blokácie"
+      },
+      "connectPortal": {
+        "q": "Ako prepojím kalendár z Bookingu alebo Airbnb?",
+        "steps": [
+          "V Bookingu (Synchronizácia kalendára) alebo v Airbnb (Dostupnosť › Prepojenie kalendárov) skopírujte adresu kalendára na export.",
+          "V Prepojenia › Booking a Airbnb kliknite na „Pridať kalendár“, vyberte zdroj a adresu vložte.",
+          "Opačným smerom: adresu „Export pre …“ z tej istej stránky vložte do Bookingu alebo Airbnb ako importovaný kalendár.",
+          "Termíny z portálov sa načítavajú samy približne každých 5 minút; tlačidlom „Synchronizovať teraz“ hneď."
+        ],
+        "go": "Otvoriť Booking a Airbnb"
+      },
+      "collision": {
+        "q": "Prečo vidím kolíziu s Airbnb alebo Bookingom?",
+        "steps": [
+          "Portál poslal obsadený termín, ktorý sa prekrýva s rezerváciou alebo blokáciou u vás. Nič sme neprepísali.",
+          "Otvorte Rezervácie › Kolízie — uvidíte, čo s čím koliduje, a rozhodnete, čo s tým."
+        ],
+        "go": "Otvoriť Kolízie"
+      },
+      "portalGuests": {
+        "q": "Kde vidím hostí z Bookingu a Airbnb?",
+        "steps": [
+          "Rezervácie › Z portálov ukazuje pobyty, ktoré prišli z kalendárov portálov (položka je v menu, keď máte kalendár prepojený).",
+          "Portály v kalendári neposielajú meno ani kontakt hosťa — ak ho portál pošle (kód rezervácie, časť telefónu), ukážeme ho; inak podrobnosti nájdete priamo na portáli.",
+          "Medzi Hosťami ani v štatistike priamych tržieb títo hostia nie sú."
+        ],
+        "go": "Otvoriť pobyty z portálov"
+      },
+      "transferPaid": {
+        "q": "Hosť zaplatil prevodom. Čo mám urobiť?",
+        "steps": [
+          "Otvorte rezerváciu v zozname Rezervácie (alebo na Prehľade v časti Čaká na vás).",
+          "Kliknite na „Platba prijatá“. Rezervácia sa potvrdí a hosť dostane potvrdenie e-mailom sám."
+        ],
+        "go": "Otvoriť Rezervácie"
+      },
+      "unpaid": {
+        "q": "Čo sa stane, keď hosť nezaplatí včas?",
+        "steps": [
+          "Nezaplatená rezervácia čaká počas lehoty na zaplatenie, ktorú nastavíte v Nastaveniach (v hodinách).",
+          "Po lehote sa sama zruší a termín sa znova uvoľní na predaj. O zrušení dostanete upozornenie.",
+          "Ak hosť zaplatí neskôr, rezerváciu vytvorte znova ručne."
+        ],
+        "go": "Otvoriť lehotu na zaplatenie"
+      },
+      "iban": {
+        "q": "Kde zmením bankový účet (IBAN) pre platby?",
+        "steps": [
+          "Otvorte Nastavenia › Platba prevodom a prepíšte IBAN a príjemcu.",
+          "Uložte. Nový účet a QR kód dostanú hostia pri nových rezerváciách."
+        ],
+        "go": "Otvoriť IBAN"
+      },
+      "cancelRequest": {
+        "q": "Hosť chce zrušiť pobyt. Ako zistím, koľko mu vrátiť?",
+        "steps": [
+          "V Nastaveniach máte storno podmienky a nepovinne storno pásma (koľko percent sa vráti podľa počtu dní do príchodu).",
+          "Keď hosť požiada o zrušenie, uvidíte to na Prehľade a v paneli rezervácie aj s návrhom storno poplatku podľa pásiem.",
+          "Peniaze vraciate sami prevodom — systém ich neposiela."
+        ],
+        "go": "Otvoriť storno podmienky"
+      },
+      "seasonPrice": {
+        "q": "Ako zmením cenu na Vianoce a Silvester?",
+        "steps": [
+          "Otvorte Objekt › Ceny a sezóny a rozbaľte sezónu (alebo pridajte novú s termínmi sviatkov).",
+          "Zmeňte cenu za noc alebo minimum nocí a uložte. Platí pre nové rezervácie, potvrdené ostávajú za pôvodnú cenu."
+        ],
+        "go": "Otvoriť Ceny a sezóny"
+      },
+      "cleaningGap": {
+        "q": "Ako nechám deň voľna na upratovanie medzi hosťami?",
+        "steps": [
+          "Otvorte Objekt › Údaje a nastavte „Upratovacie dni medzi pobytmi“.",
+          "Toľko dní po každom odchode sa nebude dať rezervovať nový príchod."
+        ],
+        "go": "Otvoriť upratovacie dni"
+      },
+      "phoneBooking": {
+        "q": "Ako zapíšem rezerváciu, ktorú mi hosť dohodol telefonicky?",
+        "steps": [
+          "Kliknite vpravo hore na „Nová rezervácia“.",
+          "Vyberte termín a vyplňte hosťa. Systém skontroluje, či je termín voľný, a vypočíta cenu.",
+          "Hosť dostane potvrdenie e-mailom ako pri rezervácii z webu."
+        ],
+        "go": "Otvoriť Novú rezerváciu"
+      },
+      "arrivalInfo": {
+        "q": "Kedy hosť dostane pokyny k príchodu a kód od dverí?",
+        "steps": [
+          "Pokyny k príchodu odchádzajú samy e-mailom pred príchodom — predvolene 3 dni vopred; zmeníte to v Nastaveniach › Upozornenia.",
+          "Kód od dverí a Wi-Fi vyplníte v Objekt › Údaje; hosť ich dostane v pokynoch a vidí ich aj vo svojom pobyte."
+        ],
+        "go": "Otvoriť nastavenie pokynov"
+      },
+      "monthlyReport": {
+        "q": "Čo je mesačný výpis a kto ho dostane?",
+        "steps": [
+          "Výpis zhrnie mesiac: tržby z priamych rezervácií, obsadenosť, úsporu na províziách a čo za vás systém urobil.",
+          "Príde vám e-mailom 1. dňa v mesiaci s PDF. Tlačidlom „Poslať účtovníkovi“ ho pošlete na e-mail účtovníka z Nastavení.",
+          "Je to podklad, nie účtovný doklad."
+        ],
+        "go": "Otvoriť Mesačný výpis"
+      },
+      "team": {
+        "q": "Ako pridám upratovačku alebo ďalšieho človeka?",
+        "steps": [
+          "V Nastavenia › Tím vidíte, kto má prístup a s akou rolou (Majiteľ, Recepcia, Upratovanie).",
+          "Nového člena tímu zatiaľ pridávame my — napíšte nám vpravo jeho e-mail a rolu a prístup mu nastavíme."
+        ],
+        "go": "Otvoriť Tím"
+      },
+      "pushPhone": {
+        "q": "Ako si zapnem upozornenia do mobilu?",
+        "steps": [
+          "Na iPhone najprv v Safari zvoľte Zdieľať › Pridať na plochu a administráciu otvorte z novej ikony.",
+          "V Nastavenia › E-maily a upozornenia zapnite upozornenia na tomto zariadení a vyberte, čo chcete dostávať."
+        ],
+        "go": "Otvoriť upozornenia"
+      },
+      "deleted": {
+        "q": "Omylom som niečo zmazal. Dá sa to vrátiť?",
+        "steps": [
+          "Áno, do 30 dní: otvorte Nastavenia › Nedávno zmazané a pri položke kliknite na Obnoviť.",
+          "Obnoviť sa dajú služby, sezóny, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre a miesta v okolí. Rezervácie sa nemažú, len rušia."
+        ],
+        "go": "Otvoriť Nedávno zmazané"
+      }
+    }
   }
 }

@@ -141,6 +141,13 @@ Administrácia (Z46): `src/modules/messages/admin/` (dáta, akcie, konverzácia,
 **Mesačný výpis (Z62):** DB `tenant_monthly_report` (nad `tenant_monthly_stats` — tržby bez `tax`/`deposit`), zobrazenie pre stránku,
 PDF aj e-mail v `src/core/reports/monthly-view.ts` (jeden zdroj textov), načítanie a PDF `src/core/reports/monthly.ts`, stránka
 `/admin/statistics/report`, e-mail `owner_monthly_report` (`src/core/email/monthly-report*.ts`, cron 1. dňa v mesiaci).
+Pruh nocí `src/core/reports/nights-bar.tsx` — výpis aj Prehľad (Z65).
+**Hľadanie a Pomoc (Z67):** register stránok a polí `src/core/search/registry.ts` (nová stránka / nové nastavenie = riadok + slová
+v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazní — `field-highlight.tsx` v AdminShell), hľadanie
+`search-box.tsx` (Ctrl K; rezervácie, hostia a poznámky cez DB `actions.ts`). Otázky Pomoci `src/core/help/faqs.ts` + `help.faqs.<id>`
+(q, steps[], go), moduly cez manifest `helpFaqs`; odkaz na otázku `helpHref(id)` (pre ⓘ). Žiadosti „Nenašli ste odpoveď?“:
+DB `support_request_create` → `support_requests`, zvonček správcu, e-mail `platform_support_request` na `NEXT_PUBLIC_SUPPORT_EMAIL`;
+riadiace centrum `/platform/support`. Zoznam otázok na kontrolu `docs/pomoc-otazky.md` (pri zmene textov pregenerovať).
 **E-maily hosťovi (Z60):** rozloženie a hlavička/päta klienta v `src/core/email/layout.ts` (`emailLayout`, `guestFrame`,
 `guestMessageHtml`) — používa ho worker (`templates.ts`, všetky `guest_*`) aj náhľad v administrácii; `{podpis}` =
 `tenant_settings.message_signature` → `contact_name` → názov klienta (DB `message_rule_text` a `messageSignature` — meniť spolu).

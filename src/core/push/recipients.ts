@@ -13,6 +13,7 @@ export const DEFAULT_PLATFORM_PUSH_KINDS = [
   "client_trial_ending",
   "client_new",
   "backup_stale",
+  "support_request",
 ] as const;
 
 export type PushDevice = {

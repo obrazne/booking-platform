@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import type { HelpFaq } from "@/core/help/faqs";
 import type { LucideIcon } from "lucide-react";
 import type { SectionDef } from "@/core/sections/types";
 
@@ -93,6 +94,8 @@ export type ModuleManifest = {
   sections?: readonly SectionDef[];
   /** Tabs of the reservation panel (Z46). */
   reservationTabs?: readonly ReservationTab[];
+  /** Questions of Pomoc (Z67); words in `<messages>.help.<id>` (q, steps[], go). Shown only with the module on. */
+  helpFaqs?: readonly HelpFaq[];
   /** After the control center switches the module on for a client (e.g. default settings — messages, Z45). */
   onEnable?: (tenantId: string) => Promise<void>;
   /**

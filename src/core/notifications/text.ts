@@ -22,6 +22,7 @@ export const NOTIFICATION_KINDS = [
   "account_deletion",
   "message_new",
   "backup_stale",
+  "support_request",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {
@@ -73,6 +74,7 @@ export function notificationText(
     property: String(d.property ?? ""),
     service: String(d.service ?? ""),
     person: String(d.person ?? ""),
+    user: String(d.user ?? ""),
     reportDue: date(d.due),
     excerpt: String(d.excerpt ?? ""),
     last: d.last ? date(d.last) : "—",

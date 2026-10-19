@@ -14,6 +14,8 @@ export const checkinModule: ModuleManifest = {
   key: "checkin",
   messages: "modules.checkin",
   ready: true,
+  // Pomoc (Z67): words in modules.checkin.help.
+  helpFaqs: [{ id: "foreigners", topic: "guests", href: "/admin/arrivals" }],
   navItems: [
     { href: "/admin/arrivals", group: "reservations", labelKey: "nav", icon: ClipboardCheck },
   ],

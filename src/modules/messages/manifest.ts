@@ -23,6 +23,8 @@ export const messagesModule: ModuleManifest = {
   key: "messages",
   messages: "modules.messages",
   ready: true,
+  // Pomoc (Z67): words in modules.messages.help.
+  helpFaqs: [{ id: "replyGuest", topic: "guests", href: "/admin/messages" }],
   navItems: [
     {
       href: "/admin/messages",

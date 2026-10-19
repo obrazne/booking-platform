@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
-import { Activity, Bell, Building2, History, Puzzle, Shield, Store } from "lucide-react";
+import { Activity, Bell, Building2, History, LifeBuoy, Puzzle, Shield, Store } from "lucide-react";
 import { AdminShell } from "@/core/admin/admin-shell";
 import { platformBrand } from "@/core/admin/brand";
 import { UserMenu } from "@/core/admin/topbar";
@@ -11,6 +11,8 @@ import { ThemeStyle } from "@/core/theme/theme-style";
 import { TourDialog } from "@/core/tours/tour-dialog";
 import { tourIsNewForUser } from "@/core/tours/server";
 import { loadBell } from "@/core/notifications/actions";
+import { loadPlatformIndex } from "@/core/search/load";
+import { SearchBox } from "@/core/search/search-box";
 import { NotificationBell } from "@/core/notifications/bell";
 import { createClient } from "@/lib/supabase/server";
 
@@ -36,6 +38,8 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
   const [user, admin] = await Promise.all([getCurrentUser(), isPlatformAdmin()]);
   const tourNew = admin ? await tourIsNewForUser("admin") : false;
   const bell = admin ? await loadBell("platform") : null;
+  // Z67: search of the top bar — pages of the control center here, clients in the database.
+  const pages = admin ? await loadPlatformIndex() : [];
   const { data: tenants } = admin
     ? await (await createClient()).from("tenants").select("id, name").order("name")
     : { data: null };
@@ -80,6 +84,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
                 label: t("platform.nav.notifications"),
                 icon: <Bell />,
               },
+              { href: "/platform/support", label: t("platform.nav.support"), icon: <LifeBuoy /> },
             ]
           : []
       }
@@ -107,11 +112,19 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
         <UserMenu name={profile?.full_name ?? null} email={user?.email ?? null} whatsNew={admin} />
       }
       topbar={
-        bell ? (
-          <div className="ml-auto">
-            <NotificationBell scope="platform" initial={bell} media="desktop" />
-          </div>
+        admin ? (
+          <>
+            <SearchBox variant="desktop" scope="platform" pages={pages} />
+            {bell ? (
+              <div className="ml-auto">
+                <NotificationBell scope="platform" initial={bell} media="desktop" />
+              </div>
+            ) : null}
+          </>
         ) : undefined
+      }
+      mobileSearch={
+        admin ? <SearchBox variant="mobile" scope="platform" pages={pages} /> : undefined
       }
       mobileBell={bell ? <NotificationBell scope="platform" initial={bell} media="mobile" /> : null}
       mobileTitle={t("platform.title")}

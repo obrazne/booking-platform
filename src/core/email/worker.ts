@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadEmailContext } from "./context";
 import { monthlyReportMail } from "./monthly-report";
+import { supportRequestMail } from "./support-request";
 import { isReservedRecipient, sendEmail } from "./send";
 import { renderEmail, renderIcalConflict, type EmailKind } from "./templates";
 
@@ -39,6 +40,30 @@ export async function processEmailQueue(
           await admin
             .from("email_outbox")
             .update({ status: "skipped", last_error: "no recipient" })
+            .eq("id", job.id);
+          stats.skipped += 1;
+          continue;
+        }
+        const result = await sendEmail(mail);
+        await admin.rpc("finish_email_job", {
+          p_id: job.id,
+          p_ok: result.ok,
+          p_provider_id: result.ok ? result.id : "",
+          p_error: result.ok ? "" : result.error,
+          p_to: mail.to,
+        });
+        if (result.ok) stats.sent += 1;
+        else stats.failed += 1;
+        continue;
+      }
+      if (job.kind === "platform_support_request") {
+        // "Nenašli ste odpoveď?" (Z67): to the support address, Reply-To = the person who asked.
+        const requestId = (job.payload as { request_id?: string } | null)?.request_id ?? "";
+        const mail = requestId ? await supportRequestMail(requestId) : null;
+        if (!mail) {
+          await admin
+            .from("email_outbox")
+            .update({ status: "skipped", last_error: "no support address or request" })
             .eq("id", job.id);
           stats.skipped += 1;
           continue;

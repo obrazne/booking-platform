@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → **Z63 (šírka, stránkovanie v DB)** — *zabratá linkou A* → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
-  **B:** ~~Z57–Z60, Z62, Z64, Z65~~ ✅ → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67~~ ✅ → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -185,7 +185,7 @@ Ten istý komponent a výpočet ako v mesačnom výpise (Z62, `tenant_monthly_re
 s prepínačom **Tento mesiac / Ďalší mesiac** (dopredu = voľné noci, ktoré treba predať); klik na úsek → kalendár na daný mesiac.
 Počty v texte, nielen farby. Test: súčty = výpis a Štatistiky.
 
-### Z67 [B] 🔄 — Hľadanie (Ctrl K) a Pomoc (pripomienky 48, 50; dosky 15, 16) — po Z65
+### Z67 [B] ✅ — Hľadanie (Ctrl K) a Pomoc (pripomienky 48, 50; dosky 15, 16) — po Z65
 1. **Hľadanie v hornej lište** (administrácia; v riadiacom centre klienti a nastavenia platformy): zástupný text „Hľadať hostí, rezervácie,
    nastavenia aj pomoc…“, Ctrl K / Cmd K, po kliknutí do prázdneho poľa príklady a posledné hľadania; výsledky v skupinách Nastavenia
    a stránky / Pomoc / Rezervácie a hostia; klávesnica (šípky, Enter, Esc). **Register nastavení a stránok** (názov, synonymá, cesta,
@@ -609,6 +609,8 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Otázky pre Martina
 - **Pomoc (Z67) — doba odpovede:** do akej doby odpovieš na otázku z formulára „Nenašli ste odpoveď?“ (napr. „do 1 pracovného dňa“)? Kým to neurčíš, text nič nesľubuje.
+  Aby žiadosti chodili aj e-mailom, nastav na Verceli `NEXT_PUBLIC_SUPPORT_EMAIL` (inak sú len v riadiacom centre › Podpora a vo zvončeku).
+  Prečítaj otázky a odpovede Pomoci v `docs/pomoc-otazky.md` (18 otázok) — čo opraviť alebo doplniť.
 - **Recenzie — schvaľovanie (pripomienka 37, 18. 10., čaká na rozhodnutie, nerobiť):** Martin chce, aby si ubytovateľ každú recenziu
   schválil sám (bez automatického zverejnenia po 72 h). Je to v rozpore s rozhodnutím 2026-10-17 (zverejnia sa všetky, zamietnuť len
   porušenie pravidiel — Omnibus: pri „overených recenziách“ a priemere nesmie majiteľ potichu vyberať len pozitívne). Možnosti:
@@ -674,6 +676,24 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z67 [linka B]: **Hľadanie (Ctrl K) a Pomoc** (pripomienky 48, 50; dosky 15, 16). (Claude Code)
+  - **Hľadanie v hornej lište** administrácie aj riadiaceho centra (nahradilo staré hľadanie rezervácií): Ctrl K / Cmd K, v prázdnom
+    poli príklady a posledné hľadania (len v prehliadači), skupiny Nastavenia a stránky · Pomoc · Rezervácie a hostia (riadiace centrum:
+    Klienti), šípky / Enter / Esc, na mobile lupa → hľadanie cez celú obrazovku. **Register** `src/core/search/registry.ts` (~55 riadkov:
+    stránky, polia nastavení a objektu, synonymá v `search.entries`), stránky modulov sa pridajú samy z ich menu. Klik na pole otvorí
+    stránku s `?hl=` a pole na chvíľu orámuje a zameria. Rezervácie, hostia a poznámky z DB (RLS, pár riadkov, s krátkou pauzou po písaní).
+  - **Pomoc** (`/admin/help`, dole v bočnom menu): hľadanie, témy, 16 otázok jadra + 2 modulové (Správy, Check-in; háčik manifestu
+    `helpFaqs`), kroky a tlačidlo na stránku (s poľom), „Pomohlo vám to? Áno / Nie“ (tabuľka `help_feedback`, jedna odpoveď na človeka).
+    Texty overené voči tomu, čo systém robí — na kontrolu `docs/pomoc-otazky.md`. Odkaz na otázku `helpHref(id)` pre ⓘ (Z66, linka A).
+  - **„Nenašli ste odpoveď?“**: text + voliteľný obrázok (súkromné úložisko `support-attachments`, 5 MB), klient, človek, stránka
+    odkiaľ prišiel (`?from=`) a prehliadač → DB `support_request_create` (max. 10 denne na človeka), upozornenie `support_request`
+    vo zvončeku správcu, e-mail `platform_support_request` na `NEXT_PUBLIC_SUPPORT_EMAIL` s Reply-To (testovacie účty sa neposielajú).
+    Doba odpovede v texte nie je (Otázky). Riadiace centrum › **Podpora**: žiadosti (zbalené riadky, obrázok cez krátky odkaz,
+    „Vybavené“) a hodnotenie návodov (najprv tie s „Nie“).
+  - Migrácia `…19120000_help_support` (len pridáva; nové tabuľky nie sú dáta klienta, `record_history` na ne nie je).
+    Testy: pgTAP `help_support.test.sql`, vitest `registry.test.ts` (preklady registra a otázok, zhoda slov), e2e `search-help.spec.ts`
+    (PC + mobil, axe). Snímky `docs/snimky/z67/`. Stránkovanie Podpory po 20 — výber 20/50/100 doplní Z63 (linka A).
+  - **Pre linku A:** Z69 mení adresy Nastavení → uprav riadky registra (`registry.ts`) a `href` v `src/core/help/faqs.ts`; Z66 ⓘ → `helpHref(id)`.
 - 2026-10-19 — Z56 [linka A]: **zbalené zoznamy a sezóny bez roka** (pripomienka 35, pravidlo 4). (Claude Code)
   - **Sezóny** (Objekt → Sezóny a ceny): zbalené riadky „názov · termíny · cena / noc · min. nocí“ (predvolená so štítkom), šípka
     rozbalí formulár, „+ Pridať sezónu“ otvorí novú navrchu. Súhrnná tabuľka a karty pod sebou preč.

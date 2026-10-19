@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   createContext,
+  Suspense,
   useContext,
   useEffect,
   useId,
@@ -14,6 +15,7 @@ import {
 import { useTranslations } from "next-intl";
 import { ChevronRight, Menu, Pin, PinOff, Plus, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { FieldHighlight } from "@/core/search/field-highlight";
 import { cn } from "@/lib/utils";
 
 /**
@@ -395,6 +397,7 @@ export function AdminShell({
   banner,
   topbar,
   mobileBell,
+  mobileSearch,
   children,
 }: {
   brand: { icon: ReactNode; label: string };
@@ -408,6 +411,8 @@ export function AdminShell({
   topbar?: ReactNode;
   /** Bell in the phone top bar. */
   mobileBell?: ReactNode;
+  /** Magnifier of the search in the phone top bar (Z67). */
+  mobileSearch?: ReactNode;
   /** Accommodation picker (none in the control center); reads `useShellExpanded()`. */
   picker?: ReactNode;
   items: ShellNavItem[];
@@ -503,6 +508,7 @@ export function AdminShell({
           <span className="text-ink min-w-0 flex-1 truncate text-[15px] font-bold">
             {mobileTitle}
           </span>
+          {mobileSearch}
           {mobileBell}
           {addHref ? (
             <Link
@@ -522,6 +528,10 @@ export function AdminShell({
         ) : null}
         {/* Default page padding; redesigned pages with their own header mark their root with data-bleed. */}
         <main className="min-w-0 flex-1 p-5 has-[>[data-bleed]]:p-0 md:px-10 md:py-8">
+          {/* Z67: the field found by the search is ringed for a moment. */}
+          <Suspense fallback={null}>
+            <FieldHighlight />
+          </Suspense>
           {children}
         </main>
       </div>
