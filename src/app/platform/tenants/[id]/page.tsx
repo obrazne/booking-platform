@@ -16,7 +16,7 @@ export default async function TenantOverview({ params }: PageProps<"/platform/te
   return (
     <div data-bleed>
       <TenantHeader tenant={tenant} tab="overview" />
-      <div className="grid max-w-[1180px] gap-8 px-5 pt-6 pb-14 md:px-10">
+      <div className="grid gap-8 px-5 pt-6 pb-14 md:px-10">
         <div className="surface p-5 md:p-6">
           <SnapshotView s={s} domain={tenant.domain} />
         </div>

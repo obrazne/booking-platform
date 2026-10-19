@@ -1,6 +1,7 @@
 import "server-only";
 import { getTranslations } from "next-intl/server";
 import { auditLabel } from "@/core/admin/audit-label";
+import { likePattern } from "@/core/admin/list-params";
 import { listModules } from "@/core/modules/registry";
 import { createClient } from "@/lib/supabase/server";
 
@@ -74,20 +75,71 @@ export type AuditRow = {
   label: string;
 };
 
+const KNOWN_ACTIONS = [
+  "tenant.created",
+  "tenant.status_changed",
+  "module.changed",
+  "membership.created",
+  "admin.entered",
+  "tenant.exported",
+  "auth.signed_in",
+] as const;
+
+/**
+ * Actions whose human text contains the searched words (rule 9 — people search what they read, e.g. "prihlásenie",
+ * not "auth.signed_in"). Every variant of each label is tried; "Iná zmena" matches all other actions.
+ */
+function actionsMatching(
+  label: (entry: Parameters<typeof auditLabel>[1]) => string,
+  needle: string,
+): { actions: string[]; other: boolean } {
+  const has = (text: string) => text.toLocaleLowerCase("sk").includes(needle);
+  const variants = (action: string) => {
+    const base = { action, entity: "", entity_id: null as string | null };
+    if (action === "module.changed")
+      return listModules().flatMap((m) =>
+        ["trial", "active", "off"].map((status) => ({
+          ...base,
+          entity_id: m.key,
+          data: { after: { status } },
+        })),
+      );
+    if (action === "tenant.status_changed")
+      return ["onboarding", "active", "suspended"].map((status) => ({ ...base, data: { status } }));
+    if (action === "auth.signed_in")
+      return ["password", "link"].map((method) => ({ ...base, data: { method } }));
+    return [{ ...base, data: {} }];
+  };
+  return {
+    actions: KNOWN_ACTIONS.filter((a) => variants(a).some((v) => has(label(v)))),
+    other: has(label({ action: "-", entity: "", entity_id: null, data: {} })),
+  };
+}
+
 /**
  * Audit entries matching the filters, newest first, with the human text of each (rule 9 — never raw action codes).
- * Platform admin sees all, an owner only their client (RLS). Searching goes through the text, client and person.
+ * Platform admin sees all, an owner only their client (RLS). Paged by the database (rule 7): one page and the count;
+ * the search goes through the client, the person, the action and the human text — all in SQL.
+ * `size: "all"` is the CSV export (everything matching, at most MAX_ROWS).
  */
-export async function loadAudit(p: AuditParams) {
+export async function loadAudit(p: AuditParams, size: number | "all" = PAGE_SIZE) {
   const [ta, tAll] = await Promise.all([getTranslations("adminV1.audit"), getTranslations()]);
   const supabase = await createClient();
+  const moduleName = (key: string) => {
+    const m = listModules().find((x) => x.key === key);
+    return m ? tAll(`${m.messages}.title` as Parameters<typeof tAll>[0]) : key;
+  };
+  const label = (entry: Parameters<typeof auditLabel>[1]) =>
+    auditLabel(ta as unknown as Parameters<typeof auditLabel>[0], entry, moduleName);
+
   let query = supabase
-    .from("audit_log")
+    .from("audit_log_search")
     .select(
-      "id, tenant_id, actor_id, action, entity, entity_id, data, created_at, actor:profiles(email, full_name), tenant:tenants(name)",
+      "id, tenant_id, actor_id, action, entity, entity_id, data, created_at, tenant_name, actor_name, actor_email",
+      { count: "exact" },
     )
     .order("created_at", { ascending: false })
-    .limit(MAX_ROWS);
+    .order("id", { ascending: false });
   if (p.from) query = query.gte("created_at", `${p.from}T00:00:00`);
   if (p.to) query = query.lte("created_at", `${p.to}T23:59:59.999`);
   if (p.tenant) query = query.eq("tenant_id", p.tenant);
@@ -100,34 +152,37 @@ export async function loadAudit(p: AuditParams) {
     ];
     query = query.or(parts.join(","));
   }
-  const { data } = await query;
-  const moduleName = (key: string) => {
-    const m = listModules().find((x) => x.key === key);
-    return m ? tAll(`${m.messages}.title` as Parameters<typeof tAll>[0]) : key;
-  };
-  let rows: AuditRow[] = (data ?? []).map((a) => ({
-    id: a.id,
-    at: a.created_at,
-    tenantId: a.tenant_id,
-    tenantName: a.tenant?.name ?? null,
-    actorId: a.actor_id,
-    actor: a.actor?.full_name ?? a.actor?.email ?? null,
-    label: auditLabel(ta as unknown as Parameters<typeof auditLabel>[0], a, moduleName),
-  }));
   if (p.q) {
     const needle = p.q.toLocaleLowerCase("sk");
-    rows = rows.filter((r) =>
-      [r.label, r.tenantName, r.actor].some((v) => v?.toLocaleLowerCase("sk").includes(needle)),
-    );
+    const { actions, other } = actionsMatching(label, needle);
+    const parts = [`search.ilike.${likePattern(needle)}`];
+    if (actions.length) parts.push(`action.in.(${actions.join(",")})`);
+    if (other) parts.push(`action.not.in.(${KNOWN_ACTIONS.join(",")})`);
+    query = query.or(parts.join(","));
   }
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  const page = Math.min(p.page, pages);
+  const page = size === "all" ? 1 : p.page;
+  query = size === "all" ? query.limit(MAX_ROWS) : query.range((page - 1) * size, page * size - 1);
+  const { data, count } = await query;
+  const rows: AuditRow[] = (data ?? []).map((a) => ({
+    id: a.id!,
+    at: a.created_at!,
+    tenantId: a.tenant_id,
+    tenantName: a.tenant_name,
+    actorId: a.actor_id,
+    actor: a.actor_name ?? a.actor_email ?? null,
+    label: label({
+      action: a.action!,
+      entity: a.entity ?? "",
+      entity_id: a.entity_id,
+      data: a.data,
+    }),
+  }));
+  const total = count ?? rows.length;
   return {
-    all: rows,
-    rows: rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    total: rows.length,
+    rows,
+    total,
     page,
-    pages,
+    pageSize: size === "all" ? total : size,
   };
 }
 

@@ -10,19 +10,23 @@ import {
   loadAudit,
   type AuditParams,
 } from "@/core/admin/audit-query";
+import { Pagination } from "@/core/admin/data-list";
 import { formatDateTime } from "@/core/format/format";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Audit with filters (control center v1.2): period, category, client, person, search; 50 per page; CSV export of
+ * Audit with filters (control center v1.2): period, category, client, person, search; paged by the database (rule 7); CSV export of
  * everything that matches. `tenantId` fixes the client (the client's "Záznam zmien" tab).
  */
 export async function AuditView({
   params,
+  pageSize,
   basePath,
   tenantId,
 }: {
   params: AuditParams;
+  /** Rows per page (readPaging — 20 / 50 / 100, remembered). */
+  pageSize: number;
   basePath: string;
   tenantId?: string;
 }) {
@@ -30,7 +34,7 @@ export async function AuditView({
   const [t, locale, result, people] = await Promise.all([
     getTranslations("platform.auditPage"),
     getLocale(),
-    loadAudit(p),
+    loadAudit(p, pageSize),
     auditPeople(tenantId),
   ]);
   const { data: tenants } = tenantId
@@ -143,7 +147,7 @@ export async function AuditView({
       </form>
 
       {result.rows.length ? (
-        <ul className="surface overflow-hidden">
+        <ul className="surface overflow-hidden" aria-label={t("title")}>
           {result.rows.map((a) => (
             <li
               key={a.id}
@@ -164,29 +168,7 @@ export async function AuditView({
         </ul>
       ) : null}
 
-      {result.pages > 1 ? (
-        <nav className="flex flex-wrap items-center justify-between gap-3 text-sm">
-          <span className="text-muted-foreground">
-            {t("page", { page: result.page, pages: result.pages })}
-          </span>
-          <span className="flex gap-2">
-            {result.page > 1 ? (
-              <Button asChild variant="outline">
-                <Link href={`${basePath}${auditQuery(p, { page: result.page - 1 })}`}>
-                  {t("previous")}
-                </Link>
-              </Button>
-            ) : null}
-            {result.page < result.pages ? (
-              <Button asChild variant="outline">
-                <Link href={`${basePath}${auditQuery(p, { page: result.page + 1 })}`}>
-                  {t("next")}
-                </Link>
-              </Button>
-            ) : null}
-          </span>
-        </nav>
-      ) : null}
+      <Pagination page={result.page} pageSize={result.pageSize} total={result.total} list="audit" />
     </div>
   );
 }

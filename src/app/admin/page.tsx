@@ -198,7 +198,7 @@ export default async function AdminDashboard() {
 
   return (
     <div data-bleed>
-      <div className="grid w-full max-w-[1180px] gap-9 px-5 pt-7 pb-14 md:px-10 md:pt-9">
+      <div className="grid w-full gap-9 px-5 pt-7 pb-14 md:px-10 md:pt-9">
         <div className="grid gap-2">
           <span className="kicker text-brand-secondary first-letter:uppercase">
             {longDate.format(new Date())}

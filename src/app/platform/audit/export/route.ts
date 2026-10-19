@@ -10,11 +10,11 @@ export async function GET(request: Request) {
   const sp = Object.fromEntries(new URL(request.url).searchParams);
   const [t, result] = await Promise.all([
     getTranslations("platform.auditPage"),
-    loadAudit({ ...parseAuditParams(sp), page: 1 }),
+    loadAudit({ ...parseAuditParams(sp), page: 1 }, "all"),
   ]);
   const lines = [
     t("csvHeader"),
-    ...result.all.map((r) =>
+    ...result.rows.map((r) =>
       [r.at, r.tenantName ?? t("noClient"), r.actor ?? t("system"), r.label].map(cell).join(";"),
     ),
   ];

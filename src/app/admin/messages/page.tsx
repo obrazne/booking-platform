@@ -1,3 +1,5 @@
+import { Pagination } from "@/core/admin/data-list";
+import { readPaging } from "@/core/admin/paging";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -36,6 +38,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
   if (!(await isModuleEnabled(active.tenantId, "messages"))) notFound();
   await ensureMessageDefaults(active.tenantId);
   const sp = await searchParams;
+  const paging = await readPaging(sp, "spravy");
   const filter = FILTERS.find((f) => f === sp.filter) ?? "all";
   const search = typeof sp.q === "string" ? sp.q.trim().slice(0, 80) : "";
   const supabase = await createClient();
@@ -44,7 +47,7 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
     getTranslations("modules.messages"),
     getLocale(),
     getTenantInfo(active.tenantId),
-    loadInbox(active.tenantId, filter, search),
+    loadInbox(active.tenantId, filter, search, paging),
     supabase
       .from("message_rules")
       .select("id", { count: "exact", head: true })
@@ -207,6 +210,9 @@ export default async function MessagesPage({ searchParams }: PageProps<"/admin/m
             {inbox.counts.all ? t("inbox.emptyFilter") : t("inbox.empty")}
           </p>
         )}
+        {inbox.total > 0 ? (
+          <Pagination page={paging.page} pageSize={paging.size} total={inbox.total} list="spravy" />
+        ) : null}
         <p className="text-[13px] text-[#5a6672]">{t("inbox.portals")}</p>
       </div>
       <UrlPanel

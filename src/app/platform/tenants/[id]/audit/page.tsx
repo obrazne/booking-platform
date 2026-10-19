@@ -5,12 +5,12 @@ import { DateRangePill, FilterPills, Pagination } from "@/core/admin/data-list";
 import { ParamSelect } from "@/core/admin/param-select";
 import { formatDateTime } from "@/core/format/format";
 import { formatRange } from "@/core/history/diff";
+import { readPaging } from "@/core/admin/paging";
 import { loadHistory, parseHistoryParams, type HistoryEntry } from "@/core/history/load";
 import { loadTenantDetail, TenantHeader } from "../tenant-header";
 import { RevertButton } from "./revert-button";
 
 const PORTALS: Record<string, string> = { booking: "Booking.com", airbnb: "Airbnb" };
-const PAGE_SIZE = 50;
 
 /**
  * Client detail — Záznam zmien (Z31, Z64): every change in the client's data as one collapsed row (who · what · when),
@@ -23,7 +23,8 @@ export default async function TenantHistory({
 }: PageProps<"/platform/tenants/[id]/audit">) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const tenant = await loadTenantDetail(id);
-  const p = parseHistoryParams(sp);
+  const paging = await readPaging(sp, "zaznam-zmien");
+  const p = { ...parseHistoryParams(sp), page: paging.page };
   const [t, ta, tt, tf, to, ts, locale, history] = await Promise.all([
     getTranslations("history.page"),
     getTranslations("platform.auditPage"),
@@ -32,7 +33,7 @@ export default async function TenantHistory({
     getTranslations("history.ops"),
     getTranslations("history.sources"),
     getLocale(),
-    loadHistory(id, p, tenant.currency),
+    loadHistory(id, p, tenant.currency, paging.size),
   ]);
   const table = (key: string) => (tt.has(key as never) ? tt(key as never) : key);
   const field = (key: string) => (tf.has(key as never) ? tf(key as never) : key.replace(/_/g, " "));
@@ -188,8 +189,13 @@ export default async function TenantHistory({
           <p className="text-muted-foreground">{t("empty")}</p>
         )}
 
-        {history.total > PAGE_SIZE ? (
-          <Pagination page={history.page} pageSize={PAGE_SIZE} total={history.total} />
+        {history.total > 0 ? (
+          <Pagination
+            page={history.page}
+            pageSize={paging.size}
+            total={history.total}
+            list="zaznam-zmien"
+          />
         ) : null}
       </div>
     </div>

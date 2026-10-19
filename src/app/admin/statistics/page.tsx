@@ -157,7 +157,7 @@ export default async function StatisticsPage({ searchParams }: PageProps<"/admin
           </>
         }
       />
-      <PageBody className="grid max-w-[1180px] gap-6">
+      <PageBody className="grid gap-6">
         <dl className="bg-card grid overflow-hidden rounded-[10px] border sm:grid-cols-2 lg:grid-cols-5">
           {kpis.map((k, i) => (
             <div

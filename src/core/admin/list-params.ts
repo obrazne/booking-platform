@@ -44,6 +44,42 @@ export function parseListParams(
   };
 }
 
+/** Rows per page of a list (rule 7): 20 by default, 50 or 100 on request (`?size=`, remembered per list in a cookie). */
+export const PAGE_SIZES = [20, 50, 100] as const;
+export type PageSize = (typeof PAGE_SIZES)[number];
+
+/** A valid page size from the URL, else the remembered one, else 20. */
+export function pageSizeOf(fromUrl: unknown, remembered?: unknown): PageSize {
+  for (const v of [fromUrl, remembered]) {
+    const n = Number(Array.isArray(v) ? v[0] : v);
+    if ((PAGE_SIZES as readonly number[]).includes(n)) return n as PageSize;
+  }
+  return 20;
+}
+
+/** Cookie remembering the page size of one list ("rezervacie", "audit"…). */
+export const pageSizeCookie = (list: string) => `list_size_${list}`;
+
+/** Page number from the URL (1 when missing or invalid). */
+export function pageOf(value: unknown): number {
+  const n = Number.parseInt(String(Array.isArray(value) ? value[0] : (value ?? "1")), 10);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+/** Page numbers to show: first, last and two around the current one; `null` = a gap. */
+export function pageItems(page: number, pages: number): (number | null)[] {
+  const keep = new Set([1, pages, page - 1, page, page + 1].filter((p) => p >= 1 && p <= pages));
+  const sorted = [...keep].sort((a, b) => a - b);
+  const out: (number | null)[] = [];
+  for (const p of sorted) {
+    const last = out.at(-1);
+    if (typeof last === "number" && p - last === 2) out.push(last + 1);
+    else if (typeof last === "number" && p - last > 2) out.push(null);
+    out.push(p);
+  }
+  return out;
+}
+
 /** Range for PostgREST `.range(from, to)`. */
 export function pageRange(p: ListParams): [number, number] {
   const from = (p.page - 1) * p.pageSize;

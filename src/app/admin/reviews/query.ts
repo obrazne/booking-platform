@@ -12,24 +12,48 @@ const COLUMNS = `id, status, rating, rating_cleanliness, rating_location, rating
   display_name, stay_month, locale, reject_reason, owner_reply, owner_reply_at, featured, submitted_at, published_at,
   rejected_at, property:properties(id, name), reservation:reservations(id, number)`;
 
-/** Reviews of the client, newest first (RLS: the team of the client). */
-export async function queryReviews(tenantId: string, status: ReviewStatus | null) {
+/**
+ * One page of the client's reviews, newest first (rule 7: range + count in the database; RLS: the team of the client).
+ * The counts of the status pills are head counts — no review is loaded only to be counted.
+ */
+export async function queryReviews(
+  tenantId: string,
+  status: ReviewStatus | null,
+  range: { from: number; to: number } = { from: 0, to: 19 },
+) {
   const supabase = await createClient();
   let q = supabase
     .from("reviews")
-    .select(COLUMNS)
+    .select(COLUMNS, { count: "exact" })
     .eq("tenant_id", tenantId)
     .order("submitted_at", { ascending: false })
-    .limit(300);
+    .order("id")
+    .range(range.from, range.to);
   if (status) q = q.eq("status", status);
-  const [{ data }, { data: all }, { data: summary }] = await Promise.all([
+  const count = (s?: ReviewStatus) => {
+    let c = supabase
+      .from("reviews")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId);
+    if (s) c = c.eq("status", s);
+    return c;
+  };
+  const [{ data, count: found }, all, { data: summary }, ...per] = await Promise.all([
     q,
-    supabase.from("reviews").select("status").eq("tenant_id", tenantId),
+    count(),
     supabase.rpc("review_summary", { p_tenant_id: tenantId }),
+    ...REVIEW_STATUSES.map((s) => count(s)),
   ]);
-  const counts: Record<string, number> = {};
-  for (const r of all ?? []) counts[r.status] = (counts[r.status] ?? 0) + 1;
-  return { rows: data ?? [], counts, total: all?.length ?? 0, summary: summary?.[0] ?? null };
+  const counts: Record<string, number> = Object.fromEntries(
+    REVIEW_STATUSES.map((s, i) => [s, per[i]?.count ?? 0]),
+  );
+  return {
+    rows: data ?? [],
+    found: found ?? 0,
+    counts,
+    total: all.count ?? 0,
+    summary: summary?.[0] ?? null,
+  };
 }
 
 export async function getReview(tenantId: string, reviewId: string) {

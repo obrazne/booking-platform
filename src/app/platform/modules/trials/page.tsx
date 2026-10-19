@@ -33,7 +33,7 @@ export default async function PlatformTrials() {
         breadcrumbs={[{ label: tn("modules"), href: "/platform/modules" }, { label: tn("trials") }]}
         title={t("title")}
       />
-      <PageBody className="grid max-w-[980px] gap-4">
+      <PageBody className="grid gap-4">
         <p className="text-muted-foreground max-w-prose text-sm">{t("intro")}</p>
         {trials.length ? (
           <div className="surface overflow-x-auto">

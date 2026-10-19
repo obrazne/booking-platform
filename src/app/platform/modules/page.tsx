@@ -43,7 +43,7 @@ export default async function PlatformModules() {
         ]}
         title={tc("title")}
       />
-      <PageBody className="grid max-w-[980px] gap-4">
+      <PageBody className="grid gap-4">
         <p className="text-muted-foreground max-w-prose text-sm">{tc("intro")}</p>
         <ExpandableList
           rows={catalog.map((m) => {

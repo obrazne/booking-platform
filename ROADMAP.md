@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → **Z63 (šírka, stránkovanie v DB)** — *zabratá linkou A* → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67~~ ✅ → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -152,7 +152,7 @@ Návrh: dosky **12 `Vypis`** a **13 `VypisEmail`** v `docs/navrhy/administracia/
 **Pripomienky 45–51 (Martin 19. 10.) → Z63–Z67.** Pravidlá 6–8 doplnené v `docs/pravidla-rozhrania.md` (šírka, stránkovanie, vysvetlivky),
 návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pri Z54–Z61: **A** spoločné komponenty, **B** obrazovky a funkcie.
 
-### Z63 [A] 🔄 — Šírka obsahu, pretekanie polí a stránkovanie v databáze (pripomienky 46, 51; pravidlá 6–7) — po Z56
+### Z63 [A] ✅ — Šírka obsahu, pretekanie polí a stránkovanie v databáze (pripomienky 46, 51; pravidlá 6–7) — po Z56
 1. Zruš pevné obmedzenie šírky (~1080 px) pri zoznamoch, tabuľkách, kalendári, záznamoch a prehľadoch v administrácii aj riadiacom
    centre; obmedz len text na čítanie a jednoduché formuláre. Oprav pretekanie polí (napr. filter Záznamu zmien — pole „Osoba“ mimo karty).
    E2E kontrola pretečenia na 1280 / 1440 / 1920 px.
@@ -676,6 +676,28 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z63 [linka A]: **šírka obsahu a stránkovanie v databáze** (pripomienky 46, 51, pravidlá 6–7). (Claude Code)
+  - **Šírka:** zoznamy, záznamy a prehľady idú cez celú šírku — preč pevné `max-w` (1180 / 980 / 880 px) na Prehľade, Štatistikách,
+    Audite, detaile klienta, katalógu modulov a skúškach, koši a upozorneniach riadiaceho centra; úvodné texty `max-w-prose`.
+  - **Spoločné stránkovanie** (`Pagination` v `data-list.tsx`, `readPaging` v `core/admin/paging.ts`, čisté funkcie a testy v
+    `list-params.ts`): „1–20 z 1 466“, čísla strán s vynechaním, šípky, **Na stránku 20 / 50 / 100** (predvolene 20, zapamätané
+    pre zoznam v cookie `list_size_<zoznam>` — teda na prehliadač, nie na účet), stav v adrese (`page`, `size`), zmena filtra = 1. strana.
+  - **Databáza načíta len jednu stránku + počet** na: Rezerváciách, Pobytoch z portálov (filter príchod/odchod a portál v SQL cez
+    rozsah nocí, počty ako `head` dopyty — predtým až 2000 riadkov a filter v pamäti), Recenziách (predtým 300 + všetky na počty),
+    Schránke správ (`message_inbox` s `range` + nová `message_inbox_counts` — predtým celá schránka dvakrát), Audite (nový pohľad
+    `audit_log_search` so `security_invoker`, hľadanie v SQL aj podľa ľudského textu „Prihlásenie (odkazom…)“ — predtým 2000
+    riadkov, hľadanie a delenie v pamäti; CSV export ostáva všetko do 2000), Zázname zmien klienta, zozname **klientov**
+    (hľadanie v názve, adrese, doméne a u majiteľa, filtre stav / modul / končiaca skúška / problém v SQL, počty filtrov `head`;
+    čísla hore cez `platform_reservation_counts` a `platform_issue_tenants` — predtým všetky rezervácie za 30 dní a všetky
+    chybné e-maily len na spočítanie). Migrácie `…19150000_audit_search`, `…19160000_message_inbox_counts`,
+    `…19170000_platform_counts` (len pridávajú).
+  - **Meranie** (`scripts/measure-lists.mjs`, medián 5 načítaní, lokálny server proti stagingu):
+    Záznam zmien STRÖMY 430 → 426 ms (HTML 406 → 298 kB), Audit 351 → 373 ms, Klienti 374 → 453 ms, Rezervácie 625 → 687 ms,
+    Z portálov 667 → 666 ms, Správy 569 → 611 ms, Recenzie 610 → 587 ms. Na stagingu je dát málo (audit 1 466 záznamov,
+    rezervácie 52), takže čas je rovnaký ± sieť a pár počtov navyše; rozdiel je v tom, že čas už nerastie s počtom záznamov.
+  - e2e `lists-paging.spec.ts` (1–20 z N, strana 2, 50 na stránku zapamätané, audit hľadá ľudský text, pretečenie polí a
+    vodorovný posun na 1280 / 1440 / 1920 px na 9 obrazovkách) + dotknuté testy prešli. Snímky `docs/snimky/z63/` (1920 px, mobil).
+  - Ostáva: filter „Osoba“ a „Typ“ v Zázname zmien berie možnosti z max. 2000 riadkov histórie; kôš majiteľa ostáva 30 dní / 200.
 - 2026-10-19 — Z67 [linka B]: **Hľadanie (Ctrl K) a Pomoc** (pripomienky 48, 50; dosky 15, 16). (Claude Code)
   - **Hľadanie v hornej lište** administrácie aj riadiaceho centra (nahradilo staré hľadanie rezervácií): Ctrl K / Cmd K, v prázdnom
     poli príklady a posledné hľadania (len v prehliadači), skupiny Nastavenia a stránky · Pomoc · Rezervácie a hostia (riadiace centrum:

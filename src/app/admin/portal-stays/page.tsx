@@ -1,9 +1,10 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { requireTenant } from "@/core/admin/action";
-import { FilterPills } from "@/core/admin/data-list";
+import { FilterPills, Pagination } from "@/core/admin/data-list";
 import { groupCrumbs } from "@/core/admin/nav-crumbs";
 import { PageHeader } from "@/core/admin/page-header";
-import { loadPortalStays } from "@/core/admin/portal-stays";
+import { readPaging } from "@/core/admin/paging";
+import { queryPortalStays } from "@/core/admin/portal-stays";
 import { PanelLink, UrlPanel } from "@/core/admin/record-panel";
 import { formatDate, formatDateTime } from "@/core/format/format";
 import { diffDays } from "@/core/pricing/dates";
@@ -26,24 +27,26 @@ const PORTALS = ["booking", "airbnb", "other"] as const;
  */
 export default async function PortalStaysPage({ searchParams }: PageProps<"/admin/portal-stays">) {
   const active = await requireTenant();
-  const [t, tr, locale, tenant, sp, all] = await Promise.all([
+  const [t, tr, locale, tenant, sp] = await Promise.all([
     getTranslations("portalStays"),
     getTranslations("reservations"),
     getLocale(),
     getTenantInfo(active.tenantId),
     searchParams,
-    loadPortalStays(active.tenantId),
   ]);
   const portal = PORTALS.find((p) => p === sp.portal) ?? "";
   const when = sp.when === "past" ? "past" : "future";
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: tenant.timezone }).format(new Date());
-  const inWhen = (s: (typeof all)[number]) =>
-    when === "past" ? s.checkOut < today : s.checkOut >= today;
-  const stays = all
-    .filter((s) => inWhen(s) && (!portal || s.portal === portal))
-    .sort((a, b) =>
-      when === "past" ? b.checkIn.localeCompare(a.checkIn) : a.checkIn.localeCompare(b.checkIn),
-    );
+  // One page from the database (rule 7); the pills count in SQL.
+  const paging = await readPaging(sp, "portaly");
+  const { stays, total, counts } = await queryPortalStays(active.tenantId, {
+    when,
+    portal,
+    today,
+    from: paging.from,
+    to: paging.to,
+  });
+  const any = counts.future + counts.past > 0;
   const portalName = (p: string) => PORTAL_NAMES[p] ?? t("other");
 
   return (
@@ -53,7 +56,7 @@ export default async function PortalStaysPage({ searchParams }: PageProps<"/admi
         title={t("title")}
       />
       <div className="grid gap-4 px-5 pb-14 md:px-10">
-        <p className="text-muted-foreground max-w-3xl text-sm">{t("lead")}</p>
+        <p className="text-muted-foreground max-w-prose text-sm">{t("lead")}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-3">
           <FilterPills
             param="when"
@@ -62,12 +65,12 @@ export default async function PortalStaysPage({ searchParams }: PageProps<"/admi
               {
                 value: "",
                 label: t("future"),
-                count: all.filter((s) => s.checkOut >= today).length,
+                count: counts.future,
               },
               {
                 value: "past",
                 label: t("past"),
-                count: all.filter((s) => s.checkOut < today).length,
+                count: counts.past,
               },
             ]}
           />
@@ -75,11 +78,11 @@ export default async function PortalStaysPage({ searchParams }: PageProps<"/admi
             param="portal"
             label={t("portal")}
             options={[
-              { value: "", label: t("allPortals"), count: all.filter(inWhen).length },
-              ...PORTALS.filter((p) => all.some((s) => s.portal === p)).map((p) => ({
+              { value: "", label: t("allPortals"), count: counts[when] },
+              ...PORTALS.filter((p) => p in counts.portals).map((p) => ({
                 value: p,
                 label: portalName(p),
-                count: all.filter((s) => inWhen(s) && s.portal === p).length,
+                count: counts.portals[p] ?? 0,
               })),
             ]}
           />
@@ -151,9 +154,12 @@ export default async function PortalStaysPage({ searchParams }: PageProps<"/admi
           </div>
         ) : (
           <p className="text-muted-foreground py-8 text-sm">
-            {all.length ? t("emptyFilter") : t("empty")}
+            {any ? t("emptyFilter") : t("empty")}
           </p>
         )}
+        {total > 0 ? (
+          <Pagination page={paging.page} pageSize={paging.size} total={total} list="portaly" />
+        ) : null}
       </div>
       <UrlPanel
         type="portal-stay"

@@ -4,7 +4,16 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowDown, ArrowUp, ArrowUpDown, CalendarDays, Download, Search } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Search,
+} from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { pageItems, pageSizeCookie } from "./list-params";
 
 const ALL = "__all";
 
@@ -130,51 +140,117 @@ export function SortHeader({ column, children }: { column: string; children: Rea
   );
 }
 
+/**
+ * Paging under a list (rule 7): "1–20 z 8 149", pages, rows per page 20 / 50 / 100 — the size is remembered for the list
+ * (cookie) and kept in the URL like the page, filters and search. Only one page is ever loaded from the database.
+ */
 export function Pagination({
   page,
   pageSize,
   total,
+  list,
 }: {
   page: number;
   pageSize: number;
   total: number;
+  /** Key of the list for the remembered page size ("rezervacie", "audit"…). */
+  list?: string;
 }) {
   const t = useTranslations("common");
   const pathname = usePathname();
   const params = useSearchParams();
+  const router = useRouter();
   const pages = Math.max(1, Math.ceil(total / pageSize));
-  const href = (p: number) => {
+  const current = Math.min(page, pages);
+  const href = (p: number, size?: number) => {
     const next = new URLSearchParams(params);
     if (p <= 1) next.delete("page");
     else next.set("page", String(p));
+    if (size) next.set("size", String(size));
     const qs = next.toString();
     return qs ? `${pathname}?${qs}` : pathname;
   };
+  const fmt = (n: number) => n.toLocaleString("sk-SK");
+  const from = total === 0 ? 0 : (current - 1) * pageSize + 1;
+  const to = Math.min(total, current * pageSize);
+  const arrow =
+    "inline-flex size-9 items-center justify-center rounded-full hover:bg-[var(--hover-row)]";
   return (
-    <div className="text-muted-foreground flex items-center justify-between gap-2 text-sm">
-      <span>{t("results", { count: total })}</span>
-      <div className="flex items-center gap-2">
-        <span>{t("pageOf", { page, pages })}</span>
-        <Button variant="outline" size="sm" asChild disabled={page <= 1}>
-          <Link
-            href={href(page - 1)}
-            aria-disabled={page <= 1}
-            className={cn(page <= 1 && "pointer-events-none opacity-50")}
+    <nav
+      aria-label={t("paging")}
+      className="text-muted-foreground flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm"
+    >
+      <span role="status">{t("range", { from: fmt(from), to: fmt(to), total: fmt(total) })}</span>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {pages > 1 ? (
+          <ul className="flex items-center gap-0.5">
+            <li>
+              <Link
+                href={href(current - 1)}
+                aria-label={t("previous")}
+                aria-disabled={current <= 1}
+                className={cn(arrow, current <= 1 && "pointer-events-none opacity-40")}
+              >
+                <ChevronLeft className="size-4" />
+              </Link>
+            </li>
+            {pageItems(current, pages).map((p, i) =>
+              p === null ? (
+                <li key={`gap-${i}`} aria-hidden className="px-1">
+                  …
+                </li>
+              ) : (
+                <li key={p}>
+                  <Link
+                    href={href(p)}
+                    aria-label={t("pageN", { page: p })}
+                    aria-current={p === current ? "page" : undefined}
+                    className={cn(
+                      "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-2 tabular-nums",
+                      p === current
+                        ? "bg-ink font-bold text-white"
+                        : "text-ink hover:bg-[var(--hover-row)]",
+                    )}
+                  >
+                    {p}
+                  </Link>
+                </li>
+              ),
+            )}
+            <li>
+              <Link
+                href={href(current + 1)}
+                aria-label={t("next")}
+                aria-disabled={current >= pages}
+                className={cn(arrow, current >= pages && "pointer-events-none opacity-40")}
+              >
+                <ChevronRight className="size-4" />
+              </Link>
+            </li>
+          </ul>
+        ) : null}
+        <label className="flex items-center gap-2">
+          {t("perPage")}
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              const size = Number(e.target.value);
+              if (list) {
+                document.cookie = `${pageSizeCookie(list)}=${size}; path=/; max-age=31536000; samesite=lax`;
+              }
+              router.replace(href(1, size), { scroll: false });
+            }}
+            className="h-9 rounded-full px-3 text-sm"
           >
-            {t("previous")}
-          </Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link
-            href={href(page + 1)}
-            aria-disabled={page >= pages}
-            className={cn(page >= pages && "pointer-events-none opacity-50")}
-          >
-            {t("next")}
-          </Link>
-        </Button>
+            {[20, 50, 100].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
-    </div>
+    </nav>
   );
 }
 

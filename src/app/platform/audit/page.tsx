@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Shield } from "lucide-react";
 import { parseAuditParams } from "@/core/admin/audit-query";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
+import { readPaging } from "@/core/admin/paging";
 import { isPlatformAdmin } from "@/core/auth/session";
 import { AuditView } from "./audit-view";
 
@@ -13,6 +14,7 @@ export default async function PlatformAudit({ searchParams }: PageProps<"/platfo
     getTranslations("platform.auditPage"),
     searchParams,
   ]);
+  const paging = await readPaging(sp, "audit");
   return (
     <div data-bleed>
       <PageHeader
@@ -23,9 +25,13 @@ export default async function PlatformAudit({ searchParams }: PageProps<"/platfo
         }
         title={tp("title")}
       />
-      <PageBody className="grid max-w-[1180px] gap-4">
+      <PageBody className="grid gap-4">
         <p className="text-muted-foreground max-w-prose text-sm">{tp("intro")}</p>
-        <AuditView params={parseAuditParams(sp)} basePath="/platform/audit" />
+        <AuditView
+          params={{ ...parseAuditParams(sp), page: paging.page }}
+          pageSize={paging.size}
+          basePath="/platform/audit"
+        />
       </PageBody>
     </div>
   );

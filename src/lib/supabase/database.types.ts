@@ -538,29 +538,35 @@ export type Database = {
       }
       guest_consent_events: {
         Row: {
+          actor_id: string | null
           created_at: string
           granted: boolean
           guest_id: string
           id: string
           kind: string
+          reason: string | null
           source: string
           tenant_id: string
         }
         Insert: {
+          actor_id?: string | null
           created_at?: string
           granted: boolean
           guest_id: string
           id?: string
           kind?: string
+          reason?: string | null
           source?: string
           tenant_id: string
         }
         Update: {
+          actor_id?: string | null
           created_at?: string
           granted?: boolean
           guest_id?: string
           id?: string
           kind?: string
+          reason?: string | null
           source?: string
           tenant_id?: string
         }
@@ -581,45 +587,150 @@ export type Database = {
           },
         ]
       }
+      guest_consent_requests: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          expires_at: string
+          guest_id: string
+          id: string
+          requested_by: string | null
+          tenant_id: string
+          token_hash: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          guest_id: string
+          id?: string
+          requested_by?: string | null
+          tenant_id: string
+          token_hash?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          guest_id?: string
+          id?: string
+          requested_by?: string | null
+          tenant_id?: string
+          token_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_consent_requests_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guest_consent_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_notes: {
+        Row: {
+          body: string
+          guest_id: string
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body: string
+          guest_id: string
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string
+          guest_id?: string
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_notes_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: true
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guest_notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guests: {
         Row: {
+          address: string | null
+          address_source: string | null
+          address_updated_at: string | null
+          consent_requested_at: string | null
           country: string | null
           created_at: string
           deletion_requested_at: string | null
           email: string
           id: string
+          language: string | null
           marketing_consent: boolean
           marketing_consent_at: string | null
           name: string | null
           phone: string | null
+          source: string
           tenant_id: string
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          address?: string | null
+          address_source?: string | null
+          address_updated_at?: string | null
+          consent_requested_at?: string | null
           country?: string | null
           created_at?: string
           deletion_requested_at?: string | null
           email: string
           id?: string
+          language?: string | null
           marketing_consent?: boolean
           marketing_consent_at?: string | null
           name?: string | null
           phone?: string | null
+          source?: string
           tenant_id: string
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          address?: string | null
+          address_source?: string | null
+          address_updated_at?: string | null
+          consent_requested_at?: string | null
           country?: string | null
           created_at?: string
           deletion_requested_at?: string | null
           email?: string
           id?: string
+          language?: string | null
           marketing_consent?: boolean
           marketing_consent_at?: string | null
           name?: string | null
           phone?: string | null
+          source?: string
           tenant_id?: string
           updated_at?: string
           user_id?: string | null
@@ -3392,7 +3503,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      audit_log_search: {
+        Row: {
+          action: string | null
+          actor_email: string | null
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string | null
+          data: Json | null
+          entity: string | null
+          entity_id: string | null
+          id: number | null
+          search: string | null
+          tenant_id: string | null
+          tenant_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_log_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       access_token_key: { Args: never; Returns: string }
@@ -3587,6 +3729,74 @@ export type Database = {
         Args: { p_reservation_id: string; p_token?: string }
         Returns: Json
       }
+      guest_consent_confirm: {
+        Args: { p_token_hash: string }
+        Returns: boolean
+      }
+      guest_consent_request: { Args: { p_guest_id: string }; Returns: string }
+      guest_consent_request_block: {
+        Args: { p_guest_id: string }
+        Returns: string
+      }
+      guest_consent_request_info: {
+        Args: { p_token_hash: string }
+        Returns: {
+          state: string
+          tenant_id: string
+          tenant_name: string
+        }[]
+      }
+      guest_consent_request_token: {
+        Args: { p_request_id: string; p_token_hash: string }
+        Returns: boolean
+      }
+      guest_consent_revoke: {
+        Args: { p_guest_id: string; p_reason: string }
+        Returns: undefined
+      }
+      guest_export_log: {
+        Args: {
+          p_count: number
+          p_guest_id?: string
+          p_scope: string
+          p_tenant_id: string
+        }
+        Returns: undefined
+      }
+      guest_list: {
+        Args: {
+          p_dir?: string
+          p_filter?: string
+          p_limit?: number
+          p_offset?: number
+          p_q?: string
+          p_sort?: string
+          p_tenant_id: string
+        }
+        Returns: {
+          country: string
+          email: string
+          id: string
+          last_stay: string
+          marketing_consent: boolean
+          name: string
+          next_stay: string
+          phone: string
+          source: string
+          spent_cents: number
+          stays: number
+          total_count: number
+        }[]
+      }
+      guest_list_counts: {
+        Args: { p_tenant_id: string }
+        Returns: {
+          all_guests: number
+          consent: number
+          returning_guests: number
+          upcoming: number
+        }[]
+      }
       guest_messages: {
         Args: { p_reservation_id: string; p_token?: string }
         Returns: Json
@@ -3686,6 +3896,15 @@ export type Database = {
           status: string
           unread: boolean
           waiting: boolean
+        }[]
+      }
+      message_inbox_counts: {
+        Args: { p_tenant_id: string }
+        Returns: {
+          all_count: number
+          past: number
+          upcoming: number
+          waiting: number
         }[]
       }
       message_rule_at: {
@@ -3788,6 +4007,21 @@ export type Database = {
           p_slug: string
         }
         Returns: string
+      }
+      platform_issue_tenants: {
+        Args: never
+        Returns: {
+          bad_channels: number
+          failed_emails: number
+          tenant_id: string
+        }[]
+      }
+      platform_reservation_counts: {
+        Args: { p_since: string; p_tenants?: string[] }
+        Returns: {
+          reservations: number
+          tenant_id: string
+        }[]
       }
       platform_revert_change: {
         Args: { p_force?: boolean; p_history_id: number }

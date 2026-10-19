@@ -25,7 +25,7 @@ export default async function PlatformNotifications() {
         }
         title={tp("pageTitle")}
       />
-      <PageBody className="grid max-w-[880px] gap-5">
+      <PageBody className="grid gap-5">
         <section aria-labelledby="push-title" className="surface grid gap-3 p-5">
           <h2 id="push-title" className="text-ink text-base font-bold">
             {tp("title")}

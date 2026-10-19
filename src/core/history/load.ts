@@ -14,7 +14,7 @@ export type HistoryParams = {
   page: number;
 };
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 20;
 const date = (v: unknown) => (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null);
 
 export function parseHistoryParams(
@@ -80,7 +80,13 @@ export type HistoryEntry = {
  * History of a client's data for the control center (Z31) — platform admin only (RLS), newest first,
  * with the readable changes of each entry.
  */
-export async function loadHistory(tenantId: string, p: HistoryParams, currency: string) {
+/** One page of the history from the database (rule 7), `size` rows (20 / 50 / 100). */
+export async function loadHistory(
+  tenantId: string,
+  p: HistoryParams,
+  currency: string,
+  size: number = PAGE_SIZE,
+) {
   const supabase = await createClient();
   let query = supabase
     .from("record_history")
@@ -90,7 +96,7 @@ export async function loadHistory(tenantId: string, p: HistoryParams, currency: 
     .eq("tenant_id", tenantId)
     .order("changed_at", { ascending: false })
     .order("id", { ascending: false })
-    .range((p.page - 1) * PAGE_SIZE, p.page * PAGE_SIZE - 1);
+    .range((p.page - 1) * size, p.page * size - 1);
   if (p.from) query = query.gte("changed_at", `${p.from}T00:00:00`);
   if (p.to) query = query.lte("changed_at", `${p.to}T23:59:59.999`);
   if (p.table) query = query.eq("table_name", p.table);
@@ -133,7 +139,7 @@ export async function loadHistory(tenantId: string, p: HistoryParams, currency: 
     entries,
     total,
     page: p.page,
-    pages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+    pages: Math.max(1, Math.ceil(total / size)),
     tables: [...new Set((tables ?? []).map((r) => r.table_name))].sort(),
     people: actorIds.map((id) => ({ id, name: name.get(id) ?? id })),
   };

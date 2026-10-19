@@ -1,3 +1,5 @@
+import { Pagination } from "@/core/admin/data-list";
+import { readPaging } from "@/core/admin/paging";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { MessageSquareReply, Pin } from "lucide-react";
@@ -31,7 +33,12 @@ export default async function ReviewsPage({ searchParams }: PageProps<"/admin/re
     searchParams,
   ]);
   const status = reviewStatusParam(sp.status);
-  const { rows, counts, total, summary } = await queryReviews(active.tenantId, status);
+  const paging = await readPaging(sp, "recenzie");
+  const { rows, found, counts, total, summary } = await queryReviews(
+    active.tenantId,
+    status,
+    paging,
+  );
 
   return (
     <div data-bleed>
@@ -111,6 +118,9 @@ export default async function ReviewsPage({ searchParams }: PageProps<"/admin/re
         ) : (
           <p className="text-muted-foreground py-10 text-center text-sm">{t("empty")}</p>
         )}
+        {found > 0 ? (
+          <Pagination page={paging.page} pageSize={paging.size} total={found} list="recenzie" />
+        ) : null}
       </div>
       <UrlPanel
         type="review"

@@ -1,3 +1,4 @@
+import { readPaging } from "@/core/admin/paging";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AlertTriangle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,8 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
     searchParams,
     getTenantInfo(active.tenantId),
   ]);
-  const params = reservationListParams(sp);
+  const paging = await readPaging(sp, "rezervacie");
+  const params = { ...reservationListParams(sp), page: paging.page, pageSize: paging.size };
   const [{ rows, total }, counts] = await Promise.all([
     queryReservations(active.tenantId, params),
     statusCounts(active.tenantId, params),
@@ -214,7 +216,12 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
         </div>
         <p className="mx-2 mt-4 text-[13px] text-[#5a6672]">{tv("portalNote")}</p>
         <div className="mt-6">
-          <Pagination page={params.page} pageSize={params.pageSize} total={total} />
+          <Pagination
+            page={params.page}
+            pageSize={params.pageSize}
+            total={total}
+            list="rezervacie"
+          />
         </div>
       </div>
 

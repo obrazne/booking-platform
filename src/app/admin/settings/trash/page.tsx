@@ -24,7 +24,7 @@ export default async function TrashPage() {
         breadcrumbs={await groupCrumbs("settings", t("title"), active.tenantId)}
         title={t("title")}
       />
-      <PageBody className="grid max-w-[880px] gap-4">
+      <PageBody className="grid gap-4">
         <p className="text-muted-foreground max-w-prose text-sm">{t("intro")}</p>
         {error ? (
           <p className="text-muted-foreground">{t("ownerOnly")}</p>

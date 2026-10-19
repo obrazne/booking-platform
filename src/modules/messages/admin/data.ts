@@ -120,26 +120,35 @@ export function unreadCount(c: Conversation): number {
 
 export type InboxFilter = "all" | "waiting" | "upcoming" | "past";
 
-/** The inbox (database `message_inbox`) and the counts of the filters. */
-export async function loadInbox(tenantId: string, filter: InboxFilter, search: string) {
+/**
+ * One page of the inbox (database `message_inbox`, rule 7: range + count) and the counts of the filters
+ * (`message_inbox_counts`) — nothing is loaded only to be counted.
+ */
+export async function loadInbox(
+  tenantId: string,
+  filter: InboxFilter,
+  search: string,
+  range: { from: number; to: number } = { from: 0, to: 19 },
+) {
   const supabase = await createClient();
-  const [{ data: rows }, { data: all }] = await Promise.all([
-    supabase.rpc("message_inbox", {
-      p_tenant_id: tenantId,
-      p_filter: filter,
-      p_search: search || undefined,
-    }),
-    supabase.rpc("message_inbox", { p_tenant_id: tenantId, p_filter: "all" }),
+  const [{ data: rows, count }, { data: c }] = await Promise.all([
+    supabase
+      .rpc(
+        "message_inbox",
+        { p_tenant_id: tenantId, p_filter: filter, p_search: search || undefined },
+        { count: "exact" },
+      )
+      .range(range.from, range.to),
+    supabase.rpc("message_inbox_counts", { p_tenant_id: tenantId }).single(),
   ]);
-  const list = all ?? [];
-  const today = new Date().toISOString().slice(0, 10);
   return {
     rows: rows ?? [],
+    total: count ?? 0,
     counts: {
-      all: list.length,
-      waiting: list.filter((r) => r.waiting).length,
-      upcoming: list.filter((r) => r.check_out >= today && r.status !== "cancelled").length,
-      past: list.filter((r) => r.check_out < today || r.status === "cancelled").length,
+      all: Number(c?.all_count ?? 0),
+      waiting: Number(c?.waiting ?? 0),
+      upcoming: Number(c?.upcoming ?? 0),
+      past: Number(c?.past ?? 0),
     },
   };
 }
