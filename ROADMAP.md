@@ -170,7 +170,7 @@ návrh `docs/vizual-administracia.md` → v1.5, dosky 14–16. Rozdelenie ako pr
    nadpismi presuň do ⓘ. Zoznam textov daj do `docs/texty-vysvetliviek.md`, aby ich Martin mohol prečítať naraz.
 3. Odkaz „Viac v Pomoci ›“ až keď existuje Pomoc (Z67) — dovtedy bez odkazu.
 
-### Z64 [B] — Záznam zmien čitateľný (pripomienka 45)
+### Z64 [B] 🔄 — Záznam zmien čitateľný (pripomienka 45)
 1. **Synchronizácia kalendárov nezaplaví históriu:** zmeny obsadenosti zo synchronizácie iCal (`kind = 'ical'`, systém) nezapisuj po jednom
    riadku — jeden súhrnný záznam za beh kanála („Airbnb: 1 pridané, 1 zmazané, 1 zmenené“) s rozbalením na detail; existujúce záznamy
    zo synchronizácie predvolene skry filtrom „Synchronizácia kalendárov“ (vypnutý). Úprava `record_history` len pridávajúcou migráciou.
