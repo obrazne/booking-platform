@@ -38,6 +38,12 @@ export function ExpandableList({
   empty?: ReactNode;
 }) {
   const [open, setOpen] = useState<string | null>(null);
+  // Rows opened once stay mounted while collapsed — unsaved changes of their form keep the save bar (rule 3).
+  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
+  const toggle = (id: string) => {
+    setOpen(open === id ? null : id);
+    if (!seen.has(id)) setSeen(new Set(seen).add(id));
+  };
   const [count, setCount] = useState(rows.length);
   // A new record arrived (the add form was saved) → close the new row.
   if (rows.length !== count) {
@@ -82,7 +88,8 @@ export function ExpandableList({
               key={row.id}
               row={row}
               expanded={open === row.id}
-              onToggle={() => setOpen(open === row.id ? null : row.id)}
+              mounted={open === row.id || seen.has(row.id)}
+              onToggle={() => toggle(row.id)}
             />
           ))}
         </ul>
@@ -94,10 +101,12 @@ export function ExpandableList({
 function Row({
   row,
   expanded,
+  mounted,
   onToggle,
 }: {
   row: ExpandableRow;
   expanded: boolean;
+  mounted: boolean;
   onToggle: () => void;
 }) {
   const id = useId();
@@ -133,7 +142,7 @@ function Row({
         hidden={!expanded}
         className="px-4 pt-1 pb-5"
       >
-        {expanded ? row.content : null}
+        {mounted ? row.content : null}
       </div>
     </li>
   );

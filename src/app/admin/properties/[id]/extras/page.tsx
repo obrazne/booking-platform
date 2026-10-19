@@ -1,9 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DeleteButton } from "@/core/admin/delete-button";
+import { ExpandableList, RowState } from "@/core/admin/expandable-list";
+import { formatMoney } from "@/core/format/format";
+import { money } from "@/core/money/money";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { asLocalized, tr } from "@/core/i18n/localized";
 import { deleteDiscount, deleteFee, saveDiscount, saveFee } from "../../actions";
@@ -194,49 +196,52 @@ export default async function ExtrasPage({ params }: PageProps<"/admin/propertie
     );
   };
 
+  const fmt = (cents: number) => formatMoney(money(cents, tenant.currency), locale);
   return (
-    <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("fees")}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-8">
-          {fees.map((f) => (
-            <div key={f.id} className="border-border grid gap-2 border-b pb-6">
-              <p className="font-medium">{tr(f.name, locale)}</p>
-              {feeForm(f)}
-            </div>
-          ))}
-          <div className="grid gap-2">
-            <p className="font-medium">{t("newFee")}</p>
-            {feeForm()}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("discounts")}</CardTitle>
-          <CardDescription>{t("notStacking")}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-8">
-          {discounts.map((d) => (
-            <div key={d.id} className="border-border grid gap-2 border-b pb-6">
-              <p className="font-medium">
-                {tr(d.name, locale)}
-                {d.code ? (
-                  <span className="text-muted-foreground font-mono"> · {d.code}</span>
-                ) : null}
-              </p>
-              {discountForm(d)}
-            </div>
-          ))}
-          <div className="grid gap-2">
-            <p className="font-medium">{t("newDiscount")}</p>
-            {discountForm()}
-          </div>
-        </CardContent>
-      </Card>
+    <div className="grid gap-8">
+      <ExpandableList
+        heading={t("fees")}
+        addLabel={t("addFee")}
+        newRow={{ title: t("newFee"), content: feeForm() }}
+        rows={fees.map((f) => ({
+          id: f.id,
+          title: tr(f.name, locale),
+          meta: [
+            `${fmt(f.amount_cents)} ${tp(f.price_model as (typeof PRICE_MODELS)[number])}`,
+            t(`feeKind.${f.kind as "automatic" | "optional" | "pet"}`),
+            f.refundable_deposit ? t("depositShort") : null,
+          ]
+            .filter(Boolean)
+            .join(" · "),
+          status: f.active ? null : <RowState on={false}>{t("inactiveShort")}</RowState>,
+          content: feeForm(f),
+        }))}
+      />
+      <ExpandableList
+        heading={t("discounts")}
+        description={t("notStacking")}
+        addLabel={t("addDiscount")}
+        newRow={{ title: t("newDiscount"), content: discountForm() }}
+        rows={discounts.map((d) => ({
+          id: d.id,
+          title: tr(d.name, locale),
+          meta: [
+            d.percent_bp
+              ? `−${d.percent_bp / 100} %`
+              : d.amount_cents
+                ? `−${fmt(d.amount_cents)}`
+                : null,
+            d.code
+              ? t("codeShort", { code: d.code })
+              : t(`discountKind.${d.kind as "length_of_stay" | "promo"}`),
+            d.min_nights ? t("fromNights", { count: d.min_nights }) : null,
+          ]
+            .filter(Boolean)
+            .join(" · "),
+          status: d.active ? null : <RowState on={false}>{t("inactiveShort")}</RowState>,
+          content: discountForm(d),
+        }))}
+      />
     </div>
   );
 }

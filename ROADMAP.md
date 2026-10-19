@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → Z56 (zbalené sezóny a zoznamy) — *zabratá linkou A* → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → **Z63 (šírka, stránkovanie v DB)** → **Z66 (vysvetlivky ⓘ)** → **Z69 (Nastavenia s kartami, spôsoby platby)** → Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67);
   **B:** ~~Z57–Z60, Z62, Z64, Z65~~ ✅ → **Z67 (hľadanie Ctrl K a Pomoc)** → **Z68 (Hostia — karta, súhlasy, export)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -76,7 +76,7 @@ použije komponenty, ktoré tam budú (ak ešte nie sú, nechaj pôvodné, Z61 t
    jedna lišta pre stránku/záložku. Okamžité prepínače: uloženie hneď + toast.
 4. e2e: zmena → lišta → uložiť → toast; zahodiť; odchod s neuloženými zmenami; chyba servera → toast s chybou.
 
-### Z56 [A] 🔄 — Ceny a sezóny a ďalšie zoznamy zbalené (pripomienka 35; pravidlo 4) — po Z55
+### Z56 [A] ✅ — Ceny a sezóny a ďalšie zoznamy zbalené (pripomienka 35; pravidlo 4) — po Z55
 1. Sezóny ako zbalené riadky: názov, termíny, cena za noc, min. nocí; šípka rozbalí formulár; rozbalený riadok iný podklad.
 2. „Nová sezóna“ skrytá za „+ Pridať sezónu“ (otvorí sa navrchu). To isté pre ostatné zoznamy s formulárom „Nový …“ v administrácii
    aj riadiacom centre (služby, poplatky a zľavy, rýchle odpovede, dokumenty, kanály iCal, katalóg modulov — klienti pri module).
@@ -674,6 +674,21 @@ Modul → hotový. Playwright: vyplnenie za 2 hostí (jeden cudzinec), odomknuti
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-19 — Z56 [linka A]: **zbalené zoznamy a sezóny bez roka** (pripomienka 35, pravidlo 4). (Claude Code)
+  - **Sezóny** (Objekt → Sezóny a ceny): zbalené riadky „názov · termíny · cena / noc · min. nocí“ (predvolená so štítkom), šípka
+    rozbalí formulár, „+ Pridať sezónu“ otvorí novú navrchu. Súhrnná tabuľka a karty pod sebou preč.
+  - **Opakované sezóny bez roka:** pri „Opakovať každý rok“ sa termín zadáva a ukazuje ako deň a mesiac („23. 12.“), uloženie ostáva
+    v roku 2000 (`pricing/day-month.ts` + test); prepnutie zaškrtávania prevedie dátumy (rok 2000 ↔ tento rok, cez Nový rok do
+    ďalšieho). `calculate.test.ts` bez zmeny.
+  - **Oprava:** uloženie existujúcej sezóny vždy padalo na „Skontrolujte vyplnené údaje“ — schéma chcela pole `color`, ktoré formulár
+    nemá. Teraz je voliteľné a chýbajúce nemaže uloženú farbu.
+  - Rovnako zbalené: **poplatky a zľavy** (suma a výpočet, druh, kaucia / zľava, kód, od nocí; vypnuté so štítkom), **jednotky**,
+    dokumenty objektu (nahrávanie za „Nahrať dokument“), rýchle odpovede (nový formulár navrchu). `ExpandableList` si nechá raz
+    otvorený riadok pripojený aj po zbalení — neuložené zmeny nezmiznú a lišta Z55 ich uloží.
+  - **Katalóg modulov:** veta s koncami skúšok pod klientmi preč; klienti pri module oddelení čiarou, nie kartou v karte.
+  - e2e `compact-lists.spec.ts` (riadky, deň a mesiac, uloženie cez lištu, pridávacie formuláre zatvorené); `admin.spec`
+    (dokumenty za tlačidlom). Snímky `docs/snimky/z56/`.
+  - **Zistenia:** Ukážkový klient má sezóny Zima a Leto bez termínov (seed ich mal) — platí len predvolená.
 - 2026-10-19 — Z65 [linka B]: **Pruh „Kde sa predali noci“ na Prehľade** (pripomienka 49). (Claude Code)
   - Jeden komponent `src/core/reports/nights-bar.tsx` pre mesačný výpis aj Prehľad, čísla z `tenant_monthly_report` cez
     `reportView` (jeden zdroj = výpis = Štatistiky). Na Prehľade prepínač **Tento mesiac / Ďalší mesiac** (oba mesiace sa

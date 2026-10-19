@@ -116,7 +116,10 @@ export function ModuleSwitchForm({
   const [value, setValue] = useState(status);
   return (
     // Module row (v1.1): name and state, the trial end on the second line, Save at the row.
-    <form onSubmit={keepValues(action)} className="surface grid gap-2.5 px-4 py-3">
+    <form
+      onSubmit={keepValues(action)}
+      className="border-hair grid gap-2.5 border-t py-3 first:border-t-0"
+    >
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="moduleKey" value={moduleKey} />
       <input type="hidden" name="status" value={value} />

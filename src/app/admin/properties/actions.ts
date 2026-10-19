@@ -334,11 +334,13 @@ const seasonSchema = z.object({
     .string()
     .transform((v) => (v.trim() === "" ? null : Number(v)))
     .pipe(z.number().int().min(1).max(365).nullable()),
+  // The form has no colour field (yet): absent = keep the stored one, "" = none.
   color: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/)
     .or(z.literal(""))
-    .transform((v) => v || null),
+    .transform((v) => v || null)
+    .optional(),
   is_default: checkbox,
 });
 
@@ -355,8 +357,13 @@ export async function saveSeason(_: ActionResult, form: FormData): Promise<Actio
     .getAll("arrival_days")
     .map(Number)
     .filter((d) => d >= 1 && d <= 7);
-  const { id, ...values } = parsed.data;
-  const row = { ...values, name, arrival_days: days.length > 0 && days.length < 7 ? days : null };
+  const { id, color, ...values } = parsed.data;
+  const row = {
+    ...values,
+    ...(color === undefined ? {} : { color }),
+    name,
+    arrival_days: days.length > 0 && days.length < 7 ? days : null,
+  };
 
   let seasonId = id;
   if (id) {

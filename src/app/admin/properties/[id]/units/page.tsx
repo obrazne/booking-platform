@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ExpandableList, RowState } from "@/core/admin/expandable-list";
 import { ActionForm, Field, SubmitButton } from "@/core/admin/form";
 import { saveUnit } from "../../actions";
 import { getPropertyForEdit } from "../../data";
@@ -52,16 +52,17 @@ export default async function UnitsPage({ params }: PageProps<"/admin/properties
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{property.name}</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        {units.map((u) => (
-          <div key={u.id}>{form(u)}</div>
-        ))}
-        <div className="border-border border-t pt-4">{form()}</div>
-      </CardContent>
-    </Card>
+    <ExpandableList
+      heading={property.name}
+      addLabel={t("add")}
+      newRow={{ title: t("newUnit"), content: form() }}
+      rows={units.map((u) => ({
+        id: u.id,
+        title: u.name,
+        meta: t("guestsShort", { count: u.max_guests }),
+        status: u.active ? null : <RowState on={false}>{t("inactiveShort")}</RowState>,
+        content: form(u),
+      }))}
+    />
   );
 }

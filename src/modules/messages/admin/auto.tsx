@@ -422,6 +422,21 @@ function QuickReplies({ items }: { items: Quick[] }) {
       </div>
       <p className="text-muted-foreground max-w-prose text-sm">{t("auto.quickLead")}</p>
       <ul className="border-line grid border-t">
+        {editing === "new" ? (
+          <li className="border-line border-b px-2 py-4">
+            <QuickForm
+              initial={{ title: "", body: "" }}
+              pending={pending}
+              onCancel={() => setEditing(null)}
+              onSave={(v) =>
+                run(
+                  () => saveQuickReply({ id: null, ...v }),
+                  () => setEditing(null),
+                )
+              }
+            />
+          </li>
+        ) : null}
         {items.map((q, i) =>
           editing === q.id ? (
             <li key={q.id} className="border-line border-b px-2 py-4">
@@ -486,21 +501,6 @@ function QuickReplies({ items }: { items: Quick[] }) {
             </li>
           ),
         )}
-        {editing === "new" ? (
-          <li className="border-line border-b px-2 py-4">
-            <QuickForm
-              initial={{ title: "", body: "" }}
-              pending={pending}
-              onCancel={() => setEditing(null)}
-              onSave={(v) =>
-                run(
-                  () => saveQuickReply({ id: null, ...v }),
-                  () => setEditing(null),
-                )
-              }
-            />
-          </li>
-        ) : null}
       </ul>
     </section>
   );

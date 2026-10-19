@@ -1,9 +1,8 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { ExpandableList } from "@/core/admin/expandable-list";
 import { PageBody, PageHeader } from "@/core/admin/page-header";
 import { loadTenants } from "@/core/admin/platform-data";
 import { isPlatformAdmin } from "@/core/auth/session";
-import { formatDate } from "@/core/format/format";
 import { moduleCatalog } from "@/core/modules/catalog";
 import { AssignModuleForm, ModuleSwitchForm } from "../forms";
 
@@ -15,11 +14,10 @@ type ModuleStatus = "trial" | "active" | "off";
  */
 export default async function PlatformModules() {
   if (!(await isPlatformAdmin())) return null;
-  const [t, tc, tn, locale, list] = await Promise.all([
+  const [t, tc, tn, list] = await Promise.all([
     getTranslations("platform"),
     getTranslations("platform.catalog"),
     getTranslations("platform.nav"),
-    getLocale(),
     loadTenants(),
   ]);
   const catalog = moduleCatalog();
@@ -77,16 +75,18 @@ export default async function PlatformModules() {
                   {m.ready ? (
                     <>
                       {users.length ? (
-                        users.map(({ tenant, row }) => (
-                          <ModuleSwitchForm
-                            key={tenant.id}
-                            tenantId={tenant.id}
-                            moduleKey={m.key}
-                            label={tenant.name}
-                            status={row.status as ModuleStatus}
-                            trialEndsAt={row.trial_ends_at}
-                          />
-                        ))
+                        <div className="border-hair grid border-y">
+                          {users.map(({ tenant, row }) => (
+                            <ModuleSwitchForm
+                              key={tenant.id}
+                              tenantId={tenant.id}
+                              moduleKey={m.key}
+                              label={tenant.name}
+                              status={row.status as ModuleStatus}
+                              trialEndsAt={row.trial_ends_at}
+                            />
+                          ))}
+                        </div>
                       ) : (
                         <p className="text-muted-foreground">{tc("noClients")}</p>
                       )}
@@ -95,17 +95,6 @@ export default async function PlatformModules() {
                   ) : (
                     <p className="text-muted-foreground">{t("detail.inPreparation")}</p>
                   )}
-                  {users.some((u) => u.row.status === "trial" && u.row.trial_ends_at) ? (
-                    <p className="text-muted-foreground text-[13px]">
-                      {users
-                        .filter((u) => u.row.status === "trial" && u.row.trial_ends_at)
-                        .map(
-                          (u) =>
-                            `${u.tenant.name}: ${formatDate(u.row.trial_ends_at!.slice(0, 10), locale)}`,
-                        )
-                        .join(" · ")}
-                    </p>
-                  ) : null}
                 </div>
               ),
             };

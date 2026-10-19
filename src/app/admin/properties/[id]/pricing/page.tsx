@@ -1,11 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ActionForm, Field, LocalizedField, SubmitButton } from "@/core/admin/form";
 import { DeleteButton } from "@/core/admin/delete-button";
+import { ExpandableList, RowState } from "@/core/admin/expandable-list";
 import { formatMoney } from "@/core/format/format";
 import { asLocalized, tr } from "@/core/i18n/localized";
 import { monthDay } from "@/core/pricing/dates";
@@ -13,6 +13,7 @@ import { money } from "@/core/money/money";
 import { deleteSeason, saveSeason } from "../../actions";
 import { centsToInput, getPropertyForEdit } from "../../data";
 import { SeasonRanges } from "./season-ranges";
+import { dayMonthText } from "./day-month";
 
 type Range = { start_date: string; end_date: string; repeat_yearly: boolean };
 
@@ -59,6 +60,32 @@ export default async function PricingPage({ params }: PageProps<"/admin/properti
     }
   }
   if (!seasons.some((s) => s.is_default)) warnings.push(t("noDefault"));
+
+  /** Dates of a season in the row: "1. 7. – 31. 8. 2027", yearly "23. 12. – 26. 12. každý rok". */
+  const seasonDates = (s: (typeof seasons)[number]) => {
+    if (s.is_default) return t("allOtherDays");
+    if (s.season_ranges.length === 0) return t("noRanges");
+    const yearly = s.season_ranges.every((r) => r.repeat_yearly);
+    const text = s.season_ranges
+      .map((r) =>
+        r.repeat_yearly
+          ? `${dayMonthText(r.start_date)} – ${dayMonthText(r.end_date)}`
+          : `${dayMonthText(r.start_date)} ${r.start_date.slice(0, 4)} – ${dayMonthText(r.end_date)} ${r.end_date.slice(0, 4)}`,
+      )
+      .join(", ");
+    return yearly ? `${text} ${t("everyYear")}` : text;
+  };
+  /** Price of a night in the row: one amount, or the cheapest–dearest over the units. */
+  const seasonPrice = (seasonId: string) => {
+    const amounts = activeUnits
+      .map((u) => rates.find((r) => r.unit_id === u.id && r.season_id === seasonId)?.amount_cents)
+      .filter((a): a is number => typeof a === "number");
+    if (amounts.length === 0) return null;
+    const fmt = (c: number) => formatMoney(money(c, tenant.currency), locale);
+    const lo = Math.min(...amounts);
+    const hi = Math.max(...amounts);
+    return t("perNightShort", { amount: lo === hi ? fmt(lo) : `${fmt(lo)} – ${fmt(hi)}` });
+  };
 
   const seasonForm = (season?: (typeof seasons)[number]) => (
     <ActionForm action={saveSeason} bar={Boolean(season)}>
@@ -127,14 +154,8 @@ export default async function PricingPage({ params }: PageProps<"/admin/properti
               start: r.start_date,
               end: r.end_date,
             }))}
+            yearly={season ? season.season_ranges.every((r) => r.repeat_yearly) : true}
           />
-          <Label className="font-normal">
-            <Checkbox
-              name="repeat_yearly"
-              defaultChecked={season ? season.season_ranges.every((r) => r.repeat_yearly) : true}
-            />
-            {t("repeatYearly")}
-          </Label>
         </fieldset>
       )}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -177,63 +198,20 @@ export default async function PricingPage({ params }: PageProps<"/admin/properti
         </div>
       ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("seasons")}</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-muted-foreground text-left">
-              <tr>
-                <th className="py-1 pr-4 font-normal">{t("name")}</th>
-                <th className="py-1 pr-4 font-normal">{t("minNights")}</th>
-                {activeUnits.map((u) => (
-                  <th key={u.id} className="py-1 pr-4 font-normal">
-                    {property.booking_mode === "units" ? u.name : rateLabel}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {seasons.map((s) => (
-                <tr key={s.id} className="border-border border-t">
-                  <td className="py-2 pr-4 font-medium">{tr(s.name, locale)}</td>
-                  <td className="py-2 pr-4">{s.min_nights}</td>
-                  {activeUnits.map((u) => {
-                    const r = rates.find((x) => x.unit_id === u.id && x.season_id === s.id);
-                    return (
-                      <td key={u.id} className="py-2 pr-4">
-                        {r ? formatMoney(money(r.amount_cents, tenant.currency), locale) : "—"}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-
-      {seasons.map((s) => (
-        <Card key={s.id}>
-          <CardHeader>
-            <CardTitle>
-              {tr(s.name, locale)}
-              {s.is_default ? (
-                <span className="text-muted-foreground font-normal"> · {t("isDefault")}</span>
-              ) : null}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>{seasonForm(s)}</CardContent>
-        </Card>
-      ))}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("newSeason")}</CardTitle>
-        </CardHeader>
-        <CardContent>{seasonForm()}</CardContent>
-      </Card>
+      <ExpandableList
+        heading={t("seasons")}
+        addLabel={t("addSeason")}
+        newRow={{ title: t("newSeason"), content: seasonForm() }}
+        rows={seasons.map((s) => ({
+          id: s.id,
+          title: tr(s.name, locale),
+          meta: [seasonDates(s), seasonPrice(s.id), t("minNightsShort", { count: s.min_nights })]
+            .filter(Boolean)
+            .join(" · "),
+          status: s.is_default ? <RowState on>{t("defaultShort")}</RowState> : null,
+          content: seasonForm(s),
+        }))}
+      />
     </div>
   );
 }

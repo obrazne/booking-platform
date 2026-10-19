@@ -27,6 +27,7 @@ export default async function PropertyDocumentsPage({
       <DocumentsManager
         tenantId={tenant.id}
         propertyId={property.id}
+        collapsed
         documents={(data ?? []).map((d) => ({
           id: d.id,
           title: tr(d.title, locale),

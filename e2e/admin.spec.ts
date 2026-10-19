@@ -79,6 +79,8 @@ test("owner: manual reservation, payment received, block, iCal conflict", async 
 
   // Document for guests at the property (private storage, shown in the guest zone).
   await page.goto(`${ADMIN_URL}/admin/properties/${TENANT_PROPERTY}/documents`);
+  // The upload form waits behind "Nahrať dokument" (Z56, rule 4).
+  await page.getByRole("button", { name: "Nahrať dokument" }).click();
   await page.getByLabel("Názov").fill("E2E poriadok");
   await page.getByLabel("Kedy ich hosť uvidí").selectOption("always");
   await page.getByLabel("Súbor").setInputFiles({
