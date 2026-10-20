@@ -2490,6 +2490,46 @@
     "showMe": "Ukázať mi to",
     "close": "Zavrieť prehliadku",
     "owner": {
+      "saveBar": {
+        "title": "Uložiť až po zmene",
+        "body": "Tlačidlo Uložiť sa ukáže, až keď niečo zmeníte — v lište dole spolu so Zahodiť. Zmenené pole je označené, po uložení vpravo dole potvrdenie a pri odchode z neuloženej stránky sa aplikácia spýta."
+      },
+      "settingsTabs": {
+        "title": "Nastavenia s kartami",
+        "body": "Všetko na jednom mieste: Všeobecné, Platby, Pravidlá pobytu, Prepojenia (Booking a Airbnb), E-maily a upozornenia, Tím a Mesačný výpis. V Platbách sú spôsoby platby — dnes prevod s QR, platba kartou sa pripravuje."
+      },
+      "infoTips": {
+        "title": "Vysvetlivky ⓘ",
+        "body": "Pri každom nadpise a pri zložitejších poliach je ⓘ — čo stránka je a kedy ju použiť. Otvorí sa pod myšou, klávesnicou aj ťuknutím a odkáže na návod v Pomoci."
+      },
+      "search": {
+        "title": "Hľadanie Ctrl K",
+        "body": "Hore hľadáte hostí, rezervácie, nastavenia aj návody. Klik na nastavenie otvorí správnu stránku a pole zvýrazní."
+      },
+      "help": {
+        "title": "Pomoc",
+        "body": "Návody krok za krokom s tlačidlom na danú stránku. Keď odpoveď nenájdete, napíšete nám priamo odtiaľ."
+      },
+      "guests": {
+        "title": "Hostia",
+        "body": "Každý hosť priamej rezervácie s kontaktom, pobytmi a súhlasom s ponukami. Súhlas s ponukami zapína len hosť sám a na e-mail marketing exportujete len hostí so súhlasom."
+      },
+      "portalStays": {
+        "title": "Pobyty z portálov",
+        "body": "Pobyty, ktoré prišli z kalendárov Bookingu a Airbnb, prehľadne s kódom rezervácie alebo koncom telefónu, ak ich portál pošle. Rezervácia a platba ostávajú na portáli."
+      },
+      "guestStay": {
+        "title": "Hosť vidí svoj pobyt hneď",
+        "body": "Po prihlásení sa hosťovi otvorí aktuálny pobyt — príchod, check-in, správy, doobjednanie a dokumenty na jednom mieste. Ďalšie pobyty sú v karte Pobyty."
+      },
+      "monthlyReport": {
+        "title": "Mesačný výpis",
+        "body": "1. dňa v mesiaci vám príde zhrnutie: tržby, obsadenosť, úspora na províziách a čo za vás systém urobil. Tlačidlom ho pošlete účtovníkovi."
+      },
+      "compactLists": {
+        "title": "Prehľadnejšie zoznamy",
+        "body": "Sezóny, poplatky, zľavy a ďalšie zoznamy sú zbalené riadky — formulár až po rozbalení. Dlhé zoznamy majú stránkovanie a 20, 50 alebo 100 riadkov na stránku."
+      },
       "messages": {
         "title": "Správy s hosťom",
         "body": "Všetky konverzácie s hosťami v jednej schránke, pri každej rezervácii aj v jej paneli. Hosť vám píše zo svojho pobytu a vašu odpoveď dostane aj e-mailom."
@@ -2572,6 +2612,10 @@
       }
     },
     "admin": {
+      "support": {
+        "title": "Podpora",
+        "body": "Žiadosti klientov z Pomoci a návody, ktoré im nepomohli. Odpovedáte e-mailom."
+      },
       "tenants": {
         "title": "Riadiace centrum",
         "body": "Zoznam všetkých klientov platformy s ich stavom. Odtiaľto spravujete, kto čo používa a či všetko beží."
@@ -3674,7 +3718,7 @@
       },
       "ical": {
         "title": "Booking a Airbnb (kalendáre iCal)",
-        "where": "Prepojenia › Booking a Airbnb",
+        "where": "Nastavenia › Prepojenia — Booking a Airbnb",
         "terms": "booking airbnb synchronizácia ical prepojenie portál kalendár"
       },
       "testimonials": {
@@ -3759,57 +3803,57 @@
       },
       "iban": {
         "title": "Bankový účet (IBAN)",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Platby › Prevod na účet",
         "terms": "iban účet banka qr platba číslo účtu"
       },
       "accountHolder": {
         "title": "Príjemca platby",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Platby › Prevod na účet",
         "terms": "majiteľ účtu príjemca"
       },
       "paymentDue": {
         "title": "Lehota na zaplatenie",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Platby › Prevod na účet",
         "terms": "splatnosť lehota nezaplatená hodiny"
       },
       "holdMinutes": {
         "title": "Dočasná blokácia počas rezervácie",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Pravidlá pobytu",
         "terms": "košík minúty držanie termínu"
       },
       "commission": {
         "title": "Provízia portálov",
-        "where": "Nastavenia — z nej sa počíta úspora",
+        "where": "Nastavenia › Všeobecné › Podnikanie",
         "terms": "provízia booking airbnb percento úspora"
       },
       "cancellation": {
         "title": "Storno podmienky",
-        "where": "Nastavenia › Storno podmienky a pásma",
+        "where": "Nastavenia › Pravidlá pobytu › Storno podmienky a pásma",
         "terms": "storno zrušenie vrátenie peňazí pásma"
       },
       "terms": {
         "title": "Obchodné podmienky",
-        "where": "Nastavenia › Právne dokumenty",
+        "where": "Nastavenia › Pravidlá pobytu",
         "terms": "vop podmienky odkaz"
       },
       "privacy": {
         "title": "Ochrana osobných údajov",
-        "where": "Nastavenia › Právne dokumenty",
+        "where": "Nastavenia › Pravidlá pobytu",
         "terms": "gdpr súkromie osobné údaje"
       },
       "contact": {
         "title": "Kontakt pre hostí",
-        "where": "Nastavenia › Kontakt",
+        "where": "Nastavenia › Všeobecné › Kontakt",
         "terms": "telefón kontaktná osoba kontakt"
       },
       "whatsapp": {
         "title": "WhatsApp",
-        "where": "Nastavenia › Kontakt",
+        "where": "Nastavenia › Všeobecné › Kontakt",
         "terms": "whatsapp mobil číslo"
       },
       "signature": {
         "title": "Podpis správ",
-        "where": "Nastavenia › Kontakt",
+        "where": "Nastavenia › Všeobecné › Kontakt",
         "terms": "podpis správy e-mail"
       },
       "accountant": {
@@ -3819,42 +3863,42 @@
       },
       "ownerEmail": {
         "title": "E-mail pre nové rezervácie",
-        "where": "Nastavenia › Upozornenia",
+        "where": "Nastavenia › E-maily a upozornenia",
         "terms": "e-mail upozornenie nová rezervácia"
       },
       "arrivalEmail": {
         "title": "Pokyny k príchodu — koľko dní vopred",
-        "where": "Nastavenia › Upozornenia",
+        "where": "Nastavenia › E-maily a upozornenia",
         "terms": "pokyny príchod e-mail dni vopred kód"
       },
       "stayAccountLimit": {
         "title": "Limit účtu pobytu",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Platby › Na účet pobytu",
         "terms": "účet pobytu limit doobjednanie"
       },
       "upsellDays": {
         "title": "Ponuka služieb pred príchodom",
-        "where": "Nastavenia › Platba prevodom",
+        "where": "Nastavenia › Platby › Na účet pobytu",
         "terms": "doobjednanie služby ponuka dni"
       },
       "messageTopics": {
         "title": "Témy správ",
-        "where": "Nastavenia › Právne dokumenty",
+        "where": "Nastavenia › Všeobecné › Recenzie a správy",
         "terms": "správy témy hosť"
       },
       "googleReview": {
         "title": "Odkaz na hodnotenie Google",
-        "where": "Nastavenia › Právne dokumenty",
+        "where": "Nastavenia › Všeobecné › Recenzie a správy",
         "terms": "google recenzia hodnotenie"
       },
       "cityTax": {
         "title": "Daň za ubytovanie",
-        "where": "Nastavenia › Online check-in",
+        "where": "Nastavenia › Pravidlá pobytu › Online check-in",
         "terms": "daň mesto obec poplatok za ubytovanie"
       },
       "checkinRetention": {
         "title": "Ako dlho uchovať údaje z check-inu",
-        "where": "Nastavenia › Online check-in",
+        "where": "Nastavenia › Pravidlá pobytu › Online check-in",
         "terms": "check-in doklady uchovanie dni"
       },
       "team": {
@@ -3864,7 +3908,7 @@
       },
       "notifications": {
         "title": "E-maily a upozornenia",
-        "where": "Nastavenia › Upozornenia",
+        "where": "Nastavenia › E-maily a upozornenia",
         "terms": "upozornenia push mobil e-maily zvonček"
       },
       "trash": {
@@ -3973,7 +4017,7 @@
         "q": "Ako prepojím kalendár z Bookingu alebo Airbnb?",
         "steps": [
           "V Bookingu (Synchronizácia kalendára) alebo v Airbnb (Dostupnosť › Prepojenie kalendárov) skopírujte adresu kalendára na export.",
-          "V Prepojenia › Booking a Airbnb kliknite na „Pridať kalendár“, vyberte zdroj a adresu vložte.",
+          "V Nastavenia › Prepojenia kliknite na „Pridať kalendár“, vyberte zdroj a adresu vložte.",
           "Opačným smerom: adresu „Export pre …“ z tej istej stránky vložte do Bookingu alebo Airbnb ako importovaný kalendár.",
           "Termíny z portálov sa načítavajú samy približne každých 5 minút; tlačidlom „Synchronizovať teraz“ hneď."
         ],
@@ -4007,7 +4051,7 @@
       "unpaid": {
         "q": "Čo sa stane, keď hosť nezaplatí včas?",
         "steps": [
-          "Nezaplatená rezervácia čaká počas lehoty na zaplatenie, ktorú nastavíte v Nastaveniach (v hodinách).",
+          "Nezaplatená rezervácia čaká počas lehoty na zaplatenie, ktorú nastavíte v Nastavenia › Platby pri prevode na účet (v hodinách).",
           "Po lehote sa sama zruší a termín sa znova uvoľní na predaj. O zrušení dostanete upozornenie.",
           "Ak hosť zaplatí neskôr, rezerváciu vytvorte znova ručne."
         ],
@@ -4016,7 +4060,7 @@
       "iban": {
         "q": "Kde zmením bankový účet (IBAN) pre platby?",
         "steps": [
-          "Otvorte Nastavenia › Platba prevodom a prepíšte IBAN a príjemcu.",
+          "Otvorte Nastavenia › Platby, rozbaľte Prevod na účet s QR a prepíšte IBAN a príjemcu.",
           "Uložte. Nový účet a QR kód dostanú hostia pri nových rezerváciách."
         ],
         "go": "Otvoriť IBAN"
@@ -4024,7 +4068,7 @@
       "cancelRequest": {
         "q": "Hosť chce zrušiť pobyt. Ako zistím, koľko mu vrátiť?",
         "steps": [
-          "V Nastaveniach máte storno podmienky a nepovinne storno pásma (koľko percent sa vráti podľa počtu dní do príchodu).",
+          "V Nastavenia › Pravidlá pobytu máte storno podmienky a nepovinne storno pásma (koľko percent sa vráti podľa počtu dní do príchodu).",
           "Keď hosť požiada o zrušenie, uvidíte to na Prehľade a v paneli rezervácie aj s návrhom storno poplatku podľa pásiem.",
           "Peniaze vraciate sami prevodom — systém ich neposiela."
         ],
@@ -4058,7 +4102,7 @@
       "arrivalInfo": {
         "q": "Kedy hosť dostane pokyny k príchodu a kód od dverí?",
         "steps": [
-          "Pokyny k príchodu odchádzajú samy e-mailom pred príchodom — predvolene 3 dni vopred; zmeníte to v Nastaveniach › Upozornenia.",
+          "Pokyny k príchodu odchádzajú samy e-mailom pred príchodom — predvolene 3 dni vopred; zmeníte to v Nastavenia › E-maily a upozornenia.",
           "Kód od dverí a Wi-Fi vyplníte v Objekt › Údaje; hosť ich dostane v pokynoch a vidí ich aj vo svojom pobyte."
         ],
         "go": "Otvoriť nastavenie pokynov"
@@ -4091,7 +4135,7 @@
       "deleted": {
         "q": "Omylom som niečo zmazal. Dá sa to vrátiť?",
         "steps": [
-          "Áno, do 30 dní: otvorte Nastavenia › Nedávno zmazané a pri položke kliknite na Obnoviť.",
+          "Áno, do 30 dní: otvorte Nastavenia › Všeobecné, dole odkaz Nedávno zmazané, a pri položke kliknite na Obnoviť.",
           "Obnoviť sa dajú služby, sezóny, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre a miesta v okolí. Rezervácie sa nemažú, len rušia."
         ],
         "go": "Otvoriť Nedávno zmazané"

@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → **Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“ — na konci, aj po Z64–Z67)** — *zabratá linkou A*;
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ — fronta linky A je prázdna;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ — fronta linky B je prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -238,7 +238,7 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 3. Úprav odkazy, ktoré viedli na staré stránky (Prehľad — zdravie kalendárov, Kolízie, Pomoc a hľadanie z Z67 — register nastavení).
 4. Testy: e2e karty a presmerovania, vypnutie prevodu pri jedinom spôsobe → chyba, košík bez vypnutého spôsobu; axe.
 
-### Z61 [A] 🔄 — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
+### Z61 [A] ✅ — Kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“ (na konci fronty, po Z54–Z60)
 1. Prejdi **všetky** obrazovky administrácie, riadiaceho centra, stránky hosťa a účtu hosťa (PC 1440 px aj mobil 390 px) a skontroluj
    pravidlá 1–5 z `docs/pravidla-rozhrania.md`; nedostatky oprav (aj na obrazovkách z linky B). Zoznam skontrolovaných obrazoviek do Denníka.
 2. Celý e2e beh + axe; nestabilné testy oprav.
@@ -400,6 +400,27 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-20 — Z61 [linka A]: **kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“** (pravidlá 1–8). (Claude Code)
+  - **Skript `scripts/ui-audit.mjs`** prejde 57 obrazoviek (administrácia 34 vrátane kariet Nastavení a panelu rezervácie,
+    riadiace centrum 14, prihlásenie majiteľa, stránka objektu, prístupový odkaz a účet hosťa po prihlásení 8) na PC 1440 px
+    aj mobile 390 px a na každej strojovo skontroluje: axe (vážne/kritické), vodorovný posun, biele polia s okrajom ≥ 3 : 1 voči
+    ploche, kartu v karte, pole mimo svojho rámčeka, ⓘ za nadpisom. Výsledok `docs/snimky/z61/report.md` (zoznam obrazoviek),
+    vybrané snímky v `docs/snimky/z61/` (všetky sa urobia znova príkazom `node scripts/ui-audit.mjs docs/snimky/z61`).
+  - **Opravené nálezy:** pruh pobytu z portálu v kalendári mal biely text na `#9aa4b0` (2,5 : 1) → `#6b7480` (4,8 : 1); budúce
+    mesiace v tabuľke Štatistík `#84888e` → `#6b7480`; pole adresy exportu kalendára bez popisu (axe label); ručná rezervácia —
+    dlhý názov jednotky v zozname roztiahol stĺpec a polia pretiekli formulár o 9 px → pravidlo 6 v `globals.css`
+    (`min-width: 0` v mriežkach formulárov, `select { max-width: 100% }`). Po opravách **114 / 114 bez nálezu**; snímky prezreté aj
+    očami (karta v karte, viditeľné Uložiť, otvorené „Nový …“ — bez nálezu). Pomoc je výnimka z ⓘ (je vysvetlením sama).
+  - **Hľadanie a Pomoc po Z69:** umiestnenia v hľadaní („Nastavenia › Platby › Prevod na účet“…) a postupy v odpovediach Pomoci
+    (`help.faqs` aj `docs/pomoc-otazky.md`: IBAN, lehota, storno, pokyny k príchodu, kalendáre portálov, Nedávno zmazané) na nové karty.
+  - **„Čo je nové“** majiteľa `2026-10-20.1`, 10 nových snímok navrch: lišta Uložiť a potvrdenia, Nastavenia s kartami a spôsoby
+    platby, vysvetlivky ⓘ, hľadanie Ctrl K, Pomoc, Hostia, pobyty z portálov, aktuálny pobyt hosťa, mesačný výpis, zbalené zoznamy
+    a stránkovanie (30 snímok s modulmi). Správca `2026-10-20.1` s Podporou. `tour-screens.mjs` vie pred snímkou urobiť krok
+    (zmeniť pole, otvoriť ⓘ, Ctrl K) a snímku hosťa cez dočasný testovací pobyt.
+  - **e2e:** celý beh 96 ✓ / 4 ✗ → opravené: `tour.spec` (nové snímky), `reviews.spec` (výber pobytu bez recenzie — vnorený dopyt
+    vracal prázdne recenzie a vkladal duplicitu), `loginOwner` teraz označí prehliadku ako videnú (nová verzia zakrývala stránku
+    testom, ktoré to zabudli; test prehliadky `{ tours: "keep" }`). `admin-v1` mobil (kalendár hosťa) samostatne prešiel —
+    známy pomalý pri záťaži. Ukážkové dáta obnovené (`demo-data --reset`, rezervácia „čaká na platbu“ vypršala).
 - 2026-10-19 — Z69 [linka A]: **Nastavenia s kartami, Prepojenia do Nastavení, spôsoby platby** (pripomienky 54, 55, doska 18). (Claude Code)
   - **Bočné menu:** Prepojenia zrušené, Nastavenia jedna položka. **Nastavenia** = karty Všeobecné · Platby · Pravidlá pobytu ·
     Prepojenia · E-maily a upozornenia · Tím · Mesačný výpis (`?tab=vseobecne|platby|pravidla|prepojenia|upozornenia|tim|vypis`),

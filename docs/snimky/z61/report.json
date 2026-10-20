@@ -1,0 +1,686 @@
+[
+  {
+    "name": "prehlad",
+    "path": "/admin",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "kalendar",
+    "path": "/admin/calendar",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rezervacie",
+    "path": "/admin/reservations",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rezervacia-panel",
+    "path": "/admin/reservations?panel=reservation:4e741987-3668-4f9a-9c9f-292c2d5e10d5",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rucna-rezervacia",
+    "path": "/admin/reservations/new",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "hostia",
+    "path": "/admin/guests",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "prichody",
+    "path": "/admin/arrivals",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "z-portalov",
+    "path": "/admin/portal-stays",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "kolizie",
+    "path": "/admin/collisions",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "blokacie",
+    "path": "/admin/blocks",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "spravy",
+    "path": "/admin/messages",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "automaticke-spravy",
+    "path": "/admin/messages/auto",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "recenzie",
+    "path": "/admin/reviews",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "sluzby",
+    "path": "/admin/services",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "referencie",
+    "path": "/admin/testimonials",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "statistiky",
+    "path": "/admin/statistics",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "vypis",
+    "path": "/admin/statistics/report",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekty",
+    "path": "/admin/properties",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-udaje",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-fotky",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/photos",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-stranka",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/page",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-poloha",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/location",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-ceny",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/pricing",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-poplatky",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/extras",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "objekt-dokumenty",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/documents",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia",
+    "path": "/admin/settings",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-platby",
+    "path": "/admin/settings?tab=platby",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-pravidla",
+    "path": "/admin/settings?tab=pravidla",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-prepojenia",
+    "path": "/admin/settings?tab=prepojenia",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-upozornenia",
+    "path": "/admin/settings?tab=upozornenia",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-tim",
+    "path": "/admin/settings?tab=tim",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-vypis",
+    "path": "/admin/settings?tab=vypis",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "kos",
+    "path": "/admin/settings/trash",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "pomoc",
+    "path": "/admin/help",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klienti",
+    "path": "/platform",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-novy-klient",
+    "path": "/platform/new",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-audit",
+    "path": "/platform/audit",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-katalog",
+    "path": "/platform/modules",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-skusky",
+    "path": "/platform/modules/trials",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-stav",
+    "path": "/platform/status",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-upozornenia",
+    "path": "/platform/notifications",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-podpora",
+    "path": "/platform/support",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-moduly",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/modules",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-ludia",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/people",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-domeny",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/domains",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-vzhlad",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/theme",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-zaznam",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/audit",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "prihlasenie-majitel",
+    "path": "/login",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-prihlasenie",
+    "path": "/ucet/prihlasenie",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-objekt",
+    "path": "/p/chalet-pod-smrekom",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-pristup",
+    "path": "/r/8619d3d33f43db74d00a3b98979947ac6672860c01535703",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-ucet",
+    "path": "/ucet",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt-spravy",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5/spravy",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt-checkin",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5/checkin",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "host-udaje",
+    "path": "/ucet/udaje",
+    "vp": "pc",
+    "findings": []
+  },
+  {
+    "name": "prehlad",
+    "path": "/admin",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "kalendar",
+    "path": "/admin/calendar",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rezervacie",
+    "path": "/admin/reservations",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rezervacia-panel",
+    "path": "/admin/reservations?panel=reservation:4e741987-3668-4f9a-9c9f-292c2d5e10d5",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rucna-rezervacia",
+    "path": "/admin/reservations/new",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "hostia",
+    "path": "/admin/guests",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "prichody",
+    "path": "/admin/arrivals",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "z-portalov",
+    "path": "/admin/portal-stays",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "kolizie",
+    "path": "/admin/collisions",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "blokacie",
+    "path": "/admin/blocks",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "spravy",
+    "path": "/admin/messages",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "automaticke-spravy",
+    "path": "/admin/messages/auto",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "recenzie",
+    "path": "/admin/reviews",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "sluzby",
+    "path": "/admin/services",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "referencie",
+    "path": "/admin/testimonials",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "statistiky",
+    "path": "/admin/statistics",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "vypis",
+    "path": "/admin/statistics/report",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekty",
+    "path": "/admin/properties",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-udaje",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-fotky",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/photos",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-stranka",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/page",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-poloha",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/location",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-ceny",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/pricing",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-poplatky",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/extras",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "objekt-dokumenty",
+    "path": "/admin/properties/b0000000-0000-4000-8000-000000000001/documents",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia",
+    "path": "/admin/settings",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-platby",
+    "path": "/admin/settings?tab=platby",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-pravidla",
+    "path": "/admin/settings?tab=pravidla",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-prepojenia",
+    "path": "/admin/settings?tab=prepojenia",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-upozornenia",
+    "path": "/admin/settings?tab=upozornenia",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-tim",
+    "path": "/admin/settings?tab=tim",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "nastavenia-vypis",
+    "path": "/admin/settings?tab=vypis",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "kos",
+    "path": "/admin/settings/trash",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "pomoc",
+    "path": "/admin/help",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klienti",
+    "path": "/platform",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-novy-klient",
+    "path": "/platform/new",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-audit",
+    "path": "/platform/audit",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-katalog",
+    "path": "/platform/modules",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-skusky",
+    "path": "/platform/modules/trials",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-stav",
+    "path": "/platform/status",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-upozornenia",
+    "path": "/platform/notifications",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-podpora",
+    "path": "/platform/support",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-moduly",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/modules",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-ludia",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/people",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-domeny",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/domains",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-vzhlad",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/theme",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "rc-klient-zaznam",
+    "path": "/platform/tenants/a0000000-0000-4000-8000-000000000001/audit",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "prihlasenie-majitel",
+    "path": "/login",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-prihlasenie",
+    "path": "/ucet/prihlasenie",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-objekt",
+    "path": "/p/chalet-pod-smrekom",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-pristup",
+    "path": "/r/8619d3d33f43db74d00a3b98979947ac6672860c01535703",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-ucet",
+    "path": "/ucet",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt-spravy",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5/spravy",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-pobyt-checkin",
+    "path": "/ucet/pobyt/4e741987-3668-4f9a-9c9f-292c2d5e10d5/checkin",
+    "vp": "mobil",
+    "findings": []
+  },
+  {
+    "name": "host-udaje",
+    "path": "/ucet/udaje",
+    "vp": "mobil",
+    "findings": []
+  }
+]

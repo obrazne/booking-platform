@@ -15,7 +15,7 @@ Tlačidlo: **Otvoriť Blokácie**
 
 ### Ako prepojím kalendár z Bookingu alebo Airbnb?
 1. V Bookingu (Synchronizácia kalendára) alebo v Airbnb (Dostupnosť › Prepojenie kalendárov) skopírujte adresu kalendára na export.
-2. V Prepojenia › Booking a Airbnb kliknite na „Pridať kalendár“, vyberte zdroj a adresu vložte.
+2. V Nastavenia › Prepojenia kliknite na „Pridať kalendár“, vyberte zdroj a adresu vložte.
 3. Opačným smerom: adresu „Export pre …“ z tej istej stránky vložte do Bookingu alebo Airbnb ako importovaný kalendár.
 4. Termíny z portálov sa načítavajú samy približne každých 5 minút; tlačidlom „Synchronizovať teraz“ hneď.
 
@@ -43,20 +43,20 @@ Tlačidlo: **Otvoriť pobyty z portálov**
 Tlačidlo: **Otvoriť Rezervácie**
 
 ### Čo sa stane, keď hosť nezaplatí včas?
-1. Nezaplatená rezervácia čaká počas lehoty na zaplatenie, ktorú nastavíte v Nastaveniach (v hodinách).
+1. Nezaplatená rezervácia čaká počas lehoty na zaplatenie, ktorú nastavíte v Nastavenia › Platby pri prevode na účet (v hodinách).
 2. Po lehote sa sama zruší a termín sa znova uvoľní na predaj. O zrušení dostanete upozornenie.
 3. Ak hosť zaplatí neskôr, rezerváciu vytvorte znova ručne.
 
 Tlačidlo: **Otvoriť lehotu na zaplatenie**
 
 ### Kde zmením bankový účet (IBAN) pre platby?
-1. Otvorte Nastavenia › Platba prevodom a prepíšte IBAN a príjemcu.
+1. Otvorte Nastavenia › Platby, rozbaľte Prevod na účet s QR a prepíšte IBAN a príjemcu.
 2. Uložte. Nový účet a QR kód dostanú hostia pri nových rezerváciách.
 
 Tlačidlo: **Otvoriť IBAN**
 
 ### Hosť chce zrušiť pobyt. Ako zistím, koľko mu vrátiť?
-1. V Nastaveniach máte storno podmienky a nepovinne storno pásma (koľko percent sa vráti podľa počtu dní do príchodu).
+1. V Nastavenia › Pravidlá pobytu máte storno podmienky a nepovinne storno pásma (koľko percent sa vráti podľa počtu dní do príchodu).
 2. Keď hosť požiada o zrušenie, uvidíte to na Prehľade a v paneli rezervácie aj s návrhom storno poplatku podľa pásiem.
 3. Peniaze vraciate sami prevodom — systém ich neposiela.
 
@@ -86,7 +86,7 @@ Tlačidlo: **Otvoriť upratovacie dni**
 Tlačidlo: **Otvoriť Novú rezerváciu**
 
 ### Kedy hosť dostane pokyny k príchodu a kód od dverí?
-1. Pokyny k príchodu odchádzajú samy e-mailom pred príchodom — predvolene 3 dni vopred; zmeníte to v Nastaveniach › Upozornenia.
+1. Pokyny k príchodu odchádzajú samy e-mailom pred príchodom — predvolene 3 dni vopred; zmeníte to v Nastavenia › E-maily a upozornenia.
 2. Kód od dverí a Wi-Fi vyplníte v Objekt › Údaje; hosť ich dostane v pokynoch a vidí ich aj vo svojom pobyte.
 
 Tlačidlo: **Otvoriť nastavenie pokynov**
@@ -125,7 +125,7 @@ Tlačidlo: **Otvoriť Tím**
 Tlačidlo: **Otvoriť upozornenia**
 
 ### Omylom som niečo zmazal. Dá sa to vrátiť?
-1. Áno, do 30 dní: otvorte Nastavenia › Nedávno zmazané a pri položke kliknite na Obnoviť.
+1. Áno, do 30 dní: otvorte Nastavenia › Všeobecné, dole odkaz Nedávno zmazané, a pri položke kliknite na Obnoviť.
 2. Obnoviť sa dajú služby, sezóny, poplatky, zľavy, fotky, sekcie, dokumenty, blokácie, kalendáre a miesta v okolí. Rezervácie sa nemažú, len rušia.
 
 Tlačidlo: **Otvoriť Nedávno zmazané**

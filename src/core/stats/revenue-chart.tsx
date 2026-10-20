@@ -279,7 +279,8 @@ export function RevenueChart({
                 className={cn(
                   "border-line-hair cursor-pointer border-b",
                   i === selected && "bg-[color-mix(in_srgb,var(--primary)_6%,transparent)]",
-                  i > done && "text-ink-soft",
+                  // Months to come, softer but readable: 4.8 : 1 (Z61).
+                  i > done && "text-[#6b7480]",
                 )}
               >
                 <th scope="row" className="px-2 py-2.5 text-left font-medium">

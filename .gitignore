@@ -32,3 +32,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# Z61: all screenshots of scripts/ui-audit.mjs stay local (8 MB); a few chosen ones are committed.
+docs/snimky/z61/*.jpg

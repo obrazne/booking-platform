@@ -11,12 +11,12 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
   const qa = list.users.find((u) => u.email === "qa@booking-platform.test");
   if (qa) await db.from("profiles").update({ tours_seen: {} }).eq("id", qa.id);
 
-  await loginOwner(page, ADMIN_URL);
+  await loginOwner(page, ADMIN_URL, { tours: "keep" });
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("heading")).toHaveText("Správy s hosťom");
-  // The demo client has messages, check-in, upsell and reviews on — all 20 slides (others skip module slides).
-  await expect(dialog).toContainText("1 z 20");
+  await expect(dialog.getByRole("heading")).toHaveText("Uložiť až po zmene");
+  // The demo client has messages, check-in, upsell and reviews on — all 30 slides (others skip module slides).
+  await expect(dialog).toContainText("1 z 30");
   // The screenshot really loads (not just a broken image).
   await expect
     .poll(() => dialog.locator("img").evaluate((img: HTMLImageElement) => img.naturalWidth))
@@ -39,17 +39,17 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
     await dialog.dispatchEvent("touchend", {
       changedTouches: [{ identifier: 0, clientX: 80, clientY: 400 }],
     });
-    await expect(dialog.getByRole("heading")).toHaveText("Automatické správy");
+    await expect(dialog.getByRole("heading")).toHaveText("Nastavenia s kartami");
     await page.keyboard.press("ArrowLeft");
   }
 
   await dialog.getByRole("button", { name: "Ďalej" }).click();
-  await expect(dialog.getByRole("heading")).toHaveText("Automatické správy");
+  await expect(dialog.getByRole("heading")).toHaveText("Nastavenia s kartami");
   await page.keyboard.press("ArrowRight");
-  await expect(dialog.getByRole("heading")).toHaveText("Online check-in a príchody");
+  await expect(dialog.getByRole("heading")).toHaveText("Vysvetlivky ⓘ");
   await dialog.getByRole("button", { name: "Späť" }).click();
-  await expect(dialog.getByRole("heading")).toHaveText("Automatické správy");
-  await expect(dialog.locator("img")).toHaveAttribute("src", /autoMessages\.jpg/);
+  await expect(dialog.getByRole("heading")).toHaveText("Nastavenia s kartami");
+  await expect(dialog.locator("img")).toHaveAttribute("src", /settingsTabs\.jpg/);
 
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
@@ -61,9 +61,9 @@ test("what's new: opens once for a new version, Next / Back / Esc, again from th
 
   // Menu "What's new" opens it from the start; "Show me" goes to the page.
   await openWhatsNew(page, info.project.name === "mobile");
-  await expect(dialog.getByRole("heading")).toHaveText("Správy s hosťom");
+  await expect(dialog.getByRole("heading")).toHaveText("Uložiť až po zmene");
   await dialog.getByRole("button", { name: "Ďalej" }).click();
   await dialog.getByRole("button", { name: "Ukázať mi to" }).click();
   await expect(dialog).toBeHidden();
-  await page.waitForURL(/\/admin\/messages\/auto/);
+  await page.waitForURL(/\/admin\/settings\?tab=platby/);
 });

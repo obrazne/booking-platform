@@ -21,9 +21,12 @@ if (!url || !key)
 if (/prod/i.test(url)) throw new Error("Screenshots are made on staging only");
 
 const BASE = process.env.TOUR_BASE_URL ?? "http://localhost:3100";
+// The guest site of the demo client (subdomain of the local server).
+const GUEST_BASE = BASE.replace("://localhost", "://ukazka.localhost");
 // The demo client (Z41) — Chalet STRÖMY has a real Booking calendar and no demo data.
 const TENANT = "a0000000-0000-4000-8000-000000000001";
 const PROPERTY = "b0000000-0000-4000-8000-000000000001";
+const UNIT = "c0000000-0000-4000-8000-000000000010";
 const DEMO_NOTE = "DEMO — ukážková rezervácia (scripts/demo-data.mjs)";
 const OUT = fileURLToPath(new URL("../public/tours/", import.meta.url));
 
@@ -140,7 +143,7 @@ async function blurPrivate(page) {
 }
 
 async function shoot(page, tour, slide, path, opts = {}) {
-  await page.goto(`${BASE}${path}`);
+  await page.goto(path.startsWith("http") ? path : `${BASE}${path}`);
   await page.waitForLoadState("networkidle");
   if (opts.heading) {
     // Several slides share one page: a frame shows which card the slide is about.
@@ -154,13 +157,15 @@ async function shoot(page, tour, slide, path, opts = {}) {
         card.scrollIntoView({ block: "center" });
       });
   }
+  // Z61: a step before the picture — a changed field (save bar), an open ⓘ, the search…
+  if (opts.do) await opts.do(page);
   await blurPrivate(page);
   if (opts.menu) {
     // The menu itself: expanded rail with the Reservations and Property groups open.
     await page.locator("aside").hover();
     // Only the active page's group is open (v1.2) — the calendar page shows Rezervácie expanded.
     await page.waitForTimeout(400);
-  } else {
+  } else if (!opts.keepMouse) {
     // Mouse away from the side menu (hovering expands it) and wait until it has collapsed.
     await page.mouse.move(page.viewportSize().width - 4, page.viewportSize().height - 4);
     await page.waitForTimeout(400);
@@ -199,7 +204,108 @@ try {
   const o = await session(browser, "qa@booking-platform.test", { owner: true });
   // January: an event from Booking.com next to other stays.
   const month = `${new Date().getFullYear() + 1}-01`;
+  // Z61: the guest's current stay — a temporary stay of a test guest, shown through its access link.
+  const { data: busyRows } = await db.rpc("unit_busy_nights", {
+    p_unit_id: UNIT,
+    p_from: `${new Date().getFullYear() + 1}-04-01`,
+    p_to: `${new Date().getFullYear() + 1}-06-30`,
+  });
+  const taken = new Set();
+  for (const r of busyRows ?? []) {
+    const m = /(\d{4}-\d{2}-\d{2}),(\d{4}-\d{2}-\d{2})/.exec(String(r.nights ?? r));
+    if (!m) continue;
+    for (
+      let d = new Date(`${m[1]}T00:00:00Z`);
+      d.toISOString().slice(0, 10) < m[2];
+      d.setUTCDate(d.getUTCDate() + 1)
+    )
+      taken.add(d.toISOString().slice(0, 10));
+  }
+  let tourIn = null;
+  for (
+    let d = new Date(Date.UTC(new Date().getFullYear() + 1, 3, 1));
+    !tourIn;
+    d.setUTCDate(d.getUTCDate() + 1)
+  ) {
+    const days = [0, 1, 2, 3].map((i) =>
+      new Date(d.getTime() + i * 864e5).toISOString().slice(0, 10),
+    );
+    if (days.every((x) => !taken.has(x))) tourIn = days[1];
+  }
+  const tourStay = must(
+    await db
+      .rpc("create_reservation", {
+        p: {
+          tenant_id: TENANT,
+          property_id: PROPERTY,
+          unit_id: UNIT,
+          guest_name: "Hosť Ukážkový",
+          guest_email: `tour-${Date.now()}@booking-platform.test`,
+          adults: 2,
+          currency: "EUR",
+          total_cents: 64000,
+          status: "confirmed",
+          lines: [
+            {
+              kind: "accommodation",
+              label: "Ubytovanie",
+              quantity: 2,
+              unit_amount_cents: 32000,
+              amount_cents: 64000,
+            },
+          ],
+          check_in: tourIn,
+          check_out: new Date(Date.parse(tourIn) + 2 * 864e5).toISOString().slice(0, 10),
+        },
+      })
+      .single(),
+    "tour stay",
+  );
   const shots = {
+    saveBar: [
+      "/admin/settings",
+      {
+        do: async (page) => {
+          const f = page.locator("#contact_name");
+          await f.fill(`${await f.inputValue()} `);
+          await page.waitForTimeout(300);
+        },
+      },
+    ],
+    settingsTabs: ["/admin/settings?tab=platby"],
+    infoTips: [
+      "/admin/blocks",
+      {
+        keepMouse: true,
+        do: async (page) => {
+          await page
+            .locator("h1")
+            .first()
+            .locator("xpath=..")
+            .locator("[data-info-tip]")
+            .first()
+            .click();
+          await page.waitForTimeout(300);
+        },
+      },
+    ],
+    search: [
+      "/admin",
+      {
+        keepMouse: true,
+        do: async (page) => {
+          await page.keyboard.press("Control+k");
+          await page.keyboard.type("iban");
+          await page.waitForTimeout(600);
+        },
+      },
+    ],
+    help: ["/admin/help"],
+    guests: ["/admin/guests"],
+    portalStays: ["/admin/portal-stays"],
+    guestStay: [`${GUEST_BASE}/r/${tourStay.access_token}`],
+    monthlyReport: ["/admin/statistics/report"],
+    compactLists: [`/admin/properties/${PROPERTY}/pricing`],
     messages: ["/admin/messages"],
     autoMessages: ["/admin/messages/auto"],
     checkin: ["/admin/arrivals"],
@@ -209,7 +315,7 @@ try {
     ],
     reviews: ["/admin/reviews"],
     collisions: ["/admin/collisions"],
-    storno: ["/admin/settings", { heading: "Storno pásma (výpočet vrátenej sumy)" }],
+    storno: ["/admin/settings?tab=pravidla", { heading: "Storno pásma (výpočet vrátenej sumy)" }],
     invoice: [
       `/admin/reservations?panel=reservation:${confirmedDemo.id}`,
       { heading: "Podklad na doklad" },
@@ -227,7 +333,16 @@ try {
     ical: ["/admin/settings?tab=prepojenia"],
     settings: ["/admin/settings"],
   };
-  for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, ...shots[s.id]);
+  try {
+    for (const s of TOURS.owner.slides) await shoot(o, "owner", s.id, ...shots[s.id]);
+  } finally {
+    await db.from("reservations").delete().eq("id", tourStay.id);
+    await db
+      .from("guests")
+      .delete()
+      .eq("tenant_id", TENANT)
+      .like("email", "tour-%@booking-platform.test");
+  }
 
   console.log("Admin tour:");
   // The platform admin is not a member of the client (v1.1) — it enters through "Otvoriť administráciu".
@@ -237,6 +352,7 @@ try {
   });
   const detail = `/platform/tenants/${TENANT}`;
   const adminShots = {
+    support: ["/platform/support"],
     tenants: ["/platform"],
     newTenant: ["/platform/new"],
     detail: [detail],

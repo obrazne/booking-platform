@@ -16,6 +16,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
       <div className="flex gap-2">
         <Input
           readOnly
+          aria-label={label}
           value={value}
           className="font-mono text-xs"
           onFocus={(e) => e.currentTarget.select()}

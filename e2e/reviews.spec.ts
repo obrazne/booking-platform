@@ -11,13 +11,18 @@ test("owner publishes, replies, features and rejects a review", async ({ page },
   test.skip(info.project.name === "mobile", "covered on desktop");
   const db = service();
   // A finished demo stay without a review (demo data: npm run demo-data).
-  const { data: stays } = await db
-    .from("reservations")
-    .select("id, property_id, reviews(id)")
-    .eq("tenant_id", TENANT)
-    .eq("status", "completed")
-    .limit(100);
-  const stay = (stays ?? []).find((s) => !s.reviews?.length);
+  const [{ data: stays }, { data: reviewed }] = await Promise.all([
+    db
+      .from("reservations")
+      .select("id, property_id")
+      .eq("tenant_id", TENANT)
+      .eq("status", "completed")
+      .limit(200),
+    db.from("reviews").select("reservation_id").eq("tenant_id", TENANT),
+  ]);
+  // Z61: stays with a review from the reviews table (the nested select came back empty and the insert collided).
+  const taken = new Set((reviewed ?? []).map((r) => r.reservation_id));
+  const stay = (stays ?? []).find((s) => !taken.has(s.id));
   test.skip(!stay, "no finished stay without a review — run npm run demo-data");
   const { data: module } = await db
     .from("tenant_modules")

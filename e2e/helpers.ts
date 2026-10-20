@@ -90,9 +90,14 @@ export async function pickStay(scope: Locator, checkIn: string, checkOut: string
 }
 
 /** Signs the QA owner in through a one-time link (scripts/qa-login-link.mjs does the same by hand). */
-export async function loginOwner(page: Page, base: string) {
+/**
+ * Signs in the QA owner of the demo client. The "What's new" tour is marked seen first (Z61: a new tour version used to
+ * cover the page of tests that forgot it) — the test of the tour itself passes `{ tours: "keep" }`.
+ */
+export async function loginOwner(page: Page, base: string, opts: { tours?: "seen" | "keep" } = {}) {
   const db = service();
   const email = "qa@booking-platform.test";
+  if (opts.tours !== "keep") await markToursSeen(email);
   const { data: list } = await db.auth.admin.listUsers({ perPage: 200 });
   let user = list.users.find((u) => u.email === email);
   if (!user) {

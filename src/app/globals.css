@@ -427,6 +427,15 @@ input[type="radio"] {
 :root:not(.dark) [data-card-link]:focus-visible {
   border-color: var(--hover-card-border);
 }
+/* Rule 6 (Z61): a field never leaves its form — grid items of a form may shrink below their content (a long option of a
+   select used to push the column wider than the form), and a select never grows past its column. */
+form:where(.grid) > *,
+form :where(.grid) > * {
+  min-width: 0;
+}
+select {
+  max-width: 100%;
+}
 /* A box that is the field (search pill with an icon, composer with its button): the inner input is data-field="bare". */
 .field-box {
   background-color: var(--field);

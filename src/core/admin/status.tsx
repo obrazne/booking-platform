@@ -44,7 +44,8 @@ export type OccupancyKind = "direct" | "pending" | "portal" | "block";
 export const OCCUPANCY_CLASS: Record<OccupancyKind, string> = {
   direct: "bg-primary text-primary-foreground",
   pending: "bg-[#f6ecdf] text-[#8a4a22] border border-[#e8cfb3]",
-  portal: "bg-[#9aa4b0] text-white",
+  // Z61: #6b7480 keeps white text at 4.8 : 1 (was #9aa4b0, 2.5 : 1).
+  portal: "bg-[#6b7480] text-white",
   block: "hatch-block text-[#3b3d42] border border-[#d6d3cb]",
 };
 

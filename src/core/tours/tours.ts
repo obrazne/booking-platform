@@ -18,8 +18,19 @@ export type Tour = { key: TourKey; version: string; slides: readonly TourSlide[]
 export const TOURS: Record<TourKey, Tour> = {
   owner: {
     key: "owner",
-    version: "2026-10-18.1",
+    version: "2026-10-20.1",
     slides: [
+      // Z61: what changed from Z54 to Z69 — saving, settings, ⓘ, search and help, guests, portals, lists.
+      { id: "saveBar", href: "/admin/settings" },
+      { id: "settingsTabs", href: "/admin/settings?tab=platby" },
+      { id: "infoTips", href: "/admin/blocks" },
+      { id: "search", href: "/admin" },
+      { id: "help", href: "/admin/help" },
+      { id: "guests", href: "/admin/guests" },
+      { id: "portalStays", href: "/admin/portal-stays" },
+      { id: "guestStay", href: "/admin/reservations" },
+      { id: "monthlyReport", href: "/admin/statistics/report" },
+      { id: "compactLists", href: "/admin/reservations" },
       // New before the demo for Jana (Z53) first: modules, collisions, storno bands, basis for the document.
       { id: "messages", href: "/admin/messages", module: "messages" },
       { id: "autoMessages", href: "/admin/messages/auto", module: "messages" },
@@ -27,7 +38,7 @@ export const TOURS: Record<TourKey, Tour> = {
       { id: "upsell", href: "/admin/reservations", module: "upsell" },
       { id: "reviews", href: "/admin/reviews", module: "reviews" },
       { id: "collisions", href: "/admin/collisions" },
-      { id: "storno", href: "/admin/settings" },
+      { id: "storno", href: "/admin/settings?tab=pravidla" },
       { id: "invoice", href: "/admin/reservations" },
       // v1.2: menu with groups, Statistics, bell.
       { id: "menu", href: "/admin" },
@@ -46,8 +57,10 @@ export const TOURS: Record<TourKey, Tour> = {
   },
   admin: {
     key: "admin",
-    version: "2026-10-17.5",
+    version: "2026-10-20.1",
     slides: [
+      // Z61: requests from Pomoc (Z67).
+      { id: "support", href: "/platform/support" },
       { id: "tenants", href: "/platform" },
       { id: "newTenant", href: "/platform/new" },
       { id: "detail", href: "/platform" },
