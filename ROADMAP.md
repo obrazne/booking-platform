@@ -334,7 +334,7 @@ pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
   Do vtedy je v košíku karta ako neaktívna možnosť „Pripravujeme“ (č. 57) — **na produkcii sa neaktívna karta hosťom nesmie ukázať.**
 - [ ] Produkčné prostredie: druhý Supabase projekt, Vercel produkcia, platené plány, doména klienta (3e) — Martin odsúhlasí náklady.
 - [ ] **E-maily hosťom naostro:** overená doména odosielateľa v Resende (SPF, DKIM, DMARC) a `EMAIL_FROM` na nej; `EMAIL_REDIRECT_TO`
-  na produkcii prázdne (staging posiela všetky e-maily na info@obrazne.sk s pôvodným príjemcom v predmete — Martin 20. 10. to považoval za chybu).
+  na produkcii prázdne (staging posiela všetky e-maily na info@obrazne.sk s pôvodným príjemcom v predmete — na stagingu je to zámer, Martin 20. 10. súhlasí).
   Skúška doručenia do Gmailu, Outlooku a Seznamu (nie do spamu).
 - [ ] Zálohy a obnova na produkcii (3f): nočná záloha produkcie, skúšobné obnovenie.
 - [ ] Online check-in — overiť pravidlá (Otázky pre Martina: polia knihy ubytovaných, lehota, uchovávanie, deti, daň obce).
