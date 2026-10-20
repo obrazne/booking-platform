@@ -268,6 +268,11 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    sa e-mailom bez hesla. Rovnaká veta do potvrdzujúceho e-mailu. Over, že po prihlásení kódom sa pobyty s tým e-mailom ukážu samy;
    ak nie, zapíš do Otázok a nechaj tlačidlo.
 
+3. **Odsadenie pripnutého zhrnutia (pripomienka 64):** v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:sticky lg:top-6`)
+   sa zelené zhrnutie pri scrolle zasunie pod pripnutú lištu účtu (Aktuálny pobyt · Pobyty · Moje údaje) — vrch karty nevidno.
+   Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
+   pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
+
 ### Z71 [B] 🔄 — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
 1. **Zľavový kód (56):** namiesto veľkého poľa odkaz „Máte zľavový kód?“, ktorý pole rozbalí; po použití zbalený riadok
    „Kód XY · −10 % ✓ · Odstrániť“.
