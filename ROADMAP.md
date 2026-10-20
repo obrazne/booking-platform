@@ -259,7 +259,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    funguje aj s témami klientov. Prejdi: detail objektu, košík, `/r`, účet (prehľad, pobyt, Moje údaje), check-in, upsell, `/suhlas`.
 3. Testy: e2e — na `/r` po scrolle sa karty v pravom stĺpci neprekrývajú (1280×800, 1440×900), PC aj mobil; axe; kontrola kontrastu.
 
-### Z72 [B] — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61)
+### Z72 [B] 🔄 — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61)
 *Presunuté z linky A na B (Martin 20. 10. — B je voľná). Linka A súčasne robí Z70 v tých istých súboroch (`/r/[token]/page.tsx`,
 `stay-detail.tsx`): ponuku kalendára sprav ako **samostatný komponent** (napr. `add-to-calendar.tsx` + `calendar-links.ts`) a do stránok
 zmeň len riadok tlačidla; presun „Uložiť do účtu“ je jeden blok. Pred commitom `git pull --rebase`, konflikt vyrieš ponechaním zmien
