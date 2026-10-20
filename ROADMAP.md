@@ -12,8 +12,8 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z72 (kalendár, účet na potvrdení)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ — fronta linky B je prázdna.
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z74 (odsadenie pripnutého zhrnutia)**;
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → **Z72 (kalendár Google/Outlook, účet na potvrdení — presunuté z A)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -259,7 +259,11 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    funguje aj s témami klientov. Prejdi: detail objektu, košík, `/r`, účet (prehľad, pobyt, Moje údaje), check-in, upsell, `/suhlas`.
 3. Testy: e2e — na `/r` po scrolle sa karty v pravom stĺpci neprekrývajú (1280×800, 1440×900), PC aj mobil; axe; kontrola kontrastu.
 
-### Z72 [A] — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61) — po Z70
+### Z72 [B] — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61)
+*Presunuté z linky A na B (Martin 20. 10. — B je voľná). Linka A súčasne robí Z70 v tých istých súboroch (`/r/[token]/page.tsx`,
+`stay-detail.tsx`): ponuku kalendára sprav ako **samostatný komponent** (napr. `add-to-calendar.tsx` + `calendar-links.ts`) a do stránok
+zmeň len riadok tlačidla; presun „Uložiť do účtu“ je jeden blok. Pred commitom `git pull --rebase`, konflikt vyrieš ponechaním zmien
+linky A. Bod 3 (odsadenie) robí linka A ako Z74.*
 1. **„Pridať do kalendára“** (dnes len stiahne .ics) → malá ponuka: **Google Kalendár** (odkaz `calendar.google.com/calendar/render?action=TEMPLATE…`),
    **Outlook** (odkaz `outlook.live.com/calendar/0/deeplink/compose…`), **Apple / iný kalendár** (.ics ako doteraz). Udalosť: „Pobyt — {objekt}“,
    príchod (čas od) – odchod (čas do), adresa, odkaz na pobyt; **bez prístupových kódov a Wi-Fi**. Časové pásmo klienta. Na `/r`, v detaile
@@ -267,11 +271,6 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
 2. **Účet:** blok „Uložiť do účtu“ na `/r` presuň hore pod nadpis (dnes dole, prehliadne sa). Text: pobyt nájdete v Mojom účte, prihlásite
    sa e-mailom bez hesla. Rovnaká veta do potvrdzujúceho e-mailu. Over, že po prihlásení kódom sa pobyty s tým e-mailom ukážu samy;
    ak nie, zapíš do Otázok a nechaj tlačidlo.
-
-3. **Odsadenie pripnutého zhrnutia (pripomienka 64):** v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:sticky lg:top-6`)
-   sa zelené zhrnutie pri scrolle zasunie pod pripnutú lištu účtu (Aktuálny pobyt · Pobyty · Moje údaje) — vrch karty nevidno.
-   Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
-   pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
 ### Z71 [B] ✅ — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
 1. **Zľavový kód (56):** namiesto veľkého poľa odkaz „Máte zľavový kód?“, ktorý pole rozbalí; po použití zbalený riadok
@@ -294,6 +293,12 @@ Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoraden�
 čísla; ak sa číslo a čas vytvorenia rozchádzajú pri ručných rezerváciách, rozhoduje čas vytvorenia), v hlavičke stĺpca Číslo
 zobraz aktívne zoradenie. Zoradenie podľa termínu ostáva na klik; pohľad „kto prichádza“ je Príchody. Uprav testy, ktoré čakajú
 pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
+
+### Z74 [A] — Odsadenie pripnutého zhrnutia pod lištou (pripomienka 64) — po Z70
+v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:sticky lg:top-6`)
+   sa zelené zhrnutie pri scrolle zasunie pod pripnutú lištu účtu (Aktuálny pobyt · Pobyty · Moje údaje) — vrch karty nevidno.
+   Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
+   pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
 *Hotové úlohy Z31–Z53 (zadania) sú v `docs/archiv/ulohy-hotove-do-Z53.md`.*
 
