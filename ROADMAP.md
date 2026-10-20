@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa) → Z72 (kalendár, účet na potvrdení)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → **Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → **Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)** → **Z73 (rezervácie: najnovšie hore)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -282,6 +282,13 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    Uloží sa k rezervácii (migrácia len pridáva, RLS, `record_history`), zobrazí sa v paneli rezervácie a v podklade na doklad.
    **Adresu bežného hosťa pri rezervácii nezbierame** (zbiera ju online check-in).
 6. Testy: e2e košíka (kód, výber platby, firma), PC aj mobil 390 px; axe.
+
+### Z73 [B] — Rezervácie: predvolene najnovšie hore (pripomienka 63) — po Z71
+Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoradený **podľa čísla zostupne — najnovšie rezervácie prvé**
+(dnes podľa termínu, Z58). V `src/app/admin/reservations/query.ts` zmeň `defaultSort` na najnovšie (`created_at` zostupne — poradie
+čísla; ak sa číslo a čas vytvorenia rozchádzajú pri ručných rezerváciách, rozhoduje čas vytvorenia), v hlavičke stĺpca Číslo
+zobraz aktívne zoradenie. Zoradenie podľa termínu ostáva na klik; pohľad „kto prichádza“ je Príchody. Uprav testy, ktoré čakajú
+pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
 *Hotové úlohy Z31–Z53 (zadania) sú v `docs/archiv/ulohy-hotove-do-Z53.md`.*
 
