@@ -10,7 +10,7 @@
   (galéria, mapa, košík v2, potvrdenie rezervácie), zóna hosťa, sekcie v administrácii, captcha, **ukážkové dáta** (`npm run demo-data`)
   a **prehliadka „Čo je nové“** pre majiteľa aj správcu, **administrácia a prihlásenia podľa vizuálu v1–v1.2** (menu so skupinami, Štatistiky, zvonček s upozorneniami, drobčeky),
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
-  nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (Fáza 4).
+  nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ — fronta linky A je prázdna;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ — fronta linky B je prázdna.
@@ -282,8 +282,19 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
   potvrdenie Martina); prvé skúšobné obnovenie. Postup pri výpadku (dokument).
 - [ ] 3e Nasadenie u Jany: `rezervacia.chaletstromy.sk`, vyhľadávací pás na jej webe (Elementor HTML widget), tlačidlá „Rezervovať“ (A17)
 
+### Pred spustením — musí byť hotové 🔧 + 🧠
+*Bez týchto bodov sa ostrá prevádzka (produkcia, skutoční hostia) nespúšťa. Pri príprave produkcie prejsť celý zoznam.*
+- [ ] **Platba kartou (Stripe)** — Martin 20. 10. (ROZHODNUTIA): funkčná platba kartou v košíku (a pri upselle „kartou hneď“).
+  Do vtedy je v košíku karta ako neaktívna možnosť „Pripravujeme“ (č. 57) — **na produkcii sa neaktívna karta hosťom nesmie ukázať.**
+- [ ] Produkčné prostredie: druhý Supabase projekt, Vercel produkcia, platené plány, doména klienta (3e) — Martin odsúhlasí náklady.
+- [ ] Zálohy a obnova na produkcii (3f): nočná záloha produkcie, skúšobné obnovenie.
+- [ ] Online check-in — overiť pravidlá (Otázky pre Martina: polia knihy ubytovaných, lehota, uchovávanie, deti, daň obce).
+- [ ] Riadiace centrum na produkcii: vlastná adresa a dvojstupňové overenie pre správcu (Otázky, pripomienka č. 9).
+- [ ] Doklady (3d): podklad na doklad a nahratie dokladu hosťovi podľa Janinho fakturačného nástroja.
+- [ ] Právne texty klienta (VOP, ochrana osobných údajov, storno) skontrolované Martinom / Janou.
+
 ## Fáza 4 — Po spustení 🔧 + 🧠
-- [ ] Stripe (karta), záloha a doplatok
+- [ ] Záloha a doplatok (Stripe/karta sa presunul pred spustenie — Fáza 3, *Pred spustením*)
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
 - [ ] Vkladací widget, ďalšie moduly podľa katalógu

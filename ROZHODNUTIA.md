@@ -2,6 +2,15 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-20 — Platba kartou pred spustením, v košíku už teraz
+
+- Martin: hosť si v košíku vyberá spôsob platby a **platba kartou tam má byť už teraz**, hoci ešte nefunguje — „kým to pôjde na ostro,
+  tak to bude dorobené“. Claude namietal (nedostupná možnosť hosťa sklame a pôsobí nedorobene); Martin rozhodol, lebo na stagingu
+  nie sú skutoční hostia a karta bude hotová pred spustením.
+- Rozhodnuté: **Stripe (karta) sa presúva z Fázy 4 do vecí, ktoré musia byť hotové pred spustením** (ROADMAP → Pred spustením).
+  Do vtedy košík ukazuje kartu ako neaktívnu možnosť „Pripravujeme“; prevod s QR je predvolený. **Ostrý web sa nespustí,
+  kým karta funguje len ako „Pripravujeme“** — neaktívnu možnosť hosťom na produkcii neukazovať.
+
 ## 2026-10-18 — Mesačný výpis ako predajný argument č. 1 (jadro)
 
 - Martin hľadal niečo jedinečné pre majiteľov, ktorí majú ubytovanie ako investíciu a nechcú s ním robotu. Claude: funkciu „ktorú Booking

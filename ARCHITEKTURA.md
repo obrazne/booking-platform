@@ -72,7 +72,8 @@ PLATFORMA (Martin)
 - **Poradie výpočtu ceny:** noci podľa sezóny → poplatky → služby → zľavy → daň za ubytovanie. Každý krok = samostatný riadok rezervácie.
 - **Cena sa zamrazí na rezervácii**; zmena cenníka sa existujúcich rezervácií nedotkne.
 - **Platby** všeobecne s poskytovateľom. MVP: bankový prevod s QR (PAY by square), variabilný symbol = číslo rezervácie,
-  ručné potvrdenie „Platba prijatá“. Ďalší poskytovateľ: Stripe. Záloha a doplatok neskôr.
+  ručné potvrdenie „Platba prijatá“. Ďalší poskytovateľ: Stripe (karta) — **musí byť hotový pred spustením** (Martin 20. 10.);
+  hosť v košíku vyberá spôsob platby. Záloha a doplatok neskôr.
 - **Doklady vystavuje klient vo svojom fakturačnom nástroji.** Jadro dáva **podklad na doklad** pri rezervácii aj účte pobytu
   (odberateľ, rozpis položiek, platby, VS — kopírovať / export) a miesto, kam klient nahrá vystavený doklad pre hosťa.
   **Automatické prepojenie s konkrétnym nástrojom (SuperFaktúra, iKROS, Billdu, Fakturoid…) je platený modul — adaptér na nástroj**
@@ -478,7 +479,7 @@ príde aj e-mailom s tlačidlom, ktoré hosťa prihlási rovno k pobytu.
 |---|---|
 | objekt celok, cena za noc, sezóny s min. nocami, zľava od N nocí, promo kód | jednotky v rozhraní, cena za osobu, vekové pásma v rozhraní |
 | služby (modul) bez doplňujúcich polí, poplatok za zviera | vlastné polia a dostupnosť služieb, upsell pred príchodom |
-| prevod s QR, 24 h lehota, automatické zrušenie, ručné potvrdenie platby | Stripe, záloha a doplatok, párovanie platieb z banky |
+| prevod s QR, 24 h lehota, automatické zrušenie, ručné potvrdenie platby; **platba kartou (Stripe) — musí byť hotová pred spustením** (Martin 20. 10.) | záloha a doplatok, párovanie platieb z banky |
 | e-maily z B6 (okrem recenzie) | SMS, push notifikácie (moduly) |
 | administrácia z B8, ručná rezervácia, CSV, štatistiky a upozornenia (v1.2) | online check-in, recenzie |
 | prístupový odkaz k rezervácii (stav, platba, storno) | účet a zóna hosťa (B10) — hneď po MVP |
