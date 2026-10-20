@@ -121,10 +121,20 @@ export function DataListToolbar({
 }
 
 /** Column header that toggles server-side sorting via the URL. */
-export function SortHeader({ column, children }: { column: string; children: ReactNode }) {
+export function SortHeader({
+  column,
+  children,
+  defaultDir,
+}: {
+  column: string;
+  children: ReactNode;
+  /** This column is the list's default order (Z73): shown active without `?sort=` in the address. */
+  defaultDir?: "asc" | "desc";
+}) {
   const { params, update } = useUpdateParams();
-  const active = params.get("sort") === column;
-  const dir = active ? params.get("dir") : null;
+  const sort = params.get("sort");
+  const active = sort === column || (!sort && Boolean(defaultDir));
+  const dir = active ? (params.get("dir") ?? defaultDir ?? null) : null;
   const Icon = !active ? ArrowUpDown : dir === "desc" ? ArrowDown : ArrowUp;
   return (
     <button

@@ -19,10 +19,11 @@ export function reservationListParams(
   to: string | null;
 } {
   const p = parseListParams(sp, {
-    // By arrival by default (Z58): stays now and coming first, the nearest on top (computed field arrival_order).
+    // Newest first by default (Z73, Martin 20. 10.): the order of the numbers; the time of creation decides when a
+    // manual reservation's number and time differ. By arrival on a click (arrival_order, Z58); "who comes" is Príchody.
     sortable: ["arrival_order", "created_at", "number", "total_cents"],
-    defaultSort: "arrival_order",
-    defaultDir: "asc",
+    defaultSort: "created_at",
+    defaultDir: "desc",
     filters: { status: STATUSES, source: SOURCES },
   });
   const date = (v: string | string[] | undefined) =>
@@ -44,7 +45,9 @@ export async function queryReservations(
     .from("reservations")
     .select(SELECT, { count: "exact" })
     .eq("tenant_id", tenantId)
-    .order(p.sort, { ascending: p.dir === "asc" });
+    .order(p.sort, { ascending: p.dir === "asc" })
+    // Same time of creation (imports, demo data): the number decides (Z73).
+    .order("number", { ascending: p.dir === "asc" });
   if (p.filters.status) q = q.eq("status", p.filters.status);
   if (p.filters.source) q = q.eq("source", p.filters.source);
   if (p.from) q = q.gte("items.check_in", p.from);

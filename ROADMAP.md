@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z72 (kalendár, účet na potvrdení)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → **Z73 (rezervácie: najnovšie hore)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ — fronta linky B je prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -288,7 +288,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    **Adresu bežného hosťa pri rezervácii nezbierame** (zbiera ju online check-in).
 6. Testy: e2e košíka (kód, výber platby, firma), PC aj mobil 390 px; axe.
 
-### Z73 [B] 🔄 — Rezervácie: predvolene najnovšie hore (pripomienka 63) — po Z71
+### Z73 [B] ✅ — Rezervácie: predvolene najnovšie hore (pripomienka 63) — po Z71
 Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoradený **podľa čísla zostupne — najnovšie rezervácie prvé**
 (dnes podľa termínu, Z58). V `src/app/admin/reservations/query.ts` zmeň `defaultSort` na najnovšie (`created_at` zostupne — poradie
 čísla; ak sa číslo a čas vytvorenia rozchádzajú pri ručných rezerváciách, rozhoduje čas vytvorenia), v hlavičke stĺpca Číslo
@@ -467,6 +467,10 @@ pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-20 — Z73 [linka B]: **Rezervácie predvolene najnovšie hore** (pripomienka 63). (Claude Code)
+  - `query.ts`: predvolené zoradenie `created_at` zostupne, pri rovnakom čase rozhoduje číslo (ukážkové dáta majú rovnaký čas
+    vytvorenia); stĺpec Číslo ukazuje aktívne zoradenie aj bez `?sort=` (`SortHeader` — nový `defaultDir`). Termín ostáva na klik.
+  - e2e `reservations-order.spec.ts` (prvé dve čísla = najnovšie v DB, klik na Číslo a Termín); `lists-paging` prešiel.
 - 2026-10-20 — Z71 [linka B]: **Košík, krok Platba** (pripomienky 56, 57, 61, 62). (Claude Code)
   - **Spôsob platby** ako karty s výberom (`PaymentChoice`): Prevod s QR (predvolený, jednou vetou — QR a pokyny hneď, zaplatiť do 24 h,
     bez poplatkov) a **Platba kartou — neaktívna „Pripravujeme“** (len na stagingu, viď *Pred spustením*). Zvolený spôsob sa uloží

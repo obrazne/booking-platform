@@ -145,7 +145,9 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
               className="border-line label-mono grid grid-cols-[110px_minmax(0,1.4fr)_minmax(0,1.2fr)_110px_110px_150px] gap-4 border-b px-2 py-3"
             >
               <span role="columnheader">
-                <SortHeader column="number">{t("number")}</SortHeader>
+                <SortHeader column="created_at" defaultDir="desc">
+                  {t("number")}
+                </SortHeader>
               </span>
               <span role="columnheader">{t("guest")}</span>
               <span role="columnheader">
