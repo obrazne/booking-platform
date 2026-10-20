@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z74 (odsadenie pripnutého zhrnutia)**;
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → **Z72 (kalendár, účet na potvrdení)**;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → **Z72 (kalendár Google/Outlook, účet na potvrdení — presunuté z A)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -247,7 +247,7 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 **Pripomienky 56–62 (Martin 20. 10., schválené „súhlasím so všetkým“) → Z70–Z72.** Strana hosťa: košík, potvrdenie, pobyt.
 Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hosťa). Linka A: potvrdenie a plochy; linka B: košík.
 
-### Z70 [A] 🔄 — Potvrdenie a pobyt: kontakt bez zdvojenia, plochy na strane hosťa (pripomienky 58, 59)
+### Z70 [A] ✅ — Potvrdenie a pobyt: kontakt bez zdvojenia, plochy na strane hosťa (pripomienky 58, 59)
 1. **Prekrývanie (58):** na `/r/<kód>` sa pri scrollovaní zelená karta „Váš pobyt“ (sticky) posúva cez kartu kontaktu pod ňou
    (slot `guest.stay.aside` → `GuestMessagesContact` modulu messages). Kontakt je dnes 3× (pätička zelenej karty, karta „Napísať správu“,
    sekcia Správy). **Samostatnú kartu kontaktu zruš**; pätička zelenej karty: „Napísať správu“ (skok na sekciu Správy — len keď je modul
@@ -472,7 +472,7 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
-- 2026-10-20 — Z70 [linka A] 🔄 (rozpracované, kód hotový): **potvrdenie a pobyt — kontakt bez zdvojenia, plochy na strane hosťa** (pripomienky 58, 59). (Claude Code)
+- 2026-10-20 — Z70 [linka A]: **potvrdenie a pobyt — kontakt bez zdvojenia, plochy na strane hosťa** (pripomienky 58, 59). (Claude Code)
   - **Kontakt raz:** samostatná karta kontaktu modulu Správy (slot `guest.stay.aside`) zrušená — šmýkala sa pod sticky zelenú kartu.
     Kontakt je len v **pätičke zelenej karty** (`src/core/guest/stay-contact.tsx`): kto odpovedá, „Napísať správu“ z modulu cez nový slot
     `guest.stay.contact` (jadro o module nevie; na PC skok na sekciu Správy, na mobile jej stránka), WhatsApp a telefón ak sú nastavené.
@@ -486,10 +486,10 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
   - `scripts/ui-audit.mjs` kontroluje na strane hosťa aj kartu, ktorá splýva s plochou alebo je biela na bielom, a košík s termínom.
     Hosťovské obrazovky PC aj mobil bez nálezu. e2e `stay-contact.spec.ts` (jeden kontakt, žiadne „Napíšte…“, karty v pravom stĺpci
     sa pri scrolle neprekrývajú na 1280×800 a 1440×900, žiadna biela karta, axe; čaká na platbu aj potvrdený; PC aj mobil) prešiel.
-  - **Zostáva:** beh testov strany hosťa padol na **plnom disku G:** (ENOSPC, voľných 0 B → po zmazaní `.next/cache` 508 MB). Treba
-    uvoľniť miesto na G: a pustiť `messages-guest, stay-states, confirm, account*, checkin-guest, upsell-guest, guest, cart, a11y,
-    reviews-guest` znova. Pozorované: kontrolné skripty občas dostanú 404 na pobyt testovacieho hosťa — pravdepodobne paralelný e2e beh
-    linky B maže pri upratovaní rezervácie `@booking-platform.test`; samostatne každá stránka prejde.
+  - **Testy strany hosťa** (po uvoľnení miesta na G:): messages-guest, stay-states, confirm, account*, checkin-guest, upsell-guest,
+    guest, cart, cart-payment, a11y, reviews-guest, stay-contact, ui-rules — 33 ✓; `reviews-guest` našiel ešte sivý text `#6e747c`
+    na teplej karte (opravené na token), `cart` Z30 samostatne prešiel (známy pomalý). Pozorované: kontrolné skripty občas dostanú
+    404 na pobyt testovacieho hosťa — pravdepodobne paralelný e2e beh linky B maže pri upratovaní rezervácie `@booking-platform.test`.
 - 2026-10-20 — Z73 [linka B]: **Rezervácie predvolene najnovšie hore** (pripomienka 63). (Claude Code)
   - `query.ts`: predvolené zoradenie `created_at` zostupne, pri rovnakom čase rozhoduje číslo (ukážkové dáta majú rovnaký čas
     vytvorenia); stĺpec Číslo ukazuje aktívne zoradenie aj bez `?sort=` (`SortHeader` — nový `defaultDir`). Termín ostáva na klik.
