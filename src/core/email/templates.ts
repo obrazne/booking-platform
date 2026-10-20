@@ -1,4 +1,5 @@
 import "server-only";
+import { calendarLinks, stayEvent } from "@/core/guest/stay-calendar";
 import { createTranslator } from "next-intl";
 import QRCode from "qrcode";
 import { CurrencyCode, encode, PaymentOptions } from "bysquare/pay";
@@ -188,6 +189,25 @@ async function renderEmailBody(
     return { blocks, attachments };
   }
 
+  // Z72: the confirmation carries the stay for the calendar (Google, Outlook, .ics) and where to find it again.
+  const calendar =
+    kind === "guest_confirmed" && ctx.guestLink
+      ? await stayEvent(r.id, ctx.guestLink, locale)
+      : null;
+  const calendarLinksOf =
+    calendar && ctx.guestLink ? calendarLinks(calendar, `${ctx.guestLink}/ics`) : null;
+  const calendarHtml = calendarLinksOf
+    ? `<p style="margin:0 0 16px;line-height:1.6">${esc(t("calendar.title"))} <a href="${esc(calendarLinksOf.google)}" style="color:${accent}">${esc(t("calendar.google"))}</a> · <a href="${esc(calendarLinksOf.outlook)}" style="color:${accent}">${esc(t("calendar.outlook"))}</a> · <a href="${esc(calendarLinksOf.ics)}" style="color:${accent}">${esc(t("calendar.ics"))}</a></p>`
+    : "";
+  const calendarText = calendarLinksOf
+    ? [
+        t("calendar.title"),
+        `${t("calendar.google")}: ${calendarLinksOf.google}`,
+        `${t("calendar.outlook")}: ${calendarLinksOf.outlook}`,
+        `${t("calendar.ics")}: ${calendarLinksOf.ics}`,
+      ].join("\n")
+    : "";
+
   switch (kind) {
     case "guest_received": {
       const pay = await paymentBlock();
@@ -262,6 +282,8 @@ async function renderEmailBody(
             p(t("guest_confirmed.intro")),
             ...blocksHtml,
             summary,
+            calendarHtml,
+            p(t("accountNote")),
             signature,
           ],
           guestButton,
@@ -271,7 +293,11 @@ async function renderEmailBody(
           t("guest_confirmed.intro"),
           ...blocksText,
           ctx.guestLink ?? "",
-        ].join("\n\n"),
+          calendarText,
+          t("accountNote"),
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
       };
     case "guest_cancelled": {
       const reason = typeof payload.reason === "string" ? payload.reason : null;

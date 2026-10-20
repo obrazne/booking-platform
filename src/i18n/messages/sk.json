@@ -1815,7 +1815,7 @@
         "returned": "Vrátime"
       },
       "saveToAccount": {
-        "text": "Pobyt máte otvorený cez odkaz z e-mailu. V účte nájdete všetky pobyty na jednom mieste — bez hesla, prihlásite sa kódom z e-mailu.",
+        "text": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla. Všetky pobyty máte na jednom mieste.",
         "cta": "Uložiť do účtu"
       }
     },
@@ -1955,14 +1955,21 @@
       "addToCalendar": "Pridať do kalendára",
       "waText": "Dobrý deň, píšem k rezervácii {number}.",
       "breakdown": "Rozpis ceny",
-      "accountTitle": "Uložte si údaje na ďalší pobyt",
-      "accountText": "Účet bez hesla — prihlásite sa kódom z e-mailu. Pobyty, platby a pokyny nájdete na jednom mieste.",
-      "accountCta": "Vytvoriť účet",
+      "accountTitle": "Pobyt nájdete aj v Mojom účte",
+      "accountText": "Prihlásite sa e-mailom, bez hesla — pobyty, platby a pokyny máte na jednom mieste.",
+      "accountCta": "Otvoriť Môj účet",
       "changeTitle": "Zmena plánov?",
       "changeText": "Inak podľa storno podmienok.",
       "bookAgain": "Rezervovať znova",
       "icsSummary": "Pobyt: {property}",
-      "icsDescription": "Rezervácia {number}. Detail: {link}"
+      "icsDescription": "Rezervácia {number}. Detail: {link}",
+      "calendarTitle": "Pobyt — {property}",
+      "calendarDescription": "Rezervácia {number}. Detail pobytu:",
+      "calendarMenu": {
+        "google": "Google Kalendár",
+        "outlook": "Outlook",
+        "ics": "Apple / iný kalendár (.ics)"
+      }
     }
   },
   "reservations": {
@@ -2226,7 +2233,14 @@
       "questions": "Otázky k pobytu?",
       "myStay": "Môj pobyt",
       "whatsapp": "WhatsApp"
-    }
+    },
+    "calendar": {
+      "title": "Pridať do kalendára:",
+      "google": "Google Kalendár",
+      "outlook": "Outlook",
+      "ics": "Apple / iný kalendár"
+    },
+    "accountNote": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla."
   },
   "collisions": {
     "title": "Kolízie kalendárov",

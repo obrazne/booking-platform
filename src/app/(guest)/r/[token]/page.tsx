@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import { CalendarPlus, Check, CircleCheck, Clock, Download } from "lucide-react";
+import { Check, CircleCheck, Clock, Download } from "lucide-react";
 import { startAccountFromReservation } from "@/core/guest/auth";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { StayDetail } from "../../ucet/pobyt/[id]/stay-detail";
 import { CancelToggle, CopyButton } from "./confirm-ui";
 import { SaveToAccount } from "./save-to-account";
+import { AddToCalendar } from "@/core/guest/add-to-calendar";
+import { calendarLinks, stayEvent } from "@/core/guest/stay-calendar";
 
 const TZ = "Europe/Bratislava";
 
@@ -64,6 +66,8 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
     return <StayDetail token={token} crumbs={<SaveToAccount token={token} />} />;
   }
   const fmt = (cents: number) => formatMoney(money(cents, r.currency), locale);
+  // Z72: the stay as a calendar event (Google, Outlook, .ics) — no codes or Wi-Fi.
+  const calendar = await stayEvent(r.id, `https://${host}/r/${token}`, locale);
   const whole = (cents: number) =>
     cents % 100 === 0
       ? new Intl.NumberFormat(locale, {
@@ -222,14 +226,13 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           })}
         </span>
       </div>
-      {!cancelled ? (
-        <a
-          href={`/r/${token}/ics`}
-          download={`pobyt-${r.number}.ics`}
+      {!cancelled && calendar ? (
+        // Z72: Google, Outlook or the .ics file.
+        <AddToCalendar
+          links={calendarLinks(calendar, `/r/${token}/ics`)}
+          fileName={`pobyt-${r.number}.ics`}
           className="btn-on-accent inline-flex min-h-12 w-full items-center justify-center gap-2.5 px-6"
-        >
-          <CalendarPlus className="size-4" /> {t("addToCalendar")}
-        </a>
+        />
       ) : null}
       {/* Z70: the only contact of the stay — no separate card under this sticky one. */}
       {!cancelled && (contact?.phone || contact?.whatsapp || contactByModule) ? (
@@ -316,6 +319,24 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
               {hero.title} <span className="text-ink-soft">{hero.title2}</span>
             </h1>
             <p className="max-w-[60ch] text-lg leading-relaxed text-[#5a6672]">{hero.text}</p>
+            {/* Z72: the account right under the title (at the bottom it was overlooked) — no password, the e-mail. */}
+            {!cancelled ? (
+              <form
+                action={startAccountFromReservation.bind(null, token)}
+                className="guest-card flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg px-5 py-3.5"
+              >
+                <span className="grid gap-0.5">
+                  <span className="text-ink font-bold">{t("accountTitle")}</span>
+                  <span className="text-sm text-[#5a6672]">{t("accountText")}</span>
+                </span>
+                <button
+                  type="submit"
+                  className="border-line text-ink inline-flex min-h-11 items-center rounded-full border px-5 text-sm font-medium hover:bg-[#f7f4ed]"
+                >
+                  {t("accountCta")}
+                </button>
+              </form>
+            ) : null}
           </div>
           <div className="guest-card overflow-hidden rounded-lg">
             {x.cover ? (
@@ -534,24 +555,6 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
               </div>
             </dl>
           </section>
-
-          {/* Guest account — a quiet row */}
-          {!cancelled ? (
-            <section className="guest-card flex flex-wrap items-center justify-between gap-4 rounded-lg px-5 py-4">
-              <span className="grid gap-0.5">
-                <span className="text-ink font-bold">{t("accountTitle")}</span>
-                <span className="text-sm text-[#5a6672]">{t("accountText")}</span>
-              </span>
-              <form action={startAccountFromReservation.bind(null, token)}>
-                <button
-                  type="submit"
-                  className="border-line text-ink inline-flex min-h-11 items-center rounded-full border px-5 text-sm font-medium hover:bg-[#f7f4ed]"
-                >
-                  {t("accountCta")}
-                </button>
-              </form>
-            </section>
-          ) : null}
 
           {/* Change of plans */}
           {pending || r.status === "confirmed" ? (

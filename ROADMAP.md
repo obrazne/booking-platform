@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ — fronta linky A je prázdna (Z72 prevzala linka B);
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → **Z72 (kalendár Google/Outlook, účet na potvrdení — presunuté z A)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ — fronta linky B je prázdna.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -259,7 +259,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    funguje aj s témami klientov. Prejdi: detail objektu, košík, `/r`, účet (prehľad, pobyt, Moje údaje), check-in, upsell, `/suhlas`.
 3. Testy: e2e — na `/r` po scrolle sa karty v pravom stĺpci neprekrývajú (1280×800, 1440×900), PC aj mobil; axe; kontrola kontrastu.
 
-### Z72 [B] 🔄 — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61)
+### Z72 [B] ✅ — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61)
 *Presunuté z linky A na B (Martin 20. 10. — B je voľná). Linka A súčasne robí Z70 v tých istých súboroch (`/r/[token]/page.tsx`,
 `stay-detail.tsx`): ponuku kalendára sprav ako **samostatný komponent** (napr. `add-to-calendar.tsx` + `calendar-links.ts`) a do stránok
 zmeň len riadok tlačidla; presun „Uložiť do účtu“ je jeden blok. Pred commitom `git pull --rebase`, konflikt vyrieš ponechaním zmien
@@ -472,6 +472,18 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-20 — Z72 [linka B]: **Pridať do kalendára a účet na potvrdení** (pripomienky 60, 61). (Claude Code)
+  - Samostatné súbory (bez zásahu do práce linky A): `src/core/guest/calendar-links.ts` (Google `calendar.google.com/…?action=TEMPLATE`,
+    Outlook `outlook.live.com/…/deeplink/compose`, .ics — čisté funkcie, unit testy vrátane letného/zimného času), `stay-calendar.ts`
+    (udalosť z rezervácie: „Pobyt — {objekt}“, príchod od času check-inu – odchod do času check-outu v časovom pásme klienta, bez
+    časov celodenná; adresa len pri presnej polohe; **bez kódov a Wi-Fi**), `add-to-calendar.tsx` (ponuka Google · Outlook · Apple / iný).
+  - Ponuka na `/r` (riadok tlačidla v zelenej karte), v detaile pobytu v účte (zelený Účet pobytu, pred odchodom; nová trasa
+    `/ucet/pobyt/<id>/ics` len pre pobyt prihláseného hosťa) a tie isté tri odkazy v potvrdzujúcom e-maile (`guest_confirmed`).
+  - **Účet:** blok na `/r` presunutý hore pod nadpis — „Pobyt nájdete aj v Mojom účte · prihlásite sa e-mailom, bez hesla“; rovnaká
+    veta v potvrdzujúcom e-maile a v riadku „Uložiť do účtu“ zaplateného pobytu. Overené: po prihlásení kódom sa pobyty s tým e-mailom
+    pripoja samy (prepojenie hosťa po overení e-mailu, Z43) — tlačidlo ostáva.
+  - Testy: vitest `calendar-links.test.ts`, e2e `confirm.spec.ts` rozšírený (účet nad platbou, ponuka a odkazy, .ics bez kódov,
+    kalendár v zaplatenom pobyte); `stay-states`, `account*` prešli. Snímky `docs/snimky/z72/`.
 - 2026-10-20 — Z70 [linka A]: **potvrdenie a pobyt — kontakt bez zdvojenia, plochy na strane hosťa** (pripomienky 58, 59). (Claude Code)
   - **Kontakt raz:** samostatná karta kontaktu modulu Správy (slot `guest.stay.aside`) zrušená — šmýkala sa pod sticky zelenú kartu.
     Kontakt je len v **pätičke zelenej karty** (`src/core/guest/stay-contact.tsx`): kto odpovedá, „Napísať správu“ z modulu cez nový slot

@@ -76,14 +76,39 @@ test("confirmation page v2.1: waiting for payment, then confirmed; calendar file
   }
   await noSeriousA11y(page);
 
-  // "Add to calendar": one all-day event; approximate location → no street.
+  // Z72: the account right under the title — before the payment details.
+  const account = page.getByRole("button", { name: "Otvoriť Môj účet" });
+  await expect(page.getByText("Pobyt nájdete aj v Mojom účte")).toBeVisible();
+  expect((await account.boundingBox())!.y).toBeLessThan(
+    (await page.getByRole("img", { name: /PAY by square/ }).boundingBox())!.y,
+  );
+  // Z72: "Pridať do kalendára" — Google, Outlook (links with the stay) and the .ics file.
+  await page.getByRole("button", { name: "Pridať do kalendára" }).filter({ visible: true }).click();
+  const google = page.getByRole("menuitem", { name: "Google Kalendár" });
+  await expect(google).toHaveAttribute(
+    "href",
+    /^https:\/\/calendar\.google\.com\/calendar\/render\?/,
+  );
+  await expect(google).toHaveAttribute(
+    "href",
+    new RegExp(`dates=${stay.checkIn.replaceAll("-", "")}`),
+  );
+  await expect(page.getByRole("menuitem", { name: "Outlook" })).toHaveAttribute(
+    "href",
+    /^https:\/\/outlook\.live\.com\/calendar\/0\/deeplink\/compose\?/,
+  );
+  await expect(page.getByRole("menuitem", { name: /Apple/ })).toHaveAttribute("href", /\/ics$/);
+  await page.keyboard.press("Escape");
+
+  // The .ics: arrival from the check-in time (or all day); approximate location → no street.
   // (fetched in the browser — *.localhost resolves there, not in Node)
   const { type, body } = await page.evaluate(async (u) => {
     const res = await fetch(u);
     return { type: res.headers.get("content-type") ?? "", body: await res.text() };
   }, `${url}/ics`);
   expect(type).toContain("text/calendar");
-  expect(body).toContain(`DTSTART;VALUE=DATE:${stay.checkIn.replaceAll("-", "")}`);
+  expect(body).toMatch(new RegExp(`DTSTART(;VALUE=DATE)?:${stay.checkIn.replaceAll("-", "")}`));
+  expect(body).not.toMatch(/Wi-?Fi|kód/i);
   expect(body).not.toContain("Do doliny");
 
   // Payment received → confirmed: since Z49 the link shows the stay detail of the account (no QR, "Uložiť do účtu").
@@ -97,5 +122,10 @@ test("confirmation page v2.1: waiting for payment, then confirmed; calendar file
   await expect(page.getByRole("button", { name: "Uložiť do účtu" })).toBeVisible();
   await expect(page.getByRole("img", { name: /PAY by square/ })).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Účet pobytu" })).toBeVisible();
+  await expect(
+    page
+      .getByRole("region", { name: "Účet pobytu" })
+      .getByRole("button", { name: "Pridať do kalendára" }),
+  ).toBeVisible();
   await noSeriousA11y(page);
 });

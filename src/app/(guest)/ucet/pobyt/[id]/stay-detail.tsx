@@ -19,6 +19,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { rebookHref, StatusBadge } from "../../stay-ui";
 import { CancelDialog } from "./cancel-dialog";
 import { stayPhase, stayStateOf, type StayPhase } from "./stay-state";
+import { AddToCalendar } from "@/core/guest/add-to-calendar";
+import { calendarLinks, stayEvent } from "@/core/guest/stay-calendar";
+import { requestHost } from "@/core/tenant/current";
 
 /**
  * One stay in the guest zone (B10, designs v2.3 `UcetPobyt` and v2.4 `StavyPobytu`). The page follows the state:
@@ -47,6 +50,12 @@ export async function StayDetail({
   const phase = stayPhase(stay.status, stay.checkIn, stay.checkOut, today);
   // A module may add "Napísať správu" to the contact foot (messages) — the foot shows even without a phone (Z70).
   const contactByModule = await guestContactByModule(tenant.id);
+  // Z72: the stay as a calendar event; the link leads back to where the guest opened it.
+  const host = await requestHost();
+  const calendar = await stayEvent(
+    stay.id,
+    token ? `https://${host}/r/${token}` : `https://${host}/ucet/pobyt/${stay.id}`,
+  );
   const state = stayStateOf(rawState);
   const [t, tg, ts, locale, { data: settings }] = await Promise.all([
     getTranslations("guest.account"),
@@ -560,6 +569,17 @@ export async function StayDetail({
                   </span>
                 </div>
               </div>
+            ) : null}
+            {/* Z72: Google, Outlook or the .ics file — before the departure. */}
+            {calendar && (phase === "pending" || phase === "before" || phase === "during") ? (
+              <AddToCalendar
+                links={calendarLinks(
+                  calendar,
+                  token ? `/r/${token}/ics` : `/ucet/pobyt/${stay.id}/ics`,
+                )}
+                fileName={`pobyt-${stay.number}.ics`}
+                className="btn-on-accent mt-1 inline-flex min-h-11 w-full items-center justify-center gap-2.5 px-6 text-sm"
+              />
             ) : null}
             {/* Z70: the only contact of the stay — the foot of this card, no separate card under it. */}
             {phase !== "cancelled" &&
