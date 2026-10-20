@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z72 (kalendár, účet na potvrdení)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → **Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)** → **Z73 (rezervácie: najnovšie hore)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → **Z73 (rezervácie: najnovšie hore)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -273,7 +273,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
    pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
-### Z71 [B] 🔄 — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
+### Z71 [B] ✅ — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
 1. **Zľavový kód (56):** namiesto veľkého poľa odkaz „Máte zľavový kód?“, ktorý pole rozbalí; po použití zbalený riadok
    „Kód XY · −10 % ✓ · Odstrániť“.
 2. **Spôsob platby (57, ROZHODNUTIA 2026-10-20):** karty s výberom zo spôsobov zapnutých klientom (nastavenie zo Z69): **Prevod s QR**
@@ -337,6 +337,8 @@ pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 *Bez týchto bodov sa ostrá prevádzka (produkcia, skutoční hostia) nespúšťa. Pri príprave produkcie prejsť celý zoznam.*
 - [ ] **Platba kartou (Stripe)** — Martin 20. 10. (ROZHODNUTIA): funkčná platba kartou v košíku (a pri upselle „kartou hneď“).
   Do vtedy je v košíku karta ako neaktívna možnosť „Pripravujeme“ (č. 57) — **na produkcii sa neaktívna karta hosťom nesmie ukázať.**
+  Z71: karta „Pripravujeme“ sa ukazuje len pri nastavenom `EMAIL_REDIRECT_TO` (staging); produkcia ho mať nesmie (bod o e-mailoch nižšie)
+  → bez neho karta zmizne sama (`upcomingMethods` v `src/core/payments/methods.ts`, test). Pri spustení skontrolovať, že na produkcii chýba.
 - [ ] Produkčné prostredie: druhý Supabase projekt, Vercel produkcia, platené plány, doména klienta (3e) — Martin odsúhlasí náklady.
 - [ ] **E-maily hosťom naostro:** overená doména odosielateľa v Resende (SPF, DKIM, DMARC) a `EMAIL_FROM` na nej; `EMAIL_REDIRECT_TO`
   na produkcii prázdne (staging posiela všetky e-maily na info@obrazne.sk s pôvodným príjemcom v predmete — na stagingu je to zámer, Martin 20. 10. súhlasí).
@@ -465,6 +467,20 @@ pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-20 — Z71 [linka B]: **Košík, krok Platba** (pripomienky 56, 57, 61, 62). (Claude Code)
+  - **Spôsob platby** ako karty s výberom (`PaymentChoice`): Prevod s QR (predvolený, jednou vetou — QR a pokyny hneď, zaplatiť do 24 h,
+    bez poplatkov) a **Platba kartou — neaktívna „Pripravujeme“** (len na stagingu, viď *Pred spustením*). Zvolený spôsob sa uloží
+    k rezervácii (`reservations.payment_method`, platba v `payments.provider`); server prijme len spôsob, ktorý je zapnutý a funguje.
+  - **Zľavový kód** za odkazom „Máte zľavový kód?“; po použití zbalený riadok „Kód XY · −suma ✓ · Odstrániť“.
+  - **Texty raz:** storno len pri jeho políčku (preč zo zeleného boxu, zo zoznamu uistení v kroku 3 aj spod tlačidla na kroku 3);
+    30 min = „Termín vám držíme 30 minút, kým dokončíte objednávku“ (hore), 24 h = lehota platby (pri prevode); spodná poznámka zmizla.
+  - **Účet:** pri kontaktných údajoch „Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla.“ Žiadne pole hesla.
+  - **Faktúra na firmu:** „Chcem faktúru na firmu“ rozbalí názov, IČO, DIČ, IČ DPH (nepovinné), adresu firmy; bez nich sa nedá pokračovať
+    (košík aj server). Uloží sa k rezervácii (`billing_*`, migrácia `…20120000_cart_payment_billing` len pridáva; `create_reservation`
+    rozšírené), je v paneli rezervácie (Platba a faktúra) a v podklade na doklad (text aj PDF — firma prvá). Adresu hosťa nezbierame.
+  - Testy: pgTAP `cart_payment_billing.test.sql`, vitest (`methods.test.ts` — karta len na stagingu, `basis.test.ts` — firma),
+    e2e `cart-payment.spec.ts` (PC + mobil, axe; dočasný zľavový kód), upravené `guest.spec.ts` a `cart.spec.ts` (storno v kroku 3 raz).
+    Snímky `docs/snimky/z71/`.
 - 2026-10-20 — Z61 [linka A]: **kontrola všetkých obrazoviek podľa pravidiel, e2e a „Čo je nové“** (pravidlá 1–8). (Claude Code)
   - **Skript `scripts/ui-audit.mjs`** prejde 57 obrazoviek (administrácia 34 vrátane kariet Nastavení a panelu rezervácie,
     riadiace centrum 14, prihlásenie majiteľa, stránka objektu, prístupový odkaz a účet hosťa po prihlásení 8) na PC 1440 px

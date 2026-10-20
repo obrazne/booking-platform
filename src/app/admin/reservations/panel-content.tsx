@@ -319,6 +319,32 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
           ) : null}
         </PanelSection>
 
+        {/* Z71: the way to pay chosen in the cart and the company for the invoice. */}
+        <PanelSection label={tv("payment.title")}>
+          <div className="surface grid gap-1 px-3.5 py-3">
+            <span className="text-ink">
+              {tv(`payment.${detail.payment_method as "bank_transfer"}`)}
+            </span>
+            {detail.billing_company ? (
+              <span className="grid gap-0.5 text-[13px] [overflow-wrap:anywhere] text-[#5a6672]">
+                <span className="text-ink font-medium">
+                  {tv("payment.invoiceTo", { company: detail.billing_company })}
+                </span>
+                <span>
+                  {[
+                    detail.billing_company_id && `IČO ${detail.billing_company_id}`,
+                    detail.billing_tax_id && `DIČ ${detail.billing_tax_id}`,
+                    detail.billing_vat_id && `IČ DPH ${detail.billing_vat_id}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+                {detail.billing_address ? <span>{detail.billing_address}</span> : null}
+              </span>
+            ) : null}
+          </div>
+        </PanelSection>
+
         {/* What the client copies into their invoicing tool; the issued document is uploaded below (Z51). */}
         {detail.status === "cancelled" &&
         !detail.payments.some((p) => p.status === "received") ? null : (

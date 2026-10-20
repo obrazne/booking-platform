@@ -42,6 +42,8 @@ export type BookingData = {
     paymentDueHours: number;
     /** Ways to pay that are on (Z69); the cart lists them. */
     paymentMethods: PaymentMethodKey[];
+    /** Prepared methods shown inactive as "Pripravujeme" (staging only, Z71). */
+    upcomingMethods: PaymentMethodKey[];
     holdMinutes: number;
     cancellationPolicy: string;
     /** First sentence of the policy for the side panel. */
@@ -52,6 +54,8 @@ export type BookingData = {
   contact: { name: string | null; phone: string | null; whatsapp: string | null } | null;
   services: Record<string, { image: string | null; description: string }>;
   trust: string[];
+  /** Reassurances of the payment step (the rest is said once next to its field, Z71). */
+  trustOnPayment: string[];
   initial: {
     checkIn: IsoDate | null;
     checkOut: IsoDate | null;
@@ -102,6 +106,8 @@ type Ctx = {
   setPromo: (p: { code: string; name: Record<string, string>; amountCents: number } | null) => void;
   guest: GuestFields;
   setGuest: (g: GuestFields) => void;
+  billing: BillingFields;
+  setBilling: (b: BillingFields) => void;
 };
 
 export type GuestFields = {
@@ -111,6 +117,27 @@ export type GuestFields = {
   country: string;
   note: string;
 };
+
+/** "Chcem faktúru na firmu" (Z71): the company for the invoice; an ordinary guest's address is not collected. */
+export type BillingFields = {
+  on: boolean;
+  company: string;
+  companyId: string;
+  taxId: string;
+  vatId: string;
+  address: string;
+};
+
+/** The company is complete enough for an invoice: name, IČO, DIČ and the address (IČ DPH is optional). */
+export function billingValid(b: BillingFields): boolean {
+  return (
+    !b.on ||
+    (b.company.trim().length >= 2 &&
+      b.companyId.trim().length >= 1 &&
+      b.taxId.trim().length >= 1 &&
+      b.address.trim().length >= 3)
+  );
+}
 
 const BookingContext = createContext<Ctx | null>(null);
 
@@ -155,6 +182,14 @@ export function BookingProvider({
     phone: "",
     country: "SK",
     note: "",
+  });
+  const [billing, setBilling] = useState<BillingFields>({
+    on: false,
+    company: "",
+    companyId: "",
+    taxId: "",
+    vatId: "",
+    address: "",
   });
   const { catalog, locale, today, modules } = data;
 
@@ -332,6 +367,8 @@ export function BookingProvider({
     setPromo,
     guest,
     setGuest,
+    billing,
+    setBilling,
   };
   return (
     <BookingContext.Provider value={value}>

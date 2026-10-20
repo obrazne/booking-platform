@@ -22,7 +22,8 @@ export async function loadInvoiceBasis(
     supabase
       .from("reservations")
       .select(
-        `number, currency, guest_name, guest_email, guest_phone, guest_country,
+        `number, currency, guest_name, guest_email, guest_phone, guest_country, billing_company,
+         billing_company_id, billing_tax_id, billing_vat_id, billing_address,
          property:properties(name), items:reservation_items(check_in, check_out, unit:units(name)),
          lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, vat_bp, sort),
          payments(provider, amount_cents, variable_symbol, status, received_at)`,
@@ -53,6 +54,15 @@ export async function loadInvoiceBasis(
       email: r.guest_email,
       phone: r.guest_phone,
       country: r.guest_country,
+      company: r.billing_company
+        ? {
+            name: r.billing_company,
+            companyId: r.billing_company_id,
+            taxId: r.billing_tax_id,
+            vatId: r.billing_vat_id,
+            address: r.billing_address,
+          }
+        : null,
     },
     stay: {
       property: r.property?.name ?? "",
@@ -89,6 +99,9 @@ export async function basisFormat(locale: string, timeZone: string) {
     noPayments: t("noPayments"),
     deposit: t("deposit"),
     vs: t("vs"),
+    companyId: t("companyId"),
+    taxId: t("taxId"),
+    vatId: t("vatId"),
     provider: (p) =>
       ["bank_transfer", "card", "on_site"].includes(p)
         ? t(`providers.${p as "bank_transfer" | "card" | "on_site"}`)

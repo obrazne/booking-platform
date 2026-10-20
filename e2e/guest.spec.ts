@@ -50,9 +50,8 @@ test("guest books the demo chalet: calendar, 3-step cart, service, consents, pay
     .filter({ visible: true })
     .click();
 
-  // Step 3 (Z69): only the ways to pay the owner has on — the bank transfer; card payments are not built yet.
-  await expect(cart.getByText("Ako zaplatíte:")).toBeVisible();
-  await expect(cart.getByText(/prevodom na účet/)).toBeVisible();
+  // Step 3 (Z69, Z71): the ways to pay as cards — the transfer with QR chosen; card payments are not built yet.
+  await expect(cart.getByRole("radio", { name: /Prevod s QR kódom/ })).toBeChecked();
   await expect(cart.getByText(/Apple Pay/)).toHaveCount(0);
   // Step 3: consents (marketing stays unchecked) and the binding button.
   await expect(cart.getByRole("checkbox", { name: /ponuky a zľavy/ })).not.toBeChecked();

@@ -37,6 +37,7 @@ import {
 import { tr } from "@/core/i18n/localized";
 import { Captcha, captchaEnabled } from "@/core/security/captcha";
 import type { Service } from "@/core/pricing/types";
+import type { PaymentMethodKey } from "@/core/payments/methods";
 import { cn } from "@/lib/utils";
 import {
   Counter,
@@ -46,6 +47,8 @@ import {
   useBooking,
   useDates,
   usePriceBlock,
+  billingValid,
+  type BillingFields,
   type GuestFields,
 } from "./guest-booking";
 
@@ -145,7 +148,8 @@ export function Cart() {
   const hasDates = Boolean(b.range.checkIn && b.range.checkOut);
   const calendarOpen = b.cartCalendar || !hasDates;
   const f = b.guest;
-  const contactValid = f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email);
+  const contactValid =
+    f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email) && billingValid(b.billing);
   // Z30: without a valid stay the reason is always written above the button (arrival → departure → price rules).
   const reason =
     b.step === 1 && !ready
@@ -262,7 +266,8 @@ export function Cart() {
               ) : null}
               {reasonLine("cart-reason")}
               {ctaButton("cart-reason")}
-              {b.data.trust[0] ? (
+              {/* Z71: on the payment step the cancellation is said once, at its checkbox. */}
+              {b.data.trust[0] && b.step !== 3 ? (
                 <p className="text-on-accent-soft inline-flex items-start gap-1.5 text-xs break-words">
                   <Check className="mt-px size-3.5 shrink-0" aria-hidden /> {b.data.trust[0]}
                 </p>
@@ -708,6 +713,50 @@ function ExtraRow({ s, open, onToggle }: { s: Service; open: boolean; onToggle: 
 
 // ------------------------------------------------------------------------------------------- step 2
 
+/** "Chcem faktúru na firmu" (Z71): unfolds the company; IČ DPH optional. The address of a guest is not asked. */
+function InvoiceFields() {
+  const t = useTranslations("guest");
+  const { billing, setBilling } = useBooking();
+  const set = (k: Exclude<keyof BillingFields, "on">, v: string) =>
+    setBilling({ ...billing, [k]: v });
+  const field = "border-line min-h-12 rounded-lg px-3.5 text-[15px]";
+  const input = (k: Exclude<keyof BillingFields, "on">, label: string, wide = false, max = 20) => (
+    <div className={cn("grid gap-1.5", wide && "sm:col-span-2")}>
+      <Label htmlFor={`c-${k}`}>{label}</Label>
+      <Input
+        id={`c-${k}`}
+        className={field}
+        value={billing[k]}
+        maxLength={max}
+        onChange={(e) => set(k, e.target.value)}
+      />
+    </div>
+  );
+  return (
+    <div className="grid gap-4">
+      <Label className="items-start font-normal">
+        <Checkbox
+          checked={billing.on}
+          onCheckedChange={(v) => setBilling({ ...billing, on: v === true })}
+          className="mt-0.5"
+        />
+        <span>{t("cart.invoice")}</span>
+      </Label>
+      {billing.on ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <p className="text-muted-foreground text-sm sm:col-span-2">{t("cart.invoiceHint")}</p>
+          {input("company", t("cart.company"), true, 200)}
+          {input("companyId", t("cart.companyId"))}
+          {input("taxId", t("cart.taxId"))}
+          {input("vatId", t("cart.vatId"))}
+          <div className="hidden sm:block" />
+          {input("address", t("cart.companyAddress"), true, 300)}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function StepDetails() {
   const t = useTranslations("guest");
   const b = useBooking();
@@ -767,6 +816,9 @@ function StepDetails() {
           />
         </div>
       </div>
+      {/* Z71: the stay is in the account too — sign-in by e-mail, never a password here. */}
+      <p className="text-muted-foreground -mt-3 text-sm">{t("cart.accountNote")}</p>
+      <InvoiceFields />
       <AskOwner />
       {b.data.catalog.services.length > 0 ? (
         <div className="border-line grid gap-2.5 border-t pt-[18px] lg:hidden">
@@ -791,6 +843,70 @@ function StepDetails() {
 
 // ------------------------------------------------------------------------------------------- step 3
 
+/**
+ * Spôsob platby (Z71, ROZHODNUTIA 2026-10-20): cards of the ways the owner switched on, the transfer with QR first;
+ * a prepared way (card) only as an inactive "Pripravujeme" card — and only on staging (`upcomingMethods`).
+ */
+function PaymentChoice({
+  offered,
+  upcoming,
+  value,
+  onChange,
+  hours,
+}: {
+  offered: PaymentMethodKey[];
+  upcoming: PaymentMethodKey[];
+  value: PaymentMethodKey;
+  onChange: (m: PaymentMethodKey) => void;
+  hours: number;
+}) {
+  const t = useTranslations("guest.cart");
+  const all = [
+    ...offered.map((m) => ({ m, on: true })),
+    ...upcoming.map((m) => ({ m, on: false })),
+  ];
+  if (!all.length) return null;
+  return (
+    <fieldset className="grid gap-2.5">
+      <legend className="text-ink mb-2.5 text-sm font-bold">{t("payChoose")}</legend>
+      {all.map(({ m, on }) => (
+        <label
+          key={m}
+          className={cn(
+            "flex items-start gap-3 rounded-lg border px-4 py-3.5 transition-colors",
+            !on
+              ? "border-line bg-muted cursor-not-allowed text-[#5a6672]"
+              : value === m
+                ? "border-primary bg-primary/5 cursor-pointer"
+                : "border-line cursor-pointer hover:border-[#c9c5ba]",
+          )}
+        >
+          <input
+            type="radio"
+            name="payment_choice"
+            value={m}
+            checked={on && value === m}
+            disabled={!on}
+            onChange={() => onChange(m)}
+            className="accent-primary mt-1 size-4 shrink-0"
+          />
+          <span className="grid gap-0.5">
+            <span className="text-ink flex flex-wrap items-center gap-2 text-[15px] font-bold">
+              {t(`method.${m}.title`)}
+              {!on ? (
+                <span className="rounded-full bg-[#eef0f3] px-2 py-0.5 text-[11px] font-bold text-[#3b4652]">
+                  {t("method.soon")}
+                </span>
+              ) : null}
+            </span>
+            <span className="text-sm">{t(`method.${m}.text`, { hours })}</span>
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 function StepPayment({
   action,
   state,
@@ -814,8 +930,10 @@ function StepPayment({
 }) {
   const t = useTranslations("guest");
   const b = useBooking();
-  const { data, money, total, range, promo, setPromo, lines } = b;
+  const { data, money, total, range, promo, setPromo, lines, billing } = b;
   const [code, setCode] = useState(promo?.code ?? "");
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [method, setMethod] = useState(data.settings.paymentMethods[0] ?? "bank_transfer");
   const [promoError, setPromoError] = useState<null | "none" | "captcha" | "limit">(null);
   const [captchaFailed, setCaptchaFailed] = useState(false);
   const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
@@ -865,6 +983,13 @@ function StepPayment({
           ["consent_cancellation_text", cancellation],
           ["privacy_text", t("booking.privacy")],
           ["consent_marketing_text", t("booking.consentMarketing", { name: data.propertyName })],
+          ["payment_method", method],
+          ["invoice", billing.on ? "1" : ""],
+          ["billing_company", billing.on ? billing.company : ""],
+          ["billing_company_id", billing.on ? billing.companyId : ""],
+          ["billing_tax_id", billing.on ? billing.taxId : ""],
+          ["billing_vat_id", billing.on ? billing.vatId : ""],
+          ["billing_address", billing.on ? billing.address : ""],
         ] as const
       ).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={String(value)} />
@@ -880,15 +1005,19 @@ function StepPayment({
         <BackPill onClick={() => b.setStep(2)}>{t("cart.back")}</BackPill>
       </div>
       <SectionTitle title={t("cart.payTitle")} sub={t("cart.paySub")} />
-      {/* Z69: only the ways to pay the owner has switched on (today the bank transfer with QR). */}
-      {data.settings.paymentMethods.length ? (
-        <p className="text-ink text-sm">
-          <span className="font-bold">{t("cart.payMethods")}</span>{" "}
-          {data.settings.paymentMethods
-            .map((m) => t(`cart.payMethod.${m}`, { hours: data.settings.paymentDueHours }))
-            .join(" · ")}
+      {/* Z71: 30 minutes = the term is held while the guest finishes; the deadline of the payment is at the method. */}
+      {holdId ? (
+        <p className="text-ink -mt-3 text-sm">
+          {t("cart.holdLine", { minutes: data.settings.holdMinutes })}
         </p>
       ) : null}
+      <PaymentChoice
+        offered={data.settings.paymentMethods}
+        upcoming={data.settings.upcomingMethods}
+        value={method}
+        onChange={setMethod}
+        hours={data.settings.paymentDueHours}
+      />
       {failed ? <p className="text-sm text-[#b5532f]">{t("booking.takenNow")}</p> : null}
       {/* The summary on the right has the breakdown; phones see it here. */}
       <dl className="grid gap-2 text-sm lg:hidden">
@@ -912,46 +1041,67 @@ function StepPayment({
         </p>
       ) : null}
 
-      <div className="grid gap-1.5">
-        <Label htmlFor="c-promo">{t("booking.promo")}</Label>
-        <div className="flex gap-2">
-          <Input
-            id="c-promo"
-            value={code}
-            onChange={(e) => {
-              setCode(e.target.value);
-              setPromoError(null);
-            }}
-            className="border-line min-h-11 rounded-lg uppercase"
-          />
-          <Button
+      {/* Z71: the code field only on request; an applied code is one folded row. */}
+      {promo ? (
+        <p className="text-ink flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" role="status">
+          <span>
+            {t("cart.promoApplied", { code: promo.code, amount: money(promo.amountCents) })}
+          </span>
+          <Check className="text-primary size-4" aria-hidden />
+          <span aria-hidden>·</span>
+          <button
             type="button"
-            variant="outline"
-            className="min-h-11 rounded-full"
-            disabled={!code.trim() || (captchaEnabled && !captcha)}
-            onClick={applyPromo}
+            onClick={() => {
+              setPromo(null);
+              setCode("");
+              setPromoOpen(false);
+            }}
+            className="font-medium underline underline-offset-[3px]"
           >
-            {t("booking.promoApply")}
-          </Button>
+            {t("cart.promoRemove")}
+          </button>
+        </p>
+      ) : !promoOpen ? (
+        <button
+          type="button"
+          onClick={() => setPromoOpen(true)}
+          aria-expanded={false}
+          className="text-ink justify-self-start text-sm font-medium underline underline-offset-[3px]"
+        >
+          {t("cart.promoLink")}
+        </button>
+      ) : (
+        <div className="grid gap-1.5">
+          <Label htmlFor="c-promo">{t("booking.promo")}</Label>
+          <div className="flex gap-2">
+            <Input
+              id="c-promo"
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value);
+                setPromoError(null);
+              }}
+              className="border-line min-h-11 rounded-lg uppercase"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 rounded-full"
+              disabled={!code.trim() || (captchaEnabled && !captcha)}
+              onClick={applyPromo}
+            >
+              {t("booking.promoApply")}
+            </Button>
+          </div>
+          {promoError ? (
+            <p className="text-muted-foreground text-xs">
+              {promoError === "none"
+                ? t("booking.promoNotApplicable")
+                : t(`booking.errors.${promoError}`)}
+            </p>
+          ) : null}
         </div>
-        {promoError ? (
-          <p className="text-muted-foreground text-xs">
-            {promoError === "none"
-              ? t("booking.promoNotApplicable")
-              : t(`booking.errors.${promoError}`)}
-          </p>
-        ) : null}
-      </div>
-
-      {data.trust.length > 0 ? (
-        <ul className="grid gap-2.5 rounded-lg bg-[#f4f3ef] px-5 py-4 text-sm">
-          {data.trust.map((line) => (
-            <li key={line} className="text-ink inline-flex items-start gap-2.5">
-              <Check className="text-primary mt-0.5 size-4 shrink-0" aria-hidden /> {line}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      )}
 
       <div className="grid gap-3">
         <Label className="items-start font-normal">
@@ -1019,10 +1169,6 @@ function StepPayment({
           {t(`booking.errors.${state.error}`)}
         </p>
       ) : null}
-      <p className="text-muted-foreground text-xs">
-        {t("booking.payNote", { hours: data.settings.paymentDueHours })}
-        {holdId ? ` ${t("booking.held", { minutes: data.settings.holdMinutes })}` : ""}
-      </p>
     </form>
   );
 }
@@ -1159,7 +1305,7 @@ function Summary({ compact }: { compact?: boolean }) {
       {compact ? (
         <div className="bg-accent-deep grid gap-4 rounded-lg px-4 pt-5 pb-6">
           <ul className="text-on-accent-soft grid gap-2 text-[13px]">
-            {data.trust.map((line) => (
+            {(b.step === 3 ? data.trustOnPayment : data.trust).map((line) => (
               <li key={line} className="inline-flex items-start gap-2">
                 <Check className="text-on-accent-muted mt-0.5 size-4 shrink-0" /> {line}
               </li>

@@ -2527,6 +2527,11 @@ export type Database = {
           access_token_enc: string | null
           access_token_hash: string
           adults: number
+          billing_address: string | null
+          billing_company: string | null
+          billing_company_id: string | null
+          billing_tax_id: string | null
+          billing_vat_id: string | null
           cancellation_request_note: string | null
           cancellation_requested_at: string | null
           cancelled_reason: string | null
@@ -2547,6 +2552,7 @@ export type Database = {
           marketing_consent: boolean
           number: string
           payment_due_at: string | null
+          payment_method: string
           pets: number
           promo_code: string | null
           property_id: string
@@ -2560,6 +2566,11 @@ export type Database = {
           access_token_enc?: string | null
           access_token_hash: string
           adults?: number
+          billing_address?: string | null
+          billing_company?: string | null
+          billing_company_id?: string | null
+          billing_tax_id?: string | null
+          billing_vat_id?: string | null
           cancellation_request_note?: string | null
           cancellation_requested_at?: string | null
           cancelled_reason?: string | null
@@ -2580,6 +2591,7 @@ export type Database = {
           marketing_consent?: boolean
           number: string
           payment_due_at?: string | null
+          payment_method?: string
           pets?: number
           promo_code?: string | null
           property_id: string
@@ -2593,6 +2605,11 @@ export type Database = {
           access_token_enc?: string | null
           access_token_hash?: string
           adults?: number
+          billing_address?: string | null
+          billing_company?: string | null
+          billing_company_id?: string | null
+          billing_tax_id?: string | null
+          billing_vat_id?: string | null
           cancellation_request_note?: string | null
           cancellation_requested_at?: string | null
           cancelled_reason?: string | null
@@ -2613,6 +2630,7 @@ export type Database = {
           marketing_consent?: boolean
           number?: string
           payment_due_at?: string | null
+          payment_method?: string
           pets?: number
           promo_code?: string | null
           property_id?: string

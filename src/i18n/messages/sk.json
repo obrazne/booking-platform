@@ -1412,7 +1412,9 @@
         "consent": "Potvrďte obchodné podmienky a storno podmienky.",
         "captcha": "Overenie, že nie ste robot, sa nepodarilo. Skúste to znova.",
         "limit": "Priveľa pokusov z vašej siete. Skúste to o hodinu.",
-        "generic": "Rezerváciu sa nepodarilo odoslať. Skúste to znova."
+        "generic": "Rezerváciu sa nepodarilo odoslať. Skúste to znova.",
+        "billing": "Doplňte názov firmy, IČO, DIČ a adresu na faktúru.",
+        "payment": "Tento spôsob platby teraz nie je dostupný. Zvoľte prevod."
       },
       "priceErrors": {
         "invalidDates": "Neplatný termín.",
@@ -1505,7 +1507,31 @@
       "payMethod": {
         "bank_transfer": "prevodom na účet — QR kód a pokyny dostanete hneď po rezervácii, zaplatiť treba do {hours} h.",
         "card": "kartou, Apple Pay alebo Google Pay."
-      }
+      },
+      "accountNote": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla.",
+      "invoice": "Chcem faktúru na firmu",
+      "invoiceHint": "Doklad vystaví ubytovateľ na tieto údaje.",
+      "company": "Názov firmy",
+      "companyId": "IČO",
+      "taxId": "DIČ",
+      "vatId": "IČ DPH (nepovinné)",
+      "companyAddress": "Adresa firmy",
+      "holdLine": "Termín vám držíme {minutes} minút, kým dokončíte objednávku.",
+      "payChoose": "Spôsob platby",
+      "method": {
+        "bank_transfer": {
+          "title": "Prevod s QR kódom",
+          "text": "QR kód a pokyny dostanete hneď po odoslaní. Zaplatiť treba do {hours} h — dovtedy je termín váš. Platíte priamo ubytovateľovi, bez poplatkov."
+        },
+        "card": {
+          "title": "Platba kartou",
+          "text": "Online kartou hneď pri rezervácii."
+        },
+        "soon": "Pripravujeme"
+      },
+      "promoLink": "Máte zľavový kód?",
+      "promoApplied": "Kód {code} · −{amount}",
+      "promoRemove": "Odstrániť"
     },
     "sections": {
       "highlights": {
@@ -2744,6 +2770,12 @@
         "cancellation": "Storno podmienky",
         "privacy": "Ochrana osobných údajov",
         "marketing": "Novinky e-mailom"
+      },
+      "payment": {
+        "title": "Platba a faktúra",
+        "bank_transfer": "Prevod s QR kódom",
+        "card": "Platba kartou",
+        "invoiceTo": "Faktúra na firmu: {company}"
       }
     },
     "calendar": {
@@ -3497,7 +3529,12 @@
     "property": "Objekt",
     "unit": "Ubytovanie",
     "dates": "Termín",
-    "supplier": "Pripravil {name}"
+    "supplier": "Pripravil {name}",
+    "companyId": "IČO",
+    "taxId": "DIČ",
+    "vatId": "IČ DPH",
+    "company": "Firma",
+    "companyAddress": "Adresa firmy"
   },
   "portalStays": {
     "title": "Pobyty z portálov",

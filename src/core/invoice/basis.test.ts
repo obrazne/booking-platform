@@ -158,5 +158,30 @@ describe("podklad na doklad", () => {
     expect(text).toContain("2026-10-20 · prevodom · VS 20260042 · 200.00 €");
     expect(text).toContain("Zostáva: 172.00 €");
     expect(text).not.toContain("17200");
+
+    // Z71: an invoice to a company — the company first, then the guest.
+    const company = basisText(
+      buildBasis({
+        ...input(true),
+        buyer: {
+          ...input(true).buyer,
+          company: {
+            name: "Firma s.r.o.",
+            companyId: "12345678",
+            taxId: "2020123456",
+            vatId: null,
+            address: "Hlavná 1, Bratislava",
+          },
+        },
+      }),
+      { ...labels, companyId: "IČO", taxId: "DIČ" },
+      { money: (c) => `${c}`, date: (iso) => iso, rate: (bp) => `${bp}` },
+    );
+    expect(company).toContain(
+      ["ODBERATEĽ", "Firma s.r.o.", "IČO 12345678", "DIČ 2020123456", "Hlavná 1, Bratislava"].join(
+        "\n",
+      ),
+    );
+    expect(company).not.toContain("IČ DPH");
   });
 });

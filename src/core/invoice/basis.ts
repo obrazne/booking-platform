@@ -32,12 +32,27 @@ export type BasisLine = {
   vatBp: number;
 };
 
+export type BuyerCompany = {
+  name: string;
+  companyId: string | null;
+  taxId: string | null;
+  vatId: string | null;
+  address: string | null;
+};
+
 export type VatRow = { rateBp: number; baseCents: number; vatCents: number; totalCents: number };
 
 export type InvoiceBasis = {
   number: string;
   currency: string;
-  buyer: { name: string; email: string | null; phone: string | null; country: string | null };
+  buyer: {
+    name: string;
+    email: string | null;
+    phone: string | null;
+    country: string | null;
+    /** "Chcem faktúru na firmu" from the cart (Z71) — the document goes to the company. */
+    company?: BuyerCompany | null;
+  };
   stay: { property: string; units: string[]; checkIn: string | null; checkOut: string | null };
   lines: BasisLine[];
   /** Refundable deposit — not part of the price, so not on the document. */
@@ -134,6 +149,10 @@ export type BasisLabels = {
   deposit: string;
   vs: string;
   provider: (p: string) => string;
+  /** IČO, DIČ, IČ DPH of a company buyer (Z71). */
+  companyId?: string;
+  taxId?: string;
+  vatId?: string;
 };
 
 /** Plain text for pasting into an invoicing tool: sections, one item per line with "quantity × unit price". */
@@ -147,7 +166,16 @@ export function basisText(
   },
 ): string {
   const out: string[] = [`${l.title} ${b.number}`, l.notTaxDocument, ""];
-  out.push(l.buyer.toUpperCase(), b.buyer.name);
+  out.push(l.buyer.toUpperCase());
+  const c = b.buyer.company;
+  if (c) {
+    out.push(c.name);
+    if (c.companyId) out.push(`${l.companyId ?? "IČO"} ${c.companyId}`);
+    if (c.taxId) out.push(`${l.taxId ?? "DIČ"} ${c.taxId}`);
+    if (c.vatId) out.push(`${l.vatId ?? "IČ DPH"} ${c.vatId}`);
+    if (c.address) out.push(c.address);
+  }
+  out.push(b.buyer.name);
   for (const v of [b.buyer.email, b.buyer.phone, b.buyer.country]) if (v) out.push(v);
   out.push(
     "",

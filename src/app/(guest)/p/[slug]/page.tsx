@@ -181,6 +181,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         settings: {
           paymentDueHours: settings.paymentDueHours,
           paymentMethods: settings.paymentMethods,
+          upcomingMethods: settings.upcomingMethods,
           holdMinutes: settings.holdMinutes,
           cancellationPolicy: policy,
           cancellationShort: policyFirst || null,
@@ -198,6 +199,8 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
           ]),
         ),
         trust,
+        // Z71: on the payment step the cancellation is at its checkbox and the deadline at the way to pay — only this stays.
+        trustOnPayment: [t("trust.direct")],
         initial: {
           checkIn: hasDates ? checkIn : null,
           checkOut: hasDates ? checkOut : null,

@@ -13,13 +13,23 @@ import { priceContributorsFor } from "@/modules/price-contributors";
 import { guardGuestAction } from "@/core/security/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
-import { getPublicProperty } from "./catalog";
+import { getGuestSettings, getPublicProperty } from "./catalog";
 import { toDiscounts, toPricingInput } from "./pricing-input";
 import { issueFormToken, verifyFormToken } from "./form-token";
 import { notifyReservationCreated } from "./notify";
 
 export type BookingState = {
-  error: null | "invalid" | "unavailable" | "price" | "consent" | "captcha" | "limit" | "generic";
+  error:
+    | null
+    | "invalid"
+    | "unavailable"
+    | "price"
+    | "consent"
+    | "captcha"
+    | "limit"
+    | "generic"
+    | "billing"
+    | "payment";
   details?: string[];
 };
 
@@ -73,6 +83,14 @@ const schema = z.object({
   captcha_token: z.string().max(2048).optional().default(""),
   // Honeypot: real people never see this field.
   website: z.string().max(0).optional().default(""),
+  // Z71: the chosen way to pay (checked against the ways the owner switched on) and the company for an invoice.
+  payment_method: z.enum(["bank_transfer", "card"]).optional().default("bank_transfer"),
+  invoice: z.string().max(1).optional().default(""),
+  billing_company: z.string().trim().max(200).optional().default(""),
+  billing_company_id: z.string().trim().max(20).optional().default(""),
+  billing_tax_id: z.string().trim().max(20).optional().default(""),
+  billing_vat_id: z.string().trim().max(20).optional().default(""),
+  billing_address: z.string().trim().max(300).optional().default(""),
 });
 
 /** Label of a frozen price line in the guest's language. */
@@ -99,8 +117,30 @@ export async function createGuestReservation(
     return { error: "consent" };
   }
 
+  const billing =
+    v.invoice === "1"
+      ? {
+          company: v.billing_company,
+          company_id: v.billing_company_id,
+          tax_id: v.billing_tax_id,
+          vat_id: v.billing_vat_id,
+          address: v.billing_address,
+        }
+      : null;
+  if (
+    billing &&
+    (billing.company.length < 2 ||
+      !billing.company_id ||
+      !billing.tax_id ||
+      billing.address.length < 3)
+  )
+    return { error: "billing" };
+
   const tenant = await getTenantFromHost();
   if (!tenant) return { error: "generic" };
+  // Only a way the owner switched on and that works (the inactive "Pripravujeme" card cannot be chosen).
+  if (!(await getGuestSettings(tenant.id)).paymentMethods.includes(v.payment_method))
+    return { error: "payment" };
   const blocked = await guardGuestAction(tenant.id, "reservation", v.captcha_token);
   if (blocked) return { error: blocked };
   const locale = await getLocale();
@@ -208,6 +248,8 @@ export async function createGuestReservation(
         guest_note: v.guest_note,
         promo_code: price.lines.some((l) => l.kind === "discount" && l.meta.code) ? code : null,
         marketing_consent: form.get("consent_marketing") === "on",
+        payment_method: v.payment_method,
+        billing,
         hold_id: v.hold_id || null,
         lines: price.lines.map((l) => ({
           kind: l.kind,

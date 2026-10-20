@@ -38,6 +38,11 @@ async function summaryFits(page: Page, cart: Locator, button: string) {
   expect((await cta.boundingBox())!.y + (await cta.boundingBox())!.height).toBeLessThanOrEqual(
     height,
   );
+  // Z71: on the payment step the cancellation is said once — at its checkbox, not under the button.
+  if (button === "Rezervovať s povinnosťou platby") {
+    await expect(aside.getByText(/Storno/)).toHaveCount(0);
+    return;
+  }
   const trust = aside.getByText(/Storno/).last();
   await expect(trust).toBeVisible();
   expect((await trust.boundingBox())!.y).toBeLessThan(height);
@@ -91,14 +96,10 @@ test("cart v2.2 on a 13″ notebook: summary without scrolling, one-line extras,
   await cart.locator("#c-email").fill(`e2e-notebook-${Date.now()}@booking-platform.test`);
   await cart.locator("aside").getByRole("button", { name: "Skontrolovať a zaplatiť" }).click();
 
-  // Step 3: three reassurances above the consents, back to the details from the summary.
+  // Step 3 (Z71): the way to pay as cards, the cancellation said once (at its checkbox), back to the details.
   await expect(cart.getByRole("heading", { name: /Skontrolujte a potvrďte/ })).toBeVisible();
-  await expect(
-    cart
-      .getByRole("list")
-      .filter({ hasText: /Storno/ })
-      .first(),
-  ).toBeVisible();
+  await expect(cart.getByRole("group", { name: "Spôsob platby" })).toBeVisible();
+  await expect(cart.getByText(/Storno podľa podmienok/).filter({ visible: true })).toHaveCount(0);
   await expect(cart.locator("aside").getByRole("button", { name: /Späť na údaje/ })).toBeVisible();
   await summaryFits(page, cart, "Rezervovať s povinnosťou platby");
   await noSeriousA11y(page);

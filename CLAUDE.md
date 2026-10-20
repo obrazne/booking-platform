@@ -148,6 +148,9 @@ v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazn
 (q, steps[], go), moduly cez manifest `helpFaqs`; odkaz na otázku `helpHref(id)` (pre ⓘ). Žiadosti „Nenašli ste odpoveď?“:
 DB `support_request_create` → `support_requests`, zvonček správcu, e-mail `platform_support_request` na `NEXT_PUBLIC_SUPPORT_EMAIL`;
 riadiace centrum `/platform/support`. Zoznam otázok na kontrolu `docs/pomoc-otazky.md` (pri zmene textov pregenerovať).
+**Košík — platba a firma (Z71):** spôsoby platby `src/core/payments/methods.ts` (`offeredMethods`; `upcomingMethods` = neaktívna
+karta „Pripravujeme“ len pri `EMAIL_REDIRECT_TO`, t. j. staging), voľba a firma idú do `create_reservation` (`payment_method`,
+`billing`) → `reservations.payment_method`, `billing_*`; podklad na doklad berie firmu ako odberateľa.
 **Hostia (Z68):** jadro, Rezervácie › Hostia `/admin/guests` (DB `guest_list` / `guest_list_counts` — počty, útrata, stránkovanie
 v DB), karta `?panel=guest:<id>` (`src/app/admin/guests/panel-content.tsx`), dáta `src/core/guests/`. **Súhlas s ponukami zapína len
 hosť** (košík, Moje údaje, odkaz `/suhlas/<token>` zo žiadosti `guest_consent_request` → e-mail `guest_consent_request`, token robí

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keepsOneMethod, offeredMethods } from "./methods";
+import { keepsOneMethod, offeredMethods, upcomingMethods } from "./methods";
 
 describe("payment methods (Z69)", () => {
   it("offers the bank transfer when it is on and has an account", () => {
@@ -24,5 +24,11 @@ describe("payment methods (Z69)", () => {
     expect(keepsOneMethod({ bank_transfer_enabled: false, card_enabled: false })).toBe(false);
     expect(keepsOneMethod({ bank_transfer_enabled: true })).toBe(true);
     expect(keepsOneMethod({})).toBe(true);
+  });
+
+  it("the inactive card (Pripravujeme) only on staging, never in production (Z71)", () => {
+    const s = { bank_transfer_enabled: true, iban: "x" };
+    expect(upcomingMethods(s, { EMAIL_REDIRECT_TO: "inbox@example.invalid" })).toEqual(["card"]);
+    expect(upcomingMethods(s, {})).toEqual([]);
   });
 });

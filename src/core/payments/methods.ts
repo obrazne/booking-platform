@@ -46,6 +46,20 @@ export function offeredMethods(s: PaymentSettings): PaymentMethodKey[] {
   );
 }
 
+/**
+ * Prepared ways to pay the cart shows as "Pripravujeme" (inactive) — only on staging (ROZHODNUTIA 2026-10-20, Z71):
+ * real guests never see an option they cannot use. Staging = e-mails redirected to one inbox (`EMAIL_REDIRECT_TO`);
+ * production runs without it (ROADMAP › Pred spustením), so the inactive card disappears there by itself.
+ */
+export function upcomingMethods(
+  s: PaymentSettings,
+  env: Record<string, string | undefined> = process.env,
+): PaymentMethodKey[] {
+  if (!env.EMAIL_REDIRECT_TO) return [];
+  const offered = offeredMethods(s);
+  return PAYMENT_PROVIDERS.filter((p) => !p.built && !offered.includes(p.key)).map((p) => p.key);
+}
+
 /** The rule of the database: at least one way to pay a reservation stays on. */
 export function keepsOneMethod(s: PaymentSettings): boolean {
   return PAYMENT_PROVIDERS.some((p) => p.enabled(s));

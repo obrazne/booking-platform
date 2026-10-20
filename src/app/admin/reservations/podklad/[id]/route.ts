@@ -34,6 +34,12 @@ export async function GET(
     {
       heading: labels.buyer,
       rows: opt([
+        // Z71: a company buyer first (the document goes to it), then the guest.
+        [t("company"), basis.buyer.company?.name ?? null],
+        [labels.companyId ?? "", basis.buyer.company?.companyId ?? null],
+        [labels.taxId ?? "", basis.buyer.company?.taxId ?? null],
+        [labels.vatId ?? "", basis.buyer.company?.vatId ?? null],
+        [t("companyAddress"), basis.buyer.company?.address ?? null],
         [t("name"), basis.buyer.name],
         [t("email"), basis.buyer.email],
         [t("phone"), basis.buyer.phone],

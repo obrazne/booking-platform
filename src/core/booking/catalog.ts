@@ -1,4 +1,4 @@
-import { offeredMethods } from "@/core/payments/methods";
+import { offeredMethods, upcomingMethods } from "@/core/payments/methods";
 import "server-only";
 import { cache } from "react";
 import { notFound } from "next/navigation";
@@ -153,6 +153,8 @@ export const getGuestSettings = cache(async (tenantId: string) => {
   return {
     /** Ways the guest can pay (Z69): switched on and ready — never the account itself. */
     paymentMethods: offeredMethods(data ?? {}),
+    /** Prepared methods shown as "Pripravujeme" — staging only (Z71). */
+    upcomingMethods: upcomingMethods(data ?? {}),
     paymentDueHours: data?.payment_due_hours ?? 24,
     holdMinutes: data?.hold_minutes ?? 30,
     cancellationPolicy: (data?.cancellation_policy ?? {}) as Record<string, string>,
