@@ -28,7 +28,7 @@ export async function GuestCheckinCard({ locale, reservationId, accessToken }: S
     return (
       <section
         aria-label={t("kicker")}
-        className="border-line flex items-center gap-3.5 rounded-[10px] border bg-[#f6f9f7] px-[22px] py-[18px]"
+        className="guest-card flex items-center gap-3.5 rounded-[10px] px-[22px] py-[18px]"
       >
         <span className="bg-primary text-primary-foreground inline-flex size-[34px] shrink-0 items-center justify-center rounded-full">
           <Check className="size-4" strokeWidth={2.4} />
@@ -60,7 +60,7 @@ export async function GuestCheckinCard({ locale, reservationId, accessToken }: S
   return (
     <section
       aria-labelledby="checkin-card"
-      className="border-line flex flex-wrap items-center justify-between gap-x-6 gap-y-4 rounded-[10px] border px-6 py-[22px]"
+      className="guest-card flex flex-wrap items-center justify-between gap-x-6 gap-y-4 rounded-[10px] px-6 py-[22px]"
     >
       <div className="grid max-w-[520px] gap-1.5">
         <span className="text-accent-2 text-xs font-medium tracking-[0.16em] uppercase">

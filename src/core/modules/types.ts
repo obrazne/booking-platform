@@ -25,6 +25,8 @@ export type SlotName =
   | "guest.stay.top"
   | "guest.stay.main"
   | "guest.stay.aside"
+  /** An action in the contact foot of the green stay card (Z70) — e.g. "Napísať správu" of the messages module. */
+  | "guest.stay.contact"
   /** Inside the stay's green "Účet pobytu" card in the account (Z44): lines a module adds (orders). */
   | "guest.stay.account"
   /** Under the dates in the stay's header (e.g. "Nová správa od Jany ↓", Z47). */

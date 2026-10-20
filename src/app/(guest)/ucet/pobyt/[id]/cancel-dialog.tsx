@@ -78,7 +78,7 @@ export function CancelDialog({
           </div>
           <label className="grid gap-1.5">
             <span className="text-sm font-medium">
-              {t("reason")} <span className="text-[#6b7480]">· {t("optional")}</span>
+              {t("reason")} <span className="text-muted-foreground">· {t("optional")}</span>
             </span>
             <textarea
               rows={3}

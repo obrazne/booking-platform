@@ -66,6 +66,8 @@
   --page: #ffffff;
   --card-surface: #fafaf8;
   --card-border: #e2dfd7;
+  /* Card on the guest side (Z70, rule 1): a soft warm shade + the card edge on the white page. */
+  --guest-card: #faf8f3;
   --divider: #ecebe6;
   --field: #ffffff;
   --field-border: #86898e;
@@ -93,7 +95,8 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* Z70: a shade darker so muted text keeps 4.5 : 1 on the warm guest cards too (was oklch 0.556 = 4.46 : 1). */
+  --muted-foreground: oklch(0.52 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -355,6 +358,11 @@
     background: color-mix(in oklab, var(--primary) 9%, transparent);
   }
   /* Something waiting for the owner (unpaid reservation): warm, not red (rule 5). */
+  /* A card on the guest side (Z70): warm shade and edge — never white on white. Fields inside stay white. */
+  .guest-card {
+    background: var(--guest-card);
+    border: 1px solid var(--card-border);
+  }
   .card-warm {
     background: #fcf6ef;
     border: 1px solid #ecd9c4;

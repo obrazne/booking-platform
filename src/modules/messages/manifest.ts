@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { messagesTab } from "./admin/tab";
 import { ensureMessageDefaults } from "./defaults";
 import { messageEmailBlocks } from "./email-blocks";
-import { GuestMessagesContact, GuestMessagesPill, GuestMessagesSection } from "./guest/section";
+import { GuestMessagesWrite, GuestMessagesPill, GuestMessagesSection } from "./guest/section";
 import { messageTodos } from "./guest/todos";
 
 /** Conversations waiting for a reply (the badge of Správy in the menu). */
@@ -41,7 +41,8 @@ export const messagesModule: ModuleManifest = {
   slots: {
     "guest.stay.top": GuestMessagesSection,
     "guest.stay.header": GuestMessagesPill,
-    "guest.stay.aside": GuestMessagesContact,
+    // Z70: no own contact card (it slid under the sticky stay card) — "Napísať správu" in the card's foot.
+    "guest.stay.contact": GuestMessagesWrite,
   },
   guestContact: true,
   guestTodos: messageTodos,

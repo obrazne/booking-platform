@@ -468,7 +468,7 @@ const calendar = defineSection({
             title={pick(content.title, data.locale, t("title"))}
             subtitle={pick(content.subtitle, data.locale, t("subtitle"))}
           />
-          <div className="border-line grid gap-[22px] rounded-lg border bg-white p-4 shadow-[0_24px_60px_-34px_rgba(17,33,47,0.14)] sm:p-[30px]">
+          <div className="guest-card grid gap-[22px] rounded-lg p-4 shadow-[0_24px_60px_-34px_rgba(17,33,47,0.14)] sm:p-[30px]">
             <InlineAvailability />
             <div className="border-line border-t pt-5">
               <CalendarSummary />
@@ -843,7 +843,7 @@ const testimonials = defineSection({
             {list.map((r) => (
               <figure
                 key={r.id}
-                className="border-line flex w-[85%] shrink-0 snap-start flex-col gap-5 rounded-lg border bg-white p-[30px] sm:w-auto"
+                className="guest-card flex w-[85%] shrink-0 snap-start flex-col gap-5 rounded-lg p-[30px] sm:w-auto"
               >
                 <blockquote className="text-ink text-lg leading-relaxed">„{r.text}“</blockquote>
                 <figcaption className="text-accent-2 mt-auto font-mono text-xs font-medium tracking-wider uppercase">

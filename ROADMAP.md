@@ -467,6 +467,24 @@ pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-20 — Z70 [linka A] 🔄 (rozpracované, kód hotový): **potvrdenie a pobyt — kontakt bez zdvojenia, plochy na strane hosťa** (pripomienky 58, 59). (Claude Code)
+  - **Kontakt raz:** samostatná karta kontaktu modulu Správy (slot `guest.stay.aside`) zrušená — šmýkala sa pod sticky zelenú kartu.
+    Kontakt je len v **pätičke zelenej karty** (`src/core/guest/stay-contact.tsx`): kto odpovedá, „Napísať správu“ z modulu cez nový slot
+    `guest.stay.contact` (jadro o module nevie; na PC skok na sekciu Správy, na mobile jej stránka), WhatsApp a telefón ak sú nastavené.
+    Na `/r` (čaká na platbu) aj v detaile pobytu v účte (a teda aj na `/r` zaplateného pobytu). Meno na vlastnom riadku, akcie pod ním.
+  - **Plochy hosťa (pravidlo 1):** token `--guest-card` (#faf8f3) a trieda `.guest-card` (teplý odtieň + okraj `--card-border`) na
+    kartách: platba s QR (QR na bielom), check-in, Správy, pokyny k príchodu, doobjednanie, pobyty v účte, bočný panel účtu, karta
+    zrušenia, recenzie, rezervačný box a referencie na stránke objektu, kalendár v košíku, karty na úvodnej stránke klienta, check-in
+    formulár. Natvrdo zadané sivé (`#6b7480`, `#5a6672`, `#f7f4ed`) v správach, check-ine, upselle, zrušení a „Uložiť do účtu“ →
+    tokeny. `--muted-foreground` stránky hosťa o odtieň tmavší (oklch 0.52), aby sivý text mal 4,5 : 1 aj na teplej karte; drobná cena
+    v kalendári `#53575d`.
+  - `scripts/ui-audit.mjs` kontroluje na strane hosťa aj kartu, ktorá splýva s plochou alebo je biela na bielom, a košík s termínom.
+    Hosťovské obrazovky PC aj mobil bez nálezu. e2e `stay-contact.spec.ts` (jeden kontakt, žiadne „Napíšte…“, karty v pravom stĺpci
+    sa pri scrolle neprekrývajú na 1280×800 a 1440×900, žiadna biela karta, axe; čaká na platbu aj potvrdený; PC aj mobil) prešiel.
+  - **Zostáva:** beh testov strany hosťa padol na **plnom disku G:** (ENOSPC, voľných 0 B → po zmazaní `.next/cache` 508 MB). Treba
+    uvoľniť miesto na G: a pustiť `messages-guest, stay-states, confirm, account*, checkin-guest, upsell-guest, guest, cart, a11y,
+    reviews-guest` znova. Pozorované: kontrolné skripty občas dostanú 404 na pobyt testovacieho hosťa — pravdepodobne paralelný e2e beh
+    linky B maže pri upratovaní rezervácie `@booking-platform.test`; samostatne každá stránka prejde.
 - 2026-10-20 — Z73 [linka B]: **Rezervácie predvolene najnovšie hore** (pripomienka 63). (Claude Code)
   - `query.ts`: predvolené zoradenie `created_at` zostupne, pri rovnakom čase rozhoduje číslo (ukážkové dáta majú rovnaký čas
     vytvorenia); stĺpec Číslo ukazuje aktívne zoradenie aj bez `?sort=` (`SortHeader` — nový `defaultDir`). Termín ostáva na klik.

@@ -440,7 +440,7 @@ function StepStay({ wide, calendarOpen }: { wide: boolean; calendarOpen: boolean
   const { data, range } = b;
   const hasDates = Boolean(range.checkIn && range.checkOut);
   const guests = (
-    <div className="border-line rounded-lg border px-4 py-2 lg:hidden">
+    <div className="guest-card rounded-lg px-4 py-2 lg:hidden">
       <Guests />
     </div>
   );
@@ -450,7 +450,7 @@ function StepStay({ wide, calendarOpen }: { wide: boolean; calendarOpen: boolean
     return (
       <section className="grid gap-[18px]">
         <SectionTitle title={t("v2.cartDatesTitle")} sub={t("v2.cartDatesSub")} />
-        <div id="cart-calendar" className="border-line rounded-lg border px-4 py-5 sm:px-6">
+        <div id="cart-calendar" className="guest-card rounded-lg px-4 py-5 sm:px-6">
           <AvailabilityCalendar
             locale={data.locale}
             currency={data.catalog.currency}

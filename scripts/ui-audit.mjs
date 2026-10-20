@@ -85,6 +85,7 @@ const PLATFORM_PAGES = [
 ];
 const GUEST_PAGES = [
   ["host-objekt", "/p/chalet-pod-smrekom"],
+  ["host-kosik", "/p/chalet-pod-smrekom?check_in={free}&check_out={freeOut}"],
   ["host-pristup", "/r/{token}"],
   ["host-ucet", "/ucet"],
   ["host-pobyt", "/ucet/pobyt/{stay}"],
@@ -174,6 +175,43 @@ async function rules(page, area) {
         p = p.parentElement;
       }
     }
+    // Rule 1 on the guest side (Z70): a card differs from the surface under it — its own shade or a visible edge.
+    if (area === "guest") {
+      let flat = 0;
+      for (const el of document.querySelectorAll("main *, [role=dialog] *")) {
+        if (
+          !el.offsetParent ||
+          ["A", "BUTTON", "INPUT", "SELECT", "TEXTAREA", "LABEL", "IMG", "SVG", "SUMMARY"].includes(
+            el.tagName,
+          )
+        )
+          continue;
+        const s = getComputedStyle(el);
+        if (
+          parseFloat(s.borderTopLeftRadius) < 6 ||
+          parseFloat(s.paddingTop) < 12 ||
+          parseFloat(s.paddingLeft) < 12
+        )
+          continue;
+        if (el.offsetWidth < 200 || el.offsetHeight < 56) continue;
+        const under = surface(el);
+        const own = opaque(s.backgroundColor) ? s.backgroundColor : under;
+        const edge =
+          s.borderTopStyle !== "none" && parseFloat(s.borderTopWidth) > 0
+            ? contrast(s.borderTopColor, own === under ? under : own)
+            : 1;
+        const shade = contrast(own, under);
+        // Z70: on the guest side a card has its own warm shade AND an edge — a white card with a thin line on white too.
+        const white = rgb(own).slice(0, 3).join() === "255,255,255";
+        if (shade < 1.03 && (edge < 1.2 || white) && s.boxShadow === "none") {
+          flat++;
+          if (flat <= 8)
+            out.push(
+              `1: karta splýva s plochou: ${name(el)}.${[...el.classList].slice(0, 4).join(".")}`,
+            );
+        }
+      }
+    }
     // Rule 6: a field or button never leaves its card or row.
     for (const el of document.querySelectorAll(
       "main input:not([type=hidden]), main select, main textarea, main button",
@@ -204,7 +242,10 @@ async function axe(page) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   return r.violations
     .filter((v) => v.impact === "serious" || v.impact === "critical")
-    .map((v) => `axe ${v.id}: ${v.nodes[0]?.target.join(" ")}`);
+    .map(
+      (v) =>
+        `axe ${v.id}: ${v.nodes[0]?.target.join(" ")} — ${(v.nodes[0]?.any[0]?.message ?? "").slice(0, 110)}`,
+    );
 }
 
 const report = [];
@@ -316,7 +357,21 @@ try {
     sender: "staff",
     body: "Dobrý deň, tešíme sa na vás. Ak budete čokoľvek potrebovať, napíšte nám sem.",
   });
-  const fill = (p) => p.replace("{stay}", stayId).replace("{token}", created.access_token ?? "");
+  // Free nights for the cart: the first 3 free nights after the test stay.
+  let free = null;
+  for (let d = new Date(Date.parse(checkOut) + 864e5); !free; d.setUTCDate(d.getUTCDate() + 1)) {
+    const days = [0, 1, 2, 3].map((i) =>
+      new Date(d.getTime() + i * 864e5).toISOString().slice(0, 10),
+    );
+    if (days.every((x) => !taken.has(x))) free = days[1];
+  }
+  const freeOut = new Date(Date.parse(free) + 2 * 864e5).toISOString().slice(0, 10);
+  const fill = (p) =>
+    p
+      .replace("{stay}", stayId)
+      .replace("{token}", created.access_token ?? "")
+      .replace("{free}", free)
+      .replace("{freeOut}", freeOut);
 
   for (const vp of Object.keys(VIEWPORTS)) {
     const o = await staffContext(browser, vp, "qa@booking-platform.test", "/admin");
@@ -334,6 +389,7 @@ try {
     await audit(gp, "guest", GUEST, ["host-prihlasenie", "/ucet/prihlasenie"], vp, fill);
     await audit(gp, "guest", GUEST, GUEST_PAGES[0], vp, fill);
     await audit(gp, "guest", GUEST, GUEST_PAGES[1], vp, fill);
+    await audit(gp, "guest", GUEST, GUEST_PAGES[2], vp, fill);
     await gp.goto(`${GUEST}/ucet/prihlasenie`);
     await gp.getByLabel("E-mail").fill(guestEmail);
     await gp.getByRole("button", { name: "Poslať kód" }).click();
@@ -348,7 +404,7 @@ try {
     await gp.waitForURL(
       (u) => u.pathname.startsWith("/ucet") && !u.pathname.includes("prihlasenie"),
     );
-    for (const p of GUEST_PAGES.slice(2)) await audit(gp, "guest", GUEST, p, vp, fill);
+    for (const p of GUEST_PAGES.slice(3)) await audit(gp, "guest", GUEST, p, vp, fill);
     await g.close();
   }
 } finally {

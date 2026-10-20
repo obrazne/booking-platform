@@ -1,7 +1,8 @@
+import { StayContactFoot } from "@/core/guest/stay-contact";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ChevronLeft, FileText, Lock, MessageCircle, Phone } from "lucide-react";
+import { ChevronLeft, FileText, Lock, MessageCircle } from "lucide-react";
 import { CopyButton } from "@/app/(guest)/r/[token]/confirm-ui";
 import { cancellationOutcome, parseBands } from "@/core/booking/cancellation";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
@@ -44,7 +45,7 @@ export async function StayDetail({
   } = await loadStay(token ? { token } : { id: id ?? "" });
   const today = todayIso();
   const phase = stayPhase(stay.status, stay.checkIn, stay.checkOut, today);
-  // A module may show the owner's contact itself (e.g. messages, Z47) — then the core card stays out.
+  // A module may add "Napísať správu" to the contact foot (messages) — the foot shows even without a phone (Z70).
   const contactByModule = await guestContactByModule(tenant.id);
   const state = stayStateOf(rawState);
   const [t, tg, ts, locale, { data: settings }] = await Promise.all([
@@ -80,13 +81,6 @@ export async function StayDetail({
   const daysToArrival = diffDays(today, stay.checkIn);
   const contactName = settings?.contact_name?.trim() || null;
   const ownerFirst = contactName?.split(/\s+/)[0] ?? null;
-  const initials = (contactName ?? stay.property?.name ?? tenant.name)
-    .split(/\s+/)
-    .filter((w) => /^\p{L}/u.test(w))
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
   const policy = tr(settings?.cancellation_policy, locale);
   const policyFirst = policy ? policy.split(/(?<=\.)\s/)[0]! : "";
   const contactHref = settings?.whatsapp_phone
@@ -250,7 +244,7 @@ export async function StayDetail({
 
           {/* Cancelled: when, why and what is returned (design v2.4). */}
           {phase === "cancelled" ? (
-            <section className="grid gap-3 rounded-lg border border-[#e3e1db] bg-[#f6f5f2] p-6">
+            <section className="guest-card grid gap-3 rounded-lg p-6">
               <h2 className="text-ink text-[22px] font-extrabold tracking-tight">
                 {ts("cancelled.title")}
               </h2>
@@ -295,7 +289,7 @@ export async function StayDetail({
             arrival.visible ? (
               <section
                 aria-labelledby="arrival-title"
-                className="bg-surface border-line grid gap-4 rounded-lg border p-6"
+                className="guest-card grid gap-4 rounded-lg p-6"
               >
                 <div className="grid gap-1">
                   <span className="text-accent-2 text-xs font-medium tracking-[0.16em] uppercase">
@@ -347,7 +341,7 @@ export async function StayDetail({
                     .map((f) => (
                       <div
                         key={f.k}
-                        className="grid content-start gap-1 rounded-[10px] border border-[#e9e5db] bg-white px-4 py-3"
+                        className="guest-card grid content-start gap-1 rounded-[10px] px-4 py-3"
                       >
                         <dt className="font-mono text-[11px] tracking-[0.1em] text-[#5a6672] uppercase">
                           {f.k}
@@ -386,7 +380,7 @@ export async function StayDetail({
                 </div>
               </section>
             ) : (
-              <section className="border-line flex items-center gap-3.5 rounded-[10px] border px-[22px] py-4">
+              <section className="guest-card flex items-center gap-3.5 rounded-[10px] px-[22px] py-4">
                 <Lock className="size-5 shrink-0 text-[#8b929b]" aria-hidden />
                 <span className="grid gap-0.5">
                   <span className="text-ink text-[15px] font-medium">{ts("arrival.locked")}</span>
@@ -567,40 +561,26 @@ export async function StayDetail({
                 </div>
               </div>
             ) : null}
+            {/* Z70: the only contact of the stay — the foot of this card, no separate card under it. */}
+            {phase !== "cancelled" &&
+            (settings?.contact_phone || settings?.whatsapp_phone || contactByModule) ? (
+              <StayContactFoot
+                name={contactName ?? tg("v2.ownerFallback")}
+                phone={settings?.contact_phone ?? null}
+                whatsapp={settings?.whatsapp_phone ?? null}
+                className="-mx-6 mt-1 -mb-[22px] px-6 py-4"
+                write={
+                  <ModuleSlot
+                    name="guest.stay.contact"
+                    tenantId={tenant.id}
+                    locale={locale}
+                    reservationId={stay.id}
+                    accessToken={token}
+                  />
+                }
+              />
+            ) : null}
           </section>
-          {!contactByModule && (settings?.contact_phone || settings?.whatsapp_phone) ? (
-            <div className="bg-surface border-line flex items-center gap-3 rounded-lg border px-[18px] py-4">
-              <span className="inline-flex size-[38px] shrink-0 items-center justify-center rounded-full bg-[#e9e5db] text-[13px] font-bold text-[#5a6672]">
-                {initials}
-              </span>
-              <span className="grid min-w-0 flex-1 gap-px">
-                <span className="text-ink text-sm font-medium">
-                  {ownerFirst ? t("contactAsk", { name: ownerFirst }) : tg("v2.questions")}
-                </span>
-                <span className="text-xs text-[#5a6672]">
-                  {settings.contact_phone ?? settings.whatsapp_phone}
-                </span>
-              </span>
-              {settings.whatsapp_phone ? (
-                <a
-                  href={`https://wa.me/${settings.whatsapp_phone.replace(/\D/g, "")}`}
-                  aria-label={tg("cart.whatsapp")}
-                  className="text-ink inline-flex size-9 items-center justify-center rounded-full hover:bg-black/5"
-                >
-                  <MessageCircle className="size-4" />
-                </a>
-              ) : null}
-              {settings.contact_phone ? (
-                <a
-                  href={`tel:${settings.contact_phone.replace(/\s/g, "")}`}
-                  aria-label={tg("cart.call")}
-                  className="text-ink inline-flex size-9 items-center justify-center rounded-full hover:bg-black/5"
-                >
-                  <Phone className="size-4" />
-                </a>
-              ) : null}
-            </div>
-          ) : null}
         </aside>
       </Container>
     </main>

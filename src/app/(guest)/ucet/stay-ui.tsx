@@ -46,7 +46,7 @@ export async function StayCard({ stay, big }: { stay: Stay; big?: boolean }) {
   return (
     <article
       className={cn(
-        "bg-card border-line grid gap-4 rounded-lg border p-5",
+        "guest-card grid gap-4 rounded-lg p-5",
         big && "shadow-[0_24px_60px_-40px_rgba(17,33,47,0.25)] sm:grid-cols-[220px_1fr] sm:p-6",
       )}
     >

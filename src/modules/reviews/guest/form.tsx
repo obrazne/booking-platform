@@ -160,7 +160,7 @@ export function ReviewForm({
         </div>
       </fieldset>
 
-      <fieldset className="grid gap-x-7 gap-y-2.5 rounded-[10px] border border-[#ecebe6] bg-[#fafaf8] px-[18px] py-4 sm:grid-cols-2">
+      <fieldset className="guest-card grid gap-x-7 gap-y-2.5 rounded-[10px] px-[18px] py-4 sm:grid-cols-2">
         <legend className="sr-only">{t("details")}</legend>
         <span aria-hidden className="text-[13px] text-[#5a6672] sm:col-span-2">
           {t("details")} <span className="text-[#6e747c]">· {t("optional")}</span>

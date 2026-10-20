@@ -106,7 +106,7 @@ export default async function GuestZonePage() {
             </h2>
             <Link
               href={`/ucet/pobyt/${next.id}`}
-              className="border-line grid overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-[0_20px_40px_-30px_rgba(17,33,47,0.35)] sm:grid-cols-[300px_minmax(0,1fr)]"
+              className="guest-card grid overflow-hidden rounded-xl transition-shadow hover:shadow-[0_20px_40px_-30px_rgba(17,33,47,0.35)] sm:grid-cols-[300px_minmax(0,1fr)]"
             >
               <span className="relative min-h-[180px] bg-[#d9dcd8] sm:min-h-[230px]">
                 {next.property?.photo ? (
@@ -146,7 +146,7 @@ export default async function GuestZonePage() {
               <Link
                 key={s.id}
                 href={`/ucet/pobyt/${s.id}`}
-                className="border-line grid gap-2 rounded-xl border bg-white px-[22px] py-[18px] transition-shadow hover:shadow-[0_20px_40px_-30px_rgba(17,33,47,0.35)]"
+                className="guest-card grid gap-2 rounded-xl px-[22px] py-[18px] transition-shadow hover:shadow-[0_20px_40px_-30px_rgba(17,33,47,0.35)]"
               >
                 <span className="flex flex-wrap items-center gap-2.5">
                   <span className="text-ink text-lg font-extrabold">{range(s)}</span>
@@ -201,7 +201,7 @@ export default async function GuestZonePage() {
       </div>
 
       {contact?.whatsapp_phone || contact?.contact_phone ? (
-        <aside className="grid gap-3 rounded-[10px] border border-[#ecebe6] bg-[#fafaf8] px-5 py-[18px] lg:sticky lg:top-[76px]">
+        <aside className="guest-card grid gap-3 rounded-[10px] px-5 py-[18px] lg:sticky lg:top-[76px]">
           <h2 className="text-ink text-[15px] font-bold">{t("questions")}</h2>
           <div className="flex items-center gap-3">
             <span

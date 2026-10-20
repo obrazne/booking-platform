@@ -127,8 +127,8 @@ export function VerifiedReviewsSection({
               <article
                 key={r.id}
                 className={cn(
-                  "grid gap-3 rounded-[10px] border px-[22px] py-5",
-                  r.featured ? "border-[#dfe8e2] bg-[#fbfdfc]" : "border-line bg-white",
+                  "guest-card grid gap-3 rounded-[10px] px-[22px] py-5",
+                  r.featured && "border-primary/40",
                 )}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -204,7 +204,7 @@ export function VerifiedReviewsSection({
             {others.map((o) => (
               <figure
                 key={o.id}
-                className="border-line m-0 grid gap-2 rounded-[10px] border px-[18px] py-4"
+                className="guest-card m-0 grid gap-2 rounded-[10px] px-[18px] py-4"
               >
                 <blockquote className="text-ink text-sm leading-relaxed">„{o.text}“</blockquote>
                 <figcaption className="font-mono text-[11px] tracking-[0.08em] text-[#5a6672] uppercase">

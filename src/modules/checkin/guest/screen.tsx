@@ -35,7 +35,7 @@ export async function CheckinScreen({
       <Container className="flex items-center justify-between gap-4 py-[18px]">
         <span className="flex items-baseline gap-3.5">
           <span className="text-ink text-lg font-extrabold tracking-tight">{r.propertyName}</span>
-          <span className="font-mono text-[11px] font-medium tracking-[0.12em] text-[#6b7480] uppercase">
+          <span className="text-muted-foreground font-mono text-[11px] font-medium tracking-[0.12em] uppercase">
             {t("kicker")}
           </span>
         </span>
@@ -126,14 +126,14 @@ export async function CheckinScreen({
           )}
         </div>
         <aside className="grid content-start gap-4 lg:sticky lg:top-6">
-          <div className="grid gap-2.5 rounded-[10px] border border-[#ecebe6] bg-[#fafaf8] px-5 py-[18px]">
+          <div className="guest-card grid gap-2.5 rounded-[10px] px-5 py-[18px]">
             <span className="text-ink text-[15px] font-bold">{t("whyTitle")}</span>
             <p className="text-sm leading-relaxed text-[#5a6672]">{t("whyText")}</p>
             <p className="text-sm leading-relaxed text-[#5a6672]">
               {t("whyPrivacy", { name: data.ownerName ?? "none" })}
             </p>
           </div>
-          <div className="border-line grid gap-2.5 rounded-[10px] border px-5 py-[18px]">
+          <div className="guest-card grid gap-2.5 rounded-[10px] px-5 py-[18px]">
             <span className="text-ink text-[15px] font-bold">{t("afterTitle")}</span>
             {[
               data.required_for_instructions

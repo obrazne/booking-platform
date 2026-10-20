@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { ChevronRight, Phone } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { SlotProps } from "@/core/modules/types";
 import { Conversation } from "./conversation";
 import { loadGuestMessages, messagesHref } from "./load";
@@ -46,7 +46,7 @@ export async function GuestMessagesSection({ locale, reservationId, accessToken 
       {/* Phones: one row to the conversation on its own screen. */}
       <Link
         href={messagesHref(reservationId, accessToken)}
-        className="border-line flex items-center gap-3 rounded-xl border bg-white px-4 py-3.5 sm:hidden"
+        className="guest-card flex items-center gap-3 rounded-xl px-4 py-3.5 sm:hidden"
       >
         <span
           aria-hidden
@@ -68,7 +68,7 @@ export async function GuestMessagesSection({ locale, reservationId, accessToken 
         <ChevronRight aria-hidden className="size-5 text-[#5a6672]" />
       </Link>
 
-      <div className="border-line hidden overflow-hidden rounded-xl border bg-white sm:block">
+      <div className="guest-card hidden overflow-hidden rounded-xl sm:block">
         <div className="border-line flex items-center gap-3 border-b px-5 py-3.5">
           <span
             aria-hidden
@@ -109,42 +109,28 @@ export async function GuestMessagesPill({ locale, reservationId, accessToken }: 
   );
 }
 
-/** "Kontakt na Janu" on the right of the stay (Z47): write a message, the phone for what cannot wait. */
-export async function GuestMessagesContact({ locale, reservationId, accessToken }: SlotProps) {
+/**
+ * "Napísať správu" in the foot of the green stay card (Z70, slot guest.stay.contact): on a wide screen a jump to the
+ * conversation on the page, on a phone its own page. The owner's name and phone are in the foot itself.
+ */
+export async function GuestMessagesWrite({ locale, reservationId, accessToken }: SlotProps) {
   if (!reservationId) return null;
   const data = await loadGuestMessages(reservationId, locale, accessToken);
   if (!data) return null;
   const t = await getTranslations("modules.messages.guest");
+  // The button of a coloured surface (works with every client theme).
+  const pill = "btn-on-accent min-h-9 items-center justify-center px-3.5 text-sm";
   return (
-    <div className="grid gap-3 rounded-[10px] border border-[#ecebe6] bg-[#fafaf8] px-5 py-[18px]">
-      <h2 className="text-ink text-[15px] font-bold">
-        {t("contactTitle", { name: data.owner.first })}
-      </h2>
-      <p className="text-sm">{data.owner.name}</p>
-      <a
-        href={`#spravy`}
-        className="hidden min-h-10 items-center justify-center rounded-full bg-[#2b3036] px-4 text-sm font-bold text-white sm:inline-flex"
-      >
+    <>
+      <a href="#spravy" className={`hidden lg:inline-flex ${pill}`}>
         {t("write")}
       </a>
       <Link
         href={messagesHref(reservationId, accessToken)}
-        className="inline-flex min-h-10 items-center justify-center rounded-full bg-[#2b3036] px-4 text-sm font-bold text-white sm:hidden"
+        className={`inline-flex lg:hidden ${pill}`}
       >
         {t("write")}
       </Link>
-      {data.owner.phone ? (
-        <p className="inline-flex items-start gap-2 text-[13px] leading-relaxed text-[#5a6672]">
-          <Phone aria-hidden className="mt-0.5 size-4 shrink-0" />
-          <span>
-            {t("phoneLabel")}{" "}
-            <a href={`tel:${data.owner.phone.replace(/\s/g, "")}`} className="text-ink font-medium">
-              {data.owner.phone}
-            </a>{" "}
-            {t("phoneNote")}
-          </span>
-        </p>
-      ) : null}
-    </div>
+    </>
   );
 }

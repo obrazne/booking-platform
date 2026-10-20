@@ -98,7 +98,7 @@ export function UpsellOffers(props: Props) {
                   className="flex min-w-0 flex-1 items-baseline gap-2.5 overflow-hidden py-3.5 text-left whitespace-nowrap"
                 >
                   <span className="text-ink truncate text-[15px] font-medium">{offer.name}</span>
-                  <span className="truncate text-[13px] text-[#6b7480] max-sm:hidden">
+                  <span className="text-muted-foreground truncate text-[13px] max-sm:hidden">
                     <PriceUnit offer={offer} />
                   </span>
                 </button>
@@ -361,7 +361,7 @@ function OfferDetail({
               >
                 {pending ? t("ordering") : t("order", { amount: fmt(amount) })}
               </button>
-              <span className="text-xs text-[#6b7480]">
+              <span className="text-muted-foreground text-xs">
                 {offer.mode === "none"
                   ? t("cutoffAt", {
                       date: formatDateTime(offer.cutoffAt, props.locale, props.timeZone, "short"),
@@ -499,7 +499,7 @@ function OrderLine({
               {t("cancel")}
             </button>
           )}
-          <span className="text-xs text-[#6b7480]">
+          <span className="text-muted-foreground text-xs">
             {t("cancelUntil", {
               date: formatDateTime(order.cutoffAt, locale, timeZone, "short"),
             })}

@@ -68,7 +68,7 @@ export async function GuestStayOffers({ locale, reservationId, accessToken }: Sl
       {toPay > 0 && data.bank ? (
         <section
           aria-labelledby="upsell-pay"
-          className="border-line grid gap-5 rounded-lg border bg-white p-6 sm:grid-cols-[minmax(0,1fr)_180px]"
+          className="guest-card grid gap-5 rounded-lg p-6 sm:grid-cols-[minmax(0,1fr)_180px]"
         >
           <div className="grid content-start gap-3">
             <h3 id="upsell-pay" className="text-ink text-lg font-bold">

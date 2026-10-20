@@ -151,7 +151,7 @@ export function Conversation({
           it.kind === "day" ? (
             <p
               key={it.key}
-              className="py-1 text-center font-mono text-[11px] tracking-[0.12em] text-[#6b7480] uppercase"
+              className="text-muted-foreground py-1 text-center font-mono text-[11px] tracking-[0.12em] uppercase"
             >
               {it.label}
             </p>
@@ -187,7 +187,7 @@ export function Conversation({
               >
                 {it.body}
               </p>
-              <span className="text-[11px] text-[#6b7480]">
+              <span className="text-muted-foreground text-[11px]">
                 {it.time}
                 {it.status ? ` · ${it.status}` : ""}
               </span>

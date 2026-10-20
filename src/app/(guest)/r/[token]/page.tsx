@@ -2,19 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import {
-  CalendarPlus,
-  Check,
-  CircleCheck,
-  Clock,
-  Download,
-  MessageCircle,
-  Phone,
-} from "lucide-react";
+import { CalendarPlus, Check, CircleCheck, Clock, Download } from "lucide-react";
 import { startAccountFromReservation } from "@/core/guest/auth";
 import { formatDate, formatDateTime, formatMoney } from "@/core/format/format";
 import { tr } from "@/core/i18n/localized";
+import { StayContactFoot } from "@/core/guest/stay-contact";
 import { ModuleSlot } from "@/core/modules/module-slot";
+import { guestContactByModule } from "@/core/modules/registry";
 import { money } from "@/core/money/money";
 import { payBySquarePng, payBySquareSvg } from "@/core/payments/pay-by-square";
 import { diffDays } from "@/core/pricing/dates";
@@ -110,6 +104,8 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
   const policy = tr(x.cancellationPolicy, locale);
   const policyFirst = policy ? policy.split(/(?<=\.)\s/)[0]!.replace(/\.$/, "") : "";
   const contact = x.contact;
+  // A module may add "Napísať správu" to the contact foot (messages) — then the foot shows even without a phone.
+  const contactByModule = await guestContactByModule(r.tenant_id);
   const iban = r.bank?.iban?.replace(/\s/g, "") ?? "";
   const dueAt = r.payment_due_at ? formatDateTime(r.payment_due_at, locale, TZ) : "";
 
@@ -158,12 +154,6 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
     },
   ];
 
-  const initials = (contact?.name ?? r.property_name)
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
   const stayCard = (
     <div className="bg-surface-accent flex flex-col gap-5 rounded-lg px-7 pt-7 pb-6 text-white lg:sticky lg:top-6">
       <div className="grid gap-0.5">
@@ -241,34 +231,24 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           <CalendarPlus className="size-4" /> {t("addToCalendar")}
         </a>
       ) : null}
-      {contact?.phone || contact?.whatsapp ? (
-        <div className="bg-accent-deep -mx-7 -mb-6 flex items-center gap-3 rounded-b-lg px-7 py-4">
-          <span className="text-primary inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[13px] font-bold">
-            {initials}
-          </span>
-          <span className="grid min-w-0 flex-1 leading-tight">
-            <span className="text-on-accent-muted text-xs">{tg("v2.questions")}</span>
-            <span className="text-[15px] font-bold">{contact.name ?? tg("v2.ownerFallback")}</span>
-          </span>
-          {contact.whatsapp ? (
-            <a
-              href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(t("waText", { number: r.number }))}`}
-              aria-label={tg("cart.whatsapp")}
-              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 hover:bg-white/25"
-            >
-              <MessageCircle className="size-4" />
-            </a>
-          ) : null}
-          {contact.phone ? (
-            <a
-              href={`tel:${contact.phone.replace(/\s/g, "")}`}
-              aria-label={tg("cart.call")}
-              className="inline-flex size-9 items-center justify-center rounded-full bg-white/15 hover:bg-white/25"
-            >
-              <Phone className="size-4" />
-            </a>
-          ) : null}
-        </div>
+      {/* Z70: the only contact of the stay — no separate card under this sticky one. */}
+      {!cancelled && (contact?.phone || contact?.whatsapp || contactByModule) ? (
+        <StayContactFoot
+          name={contact?.name ?? tg("v2.ownerFallback")}
+          phone={contact?.phone ?? null}
+          whatsapp={contact?.whatsapp ?? null}
+          waText={t("waText", { number: r.number })}
+          className="-mx-7 -mb-6 px-7 py-4"
+          write={
+            <ModuleSlot
+              name="guest.stay.contact"
+              tenantId={r.tenant_id}
+              locale={locale}
+              reservationId={r.id}
+              accessToken={token}
+            />
+          }
+        />
       ) : null}
     </div>
   );
@@ -337,7 +317,7 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
             </h1>
             <p className="max-w-[60ch] text-lg leading-relaxed text-[#5a6672]">{hero.text}</p>
           </div>
-          <div className="border-line overflow-hidden rounded-lg border bg-white">
+          <div className="guest-card overflow-hidden rounded-lg">
             {x.cover ? (
               <div className="relative h-40">
                 <Image
@@ -373,9 +353,9 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
                   {t("payTitle")} <span className="text-ink-soft">{t("payTitle2")}</span>
                 </h2>
               </div>
-              <div className="border-line grid overflow-hidden rounded-lg border bg-white sm:grid-cols-[250px_minmax(0,1fr)]">
+              <div className="guest-card grid overflow-hidden rounded-lg sm:grid-cols-[250px_minmax(0,1fr)]">
                 {qr ? (
-                  <div className="border-line order-2 grid content-start justify-items-center gap-3 border-t bg-[#fbfaf9] p-6 sm:order-1 sm:border-t-0 sm:border-r">
+                  <div className="border-line order-2 grid content-start justify-items-center gap-3 border-t bg-white p-6 sm:order-1 sm:border-t-0 sm:border-r">
                     <div
                       role="img"
                       aria-label={tg("reservation.qrHint")}
@@ -557,7 +537,7 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
 
           {/* Guest account — a quiet row */}
           {!cancelled ? (
-            <section className="border-line flex flex-wrap items-center justify-between gap-4 rounded-lg border px-5 py-4">
+            <section className="guest-card flex flex-wrap items-center justify-between gap-4 rounded-lg px-5 py-4">
               <span className="grid gap-0.5">
                 <span className="text-ink font-bold">{t("accountTitle")}</span>
                 <span className="text-sm text-[#5a6672]">{t("accountText")}</span>
@@ -603,13 +583,6 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
 
         <aside className="grid content-start gap-4">
           <div className="hidden lg:contents">{stayCard}</div>
-          <ModuleSlot
-            name="guest.stay.aside"
-            tenantId={r.tenant_id}
-            locale={locale}
-            reservationId={r.id}
-            accessToken={token}
-          />
         </aside>
       </Container>
     </main>

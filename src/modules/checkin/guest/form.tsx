@@ -172,7 +172,7 @@ export function CheckinForm(props: Props) {
           const id = `person-${i}`;
           const name = `${p.first_name} ${p.last_name}`.trim();
           return (
-            <section key={i} className="border-line overflow-hidden rounded-[10px] border">
+            <section key={i} className="guest-card overflow-hidden rounded-[10px]">
               <button
                 type="button"
                 aria-expanded={isOpen}

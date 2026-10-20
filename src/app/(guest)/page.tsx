@@ -89,7 +89,7 @@ export default async function GuestHome({ searchParams }: PageProps<"/">) {
       <h1 className="font-heading text-3xl font-semibold tracking-tight">
         {t("guest.catalog.title")}
       </h1>
-      <form className="bg-card border-border grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end">
+      <form className="guest-card grid gap-3 rounded-lg p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end">
         <label className="grid gap-1 text-sm">
           {t("guest.catalog.checkIn")}
           <Input type="date" name="check_in" defaultValue={checkIn} />
@@ -145,7 +145,7 @@ export default async function GuestHome({ searchParams }: PageProps<"/">) {
             <Link
               key={p.id}
               href={`/p/${p.slug}${detailQuery ? `?${detailQuery}` : ""}`}
-              className="group bg-card border-border overflow-hidden rounded-lg border transition-shadow hover:shadow-lg"
+              className="group guest-card overflow-hidden rounded-lg transition-shadow hover:shadow-lg"
             >
               <div className="bg-muted relative aspect-[4/3] overflow-hidden">
                 {p.photo ? (
