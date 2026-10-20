@@ -12,8 +12,8 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ — fronta linky A je prázdna;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ — fronta linky B je prázdna.
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa) → Z72 (kalendár, účet na potvrdení)**;
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → **Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -243,6 +243,45 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
    pravidlá 1–5 z `docs/pravidla-rozhrania.md`; nedostatky oprav (aj na obrazovkách z linky B). Zoznam skontrolovaných obrazoviek do Denníka.
 2. Celý e2e beh + axe; nestabilné testy oprav.
 3. Prehliadka „Čo je nové“: nové snímky a text o zmenách (lišta ukladania, potvrdenia, pobyty z portálov, aktuálny pobyt hosťa), zvýš `version`.
+
+**Pripomienky 56–62 (Martin 20. 10., schválené „súhlasím so všetkým“) → Z70–Z72.** Strana hosťa: košík, potvrdenie, pobyt.
+Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hosťa). Linka A: potvrdenie a plochy; linka B: košík.
+
+### Z70 [A] — Potvrdenie a pobyt: kontakt bez zdvojenia, plochy na strane hosťa (pripomienky 58, 59)
+1. **Prekrývanie (58):** na `/r/<kód>` sa pri scrollovaní zelená karta „Váš pobyt“ (sticky) posúva cez kartu kontaktu pod ňou
+   (slot `guest.stay.aside` → `GuestMessagesContact` modulu messages). Kontakt je dnes 3× (pätička zelenej karty, karta „Napísať správu“,
+   sekcia Správy). **Samostatnú kartu kontaktu zruš**; pätička zelenej karty: „Napísať správu“ (skok na sekciu Správy — len keď je modul
+   messages zapnutý, napoj cez slot, jadro o module nevie), telefón, WhatsApp ak je nastavený. To isté v detaile pobytu v účte
+   (`stay-detail.tsx`, aside sticky). Ak v pravom stĺpci ostane iný obsah zo slotu, zelená karta ho nesmie prekryť.
+2. **Biele na bielom (59) — pravidlo 1 na celej strane hosťa:** pozadie stránky ostáva biele; karty (Správy, platba s QR, účet, pobyt,
+   check-in, objednávky, panely košíka…) dostanú jemný teplý odtieň + okraj; polia, rýchle odpovede a podobné prvky biele s okrajom
+   s kontrastom ≥ 3 : 1. Tokeny v `globals.css`, žiadne farby natvrdo (napr. `save-to-account.tsx` má `#5a6672`, `#f7f4ed`);
+   funguje aj s témami klientov. Prejdi: detail objektu, košík, `/r`, účet (prehľad, pobyt, Moje údaje), check-in, upsell, `/suhlas`.
+3. Testy: e2e — na `/r` po scrolle sa karty v pravom stĺpci neprekrývajú (1280×800, 1440×900), PC aj mobil; axe; kontrola kontrastu.
+
+### Z72 [A] — Pridať do kalendára a účet na potvrdení (pripomienky 60, 61) — po Z70
+1. **„Pridať do kalendára“** (dnes len stiahne .ics) → malá ponuka: **Google Kalendár** (odkaz `calendar.google.com/calendar/render?action=TEMPLATE…`),
+   **Outlook** (odkaz `outlook.live.com/calendar/0/deeplink/compose…`), **Apple / iný kalendár** (.ics ako doteraz). Udalosť: „Pobyt — {objekt}“,
+   príchod (čas od) – odchod (čas do), adresa, odkaz na pobyt; **bez prístupových kódov a Wi-Fi**. Časové pásmo klienta. Na `/r`, v detaile
+   pobytu v účte a tie isté tri odkazy v potvrdzujúcom e-maile. Žiadne API ani kľúče. Unit testy tvorby odkazov (dátumy, kódovanie).
+2. **Účet:** blok „Uložiť do účtu“ na `/r` presuň hore pod nadpis (dnes dole, prehliadne sa). Text: pobyt nájdete v Mojom účte, prihlásite
+   sa e-mailom bez hesla. Rovnaká veta do potvrdzujúceho e-mailu. Over, že po prihlásení kódom sa pobyty s tým e-mailom ukážu samy;
+   ak nie, zapíš do Otázok a nechaj tlačidlo.
+
+### Z71 [B] — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
+1. **Zľavový kód (56):** namiesto veľkého poľa odkaz „Máte zľavový kód?“, ktorý pole rozbalí; po použití zbalený riadok
+   „Kód XY · −10 % ✓ · Odstrániť“.
+2. **Spôsob platby (57, ROZHODNUTIA 2026-10-20):** karty s výberom zo spôsobov zapnutých klientom (nastavenie zo Z69): **Prevod s QR**
+   (predvolený, jednou vetou ako to prebehne) a **Platba kartou — neaktívna so štítkom „Pripravujeme“**, kým nie je Stripe. Zvolený
+   spôsob sa uloží k rezervácii. **Na produkcii sa neaktívna karta nesmie ukázať** (napr. podľa prostredia) — skontroluj a zapíš
+   do *Pred spustením*.
+3. **Opakované texty (56):** storno dnes 3× (zelený box, pri políčku, pod tlačidlom) → raz; „zaplatiť do 24 h“ a „termín držíme 30 minút“
+   sa pletú → 30 min = podržanie termínu, kým hosť dokončí objednávku, 24 h = lehota platby; každé raz a zrozumiteľne.
+4. **Účet (61):** pri kontaktných údajoch veta „Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla.“ **Žiadne pole hesla.**
+5. **Faktúra na firmu (62):** nepovinné „Chcem faktúru na firmu“ → rozbalí názov firmy, IČO, DIČ, IČ DPH (nepovinné), adresu firmy.
+   Uloží sa k rezervácii (migrácia len pridáva, RLS, `record_history`), zobrazí sa v paneli rezervácie a v podklade na doklad.
+   **Adresu bežného hosťa pri rezervácii nezbierame** (zbiera ju online check-in).
+6. Testy: e2e košíka (kód, výber platby, firma), PC aj mobil 390 px; axe.
 
 *Hotové úlohy Z31–Z53 (zadania) sú v `docs/archiv/ulohy-hotove-do-Z53.md`.*
 

@@ -1,4 +1,4 @@
-# Pravidlá rozhrania — platia všade (v1.5, 19. 10. 2026)
+# Pravidlá rozhrania — platia všade (v1.6, 20. 10. 2026)
 
 Z Martinových pripomienok 31–44. **Platia naprieč celou aplikáciou:** administrácia majiteľa, riadiace centrum aj stránka a účet hosťa.
 Keď pripomienka padla pri jednej časti, uplatní sa všade, kde dáva zmysel (Martin 18. 10.: „spravíme to všade, chcem, aby si takto premýšľal“).
@@ -11,6 +11,7 @@ Vizuál ostáva podľa `docs/vizual-administracia.md` a `docs/vizual-stranka-hos
   Jeden spôsob v celej aplikácii — vyber a zapíš do tokenov (`globals.css`), nepoužívaj farby natvrdo.
 - **Polia formulára (input, select, textarea, dátum, čas) sú vždy biele s viditeľným okrajom**, bez ohľadu na plochu okolo.
   Okraj poľa má voči svojmu okoliu **kontrast aspoň 3 : 1** (WCAG 1.4.11). Rovnako zaškrtávacie políčka a prepínače vo vypnutom stave.
+- **Strana hosťa (č. 59):** pozadie stránky biele, karty jemný teplý odtieň + okraj, polia a tlačidlá typu „rýchla odpoveď“ biele s okrajom.
 - Fokus poľa: zreteľný prstenec v akcentovej farbe (už je `--ring`) — skontroluj kontrast aj pri svetlých témach klientov.
 - Kontrolu kontrastu daj do testu (vitest nad tokenmi alebo e2e meranie vypočítaných farieb na niekoľkých obrazovkách).
 
