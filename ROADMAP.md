@@ -288,7 +288,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    **Adresu bežného hosťa pri rezervácii nezbierame** (zbiera ju online check-in).
 6. Testy: e2e košíka (kód, výber platby, firma), PC aj mobil 390 px; axe.
 
-### Z73 [B] — Rezervácie: predvolene najnovšie hore (pripomienka 63) — po Z71
+### Z73 [B] 🔄 — Rezervácie: predvolene najnovšie hore (pripomienka 63) — po Z71
 Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoradený **podľa čísla zostupne — najnovšie rezervácie prvé**
 (dnes podľa termínu, Z58). V `src/app/admin/reservations/query.ts` zmeň `defaultSort` na najnovšie (`created_at` zostupne — poradie
 čísla; ak sa číslo a čas vytvorenia rozchádzajú pri ručných rezerváciách, rozhoduje čas vytvorenia), v hlavičke stĺpca Číslo
