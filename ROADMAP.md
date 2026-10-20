@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa) → Z72 (kalendár, účet na potvrdení)**;
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → **Z70 (potvrdenie: kontakt, plochy hosťa)** — *zabratá linkou A* → **Z72 (kalendár, účet na potvrdení)**;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → **Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)** → **Z73 (rezervácie: najnovšie hore)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -247,7 +247,7 @@ Návrh `docs/vizual-administracia.md` → **v1.7** (prečítaj celé), doska 18 
 **Pripomienky 56–62 (Martin 20. 10., schválené „súhlasím so všetkým“) → Z70–Z72.** Strana hosťa: košík, potvrdenie, pobyt.
 Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hosťa). Linka A: potvrdenie a plochy; linka B: košík.
 
-### Z70 [A] — Potvrdenie a pobyt: kontakt bez zdvojenia, plochy na strane hosťa (pripomienky 58, 59)
+### Z70 [A] 🔄 — Potvrdenie a pobyt: kontakt bez zdvojenia, plochy na strane hosťa (pripomienky 58, 59)
 1. **Prekrývanie (58):** na `/r/<kód>` sa pri scrollovaní zelená karta „Váš pobyt“ (sticky) posúva cez kartu kontaktu pod ňou
    (slot `guest.stay.aside` → `GuestMessagesContact` modulu messages). Kontakt je dnes 3× (pätička zelenej karty, karta „Napísať správu“,
    sekcia Správy). **Samostatnú kartu kontaktu zruš**; pätička zelenej karty: „Napísať správu“ (skok na sekciu Správy — len keď je modul
