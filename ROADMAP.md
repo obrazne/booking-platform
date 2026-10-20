@@ -268,7 +268,7 @@ Pravidlá `docs/pravidla-rozhrania.md` platia (pravidlo 1 doplnené o stranu hos
    sa e-mailom bez hesla. Rovnaká veta do potvrdzujúceho e-mailu. Over, že po prihlásení kódom sa pobyty s tým e-mailom ukážu samy;
    ak nie, zapíš do Otázok a nechaj tlačidlo.
 
-### Z71 [B] — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
+### Z71 [B] 🔄 — Košík, krok Platba: zľavový kód, spôsob platby, texty, faktúra na firmu (pripomienky 56, 57, 61, 62)
 1. **Zľavový kód (56):** namiesto veľkého poľa odkaz „Máte zľavový kód?“, ktorý pole rozbalí; po použití zbalený riadok
    „Kód XY · −10 % ✓ · Odstrániť“.
 2. **Spôsob platby (57, ROZHODNUTIA 2026-10-20):** karty s výberom zo spôsobov zapnutých klientom (nastavenie zo Z69): **Prevod s QR**
