@@ -161,8 +161,9 @@ PLATFORMA (Martin)
   konkurenciou. Bez záväzku: zriadenie 1 990 € (pokrýva prácu so zriadením pri skorom odchode), mesačne rovnako.
 - **Systém dáva podklady na Martinove faktúry:** zriadenie, mesačný poplatok, percentá z obratu za mesiac (riadiace centrum), moduly navyše,
   odporúčací program.
-- **Otvorené:** príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
-  novému, mesiac zadarmo odporúčateľovi — preveriť); podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
+- **Odporúčací program — neskôr, nie pri štarte** (Martin 21. 10.): každý klient vlastný kód, nový klient zľavu, odporúčateľ
+  **kredit** odpočítaný z jeho faktúr (nič sa nevypláca; vzor: hosting — 10 % zľava a 10 % kredit). Výška sa rozhodne neskôr.
+- **Otvorené:** príplatok za ďalší objekt; podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
   DPH (Obrazne je platiteľ podľa § 7a — účtovník); Stripe poplatky pri platbe kartou (kto ich znáša).
 
 ## A11. Zakladanie klienta (sprievodca)
