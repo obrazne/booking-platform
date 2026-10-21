@@ -133,10 +133,11 @@ PLATFORMA (Martin)
   - **Zriadenie 990 €** (pod mentálnou hranicou 1 000 €; dá sa rozložiť na splátky) — **nevracia sa** (odvedená práca).
   - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
   - **2 % z priamych rezervácií** (pásmo 1,5 % nad 10 000 € zrušené 21. 10. — zjednodušenie; veľký klient = individuálna dohoda).
-  - **DPH:** kým Obrazne nie je platiteľom, ceny sú konečné a pri nich poznámka *„Nie sme platiteľom DPH. Ak sa ním staneme, k cenám
-    sa pripočíta DPH v zákonnej výške.“* (rovnaká veta v zmluve). Po registrácii (pravdepodobne od 2027) „150 € + DPH“ — pre klientov
-    platiteľov sa náklad nezmení, neplatitelia to vedia vopred. Overiť s účtovníkom (aj vzhľadom na registráciu podľa § 7a).
-  - **Cenník v troch riadkoch:** 990 € zriadenie · 150 € (Základ) alebo 190 € (Bez starostí) mesačne · 2 % z priamych rezervácií · ročná zmluva.
+  - **DPH (Martin 21. 10.):** verejný predaj neznámym klientom začne **až od 2027**, keď bude Obrazne pravdepodobne platiteľom DPH →
+    **cenník a systém rátajú od začiatku s cenami „+ DPH“** (pre klientov platiteľov sa náklad nemení). Do konca roka len **piloti**
+    (Jana, prípadne jej kamarátka) s individuálnou dohodou a fakturáciou mimo systému. Overiť s účtovníkom.
+  - **Cenník v troch riadkoch:** 990 € zriadenie · 150 € (Základ) alebo 190 € (Bez starostí) mesačne · 2 % z priamych rezervácií · ročná zmluva;
+    všetko + DPH.
 - **Ročná zmluva, platby mesačne;** po roku vypovedateľná mesačne. Komunikovať ako „ročná zmluva“, nie „viazanosť“.
   Bez záväzku (zriadenie 1 990 €, kedykoľvek ukončiteľné) **nie je v cenníku** — len keď sa klient spýta.
 - **Odstúpenie pred koncom roka** len pri technickej chybe, ktorú klient písomne nahlási a Martin ju neopraví do dohodnutej lehoty
