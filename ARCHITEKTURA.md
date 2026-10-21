@@ -130,7 +130,7 @@ PLATFORMA (Martin)
   - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
   - **2 % z priamych rezervácií**, **1,5 % z časti mesačného obratu nad 10 000 €** (len nad hranicou, ako pri daniach — žiadny zlom).
 - **Ročná zmluva, platby mesačne;** po roku vypovedateľná mesačne. Komunikovať ako „ročná zmluva“, nie „viazanosť“.
-  *Návrh (nepotvrdený):* bez záväzku vyššie zriadenie (napr. 1 990 €) a kedykoľvek ukončiteľné.
+  Bez záväzku: zriadenie 1 990 €, kedykoľvek ukončiteľné (málokto ho vezme — hlavne ukazuje výhodnosť ročnej zmluvy).
 - **Odstúpenie pred koncom roka** len pri technickej chybe, ktorú klient písomne nahlási a Martin ju neopraví do dohodnutej lehoty
   (napr. 14 dní) — vtedy klient nedopláca zvyšok roka. **Žiadna záruka počtu rezervácií ani kontaktov** (rezervácie prináša marketing).
 - **Z čoho sa rátajú percentá (obrat):** čo hosť cez systém naozaj zaplatil — ubytovanie, služby, doobjednávky (upsell), ručné rezervácie
@@ -145,9 +145,20 @@ PLATFORMA (Martin)
   zima 310 € vs. Booking 15 % 1 200 € (úspora 890 €), leto 210 € vs. 450 €; rok 61 000 € → platforma 3 020 € (+ 990 € zriadenie
   v 1. roku = 4 010 €), Booking 9 150 €, úspora 5 140 € v 1. roku a 6 130 € ďalšie roky. Veta: *„Za každých 100 € priamej rezervácie
   zaplatíte 2 €, Bookingu by ste dali 15 €.“* Fix podávať ako správu a starostlivosť, nie ako cenu za rezervácie.
+- **Základ a moduly (21. 10., ceny ešte po researchi):** zriadenie rovnaké pre všetkých; balíky sa líšia **mesačným** poplatkom podľa
+  modulov. Základ (150 €): rezervačná stránka a košík, kalendár, cenník a sezóny, zľavové kódy, platba prevodom s QR, synchronizácia
+  Booking/Airbnb a kolízie, e-maily, administrácia (rezervácie, ručné rezervácie, hostia, blokácie, tím), účet hosťa, dokumenty, štatistiky
+  a mesačný výpis, pomoc a hľadanie, zálohy; **doplnkové služby v základe** (Martin má 2 % z každej objednanej služby). Moduly navyše
+  (pracovné ceny): doobjednávky (upsell), správy s hosťom, online check-in, recenzie, push. Moduly spolu nesmú pôsobiť drahšie
+  než polovica mesačnej správy → balík „Bez starostí“ so zľavou. **Platba kartou (Stripe) nie je v základe:** jednorazový poplatok za
+  zapojenie (napr. ~150 € — Stripe účet, nastavenie, testovanie) + len pár eur mesačne; poplatky Stripe platí klient zo svojho účtu.
+  Skúšobná doba modulu **30 dní** (za 7 dní v chalete často nie je ani jeden hosť).
+- **Ukážka pre záujemcu:** nikde verejne; odkaz až po osobnom stretnutí (follow-up), platný 48 h, Ukážkový klient s dátami obnovovanými
+  každú noc, bez exportu, bez odosielania e-mailov a napájania portálov, štítok „Ukážka“, záznam prihlásení. Dôvod: chrániť know-how pred
+  konkurenciou. Bez záväzku: zriadenie 1 990 € (pokrýva prácu so zriadením pri skorom odchode), mesačne rovnako.
 - **Systém dáva podklady na Martinove faktúry:** zriadenie, mesačný poplatok, percentá z obratu za mesiac (riadiace centrum), moduly navyše,
   odporúčací program.
-- **Otvorené:** cena modulov navyše a balík „bez starostí“; príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
+- **Otvorené:** ceny modulov a balíka „Bez starostí“ (research konkurencie); príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
   novému, mesiac zadarmo odporúčateľovi — preveriť); podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
   DPH (Obrazne je platiteľ podľa § 7a — účtovník); Stripe poplatky pri platbe kartou (kto ich znáša).
 
