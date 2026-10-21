@@ -125,6 +125,10 @@ PLATFORMA (Martin)
 *Nahrádza pracovné čísla z masterdokumentu (`docs/biznis/`, balíky 590/1 190/1 800 € a 50–75 € + 0,5–1 %) aj varianty z debaty 16. 10.*
 
 - **Klienti:** luxusné chalety a väčší ubytovatelia; cena podľa hodnoty (ušetrené provízie, pohodlie), nie „lacnejšie ako Booking“.
+- **Filozofia predaja (Martin 21. 10.):** nie „systém zarába sám“, ale **to, čo klient ušetrí na províziách, môže celé alebo časť dať
+  do vlastného marketingu**, nad ktorým má kontrolu — na Bookingu je jeden z mnohých (STRÖMY: stovky objektov, za lepšie miesto treba
+  priplácať). Kruh: úspora → vlastný marketing → viac priamych hostí → väčšia úspora + vlastná databáza hostí. Výpočty úspory platia
+  pre rezervácie, ktoré prídu priamo; aplikácia sama dopyt nevytvára.
 - **Cena:**
   - **Zriadenie 990 €** (pod mentálnou hranicou 1 000 €; dá sa rozložiť na splátky) — **nevracia sa** (odvedená práca).
   - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
