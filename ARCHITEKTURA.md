@@ -176,7 +176,13 @@ PLATFORMA (Martin)
   odporúčací program.
 - **Odporúčací program — neskôr, nie pri štarte** (Martin 21. 10.): každý klient vlastný kód, nový klient zľavu, odporúčateľ
   **kredit** odpočítaný z jeho faktúr (nič sa nevypláca; vzor: hosting — 10 % zľava a 10 % kredit). Výška sa rozhodne neskôr.
-- **Otvorené:** príplatok za ďalší objekt; podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
+- **Pilot Jana — pracovná verzia, nie konečná (21. 10.):** od Jany skúsenosti z praxe (čo ubytovateľ potrebuje), súčinnosť manžela-právnika
+  pri VOP a zmluvách a odporúčanie klientov. Zriadenie **na papieri plná cena 990 €**, vyrovnané **zápočtom s právnou prácou** (rozdiel
+  doplatí ten, kto dostal viac; Martin a Jana si to dohodnú medzi sebou) — nie zadarmo, lebo „čo je zadarmo, nemá hodnotu“. Za testovanie
+  nehotového systému **prvé 3 mesiace správy zadarmo**. Za každého odporúčaného klienta s ročnou zmluvou **1 mesiac zadarmo** až po jeho
+  zaplatení zriadenia a prvého mesiaca (Martin: predaj a réžiu robí aj tak sám). **Percentá platí** (pravdivý príbeh pre eXtreme park).
+  Spísať ako pilotnú dohodu (aj zodpovednosť pri testovaní nehotového produktu).
+- **Otvorené:** príplatok za ďalší objekt; ako z podkladu vznikne faktúra (Martinov nástroj);
   DPH (Obrazne je platiteľ podľa § 7a — účtovník); Stripe poplatky pri platbe kartou (kto ich znáša).
 
 ## A11. Zakladanie klienta (sprievodca)
