@@ -133,8 +133,9 @@ PLATFORMA (Martin)
   - **Zriadenie 990 €** (pod mentálnou hranicou 1 000 €; dá sa rozložiť na splátky) — **nevracia sa** (odvedená práca).
   - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
   - **2 % z priamych rezervácií** (pásmo 1,5 % nad 10 000 € zrušené 21. 10. — zjednodušenie; veľký klient = individuálna dohoda).
-  - **Všetky ceny bez DPH** (Martin pravdepodobne platiteľom DPH od 2027 — cena sa tak pre platiteľov nezmení; v zmluve: k cene sa
-    pripočíta DPH v zákonnej výške, ak je dodávateľ platiteľom).
+  - **DPH:** kým Obrazne nie je platiteľom, ceny sú konečné a pri nich poznámka *„Nie sme platiteľom DPH. Ak sa ním staneme, k cenám
+    sa pripočíta DPH v zákonnej výške.“* (rovnaká veta v zmluve). Po registrácii (pravdepodobne od 2027) „150 € + DPH“ — pre klientov
+    platiteľov sa náklad nezmení, neplatitelia to vedia vopred. Overiť s účtovníkom (aj vzhľadom na registráciu podľa § 7a).
   - **Cenník v troch riadkoch:** 990 € zriadenie · 150 € (Základ) alebo 190 € (Bez starostí) mesačne · 2 % z priamych rezervácií · ročná zmluva.
 - **Ročná zmluva, platby mesačne;** po roku vypovedateľná mesačne. Komunikovať ako „ročná zmluva“, nie „viazanosť“.
   Bez záväzku (zriadenie 1 990 €, kedykoľvek ukončiteľné) **nie je v cenníku** — len keď sa klient spýta.
