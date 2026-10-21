@@ -355,6 +355,11 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
 - [ ] Právne texty klienta (VOP, ochrana osobných údajov, storno) skontrolované Martinom / Janou.
 
 ## Fáza 4 — Po spustení 🔧 + 🧠
+- [ ] 🧠→🔧 **Licencie klientov** (Martin 21. 10.): licencia = záznam zmluvy v riadiacom centre, nie tajný kľúč k aplikácii (aplikácia beží
+  u nás, klient kód nedostane). Číslo licencie, klient (firma), na čo platí (objekt/objekty), balík a moduly, cenové podmienky (zriadenie,
+  mesačne, %), začiatok, viazanosť do, stav podľa platieb (aktívna · po splatnosti · pozastavená → rezervácie neprijíma, administrácia len
+  na čítanie). Klient ich môže mať viac (ďalší objekt = ďalšia licencia); viazané na firmu, nie na e-mail. Klient vidí v administrácii
+  číslo licencie, platnosť a balík. Číslo licencie = číslo v zmluve. Navrhnúť po dohode obchodného modelu (A10).
 - [ ] Záloha a doplatok (Stripe/karta sa presunul pred spustenie — Fáza 3, *Pred spustením*)
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
