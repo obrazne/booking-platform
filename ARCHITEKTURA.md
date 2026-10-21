@@ -141,10 +141,13 @@ PLATFORMA (Martin)
   **komu idú peniaze z rezervácií**: viac vlastných objektov jednej firmy = jedna licencia (zriadenie rovnaké, mesačne príplatok za ďalší
   objekt — výška otvorená); cudzí objekt v správe = samostatný klient a licencia. Stav licencie podľa platieb (aktívna · po splatnosti ·
   pozastavená). Úloha v ROADMAP Fáza 4.
-- **Modelový príklad pre predaj** (chalet ~750 €/noc; zima 8 000 €, leto 3 000 € priamych rezervácií mesačne, 5 zimných mesiacov):
-  zima 310 € vs. Booking 15 % 1 200 € (úspora 890 €), leto 210 € vs. 450 €; rok 61 000 € → platforma 3 020 € (+ 990 € zriadenie
-  v 1. roku = 4 010 €), Booking 9 150 €, úspora 5 140 € v 1. roku a 6 130 € ďalšie roky. Veta: *„Za každých 100 € priamej rezervácie
-  zaplatíte 2 €, Bookingu by ste dali 15 €.“* Fix podávať ako správu a starostlivosť, nie ako cenu za rezervácie.
+- **Modelový príklad pre predaj** (chalet ~750 €/noc; zima 8 000 €, leto 3 000 € priamych rezervácií mesačne, 5 zimných mesiacov;
+  **Booking 20 %** — Martin 21. 10.: Booking reálne berie 20–30 %; v rozhovore s klientom použiť **jeho skutočnú sadzbu** z faktúr Bookingu):
+  zima 310 € vs. Booking 1 600 € (úspora 1 290 €), leto 210 € vs. 600 € (390 €); rok 61 000 € → platforma 3 020 € (+ 990 € zriadenie
+  v 1. roku = 4 010 €), Booking 12 200 €, úspora **8 190 € v 1. roku**, 9 180 € ďalšie roky. **Návratnosť zriadenia** (úspora mesačne =
+  (sadzba Bookingu − 2 %) × priame rezervácie − 150 €): pri 20 % a 3 000 € mesačne ~2,5 mesiaca, 5 000 € ~1,3 mesiaca, 8 000 € < 1 mesiac;
+  vypláca sa od ~830 € priamych rezervácií mesačne. Veta: *„Za každých 100 € priamej rezervácie zaplatíte 2 €, Bookingu by ste dali 20 €.“*
+  Fix podávať ako správu a starostlivosť, nie ako cenu za rezervácie. Ušetrený čas (vybavovanie priamych rezervácií) sa do výpočtu nerátal.
 - **Základ a moduly (21. 10., ceny ešte po researchi):** zriadenie rovnaké pre všetkých; balíky sa líšia **mesačným** poplatkom podľa
   modulov. Základ (150 €): rezervačná stránka a košík, kalendár, cenník a sezóny, zľavové kódy, platba prevodom s QR, synchronizácia
   Booking/Airbnb a kolízie, e-maily, administrácia (rezervácie, ručné rezervácie, hostia, blokácie, tím), účet hosťa, dokumenty, štatistiky
