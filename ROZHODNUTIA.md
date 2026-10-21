@@ -2,6 +2,20 @@
 
 *Denník rozhodnutí: čo, kedy a prečo. Najnovšie hore. Výsledok sa vždy premietne aj do `ARCHITEKTURA.md`.*
 
+## 2026-10-21 — Obchodný model platformy
+
+- Martin hľadal model s nízkou vstupnou bariérou, bez klientov, ktorí rátajú každé euro, a tak, aby klient neodišiel po mesiaci;
+  cieľ ~4 000 € od klienta v prvom roku. Claude: lacnou cenou sa „šetrílkov“ neodfiltruje (filtrom je cieľový segment), bariéru
+  a záväzok spojí zriadenie pod 1 000 € + ročná zmluva (ako mobilný paušál); 24 mesiacov je pre nový produkt od jedného človeka veľa.
+- Rozhodnuté: **990 € zriadenie, 150 € mesačne, 2 % z priamych rezervácií (1,5 % z časti nad 10 000 € mesačne), ročná zmluva**
+  (Martin: 12 mesiacov je dobré aj preňho — nemusí 2 roky živiť klienta, s ktorým nie je spokojný). Hranicu 10 000 € dosiahne chalet
+  ako STRÖMY (~13 nocí po 750 €) v zime — zľava je dosiahnuteľná, preto pôsobí férovo.
+- **Záruka len technická** (neopravená nahlásená chyba), nikdy na výsledky; zriadenie sa nevracia — chráni aj pred tým, kto si systém
+  len „popozerá“.
+- **Licencia ako záznam zmluvy** (Martinov nápad — klient „niečo má“, funguje pri viacerých objektoch), nie kľúč: aplikácia beží u nás.
+  Licencia patrí tomu, komu idú peniaze z rezervácií (Jana spravujúca chalet kamarátke = dve licencie).
+- Podrobnosti a modelový príklad: `ARCHITEKTURA.md` A10.
+
 ## 2026-10-20 — Platba kartou pred spustením, v košíku už teraz
 
 - Martin: hosť si v košíku vyberá spôsob platby a **platba kartou tam má byť už teraz**, hoci ešte nefunguje — „kým to pôjde na ostro,

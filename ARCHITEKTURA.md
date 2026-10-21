@@ -120,20 +120,36 @@ PLATFORMA (Martin)
 - **Účty:** všetko na Obrazne s.r.o., dvojfaktorové overenie, heslá v správcovi hesiel. Platené plány pred prvým platiacim klientom.
 - **Zmluvné a poistné:** dostupnosť, obmedzenie zodpovednosti, export pri odchode, spracúvanie údajov; poistenie zodpovednosti (preveriť).
 
-## A10. Obchodný model platformy (na návrh)
+## A10. Obchodný model platformy (dohodnuté 21. 10. 2026)
 
-- Systém musí vedieť podklady pre Martinove faktúry klientom: zriadenie, mesačný poplatok podľa balíka, mikro-provízia z obratu,
-  moduly navyše a skúšobné doby, odporúčací program (zľava pre nového klienta, mesiac zadarmo pre odporúčateľa — masterdokument).
-- **Otvorené:** čo presne je „obrat“ pre mikro-províziu (s daňou za ubytovanie a službami? len zaplatené rezervácie? čo storná?),
-  ako sa z podkladu stane faktúra (Martinov fakturačný nástroj), DPH pri nákupe zahraničných služieb (účtovník).
-  Model sa navrhne tak, aby bol výhodný pre klientov aj pre Martina.
-- **Pracovné princípy z debaty 16. 10. (nie konečné rozhodnutie):**
-  - Cieľový segment: **luxusné chalety a väčší ubytovatelia** (obrat rádovo 10–15 tis. € mesačne), nie malí s pár stovkami eur.
-  - **Cena podľa hodnoty, nie podľa nákladov:** argumentom je úspora oproti províziám OTA a pohodlie (notifikácie, faktúry, prehľady, SMS…),
-    nie porovnanie s cenou Bookingu. Fix aj percentá primerane vyššie, nie „lacný“ produkt.
-  - Model **fix + percentá z priamych zaplatených rezervácií** (vrátane ručných rezervácií zapísaných majiteľom; bez iCal importov a blokácií); bez stropu. Väčším klientom **individuálne úľavy** po osobnej dohode.
-  - V cene musia byť okrem nástrojov aj **marketing a zisk** — Martin nesmie byť v mínuse.
-  - Modelové varianty z debaty: 99 € + 2 %, 149 € + 1,5 %, 79 € + 3 %; balík „bez starostí“ so všetkými modulmi.
+*Nahrádza pracovné čísla z masterdokumentu (`docs/biznis/`, balíky 590/1 190/1 800 € a 50–75 € + 0,5–1 %) aj varianty z debaty 16. 10.*
+
+- **Klienti:** luxusné chalety a väčší ubytovatelia; cena podľa hodnoty (ušetrené provízie, pohodlie), nie „lacnejšie ako Booking“.
+- **Cena:**
+  - **Zriadenie 990 €** (pod mentálnou hranicou 1 000 €; dá sa rozložiť na splátky) — **nevracia sa** (odvedená práca).
+  - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
+  - **2 % z priamych rezervácií**, **1,5 % z časti mesačného obratu nad 10 000 €** (len nad hranicou, ako pri daniach — žiadny zlom).
+- **Ročná zmluva, platby mesačne;** po roku vypovedateľná mesačne. Komunikovať ako „ročná zmluva“, nie „viazanosť“.
+  *Návrh (nepotvrdený):* bez záväzku vyššie zriadenie (napr. 1 990 €) a kedykoľvek ukončiteľné.
+- **Odstúpenie pred koncom roka** len pri technickej chybe, ktorú klient písomne nahlási a Martin ju neopraví do dohodnutej lehoty
+  (napr. 14 dní) — vtedy klient nedopláca zvyšok roka. **Žiadna záruka počtu rezervácií ani kontaktov** (rezervácie prináša marketing).
+- **Z čoho sa rátajú percentá (obrat):** čo hosť cez systém naozaj zaplatil — ubytovanie, služby, doobjednávky (upsell), ručné rezervácie
+  zapísané majiteľom a storno poplatok, ktorý si majiteľ ponechá. **Nerátajú sa:** daň za ubytovanie, vratná kaucia, vrátené peniaze
+  pri storne, pobyty z Bookingu/Airbnb (iCal) a blokácie.
+- **Licencia** = záznam zmluvy v riadiacom centre (číslo licencie = číslo v zmluve), nie kľúč k aplikácii — aplikácia beží u nás, klient
+  dostáva právo službu používať; kód a práva ostávajú Obrazne, dáta klienta patria klientovi (export pri odchode). Licencia patrí tomu,
+  **komu idú peniaze z rezervácií**: viac vlastných objektov jednej firmy = jedna licencia (zriadenie rovnaké, mesačne príplatok za ďalší
+  objekt — výška otvorená); cudzí objekt v správe = samostatný klient a licencia. Stav licencie podľa platieb (aktívna · po splatnosti ·
+  pozastavená). Úloha v ROADMAP Fáza 4.
+- **Modelový príklad pre predaj** (chalet ~750 €/noc; zima 8 000 €, leto 3 000 € priamych rezervácií mesačne, 5 zimných mesiacov):
+  zima 310 € vs. Booking 15 % 1 200 € (úspora 890 €), leto 210 € vs. 450 €; rok 61 000 € → platforma 3 020 € (+ 990 € zriadenie
+  v 1. roku = 4 010 €), Booking 9 150 €, úspora 5 140 € v 1. roku a 6 130 € ďalšie roky. Veta: *„Za každých 100 € priamej rezervácie
+  zaplatíte 2 €, Bookingu by ste dali 15 €.“* Fix podávať ako správu a starostlivosť, nie ako cenu za rezervácie.
+- **Systém dáva podklady na Martinove faktúry:** zriadenie, mesačný poplatok, percentá z obratu za mesiac (riadiace centrum), moduly navyše,
+  odporúčací program.
+- **Otvorené:** cena modulov navyše a balík „bez starostí“; príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
+  novému, mesiac zadarmo odporúčateľovi — preveriť); podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
+  DPH (Obrazne je platiteľ podľa § 7a — účtovník); Stripe poplatky pri platbe kartou (kto ich znáša).
 
 ## A11. Zakladanie klienta (sprievodca)
 
