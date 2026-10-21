@@ -294,6 +294,18 @@ Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoraden�
 zobraz aktívne zoradenie. Zoradenie podľa termínu ostáva na klik; pohľad „kto prichádza“ je Príchody. Uprav testy, ktoré čakajú
 pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
+### Z75 [B] — Mesačný výpis: ušetrené provízie ako rozpočet na marketing (Martin 21. 10.)
+Filozofia predaja (`ARCHITEKTURA.md` A10): to, čo klient ušetrí na províziách, môže dať do vlastného marketingu. Majiteľovi samotné
+„ušetrili ste X“ nič nehovorí — vie, že bez marketingu hostia neprídu. Má vidieť **rozpočet na marketing** a čo mu po ňom ostane.
+1. Vo výpise (stránka, e-mail aj PDF — jeden zdroj `src/core/reports/monthly-view.ts`) nazvi úsporu **„Váš rozpočet na vlastný marketing
+   tento mesiac: X €“** (= ušetrené provízie oproti portálu, výpočet ostáva).
+2. Nepovinné pole **„Koľko ste tento mesiac minuli na marketing“** (marketér, reklamy) pri výpise; uloží sa po mesiacoch (migrácia len pridáva,
+   RLS, `record_history`). Ak je vyplnené: **„Po marketingu ste v pluse Y € oproti Bookingu“** (príklad Martina: rozpočet 2 200 €,
+   marketing 1 500 € → +700 €). Záporné číslo ukáž vecne, bez strašenia.
+3. **Súčet od začiatku** (od zapnutia platformy): rozpočet spolu, minuté na marketing spolu, v pluse spolu — „časom sa to kumuluje“.
+4. Rovnaký riadok rozpočtu na Prehľade pri pruhu nocí (Z65), ak sa zmestí. Texty v prekladoch; ⓘ s vysvetlením výpočtu (sadzba portálu
+   z Nastavení — klient má zadať svoju skutočnú sadzbu z faktúr Bookingu). Testy: výpočet (vitest), e2e výpisu.
+
 ### Z74 [A] — Odsadenie pripnutého zhrnutia pod lištou (pripomienka 64) — po Z70
 v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:sticky lg:top-6`)
    sa zelené zhrnutie pri scrolle zasunie pod pripnutú lištu účtu (Aktuálny pobyt · Pobyty · Moje údaje) — vrch karty nevidno.
