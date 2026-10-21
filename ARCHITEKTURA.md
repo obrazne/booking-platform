@@ -149,16 +149,19 @@ PLATFORMA (Martin)
   modulov. Základ (150 €): rezervačná stránka a košík, kalendár, cenník a sezóny, zľavové kódy, platba prevodom s QR, synchronizácia
   Booking/Airbnb a kolízie, e-maily, administrácia (rezervácie, ručné rezervácie, hostia, blokácie, tím), účet hosťa, dokumenty, štatistiky
   a mesačný výpis, pomoc a hľadanie, zálohy; **doplnkové služby v základe** (Martin má 2 % z každej objednanej služby). Moduly navyše
-  (pracovné ceny): doobjednávky (upsell), správy s hosťom, online check-in, recenzie, push. Moduly spolu nesmú pôsobiť drahšie
-  než polovica mesačnej správy → balík „Bez starostí“ so zľavou. **Platba kartou (Stripe) nie je v základe:** jednorazový poplatok za
-  zapojenie (napr. ~150 € — Stripe účet, nastavenie, testovanie) + len pár eur mesačne; poplatky Stripe platí klient zo svojho účtu.
+  (21. 10., po researchi): **správy s hosťom 19 €, online check-in 19 €, doobjednávky (upsell) 9 €, recenzie 9 €, push 5 €,
+  platba kartou (Stripe) 5 € + jednorazové zapojenie ~150 €** (Stripe účet, nastavenie, testovanie; poplatky Stripe platí klient).
+  Spolu jednotlivo 66 € mesačne (necelá polovica mesačnej správy). **Balík „Bez starostí“: 190 € mesačne** (namiesto 216 €) —
+  všetky moduly + **všetky budúce moduly automaticky v cene** (okrem platených za použitie, napr. SMS), zapojenie platby kartou zdarma,
+  prednostná podpora. Porovnanie trhu: Smoobu 29–55 €/objekt, Lodgify 16–103 $ + 1,9 % z priamych rezervácií, online check-in
+  4–8 €/objekt (od 20 objektov), doobjednávky 9–16 $ + 5 % z doobjednávok.
   Skúšobná doba modulu **30 dní** (za 7 dní v chalete často nie je ani jeden hosť).
 - **Ukážka pre záujemcu:** nikde verejne; odkaz až po osobnom stretnutí (follow-up), platný 48 h, Ukážkový klient s dátami obnovovanými
   každú noc, bez exportu, bez odosielania e-mailov a napájania portálov, štítok „Ukážka“, záznam prihlásení. Dôvod: chrániť know-how pred
   konkurenciou. Bez záväzku: zriadenie 1 990 € (pokrýva prácu so zriadením pri skorom odchode), mesačne rovnako.
 - **Systém dáva podklady na Martinove faktúry:** zriadenie, mesačný poplatok, percentá z obratu za mesiac (riadiace centrum), moduly navyše,
   odporúčací program.
-- **Otvorené:** ceny modulov a balíka „Bez starostí“ (research konkurencie); príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
+- **Otvorené:** príplatok za ďalší objekt; odporúčací program (masterdokument: 5 % zľava
   novému, mesiac zadarmo odporúčateľovi — preveriť); podmienky pre Janu (pilot); ako z podkladu vznikne faktúra (Martinov nástroj);
   DPH (Obrazne je platiteľ podľa § 7a — účtovník); Stripe poplatky pri platbe kartou (kto ich znáša).
 

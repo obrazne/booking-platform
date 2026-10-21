@@ -14,6 +14,11 @@
   len „popozerá“.
 - **Licencia ako záznam zmluvy** (Martinov nápad — klient „niečo má“, funguje pri viacerých objektoch), nie kľúč: aplikácia beží u nás.
   Licencia patrí tomu, komu idú peniaze z rezervácií (Jana spravujúca chalet kamarátke = dve licencie).
+- **Základ a moduly:** zriadenie rovnaké pre všetkých (práca je rovnaká), balíky sa líšia mesačne. Doplnkové služby v základe (2 % z nich).
+  Platba kartou nie je v základe (Martin: Stripe účet, nastavovanie a testovanie je práca) → jednorazové zapojenie + pár eur mesačne.
+  Ceny modulov po researchi trhu znížené tak, aby všetky spolu boli pod polovicou mesačnej správy. Balík „Bez starostí“ 190 € s budúcimi
+  modulmi v cene — Martin chce klientom, ktorí chcú všetko, vyjsť v ústrety. Skúšobná doba modulu 30 dní. Ukážka len po osobnom
+  stretnutí (ochrana know-how pred konkurenciou).
 - Podrobnosti a modelový príklad: `ARCHITEKTURA.md` A10.
 
 ## 2026-10-20 — Platba kartou pred spustením, v košíku už teraz
