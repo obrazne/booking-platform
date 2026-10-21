@@ -7,7 +7,7 @@
 - Martin hľadal model s nízkou vstupnou bariérou, bez klientov, ktorí rátajú každé euro, a tak, aby klient neodišiel po mesiaci;
   cieľ ~4 000 € od klienta v prvom roku. Claude: lacnou cenou sa „šetrílkov“ neodfiltruje (filtrom je cieľový segment), bariéru
   a záväzok spojí zriadenie pod 1 000 € + ročná zmluva (ako mobilný paušál); 24 mesiacov je pre nový produkt od jedného človeka veľa.
-- Rozhodnuté: **990 € zriadenie, 150 € mesačne, 2 % z priamych rezervácií (1,5 % z časti nad 10 000 € mesačne), ročná zmluva**
+- Rozhodnuté: **990 € zriadenie, 150 € mesačne, 2 % z priamych rezervácií, ročná zmluva** (pásmo 1,5 % nad 10 000 € neskôr zrušené)
   (Martin: 12 mesiacov je dobré aj preňho — nemusí 2 roky živiť klienta, s ktorým nie je spokojný). Hranicu 10 000 € dosiahne chalet
   ako STRÖMY (~13 nocí po 750 €) v zime — zľava je dosiahnuteľná, preto pôsobí férovo.
 - **Záruka len technická** (neopravená nahlásená chyba), nikdy na výsledky; zriadenie sa nevracia — chráni aj pred tým, kto si systém
@@ -19,6 +19,10 @@
   Ceny modulov po researchi trhu znížené tak, aby všetky spolu boli pod polovicou mesačnej správy. Balík „Bez starostí“ 190 € s budúcimi
   modulmi v cene — Martin chce klientom, ktorí chcú všetko, vyjsť v ústrety. Skúšobná doba modulu 30 dní. Ukážka len po osobnom
   stretnutí (ochrana know-how pred konkurenciou).
+- **Zjednodušenie po kritickom zhodnotení (Martin súhlasil):** len dva balíky (Základ 150 €, Bez starostí 190 €), moduly jednotlivo len na
+  požiadanie; pásmo 1,5 % nad 10 000 € zrušené; ponuka bez záväzku nie je v cenníku. **Ceny bez DPH** — Martin bude pravdepodobne od
+  nového roka platiteľom DPH; uvádzať ceny s DPH by potom pôsobilo ako zdraženie. Riziká na predaj: na začiatku málo priamych rezervácií
+  (systém nevytvára dopyt — povedať narovinu, ponúknuť marketing); porovnanie s lacnými systémami s plným prepojením na Booking (my len iCal).
 - Podrobnosti a modelový príklad: `ARCHITEKTURA.md` A10.
 
 ## 2026-10-20 — Platba kartou pred spustením, v košíku už teraz

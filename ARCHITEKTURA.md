@@ -132,9 +132,12 @@ PLATFORMA (Martin)
 - **Cena:**
   - **Zriadenie 990 €** (pod mentálnou hranicou 1 000 €; dá sa rozložiť na splátky) — **nevracia sa** (odvedená práca).
   - **150 € mesačne** — správa, prevádzka, zálohy, bezpečnosť, aktualizácie, podpora.
-  - **2 % z priamych rezervácií**, **1,5 % z časti mesačného obratu nad 10 000 €** (len nad hranicou, ako pri daniach — žiadny zlom).
+  - **2 % z priamych rezervácií** (pásmo 1,5 % nad 10 000 € zrušené 21. 10. — zjednodušenie; veľký klient = individuálna dohoda).
+  - **Všetky ceny bez DPH** (Martin pravdepodobne platiteľom DPH od 2027 — cena sa tak pre platiteľov nezmení; v zmluve: k cene sa
+    pripočíta DPH v zákonnej výške, ak je dodávateľ platiteľom).
+  - **Cenník v troch riadkoch:** 990 € zriadenie · 150 € (Základ) alebo 190 € (Bez starostí) mesačne · 2 % z priamych rezervácií · ročná zmluva.
 - **Ročná zmluva, platby mesačne;** po roku vypovedateľná mesačne. Komunikovať ako „ročná zmluva“, nie „viazanosť“.
-  Bez záväzku: zriadenie 1 990 €, kedykoľvek ukončiteľné (málokto ho vezme — hlavne ukazuje výhodnosť ročnej zmluvy).
+  Bez záväzku (zriadenie 1 990 €, kedykoľvek ukončiteľné) **nie je v cenníku** — len keď sa klient spýta.
 - **Odstúpenie pred koncom roka** len pri technickej chybe, ktorú klient písomne nahlási a Martin ju neopraví do dohodnutej lehoty
   (napr. 14 dní) — vtedy klient nedopláca zvyšok roka. **Žiadna záruka počtu rezervácií ani kontaktov** (rezervácie prináša marketing).
 - **Z čoho sa rátajú percentá (obrat):** čo hosť cez systém naozaj zaplatil — ubytovanie, služby, doobjednávky (upsell), ručné rezervácie
@@ -158,14 +161,15 @@ PLATFORMA (Martin)
   a mesačný výpis, pomoc a hľadanie, zálohy; **doplnkové služby v základe** (Martin má 2 % z každej objednanej služby). Moduly navyše
   (21. 10., po researchi): **správy s hosťom 19 €, online check-in 19 €, doobjednávky (upsell) 9 €, recenzie 9 €, push 5 €,
   platba kartou (Stripe) 5 € + jednorazové zapojenie ~150 €** (Stripe účet, nastavenie, testovanie; poplatky Stripe platí klient).
-  Spolu jednotlivo 66 € mesačne (necelá polovica mesačnej správy). **Balík „Bez starostí“: 190 € mesačne** (namiesto 216 €) —
+  Spolu jednotlivo 66 € mesačne. **Predávajú sa dva balíky: Základ 150 € a „Bez starostí“ 190 € mesačne** (namiesto 216 €); moduly
+  jednotlivo len na požiadanie (zjednodušenie 21. 10.). Bez starostí —
   všetky moduly + **všetky budúce moduly automaticky v cene** (okrem platených za použitie, napr. SMS), zapojenie platby kartou zdarma,
   prednostná podpora. Porovnanie trhu: Smoobu 29–55 €/objekt, Lodgify 16–103 $ + 1,9 % z priamych rezervácií, online check-in
   4–8 €/objekt (od 20 objektov), doobjednávky 9–16 $ + 5 % z doobjednávok.
   Skúšobná doba modulu **30 dní** (za 7 dní v chalete často nie je ani jeden hosť).
 - **Ukážka pre záujemcu:** nikde verejne; odkaz až po osobnom stretnutí (follow-up), platný 48 h, Ukážkový klient s dátami obnovovanými
   každú noc, bez exportu, bez odosielania e-mailov a napájania portálov, štítok „Ukážka“, záznam prihlásení. Dôvod: chrániť know-how pred
-  konkurenciou. Bez záväzku: zriadenie 1 990 € (pokrýva prácu so zriadením pri skorom odchode), mesačne rovnako.
+  konkurenciou.
 - **Systém dáva podklady na Martinove faktúry:** zriadenie, mesačný poplatok, percentá z obratu za mesiac (riadiace centrum), moduly navyše,
   odporúčací program.
 - **Odporúčací program — neskôr, nie pri štarte** (Martin 21. 10.): každý klient vlastný kód, nový klient zľavu, odporúčateľ
