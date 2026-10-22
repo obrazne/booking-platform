@@ -72,6 +72,7 @@ export async function getReservationDetail(tenantId: string, id: string) {
       `*, property:properties(name, slug), items:reservation_items(check_in, check_out, unit:units(name)),
        lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, sort),
        payments(status, amount_cents, variable_symbol, received_at, provider),
+       gift_uses:gift_voucher_uses(amount_cents, returned_at, voucher:gift_vouchers(id, code)),
        history:reservation_status_history(from_status, to_status, reason, changed_at, actor:profiles(email, full_name)),
        consents:reservation_consents(kind, granted, created_at),
        notes:reservation_notes(id, body, created_at, author:profiles(email, full_name))`,

@@ -95,7 +95,8 @@
     "general": "Všeobecné",
     "notifications": "E-maily a upozornenia",
     "trash": "Nedávno zmazané",
-    "guests": "Hostia"
+    "guests": "Hostia",
+    "giftVouchers": "Poukazy"
   },
   "admin": {
     "noMembership": "Váš účet zatiaľ nepatrí k žiadnemu ubytovaniu. Ozvite sa správcovi platformy.",
@@ -1438,7 +1439,8 @@
         "generic": "Rezerváciu sa nepodarilo odoslať. Skúste to znova.",
         "billing": "Doplňte názov firmy, IČO, DIČ a adresu na faktúru.",
         "payment": "Tento spôsob platby teraz nie je dostupný. Zvoľte prevod.",
-        "voucher": "Doplňte číslo rekreačného poukazu a jeho vydavateľa."
+        "voucher": "Doplňte číslo rekreačného poukazu a jeho vydavateľa.",
+        "giftVoucher": "Darčekový poukaz sa nedá použiť (je vyčerpaný, neplatný alebo ho nemožno kombinovať s rekreačným poukazom)."
       },
       "priceErrors": {
         "invalidDates": "Neplatný termín.",
@@ -1571,6 +1573,14 @@
         "transferText": "QR kód a pokyny pošleme po potvrdení majiteľom (do 48 h). Potom treba zaplatiť do {hours} h. Platíte priamo ubytovateľovi, bez poplatkov.",
         "cardHold": "Suma je na karte len zablokovaná, strhne sa po potvrdení majiteľom.",
         "cta": "Odoslať žiadosť o rezerváciu"
+      },
+      "gift": {
+        "link": "Máte darčekový poukaz?",
+        "label": "Kód darčekového poukazu",
+        "applied": "Poukaz {code} zaplatí {amount}",
+        "rest": "Zostáva uhradiť {amount}",
+        "all": "Poukaz pokryje celú sumu — nič nedoplácate.",
+        "none": "Tento poukaz nepoznáme, je vyčerpaný alebo mu skončila platnosť."
       }
     },
     "sections": {
@@ -2159,7 +2169,8 @@
       "amount": "Suma",
       "due": "Splatnosť",
       "qr": "QR kód na platbu (PAY by square) nájdete v prílohe alebo naskenujte z obrázka.",
-      "voucherPaid": "Časť {amount} je uhradená rekreačným poukazom. Nižšie je doplatok."
+      "voucherPaid": "Časť {amount} je uhradená rekreačným poukazom. Nižšie je doplatok.",
+      "giftPaid": "Časť {amount} je uhradená darčekovým poukazom. Nižšie je zvyšok."
     },
     "guest_received": {
       "subject": "Rezervácia {number} prijatá — {property}",
@@ -2880,7 +2891,8 @@
         "invoiceTo": "Faktúra na firmu: {company}",
         "recreation_voucher": "Rekreačný poukaz",
         "voucher": "Poukaz č. {number} · {issuer}",
-        "voucherAmount": "Poukazom {amount} · fakturovať: {company}"
+        "voucherAmount": "Poukazom {amount} · fakturovať: {company}",
+        "gift": "Darčekový poukaz {code}: {amount}"
       },
       "approval": {
         "waiting": "Čaká na vaše schválenie do {date}",
@@ -3304,7 +3316,8 @@
       "message_overrides": "Úprava automatickej správy",
       "quick_replies": "Rýchla odpoveď",
       "guest_export": "Export hostí",
-      "guest_notes": "Poznámka o hosťovi"
+      "guest_notes": "Poznámka o hosťovi",
+      "gift_vouchers": "Darčekový poukaz"
     },
     "ops": {
       "insert": "pridané",
@@ -3622,7 +3635,8 @@
       "bank_transfer": "prevodom",
       "card": "kartou",
       "on_site": "na mieste",
-      "recreation_voucher": "rekreačným poukazom"
+      "recreation_voucher": "rekreačným poukazom",
+      "gift_voucher": "darčekovým poukazom"
     },
     "lead": "Položky a platby na vloženie do vášho fakturačného nástroja. Doklad vystavíte tam a nahráte ho sem — hosť ho uvidí vo svojom pobyte.",
     "copy": "Kopírovať",
@@ -4150,6 +4164,11 @@
         "title": "Podpora",
         "where": "Riadiace centrum › Žiadosti o pomoc a hodnotenie návodov",
         "terms": "podpora žiadosti pomoc návody"
+      },
+      "giftVouchers": {
+        "title": "Poukazy",
+        "where": "Ponuka › Darčekové poukazy",
+        "terms": "darčekový poukaz voucher darček kód hodnota"
       }
     }
   },
@@ -4585,6 +4604,10 @@
       "tenantHistory": {
         "title": "Čo je Záznam zmien",
         "text": "Každá zmena v dátach klienta za posledných 180 dní — pred a po, kto a kedy. Zmenu, ktorú urobil človek, môžete vrátiť; synchronizácia kalendárov je zhrnutá po behoch a predvolene skrytá."
+      },
+      "giftVouchers": {
+        "title": "Čo sú Poukazy",
+        "text": "Darčekový poukaz je hodnota, ktorou hosť zaplatí pobyt (nie zľava — zľavové kódy sú pri objekte v Doplnkoch). Hosť zadá kód v košíku; poukaz zaplatí najviac cenu pobytu a zvyšok ostane na ďalší raz. Keď sa rezervácia zruší, suma sa na poukaz vráti."
       }
     },
     "fields": {
@@ -4763,6 +4786,83 @@
       "added": "Pridaný ručne",
       "yes": "áno",
       "no": "nie"
+    }
+  },
+  "giftVouchers": {
+    "title": "Poukazy",
+    "lead": "Darčekový poukaz je hodnota v eurách, ktorou hosť zaplatí pobyt — nie zľava. Uplatní ho v košíku („Máte darčekový poukaz?“); čo nevyčerpá, ostáva na poukaze.",
+    "add": "Nový poukaz",
+    "addTitle": "Nový darčekový poukaz",
+    "addHint": "Kód vytvoríme sami — jedinečný a neuhádnuteľný. PDF stiahnete alebo pošlete e-mailom v karte poukazu.",
+    "create": "Vytvoriť poukaz",
+    "search": "Kód alebo meno…",
+    "filterLabel": "Stav poukazu",
+    "filters": {
+      "all": "Všetky",
+      "valid": "Platné",
+      "used": "Vyčerpané",
+      "expired": "Prepadnuté",
+      "cancelled": "Zrušené"
+    },
+    "states": {
+      "valid": "Platný",
+      "partial": "Čiastočne použitý",
+      "used": "Vyčerpaný",
+      "expired": "Prepadnutý",
+      "cancelled": "Zrušený"
+    },
+    "cols": {
+      "code": "Kód",
+      "recipient": "Na meno",
+      "amount": "Hodnota",
+      "balance": "Zostatok",
+      "validUntil": "Platí do",
+      "state": "Stav"
+    },
+    "fields": {
+      "amount": "Hodnota (€)",
+      "recipient": "Na meno",
+      "recipientHint": "Nepovinné — vytlačí sa na poukaz.",
+      "validUntil": "Platí do",
+      "validUntilHint": "Nepovinné. Bez dátumu platí neobmedzene.",
+      "note": "Poznámka pre tím",
+      "noteHint": "Napríklad „výhra v súťaži“. Na poukaz sa netlačí."
+    },
+    "noExpiry": "bez obmedzenia",
+    "empty": "Zatiaľ žiadny poukaz. Vytvorte prvý tlačidlom „Nový poukaz“.",
+    "emptyFilter": "V tomto filtri nie je žiadny poukaz.",
+    "panel": {
+      "balance": "Zostatok {balance} z {amount}",
+      "created": "Vytvorený {date}",
+      "uses": "Použitia",
+      "noUses": "Zatiaľ nepoužitý.",
+      "use": "{number} · {guest} · {amount}",
+      "returned": "vrátené po zrušení",
+      "pdf": "Stiahnuť PDF",
+      "send": "Poslať e-mailom",
+      "sendTo": "E-mail príjemcu",
+      "sendSubmit": "Poslať poukaz",
+      "sent": "Poukaz sme poslali na {email}.",
+      "sendFailed": "Poukaz sa nepodarilo poslať.",
+      "edit": "Upraviť",
+      "cancel": "Zrušiť poukaz",
+      "cancelConfirm": "Zrušiť poukaz {code}? Hosť ho už nebude môcť uplatniť. Použitia ostávajú v histórii.",
+      "cancelled": "Poukaz je zrušený."
+    },
+    "doc": {
+      "kicker": "Darčekový poukaz",
+      "forName": "pre {name}",
+      "code": "Kód poukazu",
+      "validUntil": "Platí do {date}",
+      "noExpiry": "Platnosť bez obmedzenia",
+      "useAt": "Uplatníte na {site}",
+      "useHow": "Pri rezervácii v košíku kliknite na „Máte darčekový poukaz?“ a zadajte kód. Hodnota sa odpočíta z ceny pobytu; čo nevyčerpáte, ostáva na poukaze.",
+      "emailSubject": "Darčekový poukaz {tenant} na {amount}",
+      "emailGreeting": "Dobrý deň, {name},",
+      "emailGreetingNoName": "Dobrý deň,",
+      "emailText": "posielame vám darčekový poukaz {tenant} v hodnote {amount}. Poukaz je aj v prílohe v PDF.",
+      "emailCode": "Kód poukazu: {code}",
+      "emailButton": "Vybrať termín"
     }
   }
 }

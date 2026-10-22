@@ -71,7 +71,7 @@ export async function tenantPublicHost(tenantId: string): Promise<string | null>
  */
 export async function reservationExtras(r: ReservationSummary) {
   const admin = createAdminClient();
-  const [{ data: res }, { data: property }, { data: payment }, { data: settings }, { data: loc }] =
+  const [{ data: res }, { data: property }, { data: payments }, { data: settings }, { data: loc }] =
     await Promise.all([
       admin.from("reservations").select("cancelled_reason, created_at").eq("id", r.id).single(),
       admin
@@ -85,8 +85,7 @@ export async function reservationExtras(r: ReservationSummary) {
         .from("payments")
         .select("status, received_at, amount_cents")
         .eq("reservation_id", r.id)
-        .eq("purpose", "reservation")
-        .maybeSingle(),
+        .eq("purpose", "reservation"),
       admin
         .from("tenant_settings")
         .select(
@@ -118,7 +117,14 @@ export async function reservationExtras(r: ReservationSummary) {
         ? googleDirectionsUrl(Number(property.latitude), Number(property.longitude))
         : null,
     cover: cover ? { url: photoUrl(cover.storage_path), alt: "" } : null,
-    paidAt: payment?.status === "received" ? payment.received_at : null,
+    // Paid = nothing left to pay (Z77/Z78: a voucher and the rest are separate payments) — when the last one arrived.
+    paidAt:
+      payments?.length && payments.every((p) => p.status === "received")
+        ? (payments
+            .map((p) => p.received_at ?? "")
+            .sort()
+            .at(-1) ?? null)
+        : null,
     arrivalDays: settings?.arrival_email_days_before ?? 3,
     cancellationPolicy: (settings?.cancellation_policy ?? {}) as Record<string, string>,
     contact: settings

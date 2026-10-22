@@ -13,6 +13,7 @@ import { priceContributorsFor } from "@/modules/price-contributors";
 import { guardGuestAction } from "@/core/security/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
+import { normalizeGiftCode } from "@/core/gift-vouchers/state";
 import { propertyMethods } from "@/core/payments/methods";
 import { getGuestSettings, getPublicProperty } from "./catalog";
 import { toDiscounts, toPricingInput } from "./pricing-input";
@@ -31,7 +32,8 @@ export type BookingState = {
     | "generic"
     | "billing"
     | "payment"
-    | "voucher";
+    | "voucher"
+    | "giftVoucher";
   details?: string[];
 };
 
@@ -93,6 +95,8 @@ const schema = z.object({
   // Z77: the recreation voucher — number and issuer (the owner checks them at the approval).
   voucher_number: z.string().trim().max(60).optional().default(""),
   voucher_issuer: z.string().trim().max(120).optional().default(""),
+  // Z78: a gift voucher pays part (or all) — checked and deducted again in the database.
+  gift_voucher_code: z.string().trim().max(30).optional().default(""),
   invoice: z.string().max(1).optional().default(""),
   billing_company: z.string().trim().max(200).optional().default(""),
   billing_company_id: z.string().trim().max(20).optional().default(""),
@@ -149,6 +153,9 @@ export async function createGuestReservation(
       ? { number: v.voucher_number, issuer: v.voucher_issuer }
       : null;
   if (voucher && (!voucher.number || voucher.issuer.length < 2)) return { error: "voucher" };
+  const giftCode = v.gift_voucher_code ? normalizeGiftCode(v.gift_voucher_code) : null;
+  // A recreation voucher and a gift voucher together are not combined (one company invoice, one rest).
+  if (v.gift_voucher_code && (!giftCode || voucher)) return { error: "giftVoucher" };
 
   const tenant = await getTenantFromHost();
   if (!tenant) return { error: "generic" };
@@ -271,6 +278,7 @@ export async function createGuestReservation(
         payment_method: v.payment_method,
         billing,
         voucher,
+        gift_voucher: giftCode ? { code: giftCode } : null,
         hold_id: v.hold_id || null,
         lines: price.lines.map((l) => ({
           kind: l.kind,
@@ -286,7 +294,11 @@ export async function createGuestReservation(
       } as unknown as Json,
     })
     .single();
-  if (error) return { error: error.code === "23P01" ? "unavailable" : "generic" };
+  if (error)
+    return {
+      error:
+        error.code === "23P01" ? "unavailable" : error.code === "P0002" ? "giftVoucher" : "generic",
+    };
 
   await notifyReservationCreated(data.id, data.access_token).catch(() => undefined);
   redirect(`/r/${data.access_token}`);
@@ -318,6 +330,35 @@ export async function holdTerm(
     p_check_out: checkOut,
   });
   return error ? null : (data as string);
+}
+
+export type GiftVoucherPreview =
+  | { ok: true; code: string; balanceCents: number }
+  | { ok: false; error: "none" | "captcha" | "limit" };
+
+/**
+ * Z78: checks a gift voucher for the cart — its code, that it is valid and what is left on it. Behind the captcha and
+ * the IP limit (codes cannot be tried by a script); the reservation checks and deducts it again in the database.
+ */
+export async function previewGiftVoucher(input: {
+  code: string;
+  captchaToken: string;
+}): Promise<GiftVoucherPreview> {
+  const none = { ok: false, error: "none" } as const;
+  const tenant = await getTenantFromHost();
+  const code = normalizeGiftCode(input.code);
+  if (!tenant || !code) return none;
+  const blocked = await guardGuestAction(tenant.id, "gift_voucher", input.captchaToken);
+  if (blocked) return { ok: false, error: blocked };
+  const { data } = await createAdminClient()
+    .from("gift_vouchers")
+    .select("code, balance_cents, valid_until, status")
+    .eq("tenant_id", tenant.id)
+    .eq("code", code)
+    .maybeSingle();
+  if (!data || data.status !== "active" || data.balance_cents <= 0) return none;
+  if (data.valid_until && data.valid_until < todayIso()) return none;
+  return { ok: true, code: data.code, balanceCents: data.balance_cents };
 }
 
 export type PromoPreview =

@@ -30,6 +30,7 @@ import { AvailabilityCalendar } from "@/core/booking/availability-calendar";
 import {
   createGuestReservation,
   holdTerm,
+  previewGiftVoucher,
   previewPromo,
   startBookingForm,
   type BookingState,
@@ -942,7 +943,23 @@ function StepPayment({
 }) {
   const t = useTranslations("guest");
   const b = useBooking();
-  const { data, money, total, range, promo, setPromo, lines, billing } = b;
+  const {
+    data,
+    money,
+    total,
+    range,
+    promo,
+    setPromo,
+    lines,
+    billing,
+    giftVoucher,
+    setGiftVoucher,
+  } = b;
+  // Z78: the gift voucher pays up to the total; the rest is paid by the chosen way.
+  const [giftCode, setGiftCode] = useState("");
+  const [giftOpen, setGiftOpen] = useState(false);
+  const [giftError, setGiftError] = useState<null | "none" | "captcha" | "limit">(null);
+  const giftCents = giftVoucher ? Math.min(giftVoucher.balanceCents, total) : 0;
   const [code, setCode] = useState(promo?.code ?? "");
   const [promoOpen, setPromoOpen] = useState(false);
   const [method, setMethod] = useState(data.settings.paymentMethods[0] ?? "bank_transfer");
@@ -953,6 +970,16 @@ function StepPayment({
   const [captchaFailed, setCaptchaFailed] = useState(false);
   const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
   const cancellation = data.settings.cancellationPolicy || t("booking.consentCancellation");
+
+  async function applyGift() {
+    const r = await previewGiftVoucher({ code: giftCode, captchaToken: captcha });
+    renewCaptcha(); // the token was used up by this check
+    setGiftError(r.ok ? null : r.error);
+    if (r.ok) {
+      setGiftVoucher({ code: r.code, balanceCents: r.balanceCents });
+      setGiftOpen(false);
+    }
+  }
 
   async function applyPromo() {
     if (!range.checkIn || !range.checkOut) return;
@@ -1007,6 +1034,7 @@ function StepPayment({
           ["billing_address", billing.on ? billing.address : ""],
           ["voucher_number", isVoucher ? voucher.number : ""],
           ["voucher_issuer", isVoucher ? voucher.issuer : ""],
+          ["gift_voucher_code", giftVoucher?.code ?? ""],
         ] as const
       ).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={String(value)} />
@@ -1155,6 +1183,77 @@ function StepPayment({
               {promoError === "none"
                 ? t("booking.promoNotApplicable")
                 : t(`booking.errors.${promoError}`)}
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {/* Z78: a gift voucher — a payment, not a discount: what it pays and what is left to pay. */}
+      {giftVoucher ? (
+        <div
+          className="text-ink grid gap-1 rounded-lg bg-[#eef3f0] px-4 py-3 text-sm"
+          role="status"
+          data-testid="gift-applied"
+        >
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>
+              {t("cart.gift.applied", { code: giftVoucher.code, amount: money(giftCents) })}
+            </span>
+            <Check className="text-primary size-4" aria-hidden />
+            <span aria-hidden>·</span>
+            <button
+              type="button"
+              onClick={() => {
+                setGiftVoucher(null);
+                setGiftCode("");
+              }}
+              className="font-medium underline underline-offset-[3px]"
+            >
+              {t("cart.promoRemove")}
+            </button>
+          </p>
+          <p className="font-bold">
+            {total - giftCents > 0
+              ? t("cart.gift.rest", { amount: money(total - giftCents) })
+              : t("cart.gift.all")}
+          </p>
+        </div>
+      ) : !giftOpen ? (
+        <button
+          type="button"
+          onClick={() => setGiftOpen(true)}
+          aria-expanded={false}
+          className="text-ink -mt-4 justify-self-start text-sm font-medium underline underline-offset-[3px]"
+        >
+          {t("cart.gift.link")}
+        </button>
+      ) : (
+        <div className="grid gap-1.5">
+          <Label htmlFor="c-gift">{t("cart.gift.label")}</Label>
+          <div className="flex gap-2">
+            <Input
+              id="c-gift"
+              value={giftCode}
+              autoComplete="off"
+              onChange={(e) => {
+                setGiftCode(e.target.value);
+                setGiftError(null);
+              }}
+              className="border-line min-h-11 rounded-lg uppercase"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 rounded-full"
+              disabled={!giftCode.trim() || (captchaEnabled && !captcha)}
+              onClick={applyGift}
+            >
+              {t("booking.promoApply")}
+            </Button>
+          </div>
+          {giftError ? (
+            <p className="text-muted-foreground text-xs" role="alert">
+              {giftError === "none" ? t("cart.gift.none") : t(`booking.errors.${giftError}`)}
             </p>
           ) : null}
         </div>

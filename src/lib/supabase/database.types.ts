@@ -504,6 +504,114 @@ export type Database = {
           },
         ]
       }
+      gift_voucher_uses: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          reservation_id: string | null
+          returned_at: string | null
+          tenant_id: string
+          voucher_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          id?: string
+          reservation_id?: string | null
+          returned_at?: string | null
+          tenant_id: string
+          voucher_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          reservation_id?: string | null
+          returned_at?: string | null
+          tenant_id?: string
+          voucher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_voucher_uses_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_voucher_uses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_voucher_uses_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "gift_vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_vouchers: {
+        Row: {
+          amount_cents: number
+          balance_cents: number
+          code: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          note: string | null
+          recipient_name: string | null
+          status: string
+          tenant_id: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          amount_cents: number
+          balance_cents: number
+          code: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          note?: string | null
+          recipient_name?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          balance_cents?: number
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          id?: string
+          note?: string | null
+          recipient_name?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_vouchers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guest_auth_attempts: {
         Row: {
           created_at: string
@@ -3868,6 +3976,36 @@ export type Database = {
           property_id: string
           unit_id: string
         }[]
+      }
+      gift_voucher_create: {
+        Args: {
+          p_amount_cents: number
+          p_note?: string
+          p_recipient_name?: string
+          p_tenant_id: string
+          p_valid_until?: string
+        }
+        Returns: {
+          amount_cents: number
+          balance_cents: number
+          code: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          id: string
+          note: string | null
+          recipient_name: string | null
+          status: string
+          tenant_id: string
+          updated_at: string
+          valid_until: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "gift_vouchers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       guest_arrival_instructions: {
         Args: { p_reservation_id: string }

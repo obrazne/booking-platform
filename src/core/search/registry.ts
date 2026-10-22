@@ -27,6 +27,7 @@ export const ADMIN_REGISTRY: readonly RegistryEntry[] = [
   { id: "report", href: "/admin/statistics/report" },
   { id: "ical", href: "/admin/settings?tab=prepojenia" },
   { id: "testimonials", href: "/admin/testimonials" },
+  { id: "giftVouchers", href: "/admin/vouchers" },
   { id: "help", href: "/admin/help" },
   // Objekt
   { id: "propertyData", href: "/admin/properties/{property}" },

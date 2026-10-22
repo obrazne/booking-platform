@@ -106,6 +106,9 @@ type Ctx = {
   minRate: number | null;
   promo: { code: string; name: Record<string, string>; amountCents: number } | null;
   setPromo: (p: { code: string; name: Record<string, string>; amountCents: number } | null) => void;
+  /** Z78: a gift voucher (a payment, not a discount) — what is left on it; it pays up to the total. */
+  giftVoucher: { code: string; balanceCents: number } | null;
+  setGiftVoucher: (g: { code: string; balanceCents: number } | null) => void;
   guest: GuestFields;
   setGuest: (g: GuestFields) => void;
   billing: BillingFields;
@@ -178,6 +181,7 @@ export function BookingProvider({
     highlight: null,
   });
   const [promo, setPromo] = useState<Ctx["promo"]>(null);
+  const [giftVoucher, setGiftVoucher] = useState<Ctx["giftVoucher"]>(null);
   const [guest, setGuest] = useState<GuestFields>({
     name: "",
     email: "",
@@ -367,6 +371,8 @@ export function BookingProvider({
     minRate,
     promo,
     setPromo,
+    giftVoucher,
+    setGiftVoucher,
     guest,
     setGuest,
     billing,

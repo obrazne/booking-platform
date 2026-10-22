@@ -151,7 +151,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       {
         label: t("nav.offer"),
         icon: <Gift />,
-        children: [...extra.offer, { href: "/admin/testimonials", label: t("nav.testimonials") }],
+        children: [
+          ...extra.offer,
+          // Z78: gift vouchers (core — a way to pay, like the transfer).
+          { href: "/admin/vouchers", label: t("nav.giftVouchers") },
+          { href: "/admin/testimonials", label: t("nav.testimonials") },
+        ],
       },
       {
         label: t("nav.statistics"),

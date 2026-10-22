@@ -126,8 +126,12 @@ export async function basisFormat(locale: string, timeZone: string) {
     taxId: t("taxId"),
     vatId: t("vatId"),
     provider: (p) =>
-      ["bank_transfer", "card", "on_site", "recreation_voucher"].includes(p)
-        ? t(`providers.${p as "bank_transfer" | "card" | "on_site" | "recreation_voucher"}`)
+      (
+        ["bank_transfer", "card", "on_site", "recreation_voucher", "gift_voucher"] as const
+      ).includes(p as "card")
+        ? t(
+            `providers.${p as "bank_transfer" | "card" | "on_site" | "recreation_voucher" | "gift_voucher"}`,
+          )
         : p,
   };
   const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone });

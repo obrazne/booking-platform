@@ -21,7 +21,7 @@ const AREAS: Record<string, readonly string[]> = {
     "occupancy",
   ],
   hostia: ["guests", "guest_consent_events", "guest_consent_requests", "guest_notes"],
-  platby: ["payments"],
+  platby: ["payments", "gift_vouchers", "gift_voucher_uses"],
   objednavky: ["reservation_orders"],
   spravy: ["messages", "message_threads", "message_overrides", "message_rules", "quick_replies"],
   recenzie: ["reviews", "testimonials"],

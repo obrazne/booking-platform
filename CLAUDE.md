@@ -148,6 +148,9 @@ načíta `loadMonthlyReport` (4. parameter `marketing`), pole `src/app/admin/sta
 alebo `payment_method = recreation_voucher`), `approve_reservation` / `decline_reservation`, pripomienka a vypršanie v
 `expire_pending_reservations`; panel `src/app/admin/reservations/approval-actions.tsx`; spôsoby platby pri schvaľovaní
 `propertyMethods` v `src/core/payments/methods.ts`; podklady poukaz/doplatok `splitForVoucher` (`src/core/invoice/basis.ts`).
+**Darčekové poukazy (Z78):** `gift_vouchers` + `gift_voucher_uses` (kód len cez `gift_voucher_create`, zostatok len cez rezerváciu;
+vrátenie pri zrušení triggerom), v `create_reservation` `p -> 'gift_voucher'`; administrácia `src/app/admin/vouchers/`, jadro
+`src/core/gift-vouchers/` (stav, dotazy, PDF, e-mail); košík `previewGiftVoucher` v `src/core/booking/create.ts`.
 **Hľadanie a Pomoc (Z67):** register stránok a polí `src/core/search/registry.ts` (nová stránka / nové nastavenie = riadok + slová
 v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazní — `field-highlight.tsx` v AdminShell), hľadanie
 `search-box.tsx` (Ctrl K; rezervácie, hostia a poznámky cez DB `actions.ts`). Otázky Pomoci `src/core/help/faqs.ts` + `help.faqs.<id>`

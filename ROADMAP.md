@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → ~~Z83 (widget: kalendár s cenami na web klienta)~~ ✅ → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → ~~Z77 (na schválenie, rekreačný poukaz)~~ ✅ → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → ~~Z77 (na schválenie, rekreačný poukaz)~~ ✅ → ~~Z78 (darčekové poukazy)~~ ✅ → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -367,7 +367,7 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
    po schválení hosťovi príde e-mail s doplatkom (prevod, neskôr karta). Dva **podklady na doklad**: na sumu poukazu (odberateľ = firma)
    a na doplatok (odberateľ = hosť). Migrácie len pridávajú, RLS, `record_history`. Testy: e2e oba toky, vypršanie lehoty (cron).
 
-### Z78 [B] 🔄 — Darčekové poukazy (pripomienka 67) — po Z77
+### Z78 [B] ✅ — Darčekové poukazy (pripomienka 67) — po Z77
 Poukaz = **hodnota (platba), nie zľava** (zľavový kód ostáva zvlášť).
 1. Administrácia → Ponuka → Poukazy: vytvoriť (hodnota v €, na meno, platnosť do, poznámka napr. „výhra v súťaži“) → jedinečný
    rozpoznateľný kód (napr. `STROMY-7K4P-2Q`), stav (platný / čiastočne použitý / vyčerpaný / prepadnutý / zrušený), zostatok, história použitia.
@@ -470,6 +470,9 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
   Viac vlastných objektov jednej firmy = jedna licencia (zriadenie rovnaké, mesačne príplatok za ďalší objekt — výšku určí Martin).
   Cudzí objekt v správe (napr. Jana spravuje chalet kamarátke) = samostatný klient a samostatná licencia; správca sa prihlási do oboch
   jedným účtom. Do zmluvy: licencia pokrýva objekty prevádzkované na účet držiteľa licencie.
+- [ ] 🧠→🔧 **Predaj darčekových poukazov na stránke klienta** (Z78 — teraz poukaz vytvára len majiteľ v Ponuka › Poukazy): hosť
+  si poukaz kúpi a zaplatí (karta/prevod), poukaz s PDF mu príde e-mailom. Predtým doriešiť: platba kartou (Stripe), daňový doklad
+  za poukaz (viacúčelový poukaz — DPH až pri uplatnení), storno a vrátenie.
 - [ ] *Odložené (Martin 22. 10.):* channel manager a jednotná schránka Booking/Airbnb cez sprostredkovateľa (napr. Channex, ~10 €/klient
   mesačne) — zložité na stavbu a podporu; zatiaľ iCal. Vrátiť sa, keď to budú klienti pýtať (`docs/biznis/konkurencia-rentalls.md`).
 - [ ] 🧠→🔧 **Rezervácie na schválenie + rekreačné a darčekové poukazy** (Jana 22. 10., pripomienky 66–68): pri objekte nastavenie
@@ -597,6 +600,19 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z78 [linka B]: **Darčekové poukazy** (pripomienka 67). (Claude Code)
+  - Ponuka › Poukazy (`/admin/vouchers`, jadro): nový poukaz (hodnota, na meno, platí do, poznámka pre tím) — kód robí databáza
+    (`gift_voucher_create`: prefix klienta + 8 náhodných znakov bez zameniteľných, napr. `UKAZKA-7K4P-2QXA`); zoznam so stavom
+    (platný / čiastočne použitý / vyčerpaný / prepadnutý / zrušený), zostatkom, filtrami, hľadaním a stránkovaním v DB; karta s použitiami
+    (rezervácie, vrátené po zrušení), úpravou, zrušením, **PDF v dizajne klienta** (pásik vo farbe, logo ak je verejné https, hodnota, meno,
+    kód, platnosť, „Uplatníte na <stránka>“) a **poslaním e-mailom** s PDF v prílohe.
+  - Košík: „Máte darčekový poukaz?“ vedľa zľavového kódu — kontrola za captchou a limitom pokusov (`gift_voucher`, 30/h/IP); poukaz
+    zaplatí najviac cenu, zvyšok ostáva na poukaze; „Zostáva uhradiť“. V databáze `create_reservation` poukaz zamkne, overí a odpočíta
+    (platba `gift_voucher` prijatá, QR len na zvyšok); pokryje všetko → rezervácia hneď potvrdená. Zrušená rezervácia sumu vráti.
+    S rekreačným poukazom sa nekombinuje. Na podklade na doklad je úhrada „darčekovým poukazom“; v paneli rezervácie odkaz na poukaz.
+  - Oprava popri tom: potvrdenie `/r` s viacerými platbami (poukaz + zvyšok) — „zaplatené“ až keď je zaplatené všetko.
+  - Migrácia `20261022150000_gift_vouchers.sql`, pgTAP `gift_vouchers.test.sql`, vitest `gift-vouchers/state.test.ts`, e2e
+    `gift-vouchers.spec.ts` (vytvorenie → PDF → použitie v košíku → vrátenie po zrušení). Predaj poukazov → Fáza 4. Snímky `docs/snimky/z78/`.
 - 2026-10-22 — Z77 [linka B]: **Rezervácie na schválenie + rekreačný poukaz** (pripomienky 66, 68). (Claude Code)
   - Objekt → Údaje: „Ako prijímate rezervácie“ — Okamžite / Na schválenie (`properties.booking_approval`). Priama rezervácia hosťa
     na takom objekte (a každá s poukazom) má stav **`awaiting_approval`**: termín podržaný, `approval_due_at` = +48 h, bez platobných

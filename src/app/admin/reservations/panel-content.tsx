@@ -383,6 +383,21 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             <span className="text-ink">
               {tv(`payment.${detail.payment_method as "bank_transfer"}`)}
             </span>
+            {/* Z78: what a gift voucher paid (a link to the voucher). */}
+            {detail.gift_uses
+              .filter((u) => !u.returned_at && u.voucher)
+              .map((u) => (
+                <Link
+                  key={u.voucher!.id}
+                  href={`/admin/vouchers?panel=voucher:${u.voucher!.id}`}
+                  className="text-ink text-[13px] font-medium hover:underline"
+                >
+                  {tv("payment.gift", {
+                    code: u.voucher!.code,
+                    amount: fmt(u.amount_cents, detail.currency),
+                  })}
+                </Link>
+              ))}
             {voucherLabel ? (
               <span className="grid gap-0.5 text-[13px] [overflow-wrap:anywhere] text-[#5a6672]">
                 <span>{voucherLabel}</span>

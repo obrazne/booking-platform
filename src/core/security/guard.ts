@@ -5,7 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyTurnstile } from "./turnstile";
 
 /** Guest form actions limited per IP address. */
-export type GuardedAction = "reservation" | "promo" | "login_code" | "login_verify" | "staff_link";
+export type GuardedAction =
+  "reservation" | "promo" | "login_code" | "login_verify" | "staff_link" | "gift_voucher";
 
 /** Most attempts per IP and hour (generous for a family behind one router, tight for a script). */
 export const REQUEST_LIMITS: Record<GuardedAction, number> = {
@@ -14,6 +15,8 @@ export const REQUEST_LIMITS: Record<GuardedAction, number> = {
   login_code: 10,
   login_verify: 30,
   staff_link: 10,
+  // Z78: the gift voucher in the cart — like promo codes.
+  gift_voucher: 30,
 };
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);

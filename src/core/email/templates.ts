@@ -161,12 +161,17 @@ async function renderEmailBody(
         .filter((x) => x.status === "pending" && x.provider !== "recreation_voucher")
         .sort((a, b) => b.created_at.localeCompare(a.created_at))[0] ?? null;
     const amount = open?.amount_cents ?? r.total_cents;
+    const giftCents = r.payments
+      .filter((x) => x.provider === "gift_voucher" && x.status === "received")
+      .reduce((s, x) => s + x.amount_cents, 0);
     const vs = open?.variable_symbol ?? r.payments[0]?.variable_symbol ?? r.number.replace("-", "");
     const blocks = [
       `<h2 style="font-size:16px;margin:24px 0 4px">${esc(t("payment.title"))}</h2>`,
       ...(r.voucher_amount_cents
         ? [p(t("payment.voucherPaid", { amount: fmt(r.voucher_amount_cents) }))]
         : []),
+      // Z78: the part a gift voucher paid.
+      ...(giftCents ? [p(t("payment.giftPaid", { amount: fmt(giftCents) }))] : []),
       rows([
         [t("payment.amount"), fmt(amount)],
         [t("payment.iban"), (settings?.iban ?? "").replace(/(.{4})/g, "$1 ").trim()],
