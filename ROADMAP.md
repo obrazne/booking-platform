@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ — fronta linky A je prázdna (Z72 prevzala linka B);
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → **Z74 (odsadenie pripnutého zhrnutia)** → **Z76 (preklad správ cez DeepL)**;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → **Z75 (výpis: rozpočet na marketing)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -312,6 +312,26 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
    Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
    pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
+### Z76 [A] — Správy: automatický preklad medzi jazykom hosťa a majiteľa (Jana 22. 10.) — po Z74
+Ako na Bookingu/Airbnb: hosť píše po svojom (napr. hebrejsky), majiteľ dostane správu po slovensky; majiteľ odpíše po slovensky,
+hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
+1. **Jazyk hosťa volí hosť** (Martin: nie automatická detekcia): v účte → Moje údaje „Jazyk, v ktorom komunikujem“ a aj priamo pri
+   správach (aj cez prístupový odkaz `/r/<kód>` bez účtu) malý výber „Píšete v inom jazyku?“. Predvolene jazyk stránky pri rezervácii.
+   Uloží sa k hosťovi (migrácia len pridáva, RLS, `record_history`). Jazyk majiteľa = nastavenie klienta (predvolene slovenčina).
+2. **Preklad cez DeepL API** (EÚ, podporuje aj hebrejčinu): kľúč `DEEPL_API_KEY` len na serveri (adresa API free/pro podľa kľúča — free
+   končí `:fx`); kľúč pridá Martin do `.env.local` a Vercelu, nikdy do repozitára. Prekladať len keď sa jazyky líšia.
+3. **Originál sa vždy uloží**, preklad zvlášť (cache podľa jazyka); pri správe „Zobraziť originál“ u majiteľa aj hosťa. E-mail hosťovi
+   v jeho jazyku. **Automatické správy** (pokyny k príchodu…) sa hosťovi pošlú preložené (cache podľa pravidla a jazyka).
+4. **Zapínanie a strážca nákladov:** v Nastaveniach klienta (karta E-maily a upozornenia / Správy) „Prekladať správy automaticky“;
+   počítadlo preložených znakov za mesiac v riadiacom centre; pri dosiahnutí limitu (free 500 000 znakov/mesiac) sa ďalej posiela
+   originál s poznámkou „nepreložené“, upozornenie Martinovi. Pri chybe DeepL: originál + opakovanie, nič sa nestratí.
+5. **Ochrana údajov — povinné:** text správ ide tretej strane. **DeepL Free (aj API Free) môže texty uchovávať na zlepšovanie služby →
+   len na skúšanie s testovacími dátami** (Ukážkový klient, testovacie e-maily). Skutočné správy hostí len cez **DeepL API Pro** (texty
+   nemaže/neukladá) so zmluvou o spracúvaní (DPA). Doplň: zoznam sprostredkovateľov v `docs/prevadzka/` (DeepL, účel, krajina) a do
+   *Pred spustením*: „DeepL Pro + DPA, sprostredkovateľ uvedený v zásadách ochrany osobných údajov klienta“. Overiť aktuálne podmienky DeepL.
+6. Testy: vitest s náhradou DeepL (bez skutočného volania), e2e konverzácie s prekladom (náhrada); jeden ručný test so skutočným
+   free kľúčom na stagingu (Ukážkový klient) — výsledok do Denníka.
+
 *Hotové úlohy Z31–Z53 (zadania) sú v `docs/archiv/ulohy-hotove-do-Z53.md`.*
 
 ## Fáza 0 — Organizácia projektu
@@ -356,6 +376,7 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
   Do vtedy je v košíku karta ako neaktívna možnosť „Pripravujeme“ (č. 57) — **na produkcii sa neaktívna karta hosťom nesmie ukázať.**
   Z71: karta „Pripravujeme“ sa ukazuje len pri nastavenom `EMAIL_REDIRECT_TO` (staging); produkcia ho mať nesmie (bod o e-mailoch nižšie)
   → bez neho karta zmizne sama (`upcomingMethods` v `src/core/payments/methods.ts`, test). Pri spustení skontrolovať, že na produkcii chýba.
+- [ ] Preklad správ (Z76): **DeepL API Pro + zmluva o spracúvaní**, DeepL uvedený ako sprostredkovateľ v zásadách ochrany osobných údajov klienta (free plán len na skúšanie).
 - [ ] Produkčné prostredie: druhý Supabase projekt, Vercel produkcia, platené plány, doména klienta (3e) — Martin odsúhlasí náklady.
 - [ ] **E-maily hosťom naostro:** overená doména odosielateľa v Resende (SPF, DKIM, DMARC) a `EMAIL_FROM` na nej; `EMAIL_REDIRECT_TO`
   na produkcii prázdne (staging posiela všetky e-maily na info@obrazne.sk s pôvodným príjemcom v predmete — na stagingu je to zámer, Martin 20. 10. súhlasí).
