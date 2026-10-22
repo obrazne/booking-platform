@@ -354,7 +354,7 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
 
 **Nápady od Jany 22. 10. (Martin: „čo sme odsúhlasili, sa aj spraví“) → Z77–Z82.** Linka A: Z79, Z80; linka B: Z77, Z78, Z81, Z82.
 
-### Z77 [B] — Rezervácie na schválenie + rekreačný poukaz (pripomienky 66, 68) — po Z75
+### Z77 [B] 🔄 — Rezervácie na schválenie + rekreačný poukaz (pripomienky 66, 68) — po Z75
 1. **Nastavenie pri objekte:** „Ako prijímate rezervácie“ — **okamžite** (ako dnes) / **na schválenie**. Na schválenie: termín sa podrží,
    stav „čaká na schválenie“, majiteľ do **48 h** schváli alebo zamietne (zvonček + e-mail + push, pripomienka po 24 h, po lehote
    automatické zrušenie a e-mail hosťovi). Pri prevode hosť dostane platobné údaje (QR) **až po schválení**; lehota platby beží od schválenia.
