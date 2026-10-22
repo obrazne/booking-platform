@@ -294,7 +294,7 @@ Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoraden�
 zobraz aktívne zoradenie. Zoradenie podľa termínu ostáva na klik; pohľad „kto prichádza“ je Príchody. Uprav testy, ktoré čakajú
 pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
-### Z75 [B] — Mesačný výpis: ušetrené provízie ako rozpočet na marketing (Martin 21. 10.)
+### Z75 [B] 🔄 — Mesačný výpis: ušetrené provízie ako rozpočet na marketing (Martin 21. 10.)
 Filozofia predaja (`ARCHITEKTURA.md` A10): to, čo klient ušetrí na províziách, môže dať do vlastného marketingu. Majiteľovi samotné
 „ušetrili ste X“ nič nehovorí — vie, že bez marketingu hostia neprídu. Má vidieť **rozpočet na marketing** a čo mu po ňom ostane.
 1. Vo výpise (stránka, e-mail aj PDF — jeden zdroj `src/core/reports/monthly-view.ts`) nazvi úsporu **„Váš rozpočet na vlastný marketing
