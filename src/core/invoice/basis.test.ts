@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { basisText, buildBasis, splitVat, vatSummary, type BasisLabels } from "./basis";
+import {
+  basisText,
+  buildBasis,
+  splitForVoucher,
+  splitVat,
+  vatSummary,
+  type BasisLabels,
+} from "./basis";
 
 const lines = [
   {
@@ -183,5 +190,47 @@ describe("podklad na doklad", () => {
       ),
     );
     expect(company).not.toContain("IČ DPH");
+  });
+});
+
+describe("recreation voucher (Z77)", () => {
+  const line = (kind: string, amount: number, vat = 0, sort = 0) => ({
+    kind,
+    label: kind,
+    quantity: 2,
+    unit_amount_cents: amount / 2,
+    amount_cents: amount,
+    vat_bp: vat,
+    sort,
+  });
+
+  it("the voucher takes the accommodation first, a partly covered line is split", () => {
+    const { voucher, rest } = splitForVoucher(
+      [
+        line("service", 6000, 2300, 2),
+        line("accommodation", 40000, 500, 1),
+        line("deposit", 10000),
+      ],
+      30000,
+    );
+    expect(voucher.map((l) => [l.kind, l.amount_cents, l.quantity])).toEqual([
+      ["accommodation", 30000, 1],
+    ]);
+    expect(rest.map((l) => [l.kind, l.amount_cents])).toEqual([
+      ["deposit", 10000],
+      ["accommodation", 10000],
+      ["service", 6000],
+    ]);
+    // Each part keeps its VAT rate; together they are the price.
+    expect(voucher[0]!.vat_bp).toBe(500);
+    const sum = (ls: { kind: string; amount_cents: number }[]) =>
+      ls.filter((l) => l.kind !== "deposit").reduce((s, l) => s + l.amount_cents, 0);
+    expect(sum(voucher) + sum(rest)).toBe(46000);
+  });
+
+  it("a voucher covering everything leaves nothing to pay", () => {
+    const { voucher, rest } = splitForVoucher([line("accommodation", 40000)], 40000);
+    expect(voucher).toHaveLength(1);
+    expect(rest).toEqual([]);
   });
 });

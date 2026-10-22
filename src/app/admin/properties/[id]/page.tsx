@@ -201,6 +201,25 @@ export default async function PropertyDetailsPage({ params }: PageProps<"/admin/
                 />
               </Field>
             </div>
+            {/* Z77: how reservations are accepted — instantly or after the owner's approval (48 h). */}
+            <fieldset className="grid gap-2" data-testid="booking-approval">
+              <legend className="mb-1 text-sm font-medium">{t("approval.label")}</legend>
+              {(["instant", "approval"] as const).map((m) => (
+                <label key={m} className="flex items-start gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="booking_approval"
+                    value={m}
+                    defaultChecked={property.booking_approval === m}
+                    className="accent-primary mt-0.5 size-4 shrink-0"
+                  />
+                  <span className="grid gap-0.5">
+                    <span className="font-medium">{t(`approval.${m}`)}</span>
+                    <span className="text-muted-foreground text-xs">{t(`approval.${m}Hint`)}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
             <div className="grid gap-2">
               <Label className="font-normal">
                 <Checkbox name="pets_allowed" defaultChecked={property.pets_allowed} />{" "}

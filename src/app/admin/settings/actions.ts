@@ -90,6 +90,8 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
         }),
       // Payment methods (Z69): checkboxes, present only on the Platby tab (marker `has_payment_methods`).
       bank_transfer_enabled: z.preprocess((v) => v === "on", z.boolean()),
+      // Z77: the recreation voucher (marker `has_voucher`).
+      voucher_enabled: z.preprocess((v) => v === "on", z.boolean()),
     })
     // Z69: Nastavenia has tabs, each with its own form — only the fields of the form are saved; the others stay.
     .partial()
@@ -99,6 +101,7 @@ export async function saveSettings(_: ActionResult, form: FormData): Promise<Act
       bank_transfer_enabled: form.has("has_payment_methods")
         ? form.get("bank_transfer_enabled")
         : undefined,
+      voucher_enabled: form.has("has_voucher") ? form.get("voucher_enabled") : undefined,
     });
   if (!parsed.success) return fail("invalid");
   const { stay_account_limit, upsell_offer_days, ...fields } = parsed.data;

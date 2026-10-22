@@ -44,7 +44,11 @@ export type EmailKind =
   | "guest_checkin_reminder"
   | "guest_upsell_offer"
   | "guest_message"
-  | "owner_message";
+  | "owner_message"
+  | "guest_awaiting_approval"
+  | "guest_approved"
+  | "owner_approval_request"
+  | "owner_approval_reminder";
 
 // Layout and helpers shared with the preview in the administration (Z60).
 const layout = emailLayout;
@@ -123,6 +127,8 @@ async function renderEmailBody(
     : "";
   const vars = { number: r.number, property: property?.name ?? "", guest: r.guest_name };
   const due = r.payment_due_at ? formatDateTime(r.payment_due_at, locale, tz) : "";
+  // Z77: until when the owner approves.
+  const approvalDue = r.approval_due_at ? formatDateTime(r.approval_due_at, locale, tz) : "";
   const summary = rows([
     [t("number"), r.number],
     [t("stay"), `${property?.name ?? ""}, ${stay}`],
@@ -149,11 +155,20 @@ async function renderEmailBody(
   const blocksText = moduleBlocks.map((b) => [b.title, b.text].filter(Boolean).join("\n"));
 
   async function paymentBlock() {
-    const vs = r.payments[0]?.variable_symbol ?? r.number.replace("-", "");
+    // Z77: what is left to transfer — with a recreation voucher only the rest after the voucher.
+    const open =
+      [...r.payments]
+        .filter((x) => x.status === "pending" && x.provider !== "recreation_voucher")
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))[0] ?? null;
+    const amount = open?.amount_cents ?? r.total_cents;
+    const vs = open?.variable_symbol ?? r.payments[0]?.variable_symbol ?? r.number.replace("-", "");
     const blocks = [
       `<h2 style="font-size:16px;margin:24px 0 4px">${esc(t("payment.title"))}</h2>`,
+      ...(r.voucher_amount_cents
+        ? [p(t("payment.voucherPaid", { amount: fmt(r.voucher_amount_cents) }))]
+        : []),
       rows([
-        [t("payment.amount"), fmt(r.total_cents)],
+        [t("payment.amount"), fmt(amount)],
         [t("payment.iban"), (settings?.iban ?? "").replace(/(.{4})/g, "$1 ").trim()],
         [t("payment.holder"), settings?.account_holder ?? tenantName],
         [t("payment.vs"), vs],
@@ -166,7 +181,7 @@ async function renderEmailBody(
         payments: [
           {
             type: PaymentOptions.PaymentOrder,
-            amount: r.total_cents / 100,
+            amount: amount / 100,
             currencyCode: r.currency === "EUR" ? CurrencyCode.EUR : CurrencyCode.CZK,
             variableSymbol: vs,
             paymentNote: `${property?.name ?? ""} ${r.number}`.slice(0, 140),
@@ -231,6 +246,56 @@ async function renderEmailBody(
         text: [
           t("greeting", { name: r.guest_name }),
           t("guest_received.intro", { due }),
+          ctx.guestLink ?? "",
+        ].join("\n\n"),
+        attachments: pay.attachments,
+      };
+    }
+    case "guest_awaiting_approval": {
+      // Z77: the term is held; no payment details until the owner approves.
+      const intro = t(
+        r.payment_method === "recreation_voucher"
+          ? "guest_awaiting_approval.introVoucher"
+          : "guest_awaiting_approval.intro",
+        { due: approvalDue },
+      );
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t("guest_awaiting_approval.subject", vars),
+        html: layout(
+          accent,
+          t("guest_awaiting_approval.subject", vars),
+          [p(t("greeting", { name: r.guest_name })), p(intro), summary, signature],
+          guestButton,
+        ),
+        text: [t("greeting", { name: r.guest_name }), intro, ctx.guestLink ?? ""].join("\n\n"),
+      };
+    }
+    case "guest_approved": {
+      // Z77: approved — now the payment details and the deadline of the payment.
+      const pay = await paymentBlock();
+      return {
+        to: r.guest_email,
+        replyTo: ownerTo,
+        fromName: tenantName,
+        subject: t("guest_approved.subject", vars),
+        html: layout(
+          accent,
+          t("guest_approved.subject", vars),
+          [
+            p(t("greeting", { name: r.guest_name })),
+            p(t("guest_approved.intro", { due })),
+            summary,
+            ...pay.blocks,
+            signature,
+          ],
+          guestButton,
+        ),
+        text: [
+          t("greeting", { name: r.guest_name }),
+          t("guest_approved.intro", { due }),
           ctx.guestLink ?? "",
         ].join("\n\n"),
         attachments: pay.attachments,
@@ -304,9 +369,13 @@ async function renderEmailBody(
       const extra =
         reason === "payment_deadline_expired"
           ? t("guest_cancelled.expired")
-          : reason
-            ? t("guest_cancelled.reason", { reason })
-            : "";
+          : reason === "approval_declined" || reason === "approval_expired"
+            ? t(
+                `guest_cancelled.${reason === "approval_declined" ? "declined" : "approvalExpired"}`,
+              )
+            : reason
+              ? t("guest_cancelled.reason", { reason })
+              : "";
       return {
         to: r.guest_email,
         replyTo: ownerTo,
@@ -646,16 +715,27 @@ async function renderEmailBody(
     }
     case "owner_new":
     case "owner_expired":
-    case "owner_cancel_request": {
+    case "owner_cancel_request":
+    case "owner_approval_request":
+    case "owner_approval_reminder": {
       if (!ownerTo) return null;
+      const voucher =
+        r.payment_method === "recreation_voucher" && r.voucher_number
+          ? t("owner_approval_request.voucher", {
+              number: r.voucher_number,
+              issuer: r.voucher_issuer ?? "",
+            })
+          : "";
       const intro =
-        kind === "owner_cancel_request"
-          ? [
-              t("owner_cancel_request.intro", vars),
-              payload.note ? t("owner_cancel_request.note", { note: String(payload.note) }) : "",
-              t("owner_cancel_request.decide"),
-            ]
-          : [t(`${kind}.intro`, vars)];
+        kind === "owner_approval_request" || kind === "owner_approval_reminder"
+          ? [t(`${kind}.intro`, { ...vars, due: approvalDue }), voucher]
+          : kind === "owner_cancel_request"
+            ? [
+                t("owner_cancel_request.intro", vars),
+                payload.note ? t("owner_cancel_request.note", { note: String(payload.note) }) : "",
+                t("owner_cancel_request.decide"),
+              ]
+            : [t(`${kind}.intro`, vars)];
       return {
         to: ownerTo,
         subject: t(`${kind}.subject`, vars),

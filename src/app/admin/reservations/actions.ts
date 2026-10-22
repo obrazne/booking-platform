@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import { priceContributorsFor } from "@/modules/price-contributors";
 import { toPricingInput, withoutStayRules } from "@/core/booking/pricing-input";
 import { flushEmails, notifyReservationCreated } from "@/core/booking/notify";
+import { parseMinorUnits } from "@/core/format/format";
 
 function refresh(id?: string) {
   void flushEmails();
@@ -205,4 +206,68 @@ export async function createManualReservation(
   await notifyReservationCreated(data.id, data.access_token).catch(() => undefined);
   refresh();
   redirect(`/admin/reservations?panel=reservation:${data.id}`);
+}
+
+/**
+ * Z77: approve a reservation waiting for the owner. Transfer: the guest gets the payment details now. Recreation
+ * voucher: the company for the voucher's invoice and its amount (the rest is paid by transfer).
+ */
+export async function approveReservation(
+  id: string,
+  _: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const active = await requireTenant();
+  const supabase = await createClient();
+  let voucher: Json | undefined;
+  if (form.get("voucher") === "1") {
+    const { data: tenant } = await supabase
+      .from("tenants")
+      .select("currency")
+      .eq("id", active.tenantId)
+      .single();
+    const parsed = z
+      .object({
+        amount: z.string().trim().min(1),
+        company: z.string().trim().min(2).max(200),
+        company_id: z.string().trim().min(1).max(20),
+        tax_id: z.string().trim().max(20).optional().default(""),
+        vat_id: z.string().trim().max(20).optional().default(""),
+        address: z.string().trim().min(3).max(300),
+      })
+      .safeParse(Object.fromEntries(form));
+    const cents = parsed.success
+      ? parseMinorUnits(parsed.data.amount, tenant?.currency ?? "EUR")
+      : null;
+    if (!parsed.success || cents === null || cents <= 0) return fail("invalid");
+    const { company, company_id, tax_id, vat_id, address } = parsed.data;
+    voucher = { amount_cents: cents, company, company_id, tax_id, vat_id, address };
+  }
+  const { error } = await supabase.rpc("approve_reservation", {
+    p_reservation_id: id,
+    p_voucher: voucher,
+  });
+  if (error) return fail(dbErrorKey(error));
+  refresh(id);
+  return ok();
+}
+
+/** Z77: decline — the term is released and the guest gets an e-mail; the note stays for the team. */
+export async function declineReservation(
+  id: string,
+  _: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const note =
+    String(form.get("note") ?? "")
+      .trim()
+      .slice(0, 500) || undefined;
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("decline_reservation", {
+    p_reservation_id: id,
+    p_note: note,
+  });
+  if (error) return fail(dbErrorKey(error));
+  refresh(id);
+  return ok();
 }

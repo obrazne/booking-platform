@@ -10,7 +10,7 @@ import { toDiscounts, toFees, toSeasons, toServices, type PricingCatalog } from 
 
 /** Property columns a guest may read (no street, exact coordinates or contacts — see property_public_location). */
 export const PUBLIC_PROPERTY_COLUMNS =
-  "id, tenant_id, slug, name, summary, description, house_rules, included, testimonials, status, booking_mode, pricing_model, city, country, max_guests, bedrooms, bathrooms, check_in_from, check_out_until, cleaning_gap_days, pets_allowed, tourist_tax_included, tourist_tax_cents, accommodation_vat_bp, sort, created_at, updated_at, tagline, location_mode";
+  "id, tenant_id, slug, name, summary, description, house_rules, included, testimonials, status, booking_mode, pricing_model, city, country, max_guests, bedrooms, bathrooms, check_in_from, check_out_until, cleaning_gap_days, pets_allowed, tourist_tax_included, tourist_tax_cents, accommodation_vat_bp, sort, created_at, updated_at, tagline, location_mode, booking_approval";
 
 /** Published properties of the tenant for the catalogue (guest view, RLS for anonymous). */
 export const listPublicProperties = cache(async (tenantId: string) => {
@@ -146,7 +146,7 @@ export const getGuestSettings = cache(async (tenantId: string) => {
   const { data } = await admin
     .from("tenant_settings")
     .select(
-      "payment_due_hours, hold_minutes, cancellation_policy, terms_url, privacy_url, iban, bank_transfer_enabled, card_enabled, stripe_account_id",
+      "payment_due_hours, hold_minutes, cancellation_policy, terms_url, privacy_url, iban, bank_transfer_enabled, card_enabled, stripe_account_id, voucher_enabled",
     )
     .eq("tenant_id", tenantId)
     .maybeSingle();

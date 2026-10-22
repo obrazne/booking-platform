@@ -44,6 +44,8 @@ export type BookingData = {
     paymentMethods: PaymentMethodKey[];
     /** Prepared methods shown inactive as "Pripravujeme" (staging only, Z71). */
     upcomingMethods: PaymentMethodKey[];
+    /** Z77: the owner approves the reservation (within 48 h) before the payment. */
+    approval: boolean;
     holdMinutes: number;
     cancellationPolicy: string;
     /** First sentence of the policy for the side panel. */

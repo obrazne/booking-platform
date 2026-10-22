@@ -21,6 +21,7 @@ import { addDays, isIsoDate, todayIso } from "@/core/pricing/dates";
 import { PropertySections } from "@/core/sections/render";
 import type { GuestTestimonial, SectionData } from "@/core/sections/types";
 import { nextFreeStay } from "@/core/booking/next-free";
+import { propertyMethods } from "@/core/payments/methods";
 import { Container } from "@/core/sections/ui";
 import { getTenantFromHost } from "@/core/tenant/current";
 import { loadVerifiedReviews } from "@/modules/reviews/guest/public";
@@ -69,11 +70,13 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
   const checkOut = one(sp.check_out);
   const hasDates =
     isIsoDate(checkIn) && isIsoDate(checkOut) && checkOut > checkIn && checkIn >= today;
+  // Z77: the owner approves first (48 h), then the guest pays.
+  const approval = p.booking_approval === "approval";
   const policy = tr(settings.cancellationPolicy, locale);
   const policyFirst = policy ? policy.split(/(?<=\.)\s/)[0]!.replace(/\.$/, "") : "";
   const trust = [
     t("trust.cancellation", { policy: policyFirst || t("trust.noPolicy") }),
-    t("trust.hold", { hours: settings.paymentDueHours }),
+    approval ? t("trust.approval") : t("trust.hold", { hours: settings.paymentDueHours }),
     t("trust.direct"),
   ];
   const photoList = photos.map((ph) => ({
@@ -180,8 +183,10 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
         reviewsUrl: detail.reviewsUrl,
         settings: {
           paymentDueHours: settings.paymentDueHours,
-          paymentMethods: settings.paymentMethods,
-          upcomingMethods: settings.upcomingMethods,
+          // Z77: on a property "na schválenie" only the ways that work with the approval.
+          paymentMethods: propertyMethods(settings.paymentMethods, approval),
+          upcomingMethods: propertyMethods(settings.upcomingMethods, approval),
+          approval,
           holdMinutes: settings.holdMinutes,
           cancellationPolicy: policy,
           cancellationShort: policyFirst || null,

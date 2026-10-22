@@ -10,7 +10,17 @@ export type ReservationSummary = {
   tenant_id: string;
   property_id: string;
   number: string;
-  status: "pending_payment" | "confirmed" | "in_progress" | "completed" | "cancelled";
+  status:
+    | "awaiting_approval"
+    | "pending_payment"
+    | "confirmed"
+    | "in_progress"
+    | "completed"
+    | "cancelled";
+  /** Z77: the way to pay and until when the owner approves. */
+  payment_method?: string;
+  approval_due_at?: string | null;
+  voucher_amount_cents?: number | null;
   guest_name: string;
   guest_email: string;
   adults: number;

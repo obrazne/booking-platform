@@ -60,6 +60,7 @@ export default async function AdminDashboard() {
     yearRows,
     upcoming,
     waiting,
+    approvalsWaiting,
     requests,
     events,
     horizonEvents,
@@ -106,6 +107,15 @@ export default async function AdminDashboard() {
       .eq("tenant_id", tenant.id)
       .eq("status", "pending_payment")
       .order("payment_due_at"),
+    // Z77: reservations waiting for the owner's approval (48 h).
+    supabase
+      .from("reservations")
+      .select(
+        "id, number, guest_name, approval_due_at, items:reservation_items(check_in, check_out)",
+      )
+      .eq("tenant_id", tenant.id)
+      .eq("status", "awaiting_approval")
+      .order("approval_due_at"),
     supabase
       .from("reservations")
       .select("id, number, guest_name, cancellation_request_note")
@@ -130,6 +140,7 @@ export default async function AdminDashboard() {
   const h = hourIn(tenant.timezone);
   const part = h >= 5 && h < 10 ? "morning" : h >= 10 && h < 18 ? "day" : "evening";
   const pending = waiting.data ?? [];
+  const approvals = approvalsWaiting.data ?? [];
   const asks = requests.data ?? [];
   const rows = yearRows.data ?? [];
   const revenue = yearMonths.reduce((sum, m) => sum + m.revenueCents, 0);
@@ -220,8 +231,8 @@ export default async function AdminDashboard() {
             <h1 className="text-ink text-[28px] leading-[1.1] font-extrabold tracking-[-0.03em] md:text-4xl">
               {t(`greeting.${part}`, { name: first ?? "none" })}{" "}
               <span className="text-ink-soft">
-                {pending.length + asks.length
-                  ? t("waitingCount", { count: pending.length + asks.length })
+                {pending.length + asks.length + approvals.length
+                  ? t("waitingCount", { count: pending.length + asks.length + approvals.length })
                   : t("allDone")}
               </span>
             </h1>
@@ -242,8 +253,37 @@ export default async function AdminDashboard() {
           </Link>
         ) : null}
 
-        {pending.length + asks.length ? (
+        {pending.length + asks.length + approvals.length ? (
           <section aria-label={t("waitingLabel")} className="grid gap-2.5">
+            {approvals.map((r) => {
+              const item = r.items[0];
+              return (
+                <div
+                  key={r.id}
+                  className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[#f1eff9] px-[22px] py-5"
+                >
+                  <span className="grid gap-0.5">
+                    <span className="text-ink text-base font-bold">
+                      {t("approvalTitle", { number: r.number })}
+                    </span>
+                    <span className="text-muted-foreground text-sm font-normal">
+                      {r.guest_name}
+                      {item
+                        ? ` · ${formatDate(item.check_in, locale, "short")} – ${formatDate(item.check_out, locale, "short")}`
+                        : ""}
+                      {r.approval_due_at
+                        ? ` · ${t("approvalDue", { date: formatDateTime(r.approval_due_at, locale, tenant.timezone, "short") })}`
+                        : ""}
+                    </span>
+                  </span>
+                  <Button asChild className="font-bold">
+                    <Link href={`/admin/reservations?panel=reservation:${r.id}`}>
+                      {t("approvalOpen")}
+                    </Link>
+                  </Button>
+                </div>
+              );
+            })}
             {asks.map((r) => (
               <div
                 key={r.id}

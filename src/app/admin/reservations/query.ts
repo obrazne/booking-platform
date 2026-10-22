@@ -3,6 +3,7 @@ import { likePattern, pageRange, parseListParams, type ListParams } from "@/core
 import { createClient } from "@/lib/supabase/server";
 
 export const STATUSES = [
+  "awaiting_approval",
   "pending_payment",
   "confirmed",
   "in_progress",
@@ -70,7 +71,7 @@ export async function getReservationDetail(tenantId: string, id: string) {
     .select(
       `*, property:properties(name, slug), items:reservation_items(check_in, check_out, unit:units(name)),
        lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, sort),
-       payments(status, amount_cents, variable_symbol, received_at),
+       payments(status, amount_cents, variable_symbol, received_at, provider),
        history:reservation_status_history(from_status, to_status, reason, changed_at, actor:profiles(email, full_name)),
        consents:reservation_consents(kind, granted, created_at),
        notes:reservation_notes(id, body, created_at, author:profiles(email, full_name))`,

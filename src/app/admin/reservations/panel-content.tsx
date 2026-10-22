@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CancelReservationButton, NoteForm, ReservationActions } from "./panel-actions";
 import { getReservationDetail, SOURCES, type ReservationStatus } from "./query";
 import { ExtendDueButton, MarkPaidButton } from "./quick-actions";
+import { ApprovalActions } from "./approval-actions";
 
 /**
  * Content of the reservation panel (Z26): only the detail is loaded — the reservation, its documents and the
@@ -88,6 +89,41 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
       : t("panel.adults", { count: r.adults });
   // Property documents this guest gets: "always", or "after confirmation" once the stay is confirmed.
   const confirmed = ["confirmed", "in_progress", "completed"].includes(detail.status);
+  // Z77: what is left to transfer (with a recreation voucher only the rest after the voucher).
+  const openPayments = detail.payments.filter(
+    (p) => p.status === "pending" && p.provider !== "recreation_voucher",
+  );
+  const openCents = openPayments.length
+    ? openPayments.reduce((sum, p) => sum + p.amount_cents, 0)
+    : detail.total_cents;
+  const voucherLabel =
+    detail.payment_method === "recreation_voucher"
+      ? tv("payment.voucher", {
+          number: detail.voucher_number ?? "—",
+          issuer: detail.voucher_issuer ?? "—",
+        })
+      : null;
+  const approval =
+    detail.status === "awaiting_approval" ? (
+      <ApprovalActions
+        id={detail.id}
+        label={detail.number}
+        voucher={voucherLabel}
+        totalLabel={fmt(detail.total_cents, detail.currency)}
+        company={
+          detail.billing_company
+            ? {
+                company: detail.billing_company,
+                company_id: detail.billing_company_id ?? "",
+                tax_id: detail.billing_tax_id ?? "",
+                vat_id: detail.billing_vat_id ?? "",
+                address: detail.billing_address ?? "",
+              }
+            : null
+        }
+        className="flex flex-wrap gap-2"
+      />
+    ) : null;
   const guestGets = (propertyDocs ?? []).filter(
     (d) => d.visible_when === "always" || (d.visible_when === "confirmed" && confirmed),
   );
@@ -124,7 +160,10 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
       </>
     ) : null,
     actions:
-      detail && ["pending_payment", "confirmed", "in_progress"].includes(detail.status) ? (
+      detail.status === "awaiting_approval" ? (
+        // Z77: the decision of the owner — also sticks to the bottom on a phone.
+        <span className="flex w-full gap-2.5 md:hidden">{approval}</span>
+      ) : detail && ["pending_payment", "confirmed", "in_progress"].includes(detail.status) ? (
         <>
           {detail.status === "pending_payment" ? (
             // Phone (07): the payment actions stick to the bottom while it waits for payment.
@@ -132,7 +171,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
               <ExtendDueButton id={detail.id} className="min-h-11 flex-1" />
               <MarkPaidButton
                 id={detail.id}
-                amountLabel={fmt(detail.total_cents, detail.currency)}
+                amountLabel={fmt(openCents, detail.currency)}
                 className="min-h-11 flex-1 font-bold"
               />
             </span>
@@ -248,11 +287,30 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
           </div>
         ) : null}
 
-        {detail.status === "pending_payment" ? (
+        {detail.status === "awaiting_approval" ? (
+          <section
+            className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] bg-[#f1eff9] px-[18px] py-4"
+            data-testid="approval-card"
+          >
+            <span className="grid min-w-0 gap-0.5">
+              <span className="text-ink text-[15px] font-bold">
+                {detail.approval_due_at
+                  ? tv("approval.waiting", { date: when(detail.approval_due_at) })
+                  : tv("approval.waitingNoDate")}
+              </span>
+              <span className="text-[13px] text-[#5a6672]">
+                {voucherLabel
+                  ? `${voucherLabel} · ${tv("approval.voucherHint")}`
+                  : tv("approval.hint")}
+              </span>
+            </span>
+            <span className="hidden md:flex">{approval}</span>
+          </section>
+        ) : detail.status === "pending_payment" ? (
           <section className="card-warm flex flex-wrap items-center justify-between gap-3 rounded-[10px] px-[18px] py-4">
             <span className="grid min-w-0 gap-0.5">
               <span className="text-ink text-[15px] font-bold">
-                {tv("waiting", { amount: fmt(detail.total_cents, detail.currency) })}
+                {tv("waiting", { amount: fmt(openCents, detail.currency) })}
               </span>
               <span className="text-muted-foreground text-[13px]">
                 {[
@@ -269,7 +327,7 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             <span className="hidden flex-wrap gap-2 md:flex">
               <MarkPaidButton
                 id={detail.id}
-                amountLabel={fmt(detail.total_cents, detail.currency)}
+                amountLabel={fmt(openCents, detail.currency)}
                 className="font-bold"
               />
               <ExtendDueButton id={detail.id} />
@@ -325,6 +383,19 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
             <span className="text-ink">
               {tv(`payment.${detail.payment_method as "bank_transfer"}`)}
             </span>
+            {voucherLabel ? (
+              <span className="grid gap-0.5 text-[13px] [overflow-wrap:anywhere] text-[#5a6672]">
+                <span>{voucherLabel}</span>
+                {detail.voucher_amount_cents && detail.voucher_company ? (
+                  <span className="text-ink font-medium">
+                    {tv("payment.voucherAmount", {
+                      amount: fmt(detail.voucher_amount_cents, detail.currency),
+                      company: detail.voucher_company,
+                    })}
+                  </span>
+                ) : null}
+              </span>
+            ) : null}
             {detail.billing_company ? (
               <span className="grid gap-0.5 text-[13px] [overflow-wrap:anywhere] text-[#5a6672]">
                 <span className="text-ink font-medium">
@@ -346,14 +417,25 @@ export async function reservationPanel(id: string): Promise<PanelContent> {
         </PanelSection>
 
         {/* What the client copies into their invoicing tool; the issued document is uploaded below (Z51). */}
-        {detail.status === "cancelled" &&
-        !detail.payments.some((p) => p.status === "received") ? null : (
+        {/* Z77: nothing to invoice before the owner approves. */}
+        {detail.status === "awaiting_approval" ||
+        (detail.status === "cancelled" &&
+          !detail.payments.some((p) => p.status === "received")) ? null : (
           <InvoiceBasisSection
             tenantId={active.tenantId}
             reservationId={detail.id}
             locale={locale}
             invoiceUploaded={(documents ?? []).some((d) => d.kind === "invoice")}
-          />
+          >
+            {detail.voucher_amount_cents ? (
+              <InvoiceBasisSection
+                tenantId={active.tenantId}
+                reservationId={detail.id}
+                locale={locale}
+                source="voucher"
+              />
+            ) : null}
+          </InvoiceBasisSection>
         )}
 
         {/* Modules for one reservation, e.g. the stay account of upsell (Z35). */}

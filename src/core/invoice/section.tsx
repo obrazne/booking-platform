@@ -1,4 +1,5 @@
 import "server-only";
+import type { ReactNode } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PanelSection } from "@/core/admin/record-panel";
@@ -10,7 +11,9 @@ import { basisFormat, loadInvoiceBasis, type BasisSource } from "./load";
 
 /** Link to the PDF of the basis (route in the reservations admin). */
 export function basisPdfHref(reservationId: string, source: BasisSource = "reservation") {
-  return `/admin/reservations/podklad/${reservationId}${source === "stay_account" ? "?zdroj=ucet" : ""}`;
+  const query =
+    source === "stay_account" ? "?zdroj=ucet" : source === "voucher" ? "?zdroj=poukaz" : "";
+  return `/admin/reservations/podklad/${reservationId}${query}`;
 }
 
 /**
@@ -24,6 +27,7 @@ export async function InvoiceBasisSection({
   locale,
   source = "reservation",
   invoiceUploaded,
+  children,
 }: {
   tenantId: string;
   reservationId: string;
@@ -31,6 +35,8 @@ export async function InvoiceBasisSection({
   source?: BasisSource;
   /** Reservation only: an issued document (kind invoice) is among its documents. */
   invoiceUploaded?: boolean;
+  /** Reservation only: more bases under it (Z77: the recreation voucher). */
+  children?: ReactNode;
 }) {
   const tenant = await getTenantInfo(tenantId);
   const [basis, { labels, t, fmt }] = await Promise.all([
@@ -80,10 +86,12 @@ export async function InvoiceBasisSection({
     </div>
   );
 
-  if (source === "stay_account")
+  if (source === "stay_account" || source === "voucher")
     return (
-      <div className="grid gap-2">
-        <h4 className="text-ink text-sm font-semibold">{t("stayAccountTitle")}</h4>
+      <div className="grid gap-2" data-testid={`basis-${source}`}>
+        <h4 className="text-ink text-sm font-semibold">
+          {source === "voucher" ? t("voucherTitle") : t("stayAccountTitle")}
+        </h4>
         {body}
       </div>
     );
@@ -103,6 +111,7 @@ export async function InvoiceBasisSection({
     >
       <p className="text-muted-foreground text-[13px]">{t("lead")}</p>
       {body}
+      {children}
     </PanelSection>
   );
 }

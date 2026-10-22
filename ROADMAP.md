@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → ~~Z83 (widget: kalendár s cenami na web klienta)~~ ✅ → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → ~~Z77 (na schválenie, rekreačný poukaz)~~ ✅ → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -354,7 +354,7 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
 
 **Nápady od Jany 22. 10. (Martin: „čo sme odsúhlasili, sa aj spraví“) → Z77–Z82.** Linka A: Z79, Z80; linka B: Z77, Z78, Z81, Z82.
 
-### Z77 [B] 🔄 — Rezervácie na schválenie + rekreačný poukaz (pripomienky 66, 68) — po Z75
+### Z77 [B] ✅ — Rezervácie na schválenie + rekreačný poukaz (pripomienky 66, 68) — po Z75
 1. **Nastavenie pri objekte:** „Ako prijímate rezervácie“ — **okamžite** (ako dnes) / **na schválenie**. Na schválenie: termín sa podrží,
    stav „čaká na schválenie“, majiteľ do **48 h** schváli alebo zamietne (zvonček + e-mail + push, pripomienka po 24 h, po lehote
    automatické zrušenie a e-mail hosťovi). Pri prevode hosť dostane platobné údaje (QR) **až po schválení**; lehota platby beží od schválenia.
@@ -597,6 +597,23 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z77 [linka B]: **Rezervácie na schválenie + rekreačný poukaz** (pripomienky 66, 68). (Claude Code)
+  - Objekt → Údaje: „Ako prijímate rezervácie“ — Okamžite / Na schválenie (`properties.booking_approval`). Priama rezervácia hosťa
+    na takom objekte (a každá s poukazom) má stav **`awaiting_approval`**: termín podržaný, `approval_due_at` = +48 h, bez platobných
+    údajov. Hosť: e-mail „čaká na potvrdenie“, `/r` a účet bez QR; majiteľ: e-mail, zvonček + push (`approval_request`), Prehľad
+    a pilulka „Na schválenie“. Po 24 h pripomienka (e-mail + zvonček), po 48 h zrušenie (`approval_expired`, e-mail hosťovi) —
+    v cron funkcii `expire_pending_reservations`. Ručná rezervácia schvaľovanie obchádza.
+  - Panel rezervácie: **Schváliť** (`approve_reservation`: lehota platby začne teraz, hosť dostane `guest_approved` s QR) /
+    **Zamietnuť** (`decline_reservation`, poznámka pre tím, e-mail hosťovi).
+  - **Karta pri schvaľovaní** pripravená v rozhraní poskytovateľa (`approval: "hold"`, `holdBuilt: false`) — kým nie je Stripe, karta sa
+    pri „na schválenie“ neponúka (`propertyMethods`); text „suma je na karte len zablokovaná…“ je v prekladoch.
+  - **Rekreačný poukaz** (Nastavenia → Platby, `voucher_enabled`): v košíku číslo a vydavateľ; vždy na schválenie. Pri schválení
+    majiteľ zadá sumu poukazu a firmu → platba poukazom prijatá, doplatok prevodom (QR len na doplatok), celá suma → rovno potvrdená.
+    Dva podklady na doklad: poukaz (odberateľ firma, `?zdroj=poukaz`) a doplatok (hosť) — `splitForVoucher` delí riadky so sadzbami DPH.
+  - Migrácia `20261022130000_approval_voucher.sql` (rozširuje stavy, spôsoby platby, druhy e-mailov a upozornení zo zoznamov
+    najnovších migrácií). pgTAP `approval_voucher.test.sql`, vitest (spôsoby platby, rozdelenie poukazu), e2e `approval.spec.ts`
+    (košík s poukazom → schválenie s firmou → QR na doplatok, zamietnutie, vypršanie). Snímky `docs/snimky/z77/`.
+  - Na stagingu chvíľu (15 min) padal cron `expire-pending-reservations` (premenná zatienila alias) — opravené v migrácii aj na stagingu.
 - 2026-10-22 — Z83 [linka A]: **Widget „kalendár s cenami“ na webe klienta** (A17 úroveň 2). (Claude Code)
   - `/embed/kalendar?objekt=<slug>` (vlastný layout bez hlavičky, téma klienta, `pozadie=priehladne`): kalendár z detailu objektu
     (ceny, obsadené dni, min. noci a dni príchodu, náhľad ceny), 2 mesiace / na mobile 1, hostia, súhrn „3 noci · X €“,

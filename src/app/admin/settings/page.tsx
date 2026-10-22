@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { CreditCard, Landmark, Receipt } from "lucide-react";
+import { CreditCard, Landmark, Receipt, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -79,6 +79,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
     </ActionForm>
   );
   const on = s?.bank_transfer_enabled ?? true;
+  const voucherOn = s?.voucher_enabled ?? false;
   const iban = s?.iban ? `${s.iban.slice(0, 4)} … ${s.iban.slice(-4)}` : null;
 
   const body: Record<SettingsTab, () => React.ReactNode> = {
@@ -308,6 +309,33 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
                       </Button>
                       <span className="text-muted-foreground text-sm">{t("methods.cardSoon")}</span>
                     </div>
+                  </div>
+                ),
+              },
+              {
+                // Z77: the recreation voucher — always on approval, the rest by transfer.
+                id: "recreation_voucher",
+                title: (
+                  <span className="inline-flex items-center gap-2.5">
+                    <Ticket className="size-4" aria-hidden /> {t("methods.voucher")}
+                  </span>
+                ),
+                status: (
+                  <RowState on={voucherOn}>
+                    {voucherOn ? t("methods.on") : t("methods.off")}
+                  </RowState>
+                ),
+                meta: t("methods.voucherSummary"),
+                content: (
+                  <div className="grid gap-3">
+                    <input type="hidden" name="has_voucher" value="1" />
+                    <Label className="font-normal">
+                      <Checkbox name="voucher_enabled" defaultChecked={voucherOn} />{" "}
+                      {t("methods.voucherOn")}
+                    </Label>
+                    <p className="text-muted-foreground max-w-prose text-sm">
+                      {t("methods.voucherHow")}
+                    </p>
                   </div>
                 ),
               },

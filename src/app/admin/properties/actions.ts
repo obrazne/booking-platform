@@ -108,6 +108,8 @@ const detailsSchema = z.object({
   check_in_from: z.string().regex(/^\d{2}:\d{2}$/),
   check_out_until: z.string().regex(/^\d{2}:\d{2}$/),
   cleaning_gap_days: intIn(0, 7),
+  // Z77: "Ako prijímate rezervácie".
+  booking_approval: z.enum(["instant", "approval"]).optional().default("instant"),
   pets_allowed: checkbox,
   tourist_tax_included: checkbox,
   contact_email: optionalText,

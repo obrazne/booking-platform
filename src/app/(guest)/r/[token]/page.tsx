@@ -80,6 +80,8 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
   const guests = r.adults + r.children;
   const firstName = r.guest_name.trim().split(/\s+/)[0] ?? "";
   const pending = r.status === "pending_payment";
+  // Z77: waiting for the owner's approval — the term is held, no payment details yet.
+  const awaiting = r.status === "awaiting_approval";
   const cancelled = r.status === "cancelled";
   const paid =
     Boolean(x.paidAt) ||
@@ -92,7 +94,8 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
           iban: r.bank.iban,
           bic: r.bank.bic,
           beneficiary: r.bank.account_holder ?? r.property_name,
-          amountCents: r.total_cents,
+          // Z77: the open payment (with a recreation voucher only the rest).
+          amountCents: r.payment.amount_cents,
           currency: r.currency,
           variableSymbol: r.payment.variable_symbol,
           note: `${r.property_name} ${r.number}`,
@@ -131,21 +134,40 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
             title2: t("hero.completed2"),
             text: t("hero.completedText"),
           }
-        : paid
+        : awaiting
           ? {
-              title: t("hero.paid", { name: firstName }),
-              title2: t("hero.paid2"),
-              text: t("hero.paidText", { days: x.arrivalDays }),
-            }
-          : {
               title: t("hero.pending", { name: firstName }),
-              title2: t("hero.pending2"),
-              text: t("hero.pendingText", { email: r.guest_email }),
-            };
+              title2: t("hero.approval2"),
+              text: t("hero.approvalText", {
+                email: r.guest_email,
+                date: r.approval_due_at ? formatDateTime(r.approval_due_at, locale, TZ) : "",
+              }),
+            }
+          : paid
+            ? {
+                title: t("hero.paid", { name: firstName }),
+                title2: t("hero.paid2"),
+                text: t("hero.paidText", { days: x.arrivalDays }),
+              }
+            : {
+                title: t("hero.pending", { name: firstName }),
+                title2: t("hero.pending2"),
+                text: t("hero.pendingText", { email: r.guest_email }),
+              };
 
   // What happens next: pay → we confirm → arrival instructions → arrival.
   const stage = r.status === "completed" ? 5 : r.status === "in_progress" ? 4 : paid ? 3 : 1;
   const steps = [
+    ...(awaiting
+      ? [
+          {
+            title: t("steps.approval"),
+            text: r.approval_due_at
+              ? t("steps.payBy", { date: formatDateTime(r.approval_due_at, locale, TZ) })
+              : t("steps.approvalText"),
+          },
+        ]
+      : []),
     {
       title: t("steps.pay"),
       text: pending && dueAt ? t("steps.payBy", { date: dueAt }) : t("steps.paid"),
@@ -262,8 +284,9 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
   const rows = [
     {
       label: tg("reservation.amount"),
-      value: (r.total_cents / 100).toFixed(2).replace(".", ","),
-      display: fmt(r.total_cents),
+      // Z77: what to transfer — with a recreation voucher only the rest.
+      value: ((r.payment?.amount_cents ?? r.total_cents) / 100).toFixed(2).replace(".", ","),
+      display: fmt(r.payment?.amount_cents ?? r.total_cents),
       copy: true,
       kind: "amount" as const,
     },

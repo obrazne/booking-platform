@@ -4,7 +4,7 @@
  */
 type StayLike = { id: string; status: string; checkIn: string; checkOut: string };
 
-const UPCOMING = new Set(["pending_payment", "confirmed", "in_progress"]);
+const UPCOMING = new Set(["awaiting_approval", "pending_payment", "confirmed", "in_progress"]);
 
 export function upcomingStays<S extends StayLike>(stays: S[], today: string): S[] {
   return stays

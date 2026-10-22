@@ -26,7 +26,13 @@ import {
 } from "./query";
 import { loadReservationPanel } from "./panel-loader";
 
-const PILL_STATUSES = ["pending_payment", "confirmed", "completed", "cancelled"] as const;
+const PILL_STATUSES = [
+  "awaiting_approval",
+  "pending_payment",
+  "confirmed",
+  "completed",
+  "cancelled",
+] as const;
 
 /** 03 Reservations (vizuál administrácie v1): state pills with counts, list, panel in two columns. */
 /** Changes with every server render — tells the open panel to load its detail again after a change. */
@@ -120,7 +126,10 @@ export default async function ReservationsPage({ searchParams }: PageProps<"/adm
           label={t("status")}
           options={[
             { value: "", label: tc("all"), count: all },
-            ...PILL_STATUSES.map((s) => ({
+            // Z77: "Na schválenie" only when something waits or the filter is on (most clients never approve).
+            ...PILL_STATUSES.filter(
+              (s) => s !== "awaiting_approval" || (counts[s] ?? 0) > 0 || sp.status === s,
+            ).map((s) => ({
               value: s,
               label: tv(`filters.${s}`),
               count: counts[s] ?? 0,

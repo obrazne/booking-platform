@@ -34,7 +34,7 @@ export const requireGuest = cache(async () => {
 
 /** Columns of a stay (account list, Z44 detail, access link Z49). */
 export const STAY_COLUMNS =
-  "id, number, status, adults, children, infants, pets, currency, total_cents, payment_due_at, cancellation_requested_at, property_id, items:reservation_items(check_in, check_out, unit_id), lines:reservation_lines(kind, ref_id, label, quantity, unit_amount_cents, amount_cents, meta, sort), payments(status, variable_symbol, amount_cents)";
+  "id, number, status, adults, children, infants, pets, currency, total_cents, payment_due_at, cancellation_requested_at, property_id, items:reservation_items(check_in, check_out, unit_id), lines:reservation_lines(kind, ref_id, label, quantity, unit_amount_cents, amount_cents, meta, sort), payments(status, variable_symbol, amount_cents, provider)";
 
 /** The guest's stays at this tenant (RLS: only own reservations), newest arrival first. */
 export const listStays = cache(async () => {
@@ -54,7 +54,7 @@ export async function toStays<
     property_id: string;
     items: { check_in: string; check_out: string; unit_id: string }[];
     lines: { sort: number }[];
-    payments: unknown[];
+    payments: { status: string; provider: string }[];
   },
 >(rows: R[], tenantId: string) {
   // Property names and photos (also of properties no longer published) through the server.
@@ -77,7 +77,12 @@ export async function toStays<
         checkOut: item?.check_out ?? "",
         unitId: item?.unit_id ?? null,
         lines: [...r.lines].sort((a, b) => a.sort - b.sort) as R["lines"],
-        payment: (r.payments[0] ?? null) as R["payments"][number] | null,
+        // Z77: the payment to transfer — with a recreation voucher the open rest, not the voucher.
+        payment: (r.payments.find(
+          (p) => p.status === "pending" && p.provider !== "recreation_voucher",
+        ) ??
+          r.payments[0] ??
+          null) as R["payments"][number] | null,
         property: prop
           ? {
               slug: prop.slug,

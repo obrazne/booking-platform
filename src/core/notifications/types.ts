@@ -17,6 +17,7 @@ export type BellData = { items: NotificationItem[]; unread: number };
  */
 export const TENANT_KINDS = [
   { kind: "reservation_new", email: "yes" },
+  { kind: "approval_request", email: "yes" },
   { kind: "payment_due", email: "no" },
   { kind: "payment_received", email: "no" },
   { kind: "cancel_request", email: "yes" },

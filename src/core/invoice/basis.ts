@@ -84,6 +84,40 @@ export function vatSummary(lines: readonly BasisLine[]): VatRow[] {
     .map(([rateBp, totalCents]) => ({ rateBp, totalCents, ...splitVat(totalCents, rateBp) }));
 }
 
+/**
+ * Z77: a reservation paid partly by a recreation voucher has two bases — the voucher (buyer = the company of the
+ * voucher) and the rest (buyer = the guest). The voucher amount takes the lines from the accommodation first; a line
+ * covered only in part is split into two (quantity 1), so each basis keeps the VAT rates of its lines. Deposits stay
+ * with the rest.
+ */
+export function splitForVoucher(
+  lines: readonly BasisLineInput[],
+  voucherCents: number,
+): { voucher: BasisLineInput[]; rest: BasisLineInput[] } {
+  const priced = [...lines]
+    .filter((l) => l.kind !== "deposit")
+    .sort(
+      (a, b) =>
+        Number(b.kind === "accommodation") - Number(a.kind === "accommodation") ||
+        (a.sort ?? 0) - (b.sort ?? 0),
+    );
+  const voucher: BasisLineInput[] = [];
+  const rest: BasisLineInput[] = lines.filter((l) => l.kind === "deposit").map((l) => ({ ...l }));
+  let left = Math.max(0, voucherCents);
+  for (const l of priced) {
+    const take = Math.min(left, Math.max(0, l.amount_cents));
+    left -= take;
+    if (take === l.amount_cents) voucher.push({ ...l });
+    else if (take === 0) rest.push({ ...l });
+    else {
+      voucher.push({ ...l, quantity: 1, unit_amount_cents: take, amount_cents: take });
+      const remaining = l.amount_cents - take;
+      rest.push({ ...l, quantity: 1, unit_amount_cents: remaining, amount_cents: remaining });
+    }
+  }
+  return { voucher, rest: rest.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)) };
+}
+
 export function buildBasis(input: {
   number: string;
   currency: string;

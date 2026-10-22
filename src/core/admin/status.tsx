@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
  * finished and portals = grey, cancelled = the only red.
  */
 export type ReservationStatusKey =
-  "pending_payment" | "confirmed" | "in_progress" | "completed" | "cancelled";
+  "awaiting_approval" | "pending_payment" | "confirmed" | "in_progress" | "completed" | "cancelled";
 
 const PILL: Record<ReservationStatusKey, string> = {
+  // Z77: waits for the owner — its own colour, so it stands out from "waiting for payment".
+  awaiting_approval: "bg-[#e9e6f5] text-[#4a3d8a]",
   pending_payment: "bg-[#f6ecdf] text-[#8a4a22]",
   confirmed: "bg-primary text-primary-foreground",
   in_progress: "bg-primary text-primary-foreground",
@@ -52,5 +54,5 @@ export const OCCUPANCY_CLASS: Record<OccupancyKind, string> = {
 /** Occupancy kind of a reservation by its state and source. */
 export function occupancyOfReservation(status: string, source: string): OccupancyKind {
   if (source === "booking" || source === "airbnb") return "portal";
-  return status === "pending_payment" ? "pending" : "direct";
+  return status === "pending_payment" || status === "awaiting_approval" ? "pending" : "direct";
 }

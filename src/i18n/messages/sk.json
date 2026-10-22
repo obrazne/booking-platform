@@ -1098,6 +1098,13 @@
       "inactiveShort": "Vypnutá",
       "wholeHint": "Objekt sa prenajíma celý — jednotka je skrytá a slúži na kalendár a ceny.",
       "active": "Aktívna"
+    },
+    "approval": {
+      "label": "Ako prijímate rezervácie",
+      "instant": "Okamžite",
+      "instantHint": "Hosť rezervuje a hneď dostane platobné údaje (ako doteraz).",
+      "approval": "Na schválenie",
+      "approvalHint": "Termín sa podrží a vy rezerváciu do 48 h schválite alebo zamietnete (zvonček, e-mail, push; pripomienka po 24 h). Platobné údaje dostane hosť až po schválení; bez rozhodnutia sa rezervácia po 48 h zruší."
     }
   },
   "pricing": {
@@ -1269,7 +1276,11 @@
       "stayAccountSummary": "najviac {amount}",
       "stayAccountHow": "Doplnkové služby objednané počas pobytu hosť zaplatí pri odchode — na mieste alebo prevodom.",
       "deposit": "Záloha a doplatok",
-      "depositHow": "Napríklad 30 % pri rezervácii a zvyšok 14 dní pred príchodom. Pripravujeme spolu s platbou kartou."
+      "depositHow": "Napríklad 30 % pri rezervácii a zvyšok 14 dní pred príchodom. Pripravujeme spolu s platbou kartou.",
+      "voucher": "Rekreačný poukaz",
+      "voucherOn": "Ponúkať hosťom platbu rekreačným poukazom",
+      "voucherHow": "Hosť v košíku zadá číslo poukazu a vydavateľa. Rezervácia s poukazom ide vždy na schválenie: pri schválení doplníte fakturačné údaje firmy a sumu poukazu, zvyšok hosť doplatí prevodom. Dostanete dva podklady na doklad — na poukaz (odberateľ firma) a na doplatok (odberateľ hosť).",
+      "voucherSummary": "vždy na schválenie"
     },
     "connections": {
       "more": "Ďalšie prepojenia",
@@ -1426,7 +1437,8 @@
         "limit": "Priveľa pokusov z vašej siete. Skúste to o hodinu.",
         "generic": "Rezerváciu sa nepodarilo odoslať. Skúste to znova.",
         "billing": "Doplňte názov firmy, IČO, DIČ a adresu na faktúru.",
-        "payment": "Tento spôsob platby teraz nie je dostupný. Zvoľte prevod."
+        "payment": "Tento spôsob platby teraz nie je dostupný. Zvoľte prevod.",
+        "voucher": "Doplňte číslo rekreačného poukazu a jeho vydavateľa."
       },
       "priceErrors": {
         "invalidDates": "Neplatný termín.",
@@ -1446,7 +1458,8 @@
         "confirmed": "Potvrdená",
         "in_progress": "Prebieha",
         "completed": "Ukončená",
-        "cancelled": "Zrušená"
+        "cancelled": "Zrušená",
+        "awaiting_approval": "Čaká na potvrdenie"
       },
       "thanks": "Ďakujeme, rezervácia je prijatá.",
       "payTitle": "Platba prevodom",
@@ -1477,7 +1490,8 @@
       "cancellation": "Storno podľa podmienok — {policy}",
       "hold": "Termín vám podržíme {hours} hodín, kým zaplatíte.",
       "direct": "Platíte priamo ubytovateľovi, bez poplatkov.",
-      "noPolicy": "pozrite storno podmienky nižšie"
+      "noPolicy": "pozrite storno podmienky nižšie",
+      "approval": "Termín vám podržíme, kým ho majiteľ potvrdí (do 48 h). Platíte až potom."
     },
     "cart": {
       "close": "Zavrieť",
@@ -1539,11 +1553,25 @@
           "title": "Platba kartou",
           "text": "Online kartou hneď pri rezervácii."
         },
-        "soon": "Pripravujeme"
+        "soon": "Pripravujeme",
+        "recreation_voucher": {
+          "title": "Rekreačný poukaz",
+          "text": "Zadáte číslo poukazu a vydavateľa. Rezerváciu potvrdí majiteľ do 48 h; ak bude treba niečo doplatiť, pošleme platobné údaje.",
+          "number": "Číslo poukazu",
+          "issuer": "Vydavateľ poukazu",
+          "issuerHint": "Napríklad názov firmy alebo karty, ktorá poukaz vydala.",
+          "missing": "Doplňte číslo poukazu a vydavateľa."
+        }
       },
       "promoLink": "Máte zľavový kód?",
       "promoApplied": "Kód {code} · −{amount}",
-      "promoRemove": "Odstrániť"
+      "promoRemove": "Odstrániť",
+      "approval": {
+        "note": "Rezervácia čaká na potvrdenie majiteľa — ozveme sa do 48 h. Termín vám dovtedy držíme a platobné údaje pošleme až po potvrdení.",
+        "transferText": "QR kód a pokyny pošleme po potvrdení majiteľom (do 48 h). Potom treba zaplatiť do {hours} h. Platíte priamo ubytovateľovi, bez poplatkov.",
+        "cardHold": "Suma je na karte len zablokovaná, strhne sa po potvrdení majiteľom.",
+        "cta": "Odoslať žiadosť o rezerváciu"
+      }
     },
     "sections": {
       "highlights": {
@@ -1829,6 +1857,11 @@
       "saveToAccount": {
         "text": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla. Všetky pobyty máte na jednom mieste.",
         "cta": "Uložiť do účtu"
+      },
+      "approval": {
+        "kicker": "Čaká na potvrdenie",
+        "title": "Majiteľ potvrdí termín do 48 h.",
+        "text": "Termín vám držíme. Platobné údaje vám pošleme e-mailom hneď po potvrdení a nájdete ich aj tu — dovtedy nič neplaťte."
       }
     },
     "v2": {
@@ -1930,7 +1963,9 @@
         "completedText": "Dúfame, že ste si pobyt užili.",
         "cancelled": "Rezervácia je zrušená.",
         "cancelled2": "Termín je opäť voľný.",
-        "cancelledText": "Ak ste už platili, vrátenie peňazí sa riadi storno podmienkami a ozve sa vám ubytovateľ."
+        "cancelledText": "Ak ste už platili, vrátenie peňazí sa riadi storno podmienkami a ozve sa vám ubytovateľ.",
+        "approval2": "Termín vám držíme.",
+        "approvalText": "Rezerváciu sme prijali a poslali na {email}. Teraz čaká na potvrdenie majiteľa — ozveme sa najneskôr do {date}. Platobné údaje pošleme až po potvrdení, dovtedy nič neplaťte."
       },
       "payKicker": "Platba prevodom",
       "payTitle": "Naskenujte a zaplaťte.",
@@ -1954,7 +1989,9 @@
         "confirmText": "pošleme vám e-mail",
         "instructions": "Pokyny k príchodu",
         "instructionsText": "{days, plural, one {deň} few {# dni} other {# dní}} pred príchodom, s prístupovými kódmi",
-        "arrival": "Príchod"
+        "arrival": "Príchod",
+        "approval": "Majiteľ potvrdí termín",
+        "approvalText": "do 48 h"
       },
       "from": "od {time}",
       "until": "do {time}",
@@ -2013,7 +2050,8 @@
       "confirmed": "Potvrdená",
       "in_progress": "Prebieha",
       "completed": "Ukončená",
-      "cancelled": "Zrušená"
+      "cancelled": "Zrušená",
+      "awaiting_approval": "Čaká na schválenie"
     },
     "sources": {
       "direct": "Priama",
@@ -2120,7 +2158,8 @@
       "vs": "Variabilný symbol",
       "amount": "Suma",
       "due": "Splatnosť",
-      "qr": "QR kód na platbu (PAY by square) nájdete v prílohe alebo naskenujte z obrázka."
+      "qr": "QR kód na platbu (PAY by square) nájdete v prílohe alebo naskenujte z obrázka.",
+      "voucherPaid": "Časť {amount} je uhradená rekreačným poukazom. Nižšie je doplatok."
     },
     "guest_received": {
       "subject": "Rezervácia {number} prijatá — {property}",
@@ -2138,7 +2177,9 @@
       "subject": "Rezervácia {number} bola zrušená",
       "intro": "vaša rezervácia bola zrušená.",
       "expired": "Platba neprišla v lehote, preto sa rezervácia automaticky zrušila a termín sa uvoľnil.",
-      "reason": "Dôvod: {reason}"
+      "reason": "Dôvod: {reason}",
+      "declined": "Majiteľ vašu žiadosť o rezerváciu tentoraz nemohol prijať a termín sa uvoľnil. Ospravedlňujeme sa — budeme radi, keď si vyberiete iný termín.",
+      "approvalExpired": "Majiteľ rezerváciu nepotvrdil v lehote 48 hodín, preto sa zrušila a termín sa uvoľnil. Nič ste neplatili."
     },
     "guest_arrival": {
       "subject": "Pokyny k príchodu — {property}",
@@ -2264,7 +2305,25 @@
       "outlook": "Outlook",
       "ics": "Apple / iný kalendár"
     },
-    "accountNote": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla."
+    "accountNote": "Pobyt nájdete aj v Mojom účte — prihlásite sa e-mailom, bez hesla.",
+    "guest_awaiting_approval": {
+      "subject": "Rezervácia {number} čaká na potvrdenie — {property}",
+      "intro": "ďakujeme za rezerváciu. Termín vám držíme a čaká na potvrdenie majiteľa — ozveme sa najneskôr do {due}. Platobné údaje vám pošleme hneď po potvrdení; dovtedy nič neplaťte.",
+      "introVoucher": "ďakujeme za rezerváciu s rekreačným poukazom. Termín vám držíme; majiteľ overí poukaz a ozve sa najneskôr do {due}. Ak bude treba niečo doplatiť, pošleme vám platobné údaje hneď po potvrdení."
+    },
+    "guest_approved": {
+      "subject": "Termín potvrdený — rezervácia {number}",
+      "intro": "majiteľ potvrdil váš termín. Teraz prosíme o platbu do {due} — po jej prijatí vám rezerváciu potvrdíme."
+    },
+    "owner_approval_request": {
+      "subject": "Schváľte rezerváciu {number} — {guest}",
+      "intro": "prišla rezervácia, ktorá čaká na vaše schválenie. Termín je podržaný do {due}; ak ju dovtedy neschválite ani nezamietnete, zruší sa sama.",
+      "voucher": "Hosť platí rekreačným poukazom č. {number} ({issuer}). Pri schválení doplníte fakturačné údaje firmy a sumu poukazu."
+    },
+    "owner_approval_reminder": {
+      "subject": "Pripomienka: rezervácia {number} čaká na schválenie",
+      "intro": "rezervácia {number} ({guest}) stále čaká na vaše schválenie. Ak ju do {due} neschválite ani nezamietnete, zruší sa a hosť dostane e-mail."
+    }
   },
   "collisions": {
     "title": "Kolízie kalendárov",
@@ -2770,7 +2829,10 @@
       "noUpcoming": "Žiadne nadchádzajúce pobyty.",
       "guests": "{count, plural, one {1 hosť} few {# hostia} other {# hostí}}",
       "occupancy": "Obsadenosť",
-      "calendar": "Kalendár"
+      "calendar": "Kalendár",
+      "approvalTitle": "Čaká na vaše schválenie: {number}",
+      "approvalDue": "schváľte do {date}",
+      "approvalOpen": "Schváliť alebo zamietnuť"
     },
     "reservations": {
       "search": "Meno, e-mail, číslo…",
@@ -2778,7 +2840,8 @@
         "pending_payment": "Čaká na platbu",
         "confirmed": "Zaplatené",
         "completed": "Ukončené",
-        "cancelled": "Zrušené"
+        "cancelled": "Zrušené",
+        "awaiting_approval": "Na schválenie"
       },
       "arrival": "Príchod",
       "allDates": "všetky termíny",
@@ -2814,7 +2877,32 @@
         "title": "Platba a faktúra",
         "bank_transfer": "Prevod s QR kódom",
         "card": "Platba kartou",
-        "invoiceTo": "Faktúra na firmu: {company}"
+        "invoiceTo": "Faktúra na firmu: {company}",
+        "recreation_voucher": "Rekreačný poukaz",
+        "voucher": "Poukaz č. {number} · {issuer}",
+        "voucherAmount": "Poukazom {amount} · fakturovať: {company}"
+      },
+      "approval": {
+        "waiting": "Čaká na vaše schválenie do {date}",
+        "waitingNoDate": "Čaká na vaše schválenie",
+        "hint": "Termín je podržaný. Po schválení dostane hosť platobné údaje; bez rozhodnutia sa rezervácia zruší.",
+        "voucherHint": "pri schválení doplníte firmu a sumu poukazu",
+        "approve": "Schváliť",
+        "approveTitle": "Schváliť rezerváciu {label}?",
+        "approveText": "Hosť dostane e-mail s platobnými údajmi a lehotou na platbu, ktorá začne plynúť teraz.",
+        "voucherTitle": "Schváliť rezerváciu s rekreačným poukazom",
+        "voucherText": "{voucher}. Rezervácia spolu {total}. Doplňte firmu, ktorá poukaz vydala (odberateľ podkladu na poukaz), a sumu poukazu — zvyšok hosť doplatí prevodom.",
+        "voucherAmount": "Suma poukazu",
+        "voucherAmountHint": "Najviac suma rezervácie. Ak poukaz pokryje celú sumu, rezervácia sa rovno potvrdí.",
+        "company": "Firma (odberateľ)",
+        "companyId": "IČO",
+        "taxId": "DIČ",
+        "vatId": "IČ DPH",
+        "address": "Adresa firmy",
+        "decline": "Zamietnuť",
+        "declineTitle": "Zamietnuť rezerváciu {label}?",
+        "declineText": "Termín sa uvoľní a hosť dostane zdvorilý e-mail, že rezerváciu tentoraz nemôžete prijať.",
+        "declineNote": "Poznámka pre tím (nepovinné, hosť ju neuvidí)"
       }
     },
     "calendar": {
@@ -3130,6 +3218,10 @@
       "message_new": {
         "title": "Nová správa — {guest}",
         "text": "{number} · {excerpt}"
+      },
+      "approval_request": {
+        "title": "Schváľte rezerváciu {number}",
+        "text": "{guest} · {stay} · do {due}"
       }
     },
     "settings": {
@@ -3159,7 +3251,8 @@
         "checkin_completed": "Hosť dokončil online check-in",
         "foreigner_unreported": "Cudzinec ešte nie je nahlásený (4. deň)",
         "account_deletion": "Hosť žiada zrušiť účet",
-        "message_new": "Nová správa od hosťa (e-mail o 15 min, ak ju nikto neotvoril)"
+        "message_new": "Nová správa od hosťa (e-mail o 15 min, ak ju nikto neotvoril)",
+        "approval_request": "Rezervácia čaká na moje schválenie (aj pripomienka po 24 h)"
       },
       "onlyExpired": "len pri neuhradení",
       "reportEmail": "Mesačný výpis e-mailom",
@@ -3528,7 +3621,8 @@
     "providers": {
       "bank_transfer": "prevodom",
       "card": "kartou",
-      "on_site": "na mieste"
+      "on_site": "na mieste",
+      "recreation_voucher": "rekreačným poukazom"
     },
     "lead": "Položky a platby na vloženie do vášho fakturačného nástroja. Doklad vystavíte tam a nahráte ho sem — hosť ho uvidí vo svojom pobyte.",
     "copy": "Kopírovať",
@@ -3573,7 +3667,8 @@
     "taxId": "DIČ",
     "vatId": "IČ DPH",
     "company": "Firma",
-    "companyAddress": "Adresa firmy"
+    "companyAddress": "Adresa firmy",
+    "voucherTitle": "Podklad na doklad — rekreačný poukaz (odberateľ firma)"
   },
   "portalStays": {
     "title": "Pobyty z portálov",

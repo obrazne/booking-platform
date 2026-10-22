@@ -1514,6 +1514,7 @@ export type Database = {
           accommodation_vat_bp: number
           bathrooms: number | null
           bedrooms: number | null
+          booking_approval: string
           booking_mode: string
           check_in_from: string
           check_out_until: string
@@ -1554,6 +1555,7 @@ export type Database = {
           accommodation_vat_bp?: number
           bathrooms?: number | null
           bedrooms?: number | null
+          booking_approval?: string
           booking_mode?: string
           check_in_from?: string
           check_out_until?: string
@@ -1594,6 +1596,7 @@ export type Database = {
           accommodation_vat_bp?: number
           bathrooms?: number | null
           bedrooms?: number | null
+          booking_approval?: string
           booking_mode?: string
           check_in_from?: string
           check_out_until?: string
@@ -2527,6 +2530,9 @@ export type Database = {
           access_token_enc: string | null
           access_token_hash: string
           adults: number
+          approval_due_at: string | null
+          approved_at: string | null
+          approved_by: string | null
           billing_address: string | null
           billing_company: string | null
           billing_company_id: string | null
@@ -2561,11 +2567,22 @@ export type Database = {
           tenant_id: string
           total_cents: number
           updated_at: string
+          voucher_address: string | null
+          voucher_amount_cents: number | null
+          voucher_company: string | null
+          voucher_company_id: string | null
+          voucher_issuer: string | null
+          voucher_number: string | null
+          voucher_tax_id: string | null
+          voucher_vat_id: string | null
         }
         Insert: {
           access_token_enc?: string | null
           access_token_hash: string
           adults?: number
+          approval_due_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           billing_address?: string | null
           billing_company?: string | null
           billing_company_id?: string | null
@@ -2600,11 +2617,22 @@ export type Database = {
           tenant_id: string
           total_cents: number
           updated_at?: string
+          voucher_address?: string | null
+          voucher_amount_cents?: number | null
+          voucher_company?: string | null
+          voucher_company_id?: string | null
+          voucher_issuer?: string | null
+          voucher_number?: string | null
+          voucher_tax_id?: string | null
+          voucher_vat_id?: string | null
         }
         Update: {
           access_token_enc?: string | null
           access_token_hash?: string
           adults?: number
+          approval_due_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           billing_address?: string | null
           billing_company?: string | null
           billing_company_id?: string | null
@@ -2639,6 +2667,14 @@ export type Database = {
           tenant_id?: string
           total_cents?: number
           updated_at?: string
+          voucher_address?: string | null
+          voucher_amount_cents?: number | null
+          voucher_company?: string | null
+          voucher_company_id?: string | null
+          voucher_issuer?: string | null
+          voucher_number?: string | null
+          voucher_tax_id?: string | null
+          voucher_vat_id?: string | null
         }
         Relationships: [
           {
@@ -3180,6 +3216,7 @@ export type Database = {
           updated_at: string
           upsell_offer_days: number[]
           vat_payer: boolean
+          voucher_enabled: boolean
           website_url: string | null
           whatsapp_phone: string | null
           widget_sites: string[]
@@ -3218,6 +3255,7 @@ export type Database = {
           updated_at?: string
           upsell_offer_days?: number[]
           vat_payer?: boolean
+          voucher_enabled?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
           widget_sites?: string[]
@@ -3256,6 +3294,7 @@ export type Database = {
           updated_at?: string
           upsell_offer_days?: number[]
           vat_payer?: boolean
+          voucher_enabled?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
           widget_sites?: string[]
@@ -3647,6 +3686,10 @@ export type Database = {
         }
         Returns: string
       }
+      approve_reservation: {
+        Args: { p_reservation_id: string; p_voucher?: Json }
+        Returns: string
+      }
       arrival_instructions_visible: {
         Args: { p_reservation_id: string }
         Returns: boolean
@@ -3789,6 +3832,10 @@ export type Database = {
       current_guest_id: { Args: { p_tenant_id: string }; Returns: string }
       decide_order: {
         Args: { p_confirm: boolean; p_order_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      decline_reservation: {
+        Args: { p_note?: string; p_reservation_id: string }
         Returns: undefined
       }
       dismiss_cancellation_request: {

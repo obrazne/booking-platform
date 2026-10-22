@@ -10,10 +10,11 @@ export async function loadEmailContext(reservationId: string) {
     .from("reservations")
     .select(
       `id, tenant_id, number, status, guest_name, guest_email, adults, children, infants, pets, locale, currency,
-       total_cents, payment_due_at, cancellation_request_note,
+       total_cents, payment_due_at, cancellation_request_note, payment_method, approval_due_at,
+       voucher_number, voucher_issuer, voucher_amount_cents,
        items:reservation_items(check_in, check_out, unit:units(name)),
        lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, sort),
-       payments(variable_symbol, amount_cents),
+       payments(variable_symbol, amount_cents, status, provider, created_at),
        property:properties(id, name, street, city, postal_code, check_in_from, check_out_until, contact_email, booking_mode,
          photos(storage_path, alt, sort, category),
          private:property_private(arrival_instructions, door_code, wifi_name, wifi_password)),

@@ -14,7 +14,8 @@ export function stayPhase(
   today: string,
 ): StayPhase {
   if (status === "cancelled") return "cancelled";
-  if (status === "pending_payment") return "pending";
+  // Z77: waiting for the owner is "pending" too — but without the payment details (see the stay detail).
+  if (status === "pending_payment" || status === "awaiting_approval") return "pending";
   if (status === "completed" || today > checkOut) return "after";
   if (status === "in_progress" || today >= checkIn) return "during";
   return "before";

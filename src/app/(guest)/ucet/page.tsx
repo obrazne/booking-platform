@@ -62,11 +62,13 @@ export default async function GuestZonePage() {
         "rounded-full px-2.5 py-[3px] text-xs font-medium",
         s.status === "pending_payment"
           ? "bg-[#f6ecdf] text-[#8a4a22]"
-          : s.status === "cancelled"
-            ? "bg-[#fbeceb] text-[#a8432f]"
-            : s.status === "completed"
-              ? "bg-[#eceae4] text-[#5a6672]"
-              : "text-primary bg-[#e6efeb]",
+          : s.status === "awaiting_approval"
+            ? "bg-[#e9e6f5] text-[#4a3d8a]"
+            : s.status === "cancelled"
+              ? "bg-[#fbeceb] text-[#a8432f]"
+              : s.status === "completed"
+                ? "bg-[#eceae4] text-[#5a6672]"
+                : "text-primary bg-[#e6efeb]",
       )}
     >
       {ts(s.status as "confirmed")}

@@ -144,6 +144,10 @@ PDF aj e-mail v `src/core/reports/monthly-view.ts` (jeden zdroj textov), načít
 Pruh nocí `src/core/reports/nights-bar.tsx` — výpis aj Prehľad (Z65).
 Rozpočet na vlastný marketing (Z75): úspora = rozpočet; výdavky po mesiacoch `tenant_marketing_spend`, súčty od začiatku `tenant_marketing_budget`,
 načíta `loadMonthlyReport` (4. parameter `marketing`), pole `src/app/admin/statistics/report/marketing-spend.tsx`.
+**Schvaľovanie a rekreačný poukaz (Z77):** stav `awaiting_approval` (DB `create_reservation` podľa `properties.booking_approval`
+alebo `payment_method = recreation_voucher`), `approve_reservation` / `decline_reservation`, pripomienka a vypršanie v
+`expire_pending_reservations`; panel `src/app/admin/reservations/approval-actions.tsx`; spôsoby platby pri schvaľovaní
+`propertyMethods` v `src/core/payments/methods.ts`; podklady poukaz/doplatok `splitForVoucher` (`src/core/invoice/basis.ts`).
 **Hľadanie a Pomoc (Z67):** register stránok a polí `src/core/search/registry.ts` (nová stránka / nové nastavenie = riadok + slová
 v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazní — `field-highlight.tsx` v AdminShell), hľadanie
 `search-box.tsx` (Ctrl K; rezervácie, hostia a poznámky cez DB `actions.ts`). Otázky Pomoci `src/core/help/faqs.ts` + `help.faqs.<id>`

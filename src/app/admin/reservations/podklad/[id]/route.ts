@@ -18,8 +18,9 @@ export async function GET(
   const active = await getActiveMembership();
   if (!active || !["owner", "reception"].includes(active.role) || !z.uuid().safeParse(id).success)
     return new Response(null, { status: 404 });
-  const source =
-    new URL(request.url).searchParams.get("zdroj") === "ucet" ? "stay_account" : "reservation";
+  const zdroj = new URL(request.url).searchParams.get("zdroj");
+  // Z77: "poukaz" = the basis of the recreation voucher (buyer = its company).
+  const source = zdroj === "ucet" ? "stay_account" : zdroj === "poukaz" ? "voucher" : "reservation";
   const [tenant, locale] = await Promise.all([getTenantInfo(active.tenantId), getLocale()]);
   const [basis, { labels, t, fmt }] = await Promise.all([
     loadInvoiceBasis(active.tenantId, id, source),

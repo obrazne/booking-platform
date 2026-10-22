@@ -185,7 +185,12 @@ export function Cart() {
             onClick: () => b.setStep(3),
           }
         : {
-            label: pending ? t("booking.submitting") : t("booking.submit"),
+            label: pending
+              ? t("booking.submitting")
+              : // Z77: on a property "na schválenie" the guest sends a request.
+                b.data.settings.approval
+                ? t("cart.approval.cta")
+                : t("booking.submit"),
             disabled: pending || failed || !formToken || !ready || (captchaEnabled && !captcha),
             submit: true,
           };
@@ -853,12 +858,15 @@ function PaymentChoice({
   value,
   onChange,
   hours,
+  approval,
 }: {
   offered: PaymentMethodKey[];
   upcoming: PaymentMethodKey[];
   value: PaymentMethodKey;
   onChange: (m: PaymentMethodKey) => void;
   hours: number;
+  /** Z77: the owner approves first — the transfer details come after the approval. */
+  approval: boolean;
 }) {
   const t = useTranslations("guest.cart");
   const all = [
@@ -899,7 +907,11 @@ function PaymentChoice({
                 </span>
               ) : null}
             </span>
-            <span className="text-sm">{t(`method.${m}.text`, { hours })}</span>
+            <span className="text-sm">
+              {approval && m === "bank_transfer"
+                ? t("approval.transferText", { hours })
+                : t(`method.${m}.text`, { hours })}
+            </span>
           </span>
         </label>
       ))}
@@ -934,6 +946,9 @@ function StepPayment({
   const [code, setCode] = useState(promo?.code ?? "");
   const [promoOpen, setPromoOpen] = useState(false);
   const [method, setMethod] = useState(data.settings.paymentMethods[0] ?? "bank_transfer");
+  // Z77: the recreation voucher — its number and issuer.
+  const [voucher, setVoucher] = useState({ number: "", issuer: "" });
+  const isVoucher = method === "recreation_voucher";
   const [promoError, setPromoError] = useState<null | "none" | "captcha" | "limit">(null);
   const [captchaFailed, setCaptchaFailed] = useState(false);
   const deposit = lines.filter((l) => l.kind === "deposit").reduce((s, l) => s + l.amountCents, 0);
@@ -990,6 +1005,8 @@ function StepPayment({
           ["billing_tax_id", billing.on ? billing.taxId : ""],
           ["billing_vat_id", billing.on ? billing.vatId : ""],
           ["billing_address", billing.on ? billing.address : ""],
+          ["voucher_number", isVoucher ? voucher.number : ""],
+          ["voucher_issuer", isVoucher ? voucher.issuer : ""],
         ] as const
       ).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={String(value)} />
@@ -1011,13 +1028,53 @@ function StepPayment({
           {t("cart.holdLine", { minutes: data.settings.holdMinutes })}
         </p>
       ) : null}
+      {data.settings.approval ? (
+        <p
+          className="text-ink -mt-3 rounded-lg bg-[#f6ecdf] px-4 py-3 text-sm"
+          data-testid="approval-note"
+        >
+          {t("cart.approval.note")}
+        </p>
+      ) : null}
       <PaymentChoice
         offered={data.settings.paymentMethods}
         upcoming={data.settings.upcomingMethods}
         value={method}
         onChange={setMethod}
         hours={data.settings.paymentDueHours}
+        approval={data.settings.approval}
       />
+      {isVoucher ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-1.5">
+            <Label htmlFor="c-voucher-number">{t("cart.method.recreation_voucher.number")}</Label>
+            <Input
+              id="c-voucher-number"
+              required
+              maxLength={60}
+              autoComplete="off"
+              value={voucher.number}
+              onChange={(e) => setVoucher((v) => ({ ...v, number: e.target.value }))}
+              className="border-line min-h-11 rounded-lg"
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="c-voucher-issuer">{t("cart.method.recreation_voucher.issuer")}</Label>
+            <Input
+              id="c-voucher-issuer"
+              required
+              maxLength={120}
+              aria-describedby="c-voucher-issuer-hint"
+              value={voucher.issuer}
+              onChange={(e) => setVoucher((v) => ({ ...v, issuer: e.target.value }))}
+              className="border-line min-h-11 rounded-lg"
+            />
+            <p id="c-voucher-issuer-hint" className="text-muted-foreground text-xs">
+              {t("cart.method.recreation_voucher.issuerHint")}
+            </p>
+          </div>
+        </div>
+      ) : null}
       {failed ? <p className="text-sm text-[#b5532f]">{t("booking.takenNow")}</p> : null}
       {/* The summary on the right has the breakdown; phones see it here. */}
       <dl className="grid gap-2 text-sm lg:hidden">

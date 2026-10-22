@@ -13,6 +13,7 @@ import { priceContributorsFor } from "@/modules/price-contributors";
 import { guardGuestAction } from "@/core/security/guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
+import { propertyMethods } from "@/core/payments/methods";
 import { getGuestSettings, getPublicProperty } from "./catalog";
 import { toDiscounts, toPricingInput } from "./pricing-input";
 import { issueFormToken, verifyFormToken } from "./form-token";
@@ -29,7 +30,8 @@ export type BookingState = {
     | "limit"
     | "generic"
     | "billing"
-    | "payment";
+    | "payment"
+    | "voucher";
   details?: string[];
 };
 
@@ -84,7 +86,13 @@ const schema = z.object({
   // Honeypot: real people never see this field.
   website: z.string().max(0).optional().default(""),
   // Z71: the chosen way to pay (checked against the ways the owner switched on) and the company for an invoice.
-  payment_method: z.enum(["bank_transfer", "card"]).optional().default("bank_transfer"),
+  payment_method: z
+    .enum(["bank_transfer", "card", "recreation_voucher"])
+    .optional()
+    .default("bank_transfer"),
+  // Z77: the recreation voucher — number and issuer (the owner checks them at the approval).
+  voucher_number: z.string().trim().max(60).optional().default(""),
+  voucher_issuer: z.string().trim().max(120).optional().default(""),
   invoice: z.string().max(1).optional().default(""),
   billing_company: z.string().trim().max(200).optional().default(""),
   billing_company_id: z.string().trim().max(20).optional().default(""),
@@ -136,15 +144,27 @@ export async function createGuestReservation(
   )
     return { error: "billing" };
 
+  const voucher =
+    v.payment_method === "recreation_voucher"
+      ? { number: v.voucher_number, issuer: v.voucher_issuer }
+      : null;
+  if (voucher && (!voucher.number || voucher.issuer.length < 2)) return { error: "voucher" };
+
   const tenant = await getTenantFromHost();
   if (!tenant) return { error: "generic" };
-  // Only a way the owner switched on and that works (the inactive "Pripravujeme" card cannot be chosen).
-  if (!(await getGuestSettings(tenant.id)).paymentMethods.includes(v.payment_method))
+  const detail = await getPublicProperty(tenant, v.slug);
+  // Only a way the owner switched on and that works (the inactive "Pripravujeme" card cannot be chosen); on a property
+  // "na schválenie" only the ways that work with the approval (Z77).
+  if (
+    !propertyMethods(
+      (await getGuestSettings(tenant.id)).paymentMethods,
+      detail.property.booking_approval === "approval",
+    ).includes(v.payment_method)
+  )
     return { error: "payment" };
   const blocked = await guardGuestAction(tenant.id, "reservation", v.captcha_token);
   if (blocked) return { error: blocked };
   const locale = await getLocale();
-  const detail = await getPublicProperty(tenant, v.slug);
   const catalog = detail.catalogs[v.unit_id];
   if (!catalog) return { error: "invalid" };
 
@@ -250,6 +270,7 @@ export async function createGuestReservation(
         marketing_consent: form.get("consent_marketing") === "on",
         payment_method: v.payment_method,
         billing,
+        voucher,
         hold_id: v.hold_id || null,
         lines: price.lines.map((l) => ({
           kind: l.kind,

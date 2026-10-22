@@ -71,14 +71,16 @@ export async function StayDetail({
       .maybeSingle(),
   ]);
   const fmt = (cents: number) => formatMoney(money(cents, stay.currency), locale);
-  const bank = phase === "pending" ? await bankDetails(tenant.id) : null;
+  // Z77: waiting for the owner — no payment details until the approval.
+  const awaiting = stay.status === "awaiting_approval";
+  const bank = phase === "pending" && !awaiting ? await bankDetails(tenant.id) : null;
   const qr =
-    phase === "pending" && bank?.iban && stay.payment
+    phase === "pending" && !awaiting && bank?.iban && stay.payment
       ? await payBySquareSvg({
           iban: bank.iban,
           bic: bank.bic ?? undefined,
           beneficiary: bank.account_holder ?? stay.property?.name ?? tenant.name,
-          amountCents: stay.total_cents,
+          amountCents: stay.payment.amount_cents,
           currency: stay.currency,
           variableSymbol: stay.payment.variable_symbol ?? stay.number.replace(/\D/g, ""),
           note: `${stay.property?.name ?? ""} ${stay.number}`.trim(),
@@ -177,7 +179,19 @@ export async function StayDetail({
       <Container className="grid items-start gap-10 pt-10 pb-16 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
         <div className="grid min-w-0 gap-10">
           {/* Waiting for payment: the payment card on top (design v2.4). */}
-          {phase === "pending" && stay.payment ? (
+          {awaiting ? (
+            <section
+              className="grid gap-1.5 rounded-lg border border-[#d9d3ee] bg-[#f6f4fc] p-5 sm:p-6"
+              data-testid="awaiting-approval"
+            >
+              <span className="text-xs font-medium tracking-[0.16em] text-[#4a3d8a] uppercase">
+                {ts("approval.kicker")}
+              </span>
+              <p className="text-ink text-lg font-bold">{ts("approval.title")}</p>
+              <p className="text-sm text-[#3b3d42]">{ts("approval.text")}</p>
+            </section>
+          ) : null}
+          {phase === "pending" && !awaiting && stay.payment ? (
             <section
               aria-labelledby="pay-title"
               className="grid overflow-hidden rounded-lg border border-[#ecd9c4] bg-[#fdf7f0] sm:grid-cols-[220px_minmax(0,1fr)]"
@@ -211,7 +225,7 @@ export async function StayDetail({
                   {[
                     {
                       k: tg("reservation.amount"),
-                      v: fmt(stay.total_cents),
+                      v: fmt(stay.payment.amount_cents),
                       copy: (stay.total_cents / 100).toFixed(2).replace(".", ","),
                       big: true,
                     },

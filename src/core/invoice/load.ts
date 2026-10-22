@@ -3,10 +3,10 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, formatMoney } from "@/core/format/format";
 import { money } from "@/core/money/money";
 import { createClient } from "@/lib/supabase/server";
-import { buildBasis, type BasisLabels, type InvoiceBasis } from "./basis";
+import { buildBasis, splitForVoucher, type BasisLabels, type InvoiceBasis } from "./basis";
 
 /** What the basis is for: the reservation (its frozen lines) or the settlement of the stay account (upsell orders). */
-export type BasisSource = "reservation" | "stay_account";
+export type BasisSource = "reservation" | "stay_account" | "voucher";
 
 /**
  * Basis of one reservation as the signed-in team member sees it (RLS): lines or confirmed orders, received payments
@@ -23,14 +23,15 @@ export async function loadInvoiceBasis(
       .from("reservations")
       .select(
         `number, currency, guest_name, guest_email, guest_phone, guest_country, billing_company,
-         billing_company_id, billing_tax_id, billing_vat_id, billing_address,
+         billing_company_id, billing_tax_id, billing_vat_id, billing_address, voucher_amount_cents,
+         voucher_company, voucher_company_id, voucher_tax_id, voucher_vat_id, voucher_address,
          property:properties(name), items:reservation_items(check_in, check_out, unit:units(name)),
          lines:reservation_lines(kind, label, quantity, unit_amount_cents, amount_cents, vat_bp, sort),
          payments(provider, amount_cents, variable_symbol, status, received_at)`,
       )
       .eq("tenant_id", tenantId)
       .eq("id", reservationId)
-      .eq("payments.purpose", source)
+      .eq("payments.purpose", source === "stay_account" ? "stay_account" : "reservation")
       .maybeSingle(),
     supabase.from("tenant_settings").select("vat_payer").eq("tenant_id", tenantId).maybeSingle(),
     source === "stay_account"
@@ -45,6 +46,11 @@ export async function loadInvoiceBasis(
       : Promise.resolve(null),
   ]);
   if (!r) return null;
+  // Z77: with a recreation voucher — the voucher to its company, the rest to the guest.
+  const voucherCents = source === "stay_account" ? null : r.voucher_amount_cents;
+  if (source === "voucher" && !voucherCents) return null;
+  const split = voucherCents ? splitForVoucher(r.lines, voucherCents) : null;
+  const isVoucherPayment = (p: { provider: string }) => p.provider === "recreation_voucher";
   const items = [...r.items].sort((a, b) => a.check_in.localeCompare(b.check_in));
   return buildBasis({
     number: r.number,
@@ -54,15 +60,24 @@ export async function loadInvoiceBasis(
       email: r.guest_email,
       phone: r.guest_phone,
       country: r.guest_country,
-      company: r.billing_company
-        ? {
-            name: r.billing_company,
-            companyId: r.billing_company_id,
-            taxId: r.billing_tax_id,
-            vatId: r.billing_vat_id,
-            address: r.billing_address,
-          }
-        : null,
+      company:
+        source === "voucher"
+          ? {
+              name: r.voucher_company ?? "",
+              companyId: r.voucher_company_id,
+              taxId: r.voucher_tax_id,
+              vatId: r.voucher_vat_id,
+              address: r.voucher_address,
+            }
+          : r.billing_company
+            ? {
+                name: r.billing_company,
+                companyId: r.billing_company_id,
+                taxId: r.billing_tax_id,
+                vatId: r.billing_vat_id,
+                address: r.billing_address,
+              }
+            : null,
     },
     stay: {
       property: r.property?.name ?? "",
@@ -74,8 +89,16 @@ export async function loadInvoiceBasis(
           .sort()
           .at(-1) ?? null,
     },
-    lines: orders ? orders.map((o, i) => ({ kind: "service", ...o, sort: i })) : r.lines,
-    payments: r.payments,
+    lines: orders
+      ? orders.map((o, i) => ({ kind: "service", ...o, sort: i }))
+      : split
+        ? source === "voucher"
+          ? split.voucher
+          : split.rest
+        : r.lines,
+    payments: split
+      ? r.payments.filter((p) => (source === "voucher") === isVoucherPayment(p))
+      : r.payments,
     vatPayer: settings?.vat_payer ?? false,
   });
 }
@@ -103,8 +126,8 @@ export async function basisFormat(locale: string, timeZone: string) {
     taxId: t("taxId"),
     vatId: t("vatId"),
     provider: (p) =>
-      ["bank_transfer", "card", "on_site"].includes(p)
-        ? t(`providers.${p as "bank_transfer" | "card" | "on_site"}`)
+      ["bank_transfer", "card", "on_site", "recreation_voucher"].includes(p)
+        ? t(`providers.${p as "bank_transfer" | "card" | "on_site" | "recreation_voucher"}`)
         : p,
   };
   const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone });

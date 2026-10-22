@@ -61,7 +61,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           .from("reservations")
           .select("id", { count: "exact", head: true })
           .eq("tenant_id", active.tenantId)
-          .eq("status", "pending_payment")
+          // Z77: also what waits for the owner's approval.
+          .in("status", ["pending_payment", "awaiting_approval"])
       : Promise.resolve({ count: 0 }),
     // Rezervácie › Z portálov only when a portal calendar is connected (Z58).
     active

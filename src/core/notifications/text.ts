@@ -23,6 +23,7 @@ export const NOTIFICATION_KINDS = [
   "message_new",
   "backup_stale",
   "support_request",
+  "approval_request",
 ] as const;
 
 type Translate = ((key: string, args?: Record<string, string | number>) => string) & {
