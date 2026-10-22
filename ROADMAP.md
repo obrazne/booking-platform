@@ -312,7 +312,27 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
    Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
    pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
-### Z76 [A] — Správy: automatický preklad medzi jazykom hosťa a majiteľa (Jana 22. 10.) — po Z74
+### Z83 [A] — Widget: kalendár s cenami na webe klienta (A17 úroveň 2, Martin 22. 10.) — po Z74, pred Z76
+Na Janinom webe (WordPress + Elementor) kalendár s cenami a tlačidlo „Pokračovať“, ktoré hosťa prevedie na rezervačnú stránku
+s predvyplneným termínom. Platba a celý tok ostávajú v aplikácii (A17).
+1. **Stránka na vloženie** `/embed/kalendar?objekt=<slug>` na doméne klienta: rovnaký kalendár ako na detaile objektu (ceny za noc
+   v dňoch, obsadené dni, pravidlá min. nocí a dní príchodu podľa sezóny, náhľad ceny pri prejdení), 2 mesiace vedľa seba, na mobile 1
+   s posunom; pod ním súhrn „3 noci · 2 550 €“ + počet hostí + **„Pokračovať na rezerváciu“** → otvorí v hlavnom okne (nie v rámčeku)
+   detail objektu na subdoméne klienta s termínom a hosťami v adrese a rovno otvoreným košíkom (krok 1). Vzhľad z témy klienta,
+   priehľadné/ biele pozadie podľa nastavenia. Bez prihlásenia a bez cookies.
+2. **Vkladací kód** (jeden riadok pre HTML widget v Elementore): `<div data-booking-widget="kalendar" data-objekt="…"></div>` +
+   `<script src="https://<domena-klienta>/widget.js" async></script>` — skript vytvorí rámček (iframe), sám mu nastavuje výšku
+   (postMessage, overenie pôvodu), načíta sa až pri zobrazení.
+3. **Bezpečnosť:** vkladať sa smú len stránky `/embed/*` a len na weby, ktoré klient povolí (Nastavenia → Prepojenia: „Weby, kde
+   môže byť widget“ + kód na skopírovanie s tlačidlom Kopírovať) → `Content-Security-Policy: frame-ancestors` pre klienta; ostatné
+   stránky ostávajú `DENY` (`next.config.ts`).
+4. **Rýchlosť:** ceny a obsadenosť z cache (krátka platnosť), malý balík JS; meranie zobrazení widgetu a klikov na Pokračovať
+   (podklad pre štatistiky, odchod s `utm_source=web-klienta`).
+5. **Návod** `docs/prevadzka/widget.md` (vloženie do Elementoru / WordPressu, povolenie domény) a otázka v Pomoci. Testy: e2e testovacia
+   stránka s vloženým widgetom (PC aj mobil 390 px), výber termínu → Pokračovať → košík s predvyplneným termínom; axe; zákaz vloženia
+   z nepovolenej domény. Vyhľadávací pás (len dátumy a hostia) ako druhý druh widgetu neskôr.
+
+### Z76 [A] — Správy: automatický preklad medzi jazykom hosťa a majiteľa (Jana 22. 10.) — po Z83
 Ako na Bookingu/Airbnb: hosť píše po svojom (napr. hebrejsky), majiteľ dostane správu po slovensky; majiteľ odpíše po slovensky,
 hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
 1. **Jazyk hosťa volí hosť** (Martin: nie automatická detekcia): v účte → Moje údaje „Jazyk, v ktorom komunikujem“ a aj priamo pri
