@@ -367,7 +367,7 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
    po schválení hosťovi príde e-mail s doplatkom (prevod, neskôr karta). Dva **podklady na doklad**: na sumu poukazu (odberateľ = firma)
    a na doplatok (odberateľ = hosť). Migrácie len pridávajú, RLS, `record_history`. Testy: e2e oba toky, vypršanie lehoty (cron).
 
-### Z78 [B] — Darčekové poukazy (pripomienka 67) — po Z77
+### Z78 [B] 🔄 — Darčekové poukazy (pripomienka 67) — po Z77
 Poukaz = **hodnota (platba), nie zľava** (zľavový kód ostáva zvlášť).
 1. Administrácia → Ponuka → Poukazy: vytvoriť (hodnota v €, na meno, platnosť do, poznámka napr. „výhra v súťaži“) → jedinečný
    rozpoznateľný kód (napr. `STROMY-7K4P-2Q`), stav (platný / čiastočne použitý / vyčerpaný / prepadnutý / zrušený), zostatok, história použitia.
