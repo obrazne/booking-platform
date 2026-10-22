@@ -27,6 +27,14 @@ Tlačidlo: **Otvoriť Booking a Airbnb**
 
 Tlačidlo: **Otvoriť Kolízie**
 
+### Ako dám kalendár s cenami na svoj web?
+1. V Nastavenia › Prepojenia v časti „Kalendár s cenami na vašom webe“ napíšte web, kde má byť kalendár (napr. chaletstromy.sk), a uložte. Na iných weboch sa kalendár nezobrazí.
+2. Skopírujte kód pri ubytovaní, ktoré chcete ukázať.
+3. Vo WordPresse otvorte stránku v Elementore, pridajte widget HTML a kód doň vložte. Uložte a stránku si pozrite.
+4. Hosť na vašom webe vyberie termín a hostí, vidí cenu a tlačidlom „Pokračovať na rezerváciu“ prejde na vašu rezervačnú stránku s vybraným termínom. Platba prebehne tam.
+
+Tlačidlo: **Otvoriť Prepojenia**
+
 ### Kde vidím hostí z Bookingu a Airbnb?
 1. Rezervácie › Z portálov ukazuje pobyty, ktoré prišli z kalendárov portálov (položka je v menu, keď máte kalendár prepojený).
 2. Portály v kalendári neposielajú meno ani kontakt hosťa — ak ho portál pošle (kód rezervácie, časť telefónu), ukážeme ho; inak podrobnosti nájdete priamo na portáli.

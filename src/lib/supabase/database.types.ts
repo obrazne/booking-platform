@@ -3182,6 +3182,7 @@ export type Database = {
           vat_payer: boolean
           website_url: string | null
           whatsapp_phone: string | null
+          widget_sites: string[]
         }
         Insert: {
           account_holder?: string | null
@@ -3219,6 +3220,7 @@ export type Database = {
           vat_payer?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
+          widget_sites?: string[]
         }
         Update: {
           account_holder?: string | null
@@ -3256,6 +3258,7 @@ export type Database = {
           vat_payer?: boolean
           website_url?: string | null
           whatsapp_phone?: string | null
+          widget_sites?: string[]
         }
         Relationships: [
           {
@@ -3553,6 +3556,45 @@ export type Database = {
           },
           {
             foreignKeyName: "units_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      widget_stats: {
+        Row: {
+          continues: number
+          day: string
+          property_id: string
+          tenant_id: string
+          views: number
+        }
+        Insert: {
+          continues?: number
+          day: string
+          property_id: string
+          tenant_id: string
+          views?: number
+        }
+        Update: {
+          continues?: number
+          day?: string
+          property_id?: string
+          tenant_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "widget_stats_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "widget_stats_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -4384,6 +4426,11 @@ export type Database = {
         }[]
       }
       upsell_tick: { Args: never; Returns: number }
+      widget_sites_by_host: { Args: { p_host: string }; Returns: string[] }
+      widget_track: {
+        Args: { p_host: string; p_kind: string; p_slug: string }
+        Returns: undefined
+      }
       write_audit: {
         Args: {
           p_action: string

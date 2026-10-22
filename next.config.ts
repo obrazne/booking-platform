@@ -16,8 +16,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" },
     ],
   },
-  // Security headers (Z16). Admin and control center never in a frame; guest pages stay frameable for now —
-  // embedding on the client's site will get a per-tenant allowlist (frame-ancestors) when the widget is built.
+  // Security headers (Z16). Nothing in a frame except the widget pages /embed/* (Z83), whose frame-ancestors
+  // the proxy sets from the websites the client allowed (Nastavenia → Prepojenia).
   async headers() {
     const common = [
       { key: "X-Content-Type-Options", value: "nosniff" },
@@ -30,9 +30,7 @@ const nextConfig: NextConfig = {
     ];
     return [
       { source: "/:path*", headers: common },
-      { source: "/admin/:path*", headers: noFrame },
-      { source: "/platform/:path*", headers: noFrame },
-      { source: "/login", headers: noFrame },
+      { source: "/:path((?!embed/).*)", headers: noFrame },
       // The secret reservation link must not leak to other sites through the Referer header.
       { source: "/r/:path*", headers: [{ key: "Referrer-Policy", value: "no-referrer" }] },
     ];

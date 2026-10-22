@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → **Z83 (widget: kalendár s cenami na web klienta)** — *zabratá linkou A* → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → ~~Z83 (widget: kalendár s cenami na web klienta)~~ ✅ → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -312,7 +312,7 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
    Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
    pod pripnutou hlavičkou. Ak by karta bola vyššia než okno, nepripínať ju (inak spodok nevidno). E2e: po scrolle je horný okraj karty pod lištou.
 
-### Z83 [A] 🔄 — Widget: kalendár s cenami na webe klienta (A17 úroveň 2, Martin 22. 10.) — po Z74, pred Z76
+### Z83 [A] ✅ — Widget: kalendár s cenami na webe klienta (A17 úroveň 2, Martin 22. 10.) — po Z74, pred Z76
 Na Janinom webe (WordPress + Elementor) kalendár s cenami a tlačidlo „Pokračovať“, ktoré hosťa prevedie na rezervačnú stránku
 s predvyplneným termínom. Platba a celý tok ostávajú v aplikácii (A17).
 1. **Stránka na vloženie** `/embed/kalendar?objekt=<slug>` na doméne klienta: rovnaký kalendár ako na detaile objektu (ceny za noc
@@ -597,6 +597,20 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z83 [linka A]: **Widget „kalendár s cenami“ na webe klienta** (A17 úroveň 2). (Claude Code)
+  - `/embed/kalendar?objekt=<slug>` (vlastný layout bez hlavičky, téma klienta, `pozadie=priehladne`): kalendár z detailu objektu
+    (ceny, obsadené dni, min. noci a dni príchodu, náhľad ceny), 2 mesiace / na mobile 1, hostia, súhrn „3 noci · X €“,
+    **„Pokračovať na rezerváciu“** → hlavné okno na `/p/<slug>?check_in…&utm_source=web-klienta` s otvoreným košíkom.
+    Dáta cez anonymného klienta Supabase v `unstable_cache` (60 s), bez cookies (`src/core/widget/data.ts`, `calendar-widget.tsx`).
+  - `/widget.js`: vloží rámček až pri priblížení, výšku berie len zo správ svojho rámčeka (pôvod aj zdroj).
+  - Bezpečnosť: migrácia `20261022120000_widget` (`tenant_settings.widget_sites`, `widget_sites_by_host`, `widget_stats`,
+    `widget_track`); proxy dáva `/embed/*` hlavičku `frame-ancestors 'self' <povolené weby ± www>`; **všetky ostatné stránky
+    teraz `X-Frame-Options: DENY`** (predtým len admin/platform/login). Normalizácia webov `src/core/widget/sites.ts` (+ test).
+  - Nastavenia → Prepojenia: „Kalendár s cenami na vašom webe“ (weby, kód s Kopírovať pri každom zverejnenom ubytovaní,
+    zobrazenia a kliky za 30 dní). Otázka v Pomoci `widget`, návod `docs/prevadzka/widget.md`, snímky `docs/snimky/z83/`.
+  - E2e `widget.spec.ts` (PC aj mobil): testovacia stránka klienta na lokálnom serveri, výber termínu → košík s termínom,
+    počítadlá, axe; nepovolený web bez kalendára; ostatné stránky DENY, widget bez cookies.
+  - Vyhľadávací pás (len dátumy a hostia) ostáva na neskôr.
 - 2026-10-22 — Z75 [linka B]: **Mesačný výpis — ušetrené provízie ako rozpočet na vlastný marketing** (Martin 21. 10., A10). (Claude Code)
   - Výpis (stránka, PDF, e-mail z jedného `monthly-view.ts`): karta „Váš rozpočet na vlastný marketing tento mesiac“ (= ušetrená provízia,
     výpočet bez zmeny) s ⓘ (sadzba z Nastavení — zadať skutočnú z faktúr Bookingu); nepovinné pole „Koľko ste tento mesiac minuli

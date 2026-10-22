@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { frameAncestors } from "@/core/widget/sites";
 
 const PROTECTED_PREFIXES = ["/admin", "/platform"];
 
@@ -34,6 +35,18 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
     return NextResponse.redirect(url);
+  }
+
+  // Widget pages (Z83): in a frame only on the websites the client allowed; no session, no cookies.
+  if (pathname.startsWith("/embed/")) {
+    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
+    const { data: sites } = await supabase.rpc("widget_sites_by_host", {
+      p_host:
+        process.env.NODE_ENV !== "production" && process.env.DEV_TENANT_HOST
+          ? process.env.DEV_TENANT_HOST
+          : host,
+    });
+    response.headers.set("Content-Security-Policy", frameAncestors(sites ?? []));
   }
 
   return response;

@@ -22,6 +22,7 @@ export const CORE_FAQS: readonly HelpFaq[] = [
   { id: "blockDates", topic: "calendar", href: "/admin/blocks" },
   { id: "connectPortal", topic: "calendar", href: "/admin/settings?tab=prepojenia" },
   { id: "collision", topic: "calendar", href: "/admin/collisions" },
+  { id: "widget", topic: "calendar", href: "/admin/settings?tab=prepojenia#widget" },
   { id: "portalGuests", topic: "calendar", href: "/admin/portal-stays" },
   { id: "transferPaid", topic: "payments", href: "/admin/reservations" },
   {

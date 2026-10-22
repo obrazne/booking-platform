@@ -989,7 +989,8 @@
       "invalid": "Skontrolujte vyplnené údaje.",
       "upload": "Fotku sa nepodarilo nahrať.",
       "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5.",
-      "onePaymentMethod": "Aspoň jeden spôsob platby musí ostať zapnutý — inak by hostia nemali ako zaplatiť."
+      "onePaymentMethod": "Aspoň jeden spôsob platby musí ostať zapnutý — inak by hostia nemali ako zaplatiť.",
+      "widgetSites": "Niektorý riadok nie je adresa webu — napíšte napr. chaletstromy.sk."
     },
     "unsaved": {
       "label": "Neuložené zmeny",
@@ -1273,6 +1274,17 @@
     "connections": {
       "more": "Ďalšie prepojenia",
       "moreHow": "E-mail marketing (napr. Ecomail) a fakturačný nástroj pribudnú ako platené moduly."
+    },
+    "widget": {
+      "title": "Kalendár s cenami na vašom webe",
+      "hint": "Hosť si na vašom webe vyberie termín, uvidí cenu a tlačidlom „Pokračovať na rezerváciu“ prejde na rezervačnú stránku s vybraným termínom. Platba ostáva tu.",
+      "sites": "Weby, kde môže byť kalendár",
+      "sitesHint": "Jeden web na riadok, napr. chaletstromy.sk. Inde sa kalendár nezobrazí.",
+      "code": "Kód na vloženie — {name}",
+      "codeHint": "Vložte ho do HTML widgetu v Elementore (alebo do bloku „Vlastné HTML“ vo WordPresse) na stránke, kde má byť kalendár.",
+      "noSites": "Najprv doplňte web, kde má byť kalendár — inak sa nezobrazí.",
+      "stats": "Za posledných 30 dní: {views, plural, one {# zobrazenie} few {# zobrazenia} other {# zobrazení}}, {continues, plural, one {# klik} few {# kliky} other {# klikov}} na „Pokračovať“.",
+      "help": "Ako vložiť kalendár na web ›"
     }
   },
   "blocks": {
@@ -1970,6 +1982,18 @@
         "outlook": "Outlook",
         "ics": "Apple / iný kalendár (.ics)"
       }
+    },
+    "widget": {
+      "title": "Kalendár s cenami — {name}",
+      "summary": "{nights, plural, one {# noc} few {# noci} other {# nocí}} · {price}",
+      "guests": "Hostia",
+      "adults": "Dospelí",
+      "children": "Deti",
+      "less": "Menej: {label}",
+      "more": "Viac: {label}",
+      "continue": "Pokračovať na rezerváciu",
+      "continueHint": "Rezerváciu dokončíte na našej rezervačnej stránke.",
+      "notFound": "Kalendár sa nepodarilo načítať."
     }
   },
   "reservations": {
@@ -4101,6 +4125,16 @@
           "Otvorte Rezervácie › Kolízie — uvidíte, čo s čím koliduje, a rozhodnete, čo s tým."
         ],
         "go": "Otvoriť Kolízie"
+      },
+      "widget": {
+        "q": "Ako dám kalendár s cenami na svoj web?",
+        "steps": [
+          "V Nastavenia › Prepojenia v časti „Kalendár s cenami na vašom webe“ napíšte web, kde má byť kalendár (napr. chaletstromy.sk), a uložte. Na iných weboch sa kalendár nezobrazí.",
+          "Skopírujte kód pri ubytovaní, ktoré chcete ukázať.",
+          "Vo WordPresse otvorte stránku v Elementore, pridajte widget HTML a kód doň vložte. Uložte a stránku si pozrite.",
+          "Hosť na vašom webe vyberie termín a hostí, vidí cenu a tlačidlom „Pokračovať na rezerváciu“ prejde na vašu rezervačnú stránku s vybraným termínom. Platba prebehne tam."
+        ],
+        "go": "Otvoriť Prepojenia"
       },
       "portalGuests": {
         "q": "Kde vidím hostí z Bookingu a Airbnb?",

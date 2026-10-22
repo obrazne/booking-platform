@@ -27,6 +27,7 @@ import { ConnectionsBody } from "../ical/body";
 import { TeamBody } from "../team/body";
 import { saveSettings } from "./actions";
 import { NotificationsBody } from "./notifications/body";
+import { WidgetBody } from "./widget-body";
 import { SETTINGS_TABS, settingsTab, type SettingsTab } from "./tabs";
 
 /** The ⓘ of each tab (Z66). */
@@ -514,6 +515,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
     prepojenia: () => (
       <div className="grid gap-6">
         <ConnectionsBody />
+        <WidgetBody />
         <section className="surface grid gap-1 px-4 py-3.5">
           <span className="text-ink flex flex-wrap items-center gap-2 text-[15px] font-bold">
             {t("connections.more")} <RowState on={false}>{t("methods.soon")}</RowState>
