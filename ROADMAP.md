@@ -393,7 +393,7 @@ Jana fakturuje v **Omega (KROS)**. Zisti, aký import dokladov Omega podporuje (
 (rezervácia, doplnkové objednávky, poukazy — jeden alebo viac dokladov) v tomto formáte z panela rezervácie aj hromadne za obdobie.
 Ak sa formát nedá overiť bez Omegy, zapíš do Otázok, čo treba od Jany (verzia Omegy, vzorový exportovaný súbor) a sprav zatiaľ CSV.
 
-### Z81 [B] — Licencie a stav klienta podľa platieb (A10) — po Z78
+### Z81 [B] 🔄 — Licencie a stav klienta podľa platieb (A10) — po Z78
 Podľa `ROADMAP` Fáza 4 (Licencie klientov) a `ARCHITEKTURA.md` A10: v riadiacom centre licencia = záznam zmluvy (číslo, klient, objekty,
 balík Základ / Bez starostí + moduly, zriadenie, mesačne, 2 %, začiatok, ročná zmluva do, stav aktívna / po splatnosti / pozastavená).
 Pozastavená: rezervačná stránka neprijíma nové rezervácie, administrácia len na čítanie (upozornenie navrchu). Klient vidí v administrácii
