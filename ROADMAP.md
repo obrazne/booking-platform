@@ -376,6 +376,8 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
   Viac vlastných objektov jednej firmy = jedna licencia (zriadenie rovnaké, mesačne príplatok za ďalší objekt — výšku určí Martin).
   Cudzí objekt v správe (napr. Jana spravuje chalet kamarátke) = samostatný klient a samostatná licencia; správca sa prihlási do oboch
   jedným účtom. Do zmluvy: licencia pokrýva objekty prevádzkované na účet držiteľa licencie.
+- [ ] *Odložené (Martin 22. 10.):* channel manager a jednotná schránka Booking/Airbnb cez sprostredkovateľa (napr. Channex, ~10 €/klient
+  mesačne) — zložité na stavbu a podporu; zatiaľ iCal. Vrátiť sa, keď to budú klienti pýtať (`docs/biznis/konkurencia-rentalls.md`).
 - [ ] Záloha a doplatok (Stripe/karta sa presunul pred spustenie — Fáza 3, *Pred spustením*)
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
