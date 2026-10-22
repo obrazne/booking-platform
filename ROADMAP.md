@@ -378,6 +378,14 @@ v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:stic
   jedným účtom. Do zmluvy: licencia pokrýva objekty prevádzkované na účet držiteľa licencie.
 - [ ] *Odložené (Martin 22. 10.):* channel manager a jednotná schránka Booking/Airbnb cez sprostredkovateľa (napr. Channex, ~10 €/klient
   mesačne) — zložité na stavbu a podporu; zatiaľ iCal. Vrátiť sa, keď to budú klienti pýtať (`docs/biznis/konkurencia-rentalls.md`).
+- [ ] 🧠→🔧 **Rezervácie na schválenie + rekreačné a darčekové poukazy** (Jana 22. 10., pripomienky 66–68): pri objekte nastavenie
+  **okamžitá rezervácia / na schválenie**; na schválenie termín podržaný, majiteľ do **48 h** schváli alebo zamietne (pripomienka, po lehote
+  automatické zrušenie); karta len **zablokovaná** (Stripe manuálne strhnutie — schválenie = strhnúť, zamietnutie = uvoľniť, blokácia platí
+  ~5–7 dní), prevod = platobné údaje až po schválení; hosťovi vysvetliť „čakajúcu platbu“ v banke. **Rekreačný poukaz** = spôsob platby,
+  ide vždy na schválenie: hosť zadá číslo poukazu, majiteľ overí, vyplní fakturačné údaje firmy a sumu poukazu, schváli → hosťovi príde
+  doplatok (karta/prevod); dva podklady na doklad (poukaz + doplatok). **Darčekový poukaz** (iné ako zľavový kód — je to hodnota, platba):
+  majiteľ vytvorí (hodnota, meno, platnosť) → jedinečný kód + PDF v dizajne klienta, použiteľný v košíku aj čiastočne (zostatok);
+  neskôr aj predaj poukazov na stránke klienta. Faktúry Jany: **Omega (KROS)** — preveriť import (pripomienka 65).
 - [ ] Záloha a doplatok (Stripe/karta sa presunul pred spustenie — Fáza 3, *Pred spustením*)
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov
