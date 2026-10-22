@@ -47,6 +47,9 @@ test("nights bar on the Overview: numbers as the report, months, calendar", asyn
   await expect(card.getByText(`Priamo · ${nights(thisMonth.nights_sold)}`)).toBeVisible();
   const free = thisMonth.available_nights - thisMonth.occupied_nights;
   await expect(card.getByText(`Voľné · ${nights(Math.max(0, free))}`)).toBeVisible();
+  // Z75: the budget for own marketing of the month, with the link to the report.
+  await expect(card.getByText(/^Rozpočet na vlastný marketing za /).first()).toBeVisible();
+  await expect(card.getByRole("link", { name: "Mesačný výpis ›" }).first()).toBeVisible();
 
   const a11y = await new AxeBuilder({ page })
     .include("main")

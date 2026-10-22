@@ -50,7 +50,7 @@ describe("monthly report e-mail (Z62, doska 13)", () => {
       pdf: new Uint8Array([37, 80, 68, 70]),
     });
     const nb = (s: string) => s.replace(/[  ]/g, " ");
-    expect(nb(mail.subject)).toBe("Váš september: 6 300 € priamo, 945 € ušetrených na províziách");
+    expect(nb(mail.subject)).toBe("Váš september: 6 300 € priamo, 945 € na vlastný marketing");
     expect(mail.html).toContain("Dobrý deň, Jana, takto vyzeral september:");
     expect(mail.html).toContain("Otvoriť celý výpis");
     expect(nb(mail.text)).toContain("V mesiaci október máte zatiaľ 1 400 € potvrdených.");

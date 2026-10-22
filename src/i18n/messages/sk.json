@@ -2715,7 +2715,8 @@
         "nextMonth": "Ďalší mesiac",
         "thisHint": "Rovnaké čísla ako v mesačnom výpise. Klik na pruh otvorí kalendár mesiaca.",
         "nextHint": "Voľné noci ešte môžete predať — klik na pruh otvorí kalendár mesiaca.",
-        "open": "otvoriť kalendár mesiaca"
+        "open": "otvoriť kalendár mesiaca",
+        "report": "Mesačný výpis ›"
       },
       "search": "Hľadať hosťa, číslo rezervácie…",
       "guestPage": "Stránka pre hostí",
@@ -3608,16 +3609,35 @@
     "occupancyNote": "{occupied} z {available} nocí, aj portály",
     "avgNote": "priame pobyty",
     "staysNote": "{direct} priame · {portal} z portálov",
-    "savedTitle": "Ušetrené na províziách",
-    "savedText": "Toľko by si z {count, plural, one {vášho # priameho pobytu} few {vašich # priamych pobytov} other {vašich # priamych pobytov}} vzal portál pri provízii {commission}. Zostali vám.",
+    "savedTitle": "Rozpočet na vlastný marketing",
+    "budgetTitle": "Váš rozpočet na vlastný marketing tento mesiac",
+    "budgetLine": "Váš rozpočet na vlastný marketing tento mesiac: {amount}",
+    "budgetMonth": "Rozpočet na vlastný marketing za {month}: {amount}",
+    "budgetPlus": "Po marketingu ste v pluse {amount} oproti Bookingu.",
+    "budgetMinus": "Na marketing ste minuli o {amount} viac, než by si vzal Booking.",
+    "budgetEven": "Na marketing ste minuli presne toľko, koľko by si vzal Booking.",
+    "spentLabel": "Koľko ste tento mesiac minuli na marketing",
+    "spentHint": "Suma v eurách, nepovinné — marketér, reklamy. Uloží sa k tomuto mesiacu.",
+    "spentNone": "nevyplnené",
+    "spentSave": "Uložiť",
+    "spentSaved": "Uložené.",
+    "spentFailed": "Sumu sa nepodarilo uložiť.",
+    "spentInvalid": "Zadajte sumu v eurách, napríklad 1500.",
+    "sinceStart": "Od začiatku ({month})",
+    "totalBudget": "Rozpočet spolu",
+    "totalSpent": "Na marketing spolu",
+    "totalPlus": "V pluse spolu",
+    "totalBalance": "Po marketingu spolu",
+    "totalHint": "Sčítava sa od prvého mesiaca na platforme — časom sa to kumuluje.",
+    "savedText": "Toľko by si z {count, plural, one {vášho # priameho pobytu} few {vašich # priamych pobytov} other {vašich # priamych pobytov}} vzal portál pri provízii {commission}. Zostali vám — môžete ich dať do vlastného marketingu.",
     "savedNone": "Tento mesiac nebol priamy pobyt — nebolo z čoho platiť províziu.",
-    "savedNoCommission": "Províziu portálu máte v nastaveniach 0 % — úsporu nepočítame.",
+    "savedNoCommission": "Províziu portálu máte v nastaveniach 0 % — rozpočet na marketing nepočítame.",
     "sinceJanuary": "Od januára {year}",
     "shareLabel": "Podiel priamych nocí",
     "shareWithLastYear": "{share} · v {month}: {before}",
     "contactsLabel": "Vlastné kontakty na hostí",
     "contactsValue": "{count} · +{added} tento mesiac",
-    "commissionLink": "Províziu portálu upravíte v Nastaveniach ›",
+    "commissionLink": "Sadzbu provízie z faktúr Bookingu zadáte v Nastaveniach ›",
     "workTitle": "{time} urobil systém sám.",
     "workLabel": "Za vás odpracované",
     "work": {
@@ -3665,7 +3685,7 @@
       "collisions": "{count, plural, one {# kolízia kalendárov} few {# kolízie kalendárov} other {# kolízií kalendárov}}",
       "messages": "{count, plural, one {# správa hosťa bez odpovede} few {# správy hostí bez odpovede} other {# správ hostí bez odpovede}}"
     },
-    "note": "Tržby = priame rezervácie podľa dátumu pobytu (noci v mesiaci {month}), vrátane služieb v rezervácii, bez dane z ubytovania. Obsadenosť počíta aj noci z Bookingu a Airbnb. Úspora = tržby z priamych pobytov × provízia portálu {commission} z vašich nastavení. Podklad, nie účtovný doklad.",
+    "note": "Tržby = priame rezervácie podľa dátumu pobytu (noci v mesiaci {month}), vrátane služieb v rezervácii, bez dane z ubytovania. Obsadenosť počíta aj noci z Bookingu a Airbnb. Rozpočet na marketing = tržby z priamych pobytov × provízia portálu {commission} z vašich nastavení (ušetrená provízia). Podklad, nie účtovný doklad.",
     "duration": {
       "hm": "{h} h {m} min",
       "h": "{h} {h, plural, one {hodina} few {hodiny} other {hodín}}",
@@ -3675,11 +3695,11 @@
     "ready": "Výpis za {month} je pripravený",
     "readyLink": "Otvoriť výpis →",
     "navOverview": "Čísla",
-    "emailSubject": "Váš {month}: {revenue} priamo, {saved} ušetrených na províziách",
+    "emailSubject": "Váš {month}: {revenue} priamo, {saved} na vlastný marketing",
     "emailSubjectNone": "Váš {month}: mesačný výpis",
     "emailGreeting": "Dobrý deň, {name}, takto vyzeral {month}:",
     "emailGreetingNoName": "Dobrý deň, takto vyzeral {month}:",
-    "emailSaved": "Od januára {ytd}.",
+    "emailSaved": "Od začiatku spolu {total}.",
     "emailShare": "Podiel priamych nocí {share}.",
     "emailOccupancy": "Obsadenosť",
     "emailAvg": "Priemerná cena za noc",
@@ -3687,7 +3707,7 @@
     "emailWork": "Za vás odpracované",
     "emailOutlook": "V mesiaci {month} máte zatiaľ {revenue} potvrdených. Voľné víkendy: {weekends}.",
     "emailButton": "Otvoriť celý výpis",
-    "emailFoot": "Výpis v PDF je v prílohe — môžete ho rovno preposlať účtovníkovi. Úspora = tržby z priamych pobytov × provízia {commission} z vašich nastavení. Výpis chodí 1. dňa v mesiaci; vypnúť ho môžete v Nastaveniach → E-maily a upozornenia."
+    "emailFoot": "Výpis v PDF je v prílohe — môžete ho rovno preposlať účtovníkovi. Rozpočet na marketing = tržby z priamych pobytov × provízia {commission} z vašich nastavení. Výpis chodí 1. dňa v mesiaci; vypnúť ho môžete v Nastaveniach → E-maily a upozornenia."
   },
   "search": {
     "placeholder": "Hľadať hostí, rezervácie, nastavenia aj pomoc…",
@@ -4161,7 +4181,8 @@
       "monthlyReport": {
         "q": "Čo je mesačný výpis a kto ho dostane?",
         "steps": [
-          "Výpis zhrnie mesiac: tržby z priamych rezervácií, obsadenosť, úsporu na províziách a čo za vás systém urobil.",
+          "Výpis zhrnie mesiac: tržby z priamych rezervácií, obsadenosť, rozpočet na vlastný marketing (ušetrené provízie) a čo za vás systém urobil.",
+          "Pri výpise môžete zadať, koľko ste v mesiaci minuli na marketing — uvidíte, koľko vám po ňom ostalo, za mesiac aj od začiatku.",
           "Príde vám e-mailom 1. dňa v mesiaci s PDF. Tlačidlom „Poslať účtovníkovi“ ho pošlete na e-mail účtovníka z Nastavení.",
           "Je to podklad, nie účtovný doklad."
         ],
@@ -4454,7 +4475,13 @@
       },
       "portalCommission": {
         "title": "Provízia portálov",
-        "text": "Koľko percent by ste zaplatili Bookingu alebo Airbnb. Z tohto čísla Prehľad a výpis odhadujú, koľko ste ušetrili na priamych rezerváciách — nič sa tým neúčtuje."
+        "text": "Koľko percent by ste zaplatili Bookingu alebo Airbnb — zadajte skutočnú sadzbu z ich faktúr. Z tohto čísla Prehľad a výpis rátajú, koľko ste ušetrili na priamych rezerváciách (rozpočet na vlastný marketing) — nič sa tým neúčtuje."
+      },
+      "marketingBudget": {
+        "title": "Rozpočet na vlastný marketing",
+        "text": "Toľko by si portál vzal na províziách z vašich priamych pobytov: tržby z priamych pobytov × sadzba provízie z Nastavení (zadajte skutočnú sadzbu z faktúr Bookingu). Tieto peniaze môžete dať do vlastného marketingu — keď vyplníte, koľko ste minuli, výpis ukáže, koľko vám po ňom ostalo.",
+        "faq": "monthlyReport",
+        "more": "Čo je mesačný výpis ›"
       },
       "reportMinutes": {
         "title": "Minúty vo výpise",

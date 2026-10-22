@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { requireTenant } from "@/core/admin/action";
+import { FieldHelp } from "@/core/admin/page-help";
 import { PageHeader } from "@/core/admin/page-header";
 import { todayIso } from "@/core/pricing/dates";
 import { loadMonthlyReport } from "@/core/reports/monthly";
@@ -12,6 +13,7 @@ import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { AccountantButton } from "./accountant-button";
+import { MarketingSpend } from "./marketing-spend";
 
 type T = (key: string, values?: Record<string, string | number>) => string;
 
@@ -149,18 +151,58 @@ export default async function MonthlyReportPage({
 
         <div className="grid gap-6 lg:grid-cols-2">
           <section aria-labelledby="saved-title" className="surface grid content-start gap-3 p-6">
-            <h2 id="saved-title" className="label-mono">
-              {t("savedTitle")}
+            <h2 id="saved-title" className="label-mono flex items-center gap-2">
+              {v.budget.title}
+              <FieldHelp id="marketingBudget" />
             </h2>
             <p className="text-primary text-[40px] leading-none font-extrabold tracking-[-0.03em]">
               {v.saved}
             </p>
             <p className="text-sm text-[#3b3d42]">{v.savedText}</p>
+            {/* Z75: what was spent on marketing and what is left of the budget. */}
+            <div className="border-line grid gap-2 border-t pt-3">
+              <MarketingSpend
+                key={`${month}-${v.budget.spentCents ?? ""}`}
+                month={month.slice(0, 7)}
+                cents={v.budget.spentCents}
+                shown={v.budget.spent}
+                canEdit={active.role === "owner"}
+              />
+              {v.budget.result ? (
+                <p className="text-ink text-[15px] font-bold" data-testid="budget-result">
+                  {v.budget.result}
+                </p>
+              ) : null}
+            </div>
             <dl className="border-line grid border-t text-sm">
-              <div className="border-line flex justify-between gap-3 border-b py-2.5">
-                <dt className="text-[#5a6672]">{v.ytdLabel}</dt>
-                <dd className="text-ink font-bold">{v.savedYtd}</dd>
-              </div>
+              {v.budget.total ? (
+                <div className="border-line grid gap-1.5 border-b py-2.5">
+                  <dt className="text-ink font-bold">{v.budget.total.label}</dt>
+                  <dd className="grid gap-1" data-testid="budget-total">
+                    <span className="flex justify-between gap-3">
+                      <span className="text-[#5a6672]">{t("totalBudget")}</span>
+                      <span className="text-ink font-bold tabular-nums">
+                        {v.budget.total.budget}
+                      </span>
+                    </span>
+                    <span className="flex justify-between gap-3">
+                      <span className="text-[#5a6672]">{t("totalSpent")}</span>
+                      <span className="text-ink font-bold tabular-nums">
+                        {v.budget.total.spent}
+                      </span>
+                    </span>
+                    <span className="flex justify-between gap-3">
+                      <span className="text-[#5a6672]">
+                        {t(v.budget.total.balanceCents >= 0 ? "totalPlus" : "totalBalance")}
+                      </span>
+                      <span className="text-ink font-bold tabular-nums">
+                        {v.budget.total.balance}
+                      </span>
+                    </span>
+                    <span className="text-xs text-[#5a6672]">{t("totalHint")}</span>
+                  </dd>
+                </div>
+              ) : null}
               {v.directShare ? (
                 <div className="border-line flex justify-between gap-3 border-b py-2.5">
                   <dt className="text-[#5a6672]">{t("shareLabel")}</dt>

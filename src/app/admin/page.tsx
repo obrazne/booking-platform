@@ -122,8 +122,8 @@ export default async function AdminDashboard() {
     // Revenue of the year by date of stay — the same numbers as Statistics.
     loadMonthlyStats(tenant.id, `${year}-01-01`, `${year}-12-01`),
     // Z65: nights of this and the next month — the same calculation as the monthly report.
-    loadMonthlyReport(tenant.id, `${today.slice(0, 7)}-01`),
-    loadMonthlyReport(tenant.id, shiftMonth(`${today.slice(0, 7)}-01`, 1)),
+    loadMonthlyReport(tenant.id, `${today.slice(0, 7)}-01`, false, false),
+    loadMonthlyReport(tenant.id, shiftMonth(`${today.slice(0, 7)}-01`, 1), false, false),
   ]);
 
   const first = (profile.data?.full_name ?? "").split(" ")[0] || null;
@@ -192,6 +192,18 @@ export default async function AdminDashboard() {
             openLabel={t("nights.open")}
           />
           <p className="text-[13px] text-[#5a6672]">{hint}</p>
+          {/* Z75: the saving as the budget for own marketing — the same number as the monthly report. */}
+          {raw.commission_bp > 0 ? (
+            <p className="border-line flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t pt-3 text-sm">
+              <span className="text-ink font-bold">{v.budget.lineMonth}</span>
+              <Link
+                href={`/admin/statistics/report?month=${raw.month.slice(0, 7)}`}
+                className="text-ink text-[13px] underline underline-offset-[3px]"
+              >
+                {t("nights.report")}
+              </Link>
+            </p>
+          ) : null}
         </div>
       ),
     };

@@ -142,6 +142,8 @@ Administrácia (Z46): `src/modules/messages/admin/` (dáta, akcie, konverzácia,
 PDF aj e-mail v `src/core/reports/monthly-view.ts` (jeden zdroj textov), načítanie a PDF `src/core/reports/monthly.ts`, stránka
 `/admin/statistics/report`, e-mail `owner_monthly_report` (`src/core/email/monthly-report*.ts`, cron 1. dňa v mesiaci).
 Pruh nocí `src/core/reports/nights-bar.tsx` — výpis aj Prehľad (Z65).
+Rozpočet na vlastný marketing (Z75): úspora = rozpočet; výdavky po mesiacoch `tenant_marketing_spend`, súčty od začiatku `tenant_marketing_budget`,
+načíta `loadMonthlyReport` (4. parameter `marketing`), pole `src/app/admin/statistics/report/marketing-spend.tsx`.
 **Hľadanie a Pomoc (Z67):** register stránok a polí `src/core/search/registry.ts` (nová stránka / nové nastavenie = riadok + slová
 v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazní — `field-highlight.tsx` v AdminShell), hľadanie
 `search-box.tsx` (Ctrl K; rezervácie, hostia a poznámky cez DB `actions.ts`). Otázky Pomoci `src/core/help/faqs.ts` + `help.faqs.<id>`

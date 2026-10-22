@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import messages from "@/i18n/messages/sk.json";
 import {
   duration,
+  marketingBalance,
   monthParam,
   reportView,
   shiftMonth,
@@ -105,6 +106,80 @@ describe("monthly report view (Z62)", () => {
     expect(v.work).toEqual([]);
     expect(v.human).toBe("Potrebovalo vás: nič.");
     expect(JSON.stringify(v)).not.toContain("∞");
+  });
+
+  it("Z75: the saving as the budget for marketing, what is left, sums since the start", () => {
+    expect(marketingBalance(220000, 150000)).toBe(70000);
+    expect(marketingBalance(220000, null)).toBeNull();
+    expect(marketingBalance(100000, 130000)).toBe(-30000);
+
+    // Martin's example: budget 2 200 €, marketing 1 500 € → +700 €.
+    const v = reportView(
+      {
+        ...base,
+        saved_cents: 220000,
+        marketing: {
+          since: "2025-03-01",
+          spent_cents: 150000,
+          budget_total_cents: 1200000,
+          spent_total_cents: 450000,
+        },
+      },
+      t,
+      "sk",
+      "EUR",
+    );
+    expect(nbsp(v.budget.line)).toBe("Váš rozpočet na vlastný marketing tento mesiac: 2 200 €");
+    expect(nbsp(v.budget.lineMonth)).toBe(
+      "Rozpočet na vlastný marketing za september 2026: 2 200 €",
+    );
+    expect(nbsp(v.budget.spent!)).toBe("1 500 €");
+    expect(nbsp(v.budget.result!)).toBe("Po marketingu ste v pluse 700 € oproti Bookingu.");
+    expect(v.budget.total!.label).toBe("Od začiatku (marec 2025)");
+    expect(nbsp(v.budget.total!.budget)).toBe("12 000 €");
+    expect(nbsp(v.budget.total!.spent)).toBe("4 500 €");
+    expect(nbsp(v.budget.total!.balance)).toBe("+7 500 €");
+
+    // More spent than the budget: said plainly, with a minus in the sums.
+    const over = reportView(
+      {
+        ...base,
+        saved_cents: 100000,
+        marketing: {
+          since: "2026-09-01",
+          spent_cents: 130000,
+          budget_total_cents: 100000,
+          spent_total_cents: 130000,
+        },
+      },
+      t,
+      "sk",
+      "EUR",
+    );
+    expect(nbsp(over.budget.result!)).toBe(
+      "Na marketing ste minuli o 300 € viac, než by si vzal Booking.",
+    );
+    expect(nbsp(over.budget.total!.balance)).toBe("−300 €");
+    expect(over.budget.total!.balanceCents).toBe(-30000);
+
+    // Not filled in / not loaded: no result, no sums.
+    const none = reportView(
+      {
+        ...base,
+        marketing: {
+          since: "2025-03-01",
+          spent_cents: null,
+          budget_total_cents: 0,
+          spent_total_cents: 0,
+        },
+      },
+      t,
+      "sk",
+      "EUR",
+    );
+    expect(none.budget.result).toBeNull();
+    expect(none.budget.spent).toBeNull();
+    expect(reportView(base, t, "sk", "EUR").budget.total).toBeNull();
   });
 
   it("months and durations", () => {

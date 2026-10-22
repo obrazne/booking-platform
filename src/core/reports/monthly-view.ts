@@ -38,7 +38,26 @@ export type MonthlyReportRaw = {
     free_weekends: string[];
   };
   waiting: Record<WaitingKey, number>;
+  /** Z75: own marketing (`tenant_marketing_budget`) — absent where it was not loaded. */
+  marketing?: MarketingRaw | null;
 };
+
+export type MarketingRaw = {
+  /** The first month of the sums ("od začiatku"). */
+  since: string;
+  /** What the owner spent on marketing in the month; null = not filled in. */
+  spent_cents: number | null;
+  budget_total_cents: number;
+  spent_total_cents: number;
+};
+
+/**
+ * Z75: the budget for own marketing = the commission saved against the portal (A10). What is left after the
+ * marketing: positive = in plus against the portal; null when the spend was not filled in.
+ */
+export function marketingBalance(budgetCents: number, spentCents: number | null): number | null {
+  return spentCents === null ? null : budgetCents - spentCents;
+}
 
 export const WORK_KEYS = ["email", "booking", "sync", "checkin", "order"] as const;
 export type WorkKey = (typeof WORK_KEYS)[number];
@@ -176,6 +195,11 @@ export function reportView(raw: MonthlyReportRaw, t: T, locale: string, currency
     t(`waiting.${k}`, { count: raw.waiting[k] }),
   );
   const commission = `${(raw.commission_bp / 100).toLocaleString(locale)} %`;
+  const signedMoney = (cents: number) =>
+    `${cents > 0 ? "+" : cents < 0 ? "−" : "±"}${whole(Math.abs(cents))}`;
+  const mk = raw.marketing ?? null;
+  const balance = mk ? marketingBalance(raw.saved_cents, mk.spent_cents) : null;
+  const totalBalance = mk ? mk.budget_total_cents - mk.spent_total_cents : 0;
 
   return {
     month: raw.month,
@@ -197,6 +221,32 @@ export function reportView(raw: MonthlyReportRaw, t: T, locale: string, currency
           ? t("savedText", { count: raw.direct_stays, commission })
           : t("savedNone"),
     ytdLabel: t("sinceJanuary", { year: raw.month.slice(0, 4) }),
+    // Z75: the saving as the budget for own marketing and what is left after the marketing.
+    budget: {
+      title: t("budgetTitle"),
+      line: t("budgetLine", { amount: whole(raw.saved_cents) }),
+      lineMonth: t("budgetMonth", { month: monthName(raw.month), amount: whole(raw.saved_cents) }),
+      spentCents: mk?.spent_cents ?? null,
+      spent: mk?.spent_cents != null ? whole(mk.spent_cents) : null,
+      balanceCents: balance,
+      result:
+        balance === null
+          ? null
+          : balance > 0
+            ? t("budgetPlus", { amount: whole(balance) })
+            : balance < 0
+              ? t("budgetMinus", { amount: whole(-balance) })
+              : t("budgetEven"),
+      total: mk
+        ? {
+            label: t("sinceStart", { month: monthName(mk.since) }),
+            budget: whole(mk.budget_total_cents),
+            spent: whole(mk.spent_total_cents),
+            balance: signedMoney(totalBalance),
+            balanceCents: totalBalance,
+          }
+        : null,
+    },
     commission,
     directShare:
       raw.direct_share === null

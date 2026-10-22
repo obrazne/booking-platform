@@ -54,3 +54,36 @@ export async function sendReportToAccountant(
   });
   return result.ok ? { ok: true, email: to } : { ok: false };
 }
+
+/**
+ * Z75: "Koľko ste tento mesiac minuli na marketing" — saved per month (owner only, the database checks it);
+ * an empty value removes the month's entry. Amount in euros ("1500", "1 500,50").
+ */
+export async function saveMarketingSpend(
+  monthValue: string,
+  amount: string,
+): Promise<{ ok: boolean; error?: "invalid" | "failed" }> {
+  const active = await requireTenant();
+  const month = monthParam(monthValue);
+  if (!month) return { ok: false, error: "invalid" };
+  const text = amount.replace(/[\s\u00a0€]/g, "").replace(",", ".");
+  const supabase = await createClient();
+  if (text === "") {
+    const { error } = await supabase
+      .from("tenant_marketing_spend")
+      .delete()
+      .eq("tenant_id", active.tenantId)
+      .eq("month", month);
+    return error ? { ok: false, error: "failed" } : { ok: true };
+  }
+  const value = Number(text);
+  if (!/^\d+(\.\d{1,2})?$/.test(text) || !Number.isFinite(value) || value > 1_000_000)
+    return { ok: false, error: "invalid" };
+  const { error } = await supabase.from("tenant_marketing_spend").upsert({
+    tenant_id: active.tenantId,
+    month,
+    amount_cents: Math.round(value * 100),
+    updated_at: new Date().toISOString(),
+  });
+  return error ? { ok: false, error: "failed" } : { ok: true };
+}

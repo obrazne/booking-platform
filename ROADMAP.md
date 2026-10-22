@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → **Z83 (widget: kalendár s cenami na web klienta)** → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → **Z75 (výpis: rozpočet na marketing)** → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -294,7 +294,7 @@ Martin 20. 10.: zoznam Rezervácie v administrácii má byť predvolene zoraden�
 zobraz aktívne zoradenie. Zoradenie podľa termínu ostáva na klik; pohľad „kto prichádza“ je Príchody. Uprav testy, ktoré čakajú
 pôvodné poradie. Malá úloha — e2e len zoznamu rezervácií.
 
-### Z75 [B] 🔄 — Mesačný výpis: ušetrené provízie ako rozpočet na marketing (Martin 21. 10.)
+### Z75 [B] ✅ — Mesačný výpis: ušetrené provízie ako rozpočet na marketing (Martin 21. 10.)
 Filozofia predaja (`ARCHITEKTURA.md` A10): to, čo klient ušetrí na províziách, môže dať do vlastného marketingu. Majiteľovi samotné
 „ušetrili ste X“ nič nehovorí — vie, že bez marketingu hostia neprídu. Má vidieť **rozpočet na marketing** a čo mu po ňom ostane.
 1. Vo výpise (stránka, e-mail aj PDF — jeden zdroj `src/core/reports/monthly-view.ts`) nazvi úsporu **„Váš rozpočet na vlastný marketing
@@ -597,6 +597,16 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z75 [linka B]: **Mesačný výpis — ušetrené provízie ako rozpočet na vlastný marketing** (Martin 21. 10., A10). (Claude Code)
+  - Výpis (stránka, PDF, e-mail z jedného `monthly-view.ts`): karta „Váš rozpočet na vlastný marketing tento mesiac“ (= ušetrená provízia,
+    výpočet bez zmeny) s ⓘ (sadzba z Nastavení — zadať skutočnú z faktúr Bookingu); nepovinné pole „Koľko ste tento mesiac minuli
+    na marketing“ (píše len majiteľ, ostatní vidia) → „Po marketingu ste v pluse X € oproti Bookingu“ / vecne „minuli ste o X € viac…“;
+    súčty **od začiatku** (prvý mesiac výpisu): rozpočet spolu, na marketing spolu, v pluse spolu. Predmet e-mailu „… X € na vlastný marketing“.
+  - Migrácia `20261022100000_marketing_budget.sql` (len pridáva): `tenant_marketing_spend` (klient + mesiac, RLS: číta tím, píše majiteľ,
+    `record_history`), funkcia `tenant_marketing_budget`. pgTAP `marketing_budget.test.sql`.
+  - Prehľad: pod pruhom nocí riadok „Rozpočet na vlastný marketing za {mesiac}: X €“ + odkaz na výpis.
+  - Testy: vitest (`marketingBalance`, príklad 2 200 € − 1 500 € = +700 €, záporný výsledok, súčty), e2e `monthly-report` (zadanie sumy,
+    chybná suma, výsledok, vymazanie) a `overview-nights`. Snímky `docs/snimky/z75/`.
 - 2026-10-22 — Z74 [linka A]: **Odsadenie pripnutého zhrnutia pod lištou** (pripomienka 64). (Claude Code)
   - Pripnuté stĺpce strany hosťa (`/ucet/pobyt`, `/r`, `/ucet`, check-in, recenzie) majú namiesto `lg:sticky lg:top-6` značku
     `data-guest-sticky`; pravidlo v `globals.css` ich pripne na `top: calc(var(--guest-sticky-bar) + 1.5rem)`.

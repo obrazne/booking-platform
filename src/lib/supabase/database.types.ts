@@ -3064,6 +3064,38 @@ export type Database = {
           },
         ]
       }
+      tenant_marketing_spend: {
+        Row: {
+          amount_cents: number
+          month: string
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amount_cents: number
+          month: string
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          month?: string
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_marketing_spend_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_modules: {
         Row: {
           module_key: string
@@ -4292,6 +4324,10 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      tenant_marketing_budget: {
+        Args: { p_from: string; p_month: string; p_tenant_id: string }
+        Returns: Json
       }
       tenant_monthly_report: {
         Args: { p_month: string; p_tenant_id: string }

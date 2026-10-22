@@ -38,9 +38,10 @@ export function renderMonthlyReportEmail(o: {
         `<tr><td style="padding:8px 0;border-bottom:1px solid #e9e5db;color:#6e6e73">${esc(k)}</td><td style="padding:8px 0;border-bottom:1px solid #e9e5db;text-align:right">${esc(val)}</td></tr>`,
     )
     .join("")}</table>`;
-  const savedBox = `<div style="margin:0 0 18px;padding:16px 18px;border-radius:14px;background:#eef3f0"><p style="margin:0 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5a6672">${esc(t("savedTitle"))}</p><p style="margin:0 0 6px;font-size:28px;font-weight:800;color:${esc(o.accent)}">${esc(v.saved)}</p><p style="margin:0;color:#3b3d42">${esc(
+  const savedBox = `<div style="margin:0 0 18px;padding:16px 18px;border-radius:14px;background:#eef3f0"><p style="margin:0 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5a6672">${esc(v.budget.title)}</p><p style="margin:0 0 6px;font-size:28px;font-weight:800;color:${esc(o.accent)}">${esc(v.saved)}</p><p style="margin:0;color:#3b3d42">${esc(
     [
-      t("emailSaved", { ytd: v.savedYtd }),
+      v.budget.result ?? "",
+      v.budget.total ? t("emailSaved", { total: v.budget.total.budget }) : "",
       v.directShare ? t("emailShare", { share: v.directShare }) : "",
     ]
       .filter(Boolean)
@@ -74,7 +75,8 @@ export function renderMonthlyReportEmail(o: {
     text: [
       greeting,
       v.headline,
-      `${t("savedTitle")}: ${v.saved}`,
+      `${v.budget.line}`,
+      ...(v.budget.result ? [v.budget.result] : []),
       ...rows.map((r) => r.join(": ")),
       v.human,
       outlook,
