@@ -19,7 +19,7 @@ type Props = {
   locale: string;
   /** Address of the property page on the client's booking domain (`https://…/p/<slug>`). */
   bookingUrl: string;
-  /** `data-rezim="info"`: only the calendar with prices and the legend, to look at — no dates, guests or button. */
+  /** `data-rezim="info"`: the calendar with prices and the legend; chosen nights show their price — no guests, no button. */
   infoOnly?: boolean;
   /** `data-pozadie="sive"`: on a very light grey card (corners of the client's theme), to stand out on a white page. */
   card?: boolean;
@@ -53,7 +53,8 @@ function track(slug: string, kind: "view" | "continue") {
  * The widget "kalendár s cenami" (Z83, A17 level 2): the calendar of the property page (prices in days, busy days,
  * minimum nights and arrival days by season, price preview), guests, the total and "Pokračovať na rezerváciu", which
  * opens the property page in the main window with the dates and the cart open. Payment stays in the application.
- * With `infoOnly` (Chalet STRÖMY for now: guests look and then write to the owner) only the calendar and its legend.
+ * With `infoOnly` (Chalet STRÖMY for now: guests look and then write to the owner) the calendar, its legend and the
+ * price of the chosen nights (for the default guests) — nothing to order.
  */
 export function CalendarWidget({
   slug,
@@ -167,13 +168,23 @@ export function CalendarWidget({
         value={range}
         onChange={setRange}
         months={2}
-        readOnly={infoOnly}
+        hint={!infoOnly}
         stayPrice={(a, b) => {
           const r = priceOf(a, b);
           return r.ok ? r.totalCents : null;
         }}
       />
-      {infoOnly ? null : (
+      {infoOnly ? (
+        <p
+          className="text-ink min-h-6 text-right text-[15px] font-bold"
+          aria-live="polite"
+          data-widget-summary
+        >
+          {price?.ok
+            ? t("summary", { nights: price.nights, price: money(price.totalCents) })
+            : null}
+        </p>
+      ) : (
         <>
           <div className="border-line flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t pt-4">
             <fieldset className="flex flex-wrap items-center gap-x-5 gap-y-2">

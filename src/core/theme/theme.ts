@@ -2,6 +2,7 @@ import {
   contrastRatio,
   focusRingFor,
   isHexColor,
+  LIGHT_TEXT,
   readableTextOn,
   surfaceForWhiteText,
   textAccentFor,
@@ -71,6 +72,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
     "--ring": focusRingFor(theme.primaryColor),
     // The accent as text on white (`text-primary`): darker when the accent itself is too light to read.
     "--primary-text": textAccentFor(theme.primaryColor),
+    // The dark bubble of the calendar: black next to a light accent (gold of STRÖMY), otherwise the platform's navy.
+    "--tooltip": readableTextOn(theme.primaryColor) === LIGHT_TEXT ? "#11212f" : "#111111",
     "--sidebar-primary": theme.primaryColor,
     "--sidebar-primary-foreground": readableTextOn(theme.primaryColor),
     "--brand-secondary": theme.secondaryColor,

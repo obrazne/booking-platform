@@ -43,5 +43,8 @@ describe("accent as text (Z83)", () => {
     expect(gold["--primary-text"]).not.toBe("#c7b56a");
     expect(contrastRatio(gold["--primary-text"]!, "#ffffff")).toBeGreaterThanOrEqual(4.5);
     expect(themeToCssVariables(DEFAULT_THEME)["--primary-text"]).toBe(DEFAULT_THEME.primaryColor);
+    // The calendar bubble: black next to gold, the platform navy next to a dark accent.
+    expect(gold["--tooltip"]).toBe("#111111");
+    expect(themeToCssVariables(DEFAULT_THEME)["--tooltip"]).toBe("#11212f");
   });
 });
