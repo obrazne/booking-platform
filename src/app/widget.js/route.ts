@@ -49,7 +49,8 @@ export function GET() {
   return new Response(SCRIPT, {
     headers: {
       "Content-Type": "text/javascript; charset=utf-8",
-      "Cache-Control": "public, max-age=3600",
+      // Short: a change of the loader (new attributes) reaches the client's visitors within minutes.
+      "Cache-Control": "public, max-age=300",
       "Access-Control-Allow-Origin": "*",
     },
   });
