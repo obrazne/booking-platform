@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Sprievodca pre hostí — administrácia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f7f6f2}
+.row{transition:background 150ms ease}
+.row:hover{background:#faf9f6 !important}
+.btn{transition:background 150ms ease,border-color 150ms ease}
+.btn:hover{background:#efede7 !important;border-color:#b9b4a7 !important}
+input,textarea,select{font-family:inherit}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; min-height: 1150px; background: #f7f6f2; font-family: 'Roboto', system-ui, sans-serif; font-weight: 300; color: #3b3d42;">
+<div style="flex: 0 0 248px; display: flex;"><dc-import name="Sidebar" active="dokumenty" hint-size="248px,1000px"></dc-import></div>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; position: relative;">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 40px; border-bottom: 1px solid #e3e1da; background: #ffffff;">
+<label style="flex: 0 1 460px; display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; color: #5a6672;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input type="search" placeholder="Hľadať hostí, rezervácie, nastavenia aj pomoc…" aria-label="Hľadať" style="flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; font-size: 14px; color: #11212f;"></label>
+<span style="font-size: 14px; color: #5a6672;">Jana Hladká</span>
+</div>
+
+<div style="padding: 28px 40px 110px; display: flex; flex-direction: column; gap: 20px;">
+<nav aria-label="Drobčeky" style="font-size: 13px; color: #5a6672;">Objekt › Chalet STRÖMY › <span style="color: #11212f; font-weight: 500;">Sprievodca pre hostí</span></nav>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; align-items: center; gap: 10px;"><h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #11212f;">Sprievodca pre hostí</h1><button type="button" aria-label="Čo je sprievodca?" style="width: 24px; height: 24px; padding: 0; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; color: #5a6672; font-size: 13px; font-weight: 700; cursor: pointer;">i</button></div>
+<span style="font-size: 14px; color: #5a6672;">Všetko, čo hosť potrebuje vedieť — nájde to v účte pri svojom pobyte, aj s hľadaním a mapou.</span>
+</div>
+<div style="display: flex; gap: 10px;">
+<a href="#" class="btn" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-size: 14px; font-weight: 500; color: #11212f; text-decoration: none;">Náhľad pre hosťa ↗</a>
+<button type="button" style="min-height: 42px; padding: 0 18px; border-radius: 9999px; border: none; background: #2f5d50; font-family: inherit; font-size: 14px; font-weight: 700; color: #ffffff; cursor: pointer;">+ Pridať položku</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 18px; min-width: 0;">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<section style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 10px; overflow: hidden;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid #ecebe6;">
+<span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #ad5a2b;">{{g.label}} · {{g.count}}</span>
+<button type="button" class="btn" style="min-height: 34px; padding: 0 12px; border-radius: 9999px; border: 1px solid #c9c5ba; background: #ffffff; font-family: inherit; font-size: 13px; font-weight: 500; color: #11212f; cursor: pointer;">+ Pridať sem</button>
+</div>
+<sc-for list="{{g.items}}" as="it" hint-placeholder-count="3">
+<div style="border-bottom: 1px solid #ecebe6; background: {{it.bg}};">
+<button type="button" class="row" onClick="{{it.toggle}}" aria-expanded="{{it.open}}" style="width: 100%; border: none; background: transparent; padding: 12px 18px; display: flex; align-items: center; gap: 14px; text-align: left; font-family: inherit; cursor: pointer;">
+<span style="color: #a9aeb5; font-size: 14px;" aria-hidden="true">⋮⋮</span>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">{{it.title}}</span><span style="font-size: 12px; color: #6b7480;">{{it.meta}}</span></span>
+<span style="font-size: 12px; padding: 3px 10px; border-radius: 9999px; background: {{it.visBg}}; color: {{it.visFg}}; white-space: nowrap;">{{it.vis}}</span>
+<span aria-hidden="true" style="color: #8b929b;">{{it.arrow}}</span>
+</button>
+<sc-if value="{{it.open}}" hint-placeholder-val="{{false}}">
+<div style="padding: 4px 18px 20px 46px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #11212f;">Názov<input value="Demänovská jaskyňa slobody" style="min-height: 42px; padding: 0 12px; border: 1px solid #a9a597; border-radius: 8px; background: #ffffff; font-size: 14px; color: #11212f; box-sizing: border-box; width: 100%;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #11212f;">Kategória<select style="min-height: 42px; padding: 0 10px; border: 1px solid #a9a597; border-radius: 8px; background: #ffffff; font-size: 14px; color: #11212f; box-sizing: border-box; width: 100%;"><option>Tipy v okolí</option><option>Príchod a odchod</option><option>V chalete</option><option>Kontakty a pomoc</option></select></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #11212f;">Text pre hosťa<textarea rows="3" style="padding: 10px 12px; border: 1px solid #a9a597; border-radius: 8px; background: #ffffff; font-size: 14px; line-height: 1.5; color: #11212f; resize: vertical; box-sizing: border-box; width: 100%;">Ideálne, keď prší. V jaskyni je stále chladno, vezmite si mikinu aj deťom.</textarea></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #11212f;">Adresa (bod na mape)<input value="Demänovská Dolina, jaskyňa slobody" style="min-height: 42px; padding: 0 12px; border: 1px solid #a9a597; border-radius: 8px; background: #ffffff; font-size: 14px; color: #11212f; box-sizing: border-box; width: 100%;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #11212f;">Odkaz (nepovinné)<input placeholder="https://… alebo telefón" style="min-height: 42px; padding: 0 12px; border: 1px solid #a9a597; border-radius: 8px; background: #ffffff; font-size: 14px; color: #11212f; box-sizing: border-box; width: 100%;"></label>
+<div style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Štítky</span><div style="display: flex; flex-wrap: wrap; gap: 6px;"><sc-for list="{{tags}}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{t.toggle}}" aria-pressed="{{t.on}}" style="{{t.style}}">{{t.label}}</button></sc-for></div></div>
+<div style="display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Fotka</span><div style="min-height: 42px; border: 1px dashed #a9a597; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #5a6672; background: #ffffff;">Pretiahnite fotku alebo kliknite</div></div>
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px;"><span style="font-size: 13px; font-weight: 500; color: #11212f;">Kedy to hosť uvidí</span><div style="display: flex; flex-wrap: wrap; gap: 8px;"><sc-for list="{{visOpts}}" as="v" hint-placeholder-count="3"><button type="button" onClick="{{v.pick}}" aria-pressed="{{v.on}}" style="{{v.style}}">{{v.label}}</button></sc-for></div><span style="font-size: 12px; color: #6b7480;">Kód od dverí a heslo Wi-Fi nastavte „S pokynmi k príchodu“ — odomknú sa až pred príchodom.</span></div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</section>
+</sc-for>
+</div>
+
+<aside style="display: flex; flex-direction: column; gap: 14px;">
+<div style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Predloha na začiatok</span>
+<span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Nový sprievodca dostane kategórie a vzorové položky (parkovanie, Wi-Fi, 112, lekáreň, taxi). Stačí ich prepísať.</span>
+</div>
+<div style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Osobný plán výletov za poplatok</span>
+<span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Pridajte ho ako doplnkovú službu. Keď si ho hosť objedná, hotový plán mu nahrajte k pobytu v Dokumentoch.</span>
+<a href="#" style="font-size: 13px; font-weight: 500; color: #2f5d50;">Doplnkové služby →</a>
+</div>
+<div style="background: #ffffff; border: 1px solid #e3e1da; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">Poradie</span>
+<span style="font-size: 13px; line-height: 1.5; color: #5a6672;">Položky aj kategórie preťahujte za ⋮⋮. Hosť ich uvidí v rovnakom poradí.</span>
+</div>
+</aside>
+</div>
+</div>
+
+<sc-if value="{{dirty}}" hint-placeholder-val="{{true}}">
+<div style="position: sticky; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 40px; background: #11212f; color: #ffffff;">
+<span style="font-size: 14px;">Máte neuložené zmeny</span>
+<span style="display: flex; gap: 10px;"><button type="button" style="min-height: 40px; padding: 0 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #ffffff; font-family: inherit; font-size: 14px; cursor: pointer;">Zahodiť</button><button type="button" style="min-height: 40px; padding: 0 18px; border-radius: 9999px; border: none; background: #ffffff; color: #11212f; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;">Uložiť</button></span>
+</div>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { open: 'jaskyna', tags: ['dazd', 'deti'], vis: 'always', dirty: true }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var VIS = { always: 'Vždy', confirmed: 'Po potvrdení', arrival: 'S pokynmi k príchodu' };
+    var G = [
+      { label: 'Príchod a odchod', items: [
+        { id: 'park', t: 'Parkovanie', m: 'Fotka · mapa', v: 'confirmed' },
+        { id: 'cas', t: 'Príchod a odchod', m: 'Odkaz: neskorší odchod', v: 'always' },
+        { id: 'kod', t: 'Kód od dverí', m: 'Citlivé', v: 'arrival' } ] },
+      { label: 'V chalete', items: [
+        { id: 'wifi', t: 'Wi-Fi', m: 'Citlivé — heslo', v: 'arrival' },
+        { id: 'sauna', t: 'Sauna — ako ju zapnúť', m: 'Fotka · PDF návod', v: 'confirmed' },
+        { id: 'krb', t: 'Krb a drevo', m: '', v: 'confirmed' } ] },
+      { label: 'Kontakty a pomoc', items: [
+        { id: 'n112', t: 'Tiesňové čísla (112, Horská záchranná služba)', m: 'Telefón', v: 'always' },
+        { id: 'lek', t: 'Najbližšia lekáreň', m: 'Mapa · telefón', v: 'always' } ] },
+      { label: 'Tipy v okolí', items: [
+        { id: 'chopok', t: 'Jasná — lanovka na Chopok', m: 'Zima · Leto · mapa', v: 'always' },
+        { id: 'jaskyna', t: 'Demänovská jaskyňa slobody', m: 'Keď prší · S deťmi · mapa', v: 'always' },
+        { id: 'tatra', t: 'Aquapark Tatralandia', m: 'Keď prší · S deťmi · mapa', v: 'always' } ] }
+    ];
+    var groups = G.map(function (g) {
+      return { label: g.label, count: g.items.length, items: g.items.map(function (it) {
+        var open = s.open === it.id;
+        var v = open ? s.vis : it.v;
+        var sens = v === 'arrival';
+        return { title: it.t, meta: it.m || 'Text', open: open, arrow: open ? '▴' : '▾', bg: open ? '#fbfaf7' : '#ffffff',
+          vis: VIS[v], visBg: sens ? '#f6ece4' : '#eef2ef', visFg: sens ? '#8a4520' : '#2f5d50',
+          toggle: function () { self.setState({ open: open ? null : it.id }); } };
+      }) };
+    });
+    var pill = function (on) { return 'min-height: 34px; padding: 0 12px; border-radius: 9999px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 500; border: 1px solid ' + (on ? '#2f5d50' : '#a9a597') + '; background: ' + (on ? '#2f5d50' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + ';'; };
+    return {
+      groups: groups, dirty: s.dirty,
+      tags: [['zima', 'Zima'], ['leto', 'Leto'], ['dazd', 'Keď prší'], ['deti', 'S deťmi']].map(function (x) {
+        var on = s.tags.indexOf(x[0]) >= 0;
+        return { label: x[1], on: on, style: pill(on), toggle: function () { var c = self.state.tags.slice(); var i = c.indexOf(x[0]); if (i >= 0) c.splice(i, 1); else c.push(x[0]); self.setState({ tags: c, dirty: true }); } };
+      }),
+      visOpts: ['always', 'confirmed', 'arrival'].map(function (k) {
+        var on = s.vis === k;
+        return { label: VIS[k], on: on, style: pill(on), pick: function () { self.setState({ vis: k, dirty: true }); } };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

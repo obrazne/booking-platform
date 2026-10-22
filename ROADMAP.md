@@ -12,8 +12,8 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → **Z74 (odsadenie pripnutého zhrnutia)** → **Z76 (preklad správ cez DeepL)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → **Z75 (výpis: rozpočet na marketing)**.
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → **Z74 (odsadenie pripnutého zhrnutia)** → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → **Z75 (výpis: rozpočet na marketing)** → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -332,6 +332,59 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
 6. Testy: vitest s náhradou DeepL (bez skutočného volania), e2e konverzácie s prekladom (náhrada); jeden ručný test so skutočným
    free kľúčom na stagingu (Ukážkový klient) — výsledok do Denníka.
 
+**Nápady od Jany 22. 10. (Martin: „čo sme odsúhlasili, sa aj spraví“) → Z77–Z82.** Linka A: Z79, Z80; linka B: Z77, Z78, Z81, Z82.
+
+### Z77 [B] — Rezervácie na schválenie + rekreačný poukaz (pripomienky 66, 68) — po Z75
+1. **Nastavenie pri objekte:** „Ako prijímate rezervácie“ — **okamžite** (ako dnes) / **na schválenie**. Na schválenie: termín sa podrží,
+   stav „čaká na schválenie“, majiteľ do **48 h** schváli alebo zamietne (zvonček + e-mail + push, pripomienka po 24 h, po lehote
+   automatické zrušenie a e-mail hosťovi). Pri prevode hosť dostane platobné údaje (QR) **až po schválení**; lehota platby beží od schválenia.
+   Texty v košíku a e-mailoch („Rezervácia čaká na potvrdenie majiteľa, ozveme sa do 48 h“).
+2. **Karta pri schvaľovaní (pripraviť, zapnúť so Stripe):** v rozhraní poskytovateľa platby (Z69) metóda „zablokovať“ (manuálne strhnutie):
+   schválenie = strhnúť, zamietnutie/vypršanie = uvoľniť; blokácia platí ~5–7 dní → lehota 48 h. Kým Stripe nie je, karta sa pri
+   „na schválenie“ neponúka. Hosťovi veta „suma je na karte len zablokovaná, strhne sa po potvrdení“.
+3. **Rekreačný poukaz** = spôsob platby v košíku (zapína klient v Nastaveniach → Platby). Ide **vždy na schválenie** bez ohľadu na nastavenie
+   objektu. Hosť zadá číslo poukazu a vydavateľa (voľný text). Majiteľ pri schvaľovaní vyplní **fakturačné údaje firmy** a **sumu poukazu**;
+   po schválení hosťovi príde e-mail s doplatkom (prevod, neskôr karta). Dva **podklady na doklad**: na sumu poukazu (odberateľ = firma)
+   a na doplatok (odberateľ = hosť). Migrácie len pridávajú, RLS, `record_history`. Testy: e2e oba toky, vypršanie lehoty (cron).
+
+### Z78 [B] — Darčekové poukazy (pripomienka 67) — po Z77
+Poukaz = **hodnota (platba), nie zľava** (zľavový kód ostáva zvlášť).
+1. Administrácia → Ponuka → Poukazy: vytvoriť (hodnota v €, na meno, platnosť do, poznámka napr. „výhra v súťaži“) → jedinečný
+   rozpoznateľný kód (napr. `STROMY-7K4P-2Q`), stav (platný / čiastočne použitý / vyčerpaný / prepadnutý / zrušený), zostatok, história použitia.
+2. **PDF poukazu v dizajne klienta** (logo, farby, meno, hodnota, kód, platnosť, „Uplatníte na <stránka>“) na stiahnutie a poslanie e-mailom.
+3. **Uplatnenie v košíku** (pole „Máte poukaz?“ vedľa zľavového kódu): odpočíta sa do výšky ceny, zvyšok ostáva na poukaze; v rezervácii
+   ako platba `voucher`. Na podklade na doklad uvedený ako úhrada poukazom. Ochrana: limit pokusov (ako pri kódoch), kód nie je odhadnuteľný.
+4. Predaj poukazov na stránke klienta až neskôr (zapíš do ROADMAP Fáza 4). Testy: vitest zostatok, e2e vytvorenie → použitie.
+
+### Z79 [A] — Sprievodca pre hostí: tipy do okolia + praktické informácie (pripomienka 69) — po Z76
+Návrh: `docs/navrhy/stranka-hosta/Sprievodca.dc.html`, `MobilSprievodca.dc.html`, `docs/navrhy/administracia/SprievodcaAdmin.dc.html`
+(zámer). **Úprava Martina 22. 10. — rozdeliť:**
+- **Praktické informácie** (kód od dverí, parkovanie, Wi-Fi, sauna, krb, odpad, dôležité kontakty) **patria do detailu pobytu** k pokynom
+  k príchodu (dnes karta „Pokyny k príchodu a kód“) — rozšíriť ju o položky s kategóriami a „kedy to hosť uvidí“ (vždy / po potvrdení /
+  s pokynmi k príchodu). Žiadna druhá kópia na mobile.
+- **Tipy do okolia** = samostatná sekcia: v účte hosťa vlastná karta „Tipy do okolia“ (vedľa Aktuálny pobyt · Pobyty · Moje údaje,
+  aj v podmenu Môj účet) s hľadaním, filtrami Zima / Leto / Keď prší / S deťmi a mapou bodov (rovnaká mapa ako na stránke objektu).
+- Administrácia: Objekt → Sprievodca (položka = názov, kategória, text, fotka, odkaz, adresa → bod na mape, štítky, kedy to hosť uvidí,
+  poradie ťahaním); predloha so vzorovými položkami pre nový objekt. Modul `guide` (manifest, zapínanie per klient, cena podľa A10).
+- Platený osobný plán výletov = doplnková služba (upsell) + dokument k pobytu — nič nové, len otázka v Pomoci, ako to nastaviť.
+
+### Z80 [A] — Podklady na doklad pre Omegu (pripomienka 65) — po Z79
+Jana fakturuje v **Omega (KROS)**. Zisti, aký import dokladov Omega podporuje (formát súboru, povinné polia) a pridaj export podkladov
+(rezervácia, doplnkové objednávky, poukazy — jeden alebo viac dokladov) v tomto formáte z panela rezervácie aj hromadne za obdobie.
+Ak sa formát nedá overiť bez Omegy, zapíš do Otázok, čo treba od Jany (verzia Omegy, vzorový exportovaný súbor) a sprav zatiaľ CSV.
+
+### Z81 [B] — Licencie a stav klienta podľa platieb (A10) — po Z78
+Podľa `ROADMAP` Fáza 4 (Licencie klientov) a `ARCHITEKTURA.md` A10: v riadiacom centre licencia = záznam zmluvy (číslo, klient, objekty,
+balík Základ / Bez starostí + moduly, zriadenie, mesačne, 2 %, začiatok, ročná zmluva do, stav aktívna / po splatnosti / pozastavená).
+Pozastavená: rezervačná stránka neprijíma nové rezervácie, administrácia len na čítanie (upozornenie navrchu). Klient vidí v administrácii
+číslo licencie, balík a platnosť. Mesačný podklad na faktúru klientovi (mesačne + 2 % z obratu podľa A10 — čo sa ráta a čo nie). Skúšobná
+doba modulu 30 dní (dnes nastaviteľná — zmeň predvolenú). Zmeny len pridávajúcimi migráciami, audit.
+
+### Z82 [B] — Ukážka pre záujemcu po stretnutí (A10) — po Z81
+Odkaz na ukážku (Ukážkový klient) generuje Martin v riadiacom centre pre konkrétneho záujemcu (meno, e-mail), platnosť **48 h**. Prihlásenie
+len cez odkaz; ukážka bez exportu, bez odosielania e-mailov a napájania portálov, štítok „Ukážka“ navrchu; zápis prihlásení a navštívených
+stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm run demo-data -- --reset` ako cron alebo job worker). Nikde verejne.
+
 *Hotové úlohy Z31–Z53 (zadania) sú v `docs/archiv/ulohy-hotove-do-Z53.md`.*
 
 ## Fáza 0 — Organizácia projektu
@@ -406,7 +459,7 @@ hosťovi príde v jeho jazyku. Súčasť modulu `messages`.
   ide vždy na schválenie: hosť zadá číslo poukazu, majiteľ overí, vyplní fakturačné údaje firmy a sumu poukazu, schváli → hosťovi príde
   doplatok (karta/prevod); dva podklady na doklad (poukaz + doplatok). **Darčekový poukaz** (iné ako zľavový kód — je to hodnota, platba):
   majiteľ vytvorí (hodnota, meno, platnosť) → jedinečný kód + PDF v dizajne klienta, použiteľný v košíku aj čiastočne (zostatok);
-  neskôr aj predaj poukazov na stránke klienta. Faktúry Jany: **Omega (KROS)** — preveriť import (pripomienka 65).
+  neskôr aj predaj poukazov na stránke klienta. → zadané ako Z77, Z78, Z80.
 - [ ] Záloha a doplatok (Stripe/karta sa presunul pred spustenie — Fáza 3, *Pred spustením*)
 - [ ] Účet a zóna hosťa (B10): pobyty, dokumenty od majiteľa, doklady, pokyny k príchodu, Rezervovať znova, správy, súhlasy
 - [ ] Riadiace centrum v plnom rozsahu, skúšobné doby modulov

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Účet hosťa — sprievodca pobytom</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.row{transition:background 150ms ease}
+.row:hover{background:#f6f4ef}
+.chip{transition:background 150ms ease,border-color 150ms ease}
+.chip:hover{border-color:#a9aeb5}
+input:focus-visible,button:focus-visible{outline:2px solid #2f5d50;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.row,.chip{transition:none}}
+</style>
+</helmet>
+<div style="background: #ffffff; font-weight: 300;">
+
+<header style="border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Chalet STRÖMY</span>
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7480;">Môj účet</span>
+</div>
+<nav style="display: flex; gap: 22px; align-items: center; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;"><span style="color: #11212f; font-weight: 500;">Môj účet ▾</span><a href="#" style="color: #595959; text-decoration: none;">Späť na web ↗</a></nav>
+</div>
+</header>
+<div style="position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,0.96); border-bottom: 1px solid #e9e5db;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;">
+<nav aria-label="Môj účet" style="display: flex; gap: 6px;">
+<span style="height: 52px; padding: 0 14px; border-bottom: 2px solid {{accent}}; color: #11212f; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center;">Aktuálny pobyt</span>
+<span style="height: 52px; padding: 0 14px; border-bottom: 2px solid transparent; color: #5a6672; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center;">Pobyty</span>
+<span style="height: 52px; padding: 0 14px; border-bottom: 2px solid transparent; color: #5a6672; font-size: 15px; font-weight: 500; display: inline-flex; align-items: center;">Moje údaje</span>
+</nav>
+<span style="font-size: 14px; color: #5a6672;">Odhlásiť sa</span>
+</div>
+</div>
+
+<section style="background: linear-gradient(165deg, #f9f8f5 0%, #f2f3f0 50%, #e9eeeb 100%); border-bottom: 1px solid #e3e6e2;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 32px 24px 30px; display: flex; flex-direction: column; gap: 14px;">
+<nav aria-label="Drobčeky" style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><a href="#" style="color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">← Aktuálny pobyt (21. – 24. 12.)</a><span style="color: #a9aeb5;">›</span><span style="color: #11212f; font-weight: 500;">Sprievodca</span></nav>
+<h1 style="margin: 0; font-size: 40px; font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: #11212f;">Sprievodca pobytom. <span style="color: #8b929b;">Všetko na jednom mieste.</span></h1>
+<span style="font-size: 16px; color: #3b3d42; max-width: 62ch;">Príchod, vybavenie chaletu, dôležité kontakty a tipy od Jany do okolia. Funguje aj v mobile.</span>
+<label style="margin-top: 6px; max-width: 640px; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 18px; border: 1px solid #b9b5aa; border-radius: 9999px; background: #ffffff;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a6672" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<input type="search" value="{{q}}" onChange="{{onSearch}}" placeholder="Hľadať: sauna, Wi-Fi, lekáreň, keď prší…" aria-label="Hľadať v sprievodcovi" style="flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; font-size: 16px; color: #11212f;">
+</label>
+</div>
+</section>
+
+<div style="max-width: 1180px; margin: 0 auto; padding: 28px 24px 96px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 44px; align-items: start;">
+<div style="display: flex; flex-direction: column; gap: 22px; min-width: 0;">
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px;" role="group" aria-label="Kategórie">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><button type="button" class="chip" onClick="{{c.pick}}" aria-pressed="{{c.on}}" style="{{c.style}}">{{c.label}} <span style="font-weight: 400; opacity: 0.7;">{{c.count}}</span></button></sc-for>
+</div>
+<sc-if value="{{showTags}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;" role="group" aria-label="Tipy podľa situácie">
+<span class="mono" style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b7480;">Tipy:</span>
+<sc-for list="{{tags}}" as="t" hint-placeholder-count="4"><button type="button" class="chip" onClick="{{t.pick}}" aria-pressed="{{t.on}}" style="{{t.style}}">{{t.label}}</button></sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+<div style="padding: 28px; border: 1px dashed #c9c5ba; border-radius: 12px; background: #faf9f6; display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 17px; font-weight: 700; color: #11212f;">Nič sme nenašli pre „{{q}}“.</span>
+<span style="font-size: 14px; color: #5a6672;">Skúste iné slovo, alebo sa opýtajte Jany v správach — odpovedá zvyčajne do hodiny.</span>
+</div>
+</sc-if>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}}; padding-bottom: 8px; border-bottom: 1px solid #e9e5db;">{{g.label}}</span>
+<sc-for list="{{g.items}}" as="it" hint-placeholder-count="3">
+<div style="border-bottom: 1px solid #e9e5db; background: {{it.bg}};">
+<button type="button" class="row" onClick="{{it.toggle}}" aria-expanded="{{it.open}}" style="width: 100%; border: none; background: transparent; padding: 14px 6px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer;">
+<sc-if value="{{it.hasPin}}" hint-placeholder-val="{{false}}"><span style="flex: 0 0 auto; width: 26px; height: 26px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">{{it.pin}}</span></sc-if>
+<span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 16px; font-weight: 500; color: #11212f;">{{it.title}}</span>
+<span style="font-size: 13px; color: #6b7480;">{{it.sub}}</span>
+</span>
+<sc-if value="{{it.locked}}" hint-placeholder-val="{{false}}"><span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 9999px; background: #f1eee6; color: #5a6672; white-space: nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5a6672" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>od 19. 12.</span></sc-if>
+<span aria-hidden="true" style="color: #8b929b; font-size: 14px;">{{it.arrow}}</span>
+</button>
+<sc-if value="{{it.open}}" hint-placeholder-val="{{false}}">
+<div style="padding: 0 6px 18px 46px; display: flex; flex-direction: column; gap: 12px;">
+<sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{false}}"><div style="height: 150px; max-width: 420px; border-radius: 10px; background: #ece8df; display: flex; align-items: flex-end; padding: 10px;"><span class="mono" style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b7480;">Fotka: {{it.title}}</span></div></sc-if>
+<span style="font-size: 15px; line-height: 1.6; color: #3b3d42; max-width: 64ch;">{{it.body}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+<sc-for list="{{it.actions}}" as="a" hint-placeholder-count="1"><a href="#" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid #c9c5ba; border-radius: 9999px; background: #ffffff; color: #11212f; font-size: 14px; font-weight: 500; text-decoration: none;">{{a}}</a></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</section>
+</sc-for>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 24px; border: 1px solid #e3ddd0; border-radius: 14px; background: #faf8f3;">
+<div style="display: flex; flex-direction: column; gap: 4px; max-width: 56ch;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">Na mieru</span>
+<span style="font-size: 19px; font-weight: 800; color: #11212f;">Osobný plán výletov od Jany</span>
+<span style="font-size: 14px; color: #5a6672;">Plán na vaše dni podľa sezóny, počasia a záujmov — aj náhradný program, keď prší. Príde vám do účtu ako dokument. [CENA]</span>
+</div>
+<button type="button" style="min-height: 46px; padding: 0 22px; border: none; border-radius: 9999px; background: #2b3036; color: #ffffff; font-size: 15px; font-weight: 700;">Objednať plán</button>
+</div>
+</div>
+
+<aside style="position: sticky; top: 76px; display: flex; flex-direction: column; gap: 18px;">
+<div style="border: 1px solid #e3ddd0; border-radius: 14px; overflow: hidden; background: #faf8f3;">
+<div style="position: relative; height: 300px; background: #e8ece4;" role="img" aria-label="Mapa okolia s očíslovanými tipmi">
+<svg width="380" height="300" viewBox="0 0 380 300" aria-hidden="true" style="position: absolute; inset: 0;">
+<path d="M0 210 C 80 180, 140 230, 220 190 S 330 150, 380 170 L380 300 L0 300 Z" fill="#dfe6db"></path>
+<path d="M40 0 C 90 70, 70 150, 150 200 S 260 260, 300 300" fill="none" stroke="#ffffff" stroke-width="6"></path>
+<path d="M230 0 C 220 60, 260 110, 250 170" fill="none" stroke="#ffffff" stroke-width="4"></path>
+<ellipse cx="300" cy="248" rx="60" ry="26" fill="#cfe0e6"></ellipse>
+</svg>
+<span style="position: absolute; left: 146px; top: 118px; width: 34px; height: 34px; border-radius: 9999px; background: #11212f; color: #ffffff; display: inline-flex; align-items: center; justify-content: center;" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"></path><path d="M5 10v10h14V10"></path></svg></span>
+<sc-for list="{{pins}}" as="p" hint-placeholder-count="4"><button type="button" class="pin" onClick="{{p.pick}}" aria-label="{{p.label}}" style="{{p.style}}">{{p.n}}</button></sc-for>
+<span class="mono" style="position: absolute; left: 10px; bottom: 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6672;">Ilustrácia — v aplikácii skutočná mapa</span>
+</div>
+<div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 15px; font-weight: 700; color: #11212f;">{{pinTitle}}</span>
+<span style="font-size: 13px; color: #5a6672;">{{pinSub}}</span>
+</div>
+</div>
+
+<div style="border: 1px solid #e3ddd0; border-radius: 14px; background: #faf8f3; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}};">V núdzi</span>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 15px;"><span style="color: #3b3d42;">Tiesňová linka</span><a href="#" style="color: #11212f; font-weight: 700; text-decoration: none;">112</a></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 15px;"><span style="color: #3b3d42;">Horská záchranná služba</span><a href="#" style="color: #11212f; font-weight: 700; text-decoration: none;">18 300</a></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 15px;"><span style="color: #3b3d42;">Nemocnica Liptovský Mikuláš</span><a href="#" style="color: #11212f; font-weight: 700; text-decoration: none;">[TELEFÓN]</a></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 15px; padding-top: 10px; border-top: 1px solid #e9e5db;"><span style="color: #3b3d42;">Jana, majiteľka</span><a href="#" style="color: {{accent}}; font-weight: 700; text-decoration: underline; text-underline-offset: 3px;">Napísať správu</a></div>
+</div>
+</aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { cat: 'all', tag: null, q: '', open: 'sauna', pin: 2 }; }
+  fold(s) { return String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var CATS = [
+      { id: 'all', label: 'Všetko' },
+      { id: 'prichod', label: 'Príchod a odchod' },
+      { id: 'chalet', label: 'V chalete' },
+      { id: 'kontakty', label: 'Kontakty a pomoc' },
+      { id: 'okolie', label: 'Tipy v okolí' }
+    ];
+    var TAGS = [{ id: 'zima', label: 'Zima' }, { id: 'leto', label: 'Leto' }, { id: 'dazd', label: 'Keď prší' }, { id: 'deti', label: 'S deťmi' }];
+    var ITEMS = [
+      { id: 'parking', cat: 'prichod', title: 'Parkovanie', sub: '2 miesta priamo pri chalete', body: 'Parkujete priamo pri chalete, na štrkovej ploche vpravo od vchodu. V zime majte so sebou snehové reťaze — posledný úsek cesty je do kopca.', actions: ['Navigovať ↗'], photo: true },
+      { id: 'times', cat: 'prichod', title: 'Príchod a odchod', sub: 'Príchod od 15:00 · odchod do 10:00', body: 'Neskorší odchod sa dá doobjednať v účte pobytu, ak po vás nikto neprichádza.', actions: ['Doobjednať neskorší odchod'] },
+      { id: 'door', cat: 'prichod', title: 'Kód od dverí', sub: 'Odomkne sa 3 dni pred príchodom', body: 'Kód vám ukážeme tu a pošleme e-mailom 19. 12.', actions: [], locked: true },
+      { id: 'wifi', cat: 'chalet', title: 'Wi-Fi', sub: 'Názov siete: STROMY-guest', body: 'Heslo sa odomkne spolu s kódom od dverí.', actions: [], locked: true },
+      { id: 'sauna', cat: 'chalet', title: 'Sauna — ako ju zapnúť', sub: 'Na 80 °C je pripravená zhruba za 45 minút', body: 'Ovládač je vedľa dverí sauny. Podržte tlačidlo ⏻ 2 sekundy, šípkami nastavte teplotu a čas. Po saunovaní nechajte dvere pootvorené, aby sa vyvetrala.', actions: ['Návod (PDF)'], photo: true },
+      { id: 'krb', cat: 'chalet', title: 'Krb a drevo', sub: 'Drevo je v prístrešku za chaletom', body: 'Zapaľujte len suchým drevom z prístrešku. Popol vysypte do kovovej nádoby pri vchode, nikdy do koša.', actions: [] },
+      { id: 'odpad', cat: 'chalet', title: 'Odpad a triedenie', sub: 'Plast, papier, sklo, zmesový', body: 'Nádoby sú pri ceste pod chaletom. Ďakujeme, že triedite.', actions: [] },
+      { id: 'lekaren', cat: 'kontakty', title: 'Najbližšia lekáreň', sub: '[NÁZOV] · [ADRESA]', body: '[OTVÁRACIE HODINY] · [TELEFÓN]', actions: ['Navigovať ↗'] },
+      { id: 'taxi', cat: 'kontakty', title: 'Taxi', sub: '[NÁZOV] · [TELEFÓN]', body: 'Odporúčame objednať vopred, najmä večer a cez sviatky.', actions: ['Zavolať'] },
+      { id: 'chopok', cat: 'okolie', pin: 1, x: 214, y: 46, tags: ['zima', 'leto'], title: 'Jasná — lanovka na Chopok', sub: '[ČAS] autom · lyžovanie v zime, výhľady v lete', body: 'V zime lyžovanie priamo v Jasnej, v lete lanovkou až na Chopok a späť pešo hrebeňom. Lístky výhodnejšie online deň vopred.', actions: ['Navigovať ↗', 'Web strediska ↗'], photo: true },
+      { id: 'jaskyna', cat: 'okolie', pin: 2, x: 92, y: 150, tags: ['dazd', 'deti'], title: 'Demänovská jaskyňa slobody', sub: '[ČAS] autom · prehliadka cca hodinu', body: 'Ideálne, keď prší. V jaskyni je stále chladno, vezmite si mikinu aj deťom. Prehliadky začínajú v pravidelných časoch — overte si ich na webe.', actions: ['Navigovať ↗'], photo: true },
+      { id: 'tatralandia', cat: 'okolie', pin: 3, x: 262, y: 206, tags: ['dazd', 'deti', 'zima', 'leto'], title: 'Aquapark Tatralandia', sub: '[ČAS] autom · celý deň pre rodiny', body: 'Krytá časť funguje celý rok, takže je to istota pre upršaný deň s deťmi.', actions: ['Navigovať ↗'] },
+      { id: 'mara', cat: 'okolie', pin: 4, x: 318, y: 236, tags: ['leto'], title: 'Liptovská Mara — prechádzka a bicykel', sub: '[ČAS] autom · rovinatý okruh popri vode', body: 'Pekný okruh na bicykli aj s deťmi, v lete požičovne bicyklov a lodiek.', actions: ['Navigovať ↗'] }
+    ];
+    var q = this.fold(s.q.trim());
+    var visible = ITEMS.filter(function (it) {
+      if (s.cat !== 'all' && it.cat !== s.cat) return false;
+      if (s.tag && (!it.tags || it.tags.indexOf(s.tag) < 0)) return false;
+      if (q && self.fold(it.title + ' ' + it.sub + ' ' + it.body + ' ' + (it.tags || []).join(' ') + (it.tags && it.tags.indexOf('dazd') >= 0 ? ' prsi dazd' : '')).indexOf(q) < 0) return false;
+      return true;
+    });
+    var chipStyle = function (on) { return 'min-height: 40px; padding: 0 16px; border-radius: 9999px; cursor: pointer; font-size: 14px; font-weight: 500; border: 1px solid ' + (on ? accent : '#c9c5ba') + '; background: ' + (on ? accent : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + ';'; };
+    var groups = CATS.filter(function (c) { return c.id !== 'all'; }).map(function (c) {
+      return {
+        label: c.label,
+        items: visible.filter(function (it) { return it.cat === c.id; }).map(function (it) {
+          var open = s.open === it.id;
+          return {
+            title: it.title, sub: it.sub, body: it.body, actions: it.actions, locked: !!it.locked, hasPhoto: !!it.photo,
+            hasPin: !!it.pin, pin: it.pin, open: open, arrow: open ? '▴' : '▾',
+            bg: open ? '#faf8f3' : '#ffffff',
+            toggle: function () { self.setState({ open: open ? null : it.id, pin: it.pin || self.state.pin }); }
+          };
+        })
+      };
+    }).filter(function (g) { return g.items.length; });
+    var pinned = ITEMS.filter(function (it) { return it.pin; });
+    var activePin = pinned.filter(function (p) { return p.pin === s.pin; })[0] || pinned[0];
+    return {
+      accent: accent, accent2: this.props.accent2 ?? '#ad5a2b', q: s.q,
+      onSearch: function (e) { self.setState({ q: e.target.value }); },
+      cats: CATS.map(function (c) {
+        var on = s.cat === c.id;
+        var n = ITEMS.filter(function (it) { return c.id === 'all' || it.cat === c.id; }).length;
+        return { label: c.label, count: n, on: on, style: chipStyle(on), pick: function () { self.setState({ cat: c.id, tag: c.id === 'okolie' || c.id === 'all' ? self.state.tag : null }); } };
+      }),
+      showTags: s.cat === 'all' || s.cat === 'okolie',
+      tags: TAGS.map(function (t) {
+        var on = s.tag === t.id;
+        return { label: t.label, on: on, style: chipStyle(on).replace('min-height: 40px', 'min-height: 36px'), pick: function () { self.setState({ tag: on ? null : t.id }); } };
+      }),
+      groups: groups, empty: groups.length === 0,
+      pins: pinned.map(function (p) {
+        var on = p.pin === activePin.pin;
+        return { n: p.pin, label: p.pin + ': ' + p.title, pick: function () { self.setState({ pin: p.pin, open: p.id, cat: 'all' }); },
+          style: 'position: absolute; left: ' + (p.x - 15) + 'px; top: ' + (p.y - 15) + 'px; width: 30px; height: 30px; border-radius: 9999px; cursor: pointer; font-size: 13px; font-weight: 700; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(17,33,47,0.25); background: ' + (on ? '#ad5a2b' : accent) + '; color: #ffffff;' };
+      }),
+      pinTitle: activePin.pin + ' · ' + activePin.title, pinSub: activePin.sub
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<title>Mobil — sprievodca pobytom</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Roboto',system-ui,sans-serif;color:#3b3d42;background:#ffffff;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #ffffff; font-weight: 300;">
+<div style="position: absolute; inset: 0; overflow-y: auto; padding-bottom: 24px;">
+<div style="padding: 14px 20px; border-bottom: 1px solid #e9e5db; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 18px; font-weight: 800; color: #11212f;">Chalet STRÖMY</span><span style="font-size: 14px; color: #5a6672;">Môj účet ▾</span></div>
+<div style="padding: 16px 20px 18px; background: linear-gradient(165deg, #f9f8f5 0%, #e9eeeb 100%); display: flex; flex-direction: column; gap: 10px;">
+<a href="#" style="font-size: 14px; color: #5a6672; text-decoration: underline; text-underline-offset: 3px;">← Aktuálny pobyt</a>
+<span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #11212f;">Sprievodca pobytom</span>
+<label style="display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 16px; border: 1px solid #b9b5aa; border-radius: 9999px; background: #ffffff;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a6672" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<input type="search" placeholder="Hľadať: sauna, Wi-Fi, keď prší…" aria-label="Hľadať v sprievodcovi" style="flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; font-size: 16px; color: #11212f;">
+</label>
+</div>
+<div style="padding: 14px 20px 0; display: flex; gap: 8px;" role="group" aria-label="Zobrazenie">
+<button type="button" onClick="{{showList}}" aria-pressed="{{isList}}" style="{{listStyle}}">Zoznam</button>
+<button type="button" onClick="{{showMap}}" aria-pressed="{{isMap}}" style="{{mapStyle}}">Mapa tipov</button>
+</div>
+<div style="padding: 12px 20px 0; display: flex; gap: 8px; overflow-x: auto;">
+<span style="flex: 0 0 auto; min-height: 36px; padding: 0 14px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;">Všetko</span>
+<span style="flex: 0 0 auto; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #c9c5ba; color: #11212f; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;">Príchod</span>
+<span style="flex: 0 0 auto; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #c9c5ba; color: #11212f; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;">V chalete</span>
+<span style="flex: 0 0 auto; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #c9c5ba; color: #11212f; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;">Kontakty</span>
+<span style="flex: 0 0 auto; min-height: 36px; padding: 0 14px; border-radius: 9999px; border: 1px solid #c9c5ba; color: #11212f; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;">Okolie</span>
+</div>
+
+<sc-if value="{{isList}}" hint-placeholder-val="{{true}}">
+<div style="padding: 14px 20px 0; display: flex; flex-direction: column;">
+<span class="mono" style="font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}}; padding-bottom: 8px; border-bottom: 1px solid #e9e5db;">V chalete</span>
+<div style="padding: 14px 2px; border-bottom: 1px solid #e9e5db; display: flex; justify-content: space-between; gap: 10px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">Wi-Fi</span><span style="font-size: 12px; color: #6b7480;">Heslo sa odomkne 19. 12.</span></span><span style="font-size: 12px; color: #5a6672; align-self: center;">od 19. 12.</span></div>
+<div style="padding: 14px 2px 16px; border-bottom: 1px solid #e9e5db; background: #faf8f3; display: flex; flex-direction: column; gap: 8px;">
+<span style="display: flex; justify-content: space-between;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">Sauna — ako ju zapnúť</span><span aria-hidden="true" style="color: #8b929b;">▴</span></span>
+<span style="font-size: 14px; line-height: 1.55; color: #3b3d42;">Ovládač je vedľa dverí sauny. Podržte tlačidlo ⏻ 2 sekundy, šípkami nastavte teplotu a čas. Na 80 °C je pripravená zhruba za 45 minút.</span>
+<a href="#" style="align-self: flex-start; min-height: 40px; padding: 0 16px; border: 1px solid #c9c5ba; border-radius: 9999px; color: #11212f; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center;">Návod (PDF)</a>
+</div>
+<div style="padding: 14px 2px; border-bottom: 1px solid #e9e5db;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">Krb a drevo</span><span style="font-size: 12px; color: #6b7480;">Drevo je v prístrešku za chaletom</span></span></div>
+<span class="mono" style="margin-top: 20px; font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{accent2}}; padding-bottom: 8px; border-bottom: 1px solid #e9e5db;">Tipy v okolí</span>
+<div style="padding: 14px 2px; border-bottom: 1px solid #e9e5db; display: flex; gap: 12px; align-items: center;"><span style="width: 26px; height: 26px; border-radius: 9999px; background: {{accent}}; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">2</span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; font-weight: 500; color: #11212f;">Demänovská jaskyňa slobody</span><span style="font-size: 12px; color: #6b7480;">Keď prší · s deťmi · [ČAS] autom</span></span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{isMap}}" hint-placeholder-val="{{false}}">
+<div style="padding: 14px 20px 0; display: flex; flex-direction: column; gap: 12px;">
+<div style="position: relative; height: 380px; border-radius: 14px; overflow: hidden; background: #e8ece4;" role="img" aria-label="Mapa okolia s očíslovanými tipmi">
+<svg width="350" height="380" viewBox="0 0 350 380" aria-hidden="true" style="position: absolute; inset: 0;">
+<path d="M0 270 C 80 240, 140 290, 210 250 S 310 210, 350 230 L350 380 L0 380 Z" fill="#dfe6db"></path>
+<path d="M30 0 C 80 90, 60 190, 140 250 S 240 330, 280 380" fill="none" stroke="#ffffff" stroke-width="6"></path>
+<ellipse cx="280" cy="315" rx="55" ry="26" fill="#cfe0e6"></ellipse>
+</svg>
+<span style="position: absolute; left: 132px; top: 150px; width: 26px; height: 26px; border-radius: 9999px; background: #11212f; border: 2px solid #ffffff;" aria-hidden="true"></span>
+<span style="position: absolute; left: 196px; top: 50px; width: 28px; height: 28px; border-radius: 9999px; background: {{accent}}; border: 2px solid #ffffff; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">1</span>
+<span style="position: absolute; left: 70px; top: 190px; width: 28px; height: 28px; border-radius: 9999px; background: #ad5a2b; border: 2px solid #ffffff; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">2</span>
+<span style="position: absolute; left: 236px; top: 262px; width: 28px; height: 28px; border-radius: 9999px; background: {{accent}}; border: 2px solid #ffffff; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">3</span>
+<span style="position: absolute; left: 292px; top: 300px; width: 28px; height: 28px; border-radius: 9999px; background: {{accent}}; border: 2px solid #ffffff; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;">4</span>
+</div>
+<div style="border: 1px solid #e3ddd0; border-radius: 12px; background: #faf8f3; padding: 14px; display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 16px; font-weight: 700; color: #11212f;">2 · Demänovská jaskyňa slobody</span>
+<span style="font-size: 13px; color: #5a6672;">Keď prší · s deťmi · prehliadka cca hodinu</span>
+<a href="#" style="align-self: flex-start; min-height: 40px; padding: 0 16px; border-radius: 9999px; background: #2b3036; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center;">Navigovať ↗</a>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2f5d50","options":["#2f5d50","#2e5ea8","#11212f","#8a5a3c"]},"accent2":{"editor":"color","default":"#ad5a2b","options":["#ad5a2b","#b8862f","#9a4f6b","#3d6a8a"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'list' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var accent = this.props.accent ?? '#2f5d50';
+    var tab = function (on) { return 'flex: 1 1 0; min-height: 42px; border-radius: 9999px; cursor: pointer; font-size: 14px; font-weight: 500; border: 1px solid ' + (on ? '#11212f' : '#c9c5ba') + '; background: ' + (on ? '#11212f' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#11212f') + ';'; };
+    return {
+      accent: accent, accent2: this.props.accent2 ?? '#ad5a2b',
+      isList: s.view === 'list', isMap: s.view === 'map',
+      listStyle: tab(s.view === 'list'), mapStyle: tab(s.view === 'map'),
+      showList: function () { self.setState({ view: 'list' }); },
+      showMap: function () { self.setState({ view: 'map' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
