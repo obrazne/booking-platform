@@ -10,6 +10,7 @@ import { getTenantTheme } from "@/core/theme/load";
 import { createClient } from "@/lib/supabase/server";
 import { ArrowUpRight } from "lucide-react";
 import { ThemeStyle } from "@/core/theme/theme-style";
+import { GuestStickyOffset } from "@/core/guest/sticky-offset";
 
 // The booking page lives next to the client's own website and must not compete with it in search (A17).
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -32,6 +33,7 @@ export default async function GuestLayout({ children }: LayoutProps<"/">) {
       className={`bg-brand-background text-foreground flex min-h-svh flex-col font-sans ${theme.colorMode === "dark" ? "dark" : ""}`}
     >
       <ThemeStyle theme={theme} scope="page" />
+      <GuestStickyOffset />
       <header className="border-line border-b">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center px-4 sm:px-6">
           <Link href="/" className="font-heading text-lg font-semibold tracking-tight">

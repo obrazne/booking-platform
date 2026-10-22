@@ -12,7 +12,7 @@
   **riadiace centrum v1.2** (detail klienta so záložkami, katalóg modulov, audit s filtrami) a košík v2.2 pre notebook. Chýba: doklady (čaká na Janin fakturačný nástroj), produkčné prostredie,
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
-  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → **Z74 (odsadenie pripnutého zhrnutia)** — *zabratá linkou A* → **Z83 (widget: kalendár s cenami na web klienta)** → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
+  **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → **Z83 (widget: kalendár s cenami na web klienta)** → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
   **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → **Z75 (výpis: rozpočet na marketing)** → **Z77 (na schválenie, rekreačný poukaz)** → **Z78 (darčekové poukazy)** → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
@@ -306,7 +306,7 @@ Filozofia predaja (`ARCHITEKTURA.md` A10): to, čo klient ušetrí na províziá
 4. Rovnaký riadok rozpočtu na Prehľade pri pruhu nocí (Z65), ak sa zmestí. Texty v prekladoch; ⓘ s vysvetlením výpočtu (sadzba portálu
    z Nastavení — klient má zadať svoju skutočnú sadzbu z faktúr Bookingu). Testy: výpočet (vitest), e2e výpisu.
 
-### Z74 [A] 🔄 — Odsadenie pripnutého zhrnutia pod lištou (pripomienka 64) — po Z70
+### Z74 [A] ✅ — Odsadenie pripnutého zhrnutia pod lištou (pripomienka 64) — po Z70
 v detaile pobytu v účte (`/ucet/pobyt/<id>`, `stay-detail.tsx`, aside `lg:sticky lg:top-6`)
    sa zelené zhrnutie pri scrolle zasunie pod pripnutú lištu účtu (Aktuálny pobyt · Pobyty · Moje údaje) — vrch karty nevidno.
    Odsadenie = výška pripnutej hlavičky/lišty + medzera (jedna CSS premenná, nie číslo natvrdo), aj na `/r` a všade, kde je pripnutý stĺpec
@@ -597,6 +597,12 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z74 [linka A]: **Odsadenie pripnutého zhrnutia pod lištou** (pripomienka 64). (Claude Code)
+  - Pripnuté stĺpce strany hosťa (`/ucet/pobyt`, `/r`, `/ucet`, check-in, recenzie) majú namiesto `lg:sticky lg:top-6` značku
+    `data-guest-sticky`; pravidlo v `globals.css` ich pripne na `top: calc(var(--guest-sticky-bar) + 1.5rem)`.
+  - `src/core/guest/sticky-offset.tsx` (v layoute hosťa) meria pripnuté lišty `data-sticky-bar` (karty účtu) do premennej
+    `--guest-sticky-bar`; stĺpec vyšší než okno dostane `data-too-tall` a nepripne sa.
+  - E2e `sticky-offset.spec.ts`: po scrolle je karta pod lištou účtu, na `/r` s medzerou od vrchu, v nízkom okne nepripnutá.
 - 2026-10-20 — Z72 [linka B]: **Pridať do kalendára a účet na potvrdení** (pripomienky 60, 61). (Claude Code)
   - Samostatné súbory (bez zásahu do práce linky A): `src/core/guest/calendar-links.ts` (Google `calendar.google.com/…?action=TEMPLATE`,
     Outlook `outlook.live.com/…/deeplink/compose`, .ics — čisté funkcie, unit testy vrátane letného/zimného času), `stay-calendar.ts`

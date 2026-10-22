@@ -125,7 +125,7 @@ export async function CheckinScreen({
             </p>
           )}
         </div>
-        <aside className="grid content-start gap-4 lg:sticky lg:top-6">
+        <aside className="grid content-start gap-4" data-guest-sticky>
           <div className="guest-card grid gap-2.5 rounded-[10px] px-5 py-[18px]">
             <span className="text-ink text-[15px] font-bold">{t("whyTitle")}</span>
             <p className="text-sm leading-relaxed text-[#5a6672]">{t("whyText")}</p>

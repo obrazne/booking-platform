@@ -201,7 +201,7 @@ export default async function GuestZonePage() {
       </div>
 
       {contact?.whatsapp_phone || contact?.contact_phone ? (
-        <aside className="guest-card grid gap-3 rounded-[10px] px-5 py-[18px] lg:sticky lg:top-[76px]">
+        <aside className="guest-card grid gap-3 rounded-[10px] px-5 py-[18px]" data-guest-sticky>
           <h2 className="text-ink text-[15px] font-bold">{t("questions")}</h2>
           <div className="flex items-center gap-3">
             <span

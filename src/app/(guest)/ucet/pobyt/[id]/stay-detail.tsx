@@ -503,7 +503,7 @@ export async function StayDetail({
           ) : null}
         </div>
 
-        <aside className="grid content-start gap-4 lg:sticky lg:top-6">
+        <aside className="grid content-start gap-4" data-guest-sticky>
           {/* Účet pobytu: the stay, its price breakdown, what modules add (orders), what is to pay or returned. */}
           <section
             aria-label={ts("account.title")}

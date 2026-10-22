@@ -26,7 +26,10 @@ export function AccountTabs({
   const active = activeAccountItem(items, path);
   const tabs = items.map((i) => ({ ...i, on: i.key === active }));
   return (
-    <div className="border-line sticky top-0 z-20 border-b bg-white/95 backdrop-blur">
+    <div
+      data-sticky-bar
+      className="border-line sticky top-0 z-20 border-b bg-white/95 backdrop-blur"
+    >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <nav aria-label={t("menu")} className="flex gap-1.5 overflow-x-auto py-2 sm:py-0">
           {tabs.map((x) => (

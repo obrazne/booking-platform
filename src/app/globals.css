@@ -470,3 +470,13 @@ select {
   outline-offset: 2px;
   box-shadow: none;
 }
+
+/* Pinned columns of the guest side (Z74): below the pinned bars plus a gap — `--guest-sticky-bar` is measured by
+   `GuestStickyOffset`; a column taller than the window (`data-too-tall`) is not pinned. */
+@media (min-width: 64rem) {
+  [data-guest-sticky]:not([data-too-tall]) {
+    position: sticky;
+    top: calc(var(--guest-sticky-bar, 0px) + 1.5rem);
+    align-self: start;
+  }
+}

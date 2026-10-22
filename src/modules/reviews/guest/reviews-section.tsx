@@ -53,7 +53,7 @@ export function VerifiedReviewsSection({
   return (
     <div className="grid gap-9">
       <div className="grid items-start gap-10 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-14">
-        <div className="grid gap-[18px] lg:sticky lg:top-6">
+        <div className="grid gap-[18px]" data-guest-sticky>
           <span className="text-accent-2 text-[13px] font-medium tracking-[0.16em] uppercase">
             {heading.kicker}
           </span>

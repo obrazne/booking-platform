@@ -159,7 +159,10 @@ export default async function ReservationPage({ params }: PageProps<"/r/[token]"
   ];
 
   const stayCard = (
-    <div className="bg-surface-accent flex flex-col gap-5 rounded-lg px-7 pt-7 pb-6 text-white lg:sticky lg:top-6">
+    <div
+      className="bg-surface-accent flex flex-col gap-5 rounded-lg px-7 pt-7 pb-6 text-white"
+      data-guest-sticky
+    >
       <div className="grid gap-0.5">
         <span className="text-on-accent-muted font-mono text-[11px] font-medium tracking-[0.1em] uppercase">
           {t("yourStay")}
