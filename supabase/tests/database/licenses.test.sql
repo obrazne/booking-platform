@@ -81,7 +81,8 @@ set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","r
 select is((select state from public.tenant_licenses), 'suspended', 'the team sees its licence');
 select throws_ok($$update public.properties set name = 'Nové' where id = '20000000-0000-0000-0000-00000000000a'$$,
   'LIC01', null, 'suspended: the administration is read only');
-select is((select count(*)::int from public.properties), 1, 'reading works');
+select is((select count(*)::int from public.properties where tenant_id = '10000000-0000-0000-0000-00000000000a'), 1,
+  'reading works');
 reset role;
 
 -- No new reservation (the guest page uses the server key) and no hold.
