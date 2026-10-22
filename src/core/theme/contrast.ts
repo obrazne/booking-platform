@@ -76,3 +76,19 @@ export function focusRingFor(hex: string): string {
   }
   return toHex();
 }
+
+/**
+ * The accent as text on white (links, highlighted words): the accent itself when it reaches 4.5 : 1, otherwise darkened
+ * step by step — a light accent such as gold (Chalet STRÖMY, #c7b56a, 2 : 1) stays for buttons with dark text only.
+ */
+export function textAccentFor(hex: string): string {
+  let { r, g, b } = parseHex(hex);
+  const toHex = () =>
+    `#${[r, g, b].map((c) => Math.round(c).toString(16).padStart(2, "0")).join("")}`;
+  for (let i = 0; i < 40 && contrastRatio(toHex(), "#fafaf8") < 4.5; i++) {
+    r *= 0.92;
+    g *= 0.92;
+    b *= 0.92;
+  }
+  return toHex();
+}

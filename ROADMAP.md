@@ -630,6 +630,10 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
   - Vyhľadávací pás (len dátumy a hostia) ostáva na neskôr.
   - Režim `data-rezim="info"` (Martin 22. 10.): len kalendár s cenami a legendou na ukážku, bez výberu, hostí a „Pokračovať“
     (`readOnly` v `AvailabilityCalendar`); STRÖMY ho zatiaľ používa na `chaletstromy.sk` (povolený web), hostia potom píšu Jane.
+  - `data-pozadie="sive"` (jemne sivá plocha); v režime na ukážku sú voľné dni normálne (nie sivé pre deň bez príchodu).
+  - Téma STRÖMY podľa chaletstromy.sk: zlatá `#c7b56a` (text na nej čierny), rohy 0 px. Nová premenná `--primary-text`
+    (`textAccentFor`): svetlý akcent ako text na bielom stmavený na 4,5 : 1 (`.text-primary` v `globals.css`).
+  - `a11y.spec`: košík sa meria až po skončení animácie otvárania (počas nej axe hlásil 4,42 : 1).
 - 2026-10-22 — Z75 [linka B]: **Mesačný výpis — ušetrené provízie ako rozpočet na vlastný marketing** (Martin 21. 10., A10). (Claude Code)
   - Výpis (stránka, PDF, e-mail z jedného `monthly-view.ts`): karta „Váš rozpočet na vlastný marketing tento mesiac“ (= ušetrená provízia,
     výpočet bez zmeny) s ⓘ (sadzba z Nastavení — zadať skutočnú z faktúr Bookingu); nepovinné pole „Koľko ste tento mesiac minuli

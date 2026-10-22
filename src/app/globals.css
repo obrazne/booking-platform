@@ -480,3 +480,8 @@ select {
     align-self: start;
   }
 }
+
+/* The accent as text (Z83, light accents like gold): `--primary-text` is the accent darkened to 4.5 : 1 when needed. */
+.text-primary {
+  color: var(--primary-text, var(--primary));
+}

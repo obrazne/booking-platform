@@ -270,7 +270,10 @@ export function AvailabilityCalendar({
                 const col = isoWeekday(date) - 1;
                 const edge = date === value.checkIn || date === value.checkOut;
                 const inPreview = preview(date);
-                const enabled = !d.past && (canArrive(date) || (selectingOut && outPossible(date)));
+                // Only to look at: every free priced day looks free (the bubble says when one can arrive).
+                const enabled = readOnly
+                  ? !d.past && !d.busy && d.rate !== undefined
+                  : !d.past && (canArrive(date) || (selectingOut && outPossible(date)));
                 const content = bubbles && hover === date && !d.past ? bubble(date) : null;
                 return (
                   <div key={date} className="relative">
@@ -325,7 +328,7 @@ export function AvailabilityCalendar({
                       <div
                         role="tooltip"
                         className={cn(
-                          "bg-tooltip pointer-events-none absolute bottom-full z-30 mb-2 grid w-[220px] gap-1 rounded-[14px] px-3 py-2.5 text-xs leading-snug text-white shadow-lg",
+                          "bg-tooltip pointer-events-none absolute bottom-full z-30 mb-2 grid w-[220px] gap-1 rounded-xl px-3 py-2.5 text-xs leading-snug text-white shadow-lg",
                           col <= 1 ? "left-0" : col >= 5 ? "right-0" : "left-1/2 -translate-x-1/2",
                         )}
                       >

@@ -35,3 +35,13 @@ describe("theme", () => {
     expect(vars["--surface-accent"]).not.toBe("#ffd60a"); // light accent → darker surface for white text
   });
 });
+
+describe("accent as text (Z83)", () => {
+  it("a light accent gets a darker text colour, a dark one stays", () => {
+    const gold = themeToCssVariables({ ...DEFAULT_THEME, primaryColor: "#c7b56a" });
+    expect(gold["--primary-foreground"]).toBe("#111111");
+    expect(gold["--primary-text"]).not.toBe("#c7b56a");
+    expect(contrastRatio(gold["--primary-text"]!, "#ffffff")).toBeGreaterThanOrEqual(4.5);
+    expect(themeToCssVariables(DEFAULT_THEME)["--primary-text"]).toBe(DEFAULT_THEME.primaryColor);
+  });
+});

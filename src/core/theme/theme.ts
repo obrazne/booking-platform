@@ -4,6 +4,7 @@ import {
   isHexColor,
   readableTextOn,
   surfaceForWhiteText,
+  textAccentFor,
 } from "./contrast";
 
 /** Fonts a client can choose from (A12: limited set so the look cannot be broken). */
@@ -68,6 +69,8 @@ export function themeToCssVariables(theme: Theme): Record<string, string> {
     "--primary-foreground": readableTextOn(theme.primaryColor),
     // The focus ring stays visible on white fields even with a light accent (Z54).
     "--ring": focusRingFor(theme.primaryColor),
+    // The accent as text on white (`text-primary`): darker when the accent itself is too light to read.
+    "--primary-text": textAccentFor(theme.primaryColor),
     "--sidebar-primary": theme.primaryColor,
     "--sidebar-primary-foreground": readableTextOn(theme.primaryColor),
     "--brand-secondary": theme.secondaryColor,

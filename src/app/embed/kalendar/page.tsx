@@ -17,7 +17,7 @@ export async function generateMetadata({
 }
 
 /**
- * The widget "kalendár s cenami" for the client's website (Z83): `/embed/kalendar?objekt=<slug>[&pozadie=priehladne][&rezim=info]`,
+ * The widget "kalendár s cenami" for the client's website (Z83): `/embed/kalendar?objekt=<slug>[&pozadie=priehladne|sive][&rezim=info]`,
  * put in a frame by `/widget.js`. Without sign-in and cookies; in a frame only on the websites the client allowed.
  */
 export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/kalendar">) {
@@ -33,7 +33,9 @@ export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/
     tenant && slug
       ? await loadWidgetData(tenant.id, tenant.currency, slug, one(sp.unit), today)
       : null;
-  const transparent = one(sp.pozadie) === "priehladne";
+  // pozadie=priehladne: the client's page shows through; sive: a very light grey card on a white page; else white.
+  const background = one(sp.pozadie);
+  const transparent = background === "priehladne" || background === "sive";
   return (
     <main className="mx-auto w-full max-w-5xl">
       {/* Background of the client's page through (pozadie=priehladne) or white. */}
@@ -49,6 +51,7 @@ export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/
           locale={locale}
           bookingUrl={`/p/${data.slug}`}
           infoOnly={one(sp.rezim) === "info"}
+          card={background === "sive"}
         />
       ) : (
         <p className="text-muted-foreground p-4 text-sm">{t("notFound")}</p>

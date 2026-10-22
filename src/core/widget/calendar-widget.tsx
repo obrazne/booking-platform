@@ -21,6 +21,8 @@ type Props = {
   bookingUrl: string;
   /** `data-rezim="info"`: only the calendar with prices and the legend, to look at — no dates, guests or button. */
   infoOnly?: boolean;
+  /** `data-pozadie="sive"`: on a very light grey card (corners of the client's theme), to stand out on a white page. */
+  card?: boolean;
 };
 
 /** Height of the widget for the frame on the client's website (`widget.js` listens). */
@@ -63,6 +65,7 @@ export function CalendarWidget({
   locale,
   bookingUrl,
   infoOnly = false,
+  card = false,
 }: Props) {
   const t = useTranslations("guest.widget");
   const root = useRef<HTMLDivElement>(null);
@@ -147,7 +150,11 @@ export function CalendarWidget({
   );
 
   return (
-    <div ref={root} className="grid gap-5 p-1" data-booking-widget-root>
+    <div
+      ref={root}
+      className={cn("grid gap-5", card ? "rounded-lg bg-[#f6f6f4] p-4 sm:p-6" : "p-1")}
+      data-booking-widget-root
+    >
       <h1 className="sr-only">{t("title", { name })}</h1>
       <AvailabilityCalendar
         locale={locale}

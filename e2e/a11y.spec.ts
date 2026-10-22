@@ -23,5 +23,9 @@ test("guest page and cart have no serious accessibility problems", async ({ page
   expect(await audit(page, "detail")).toEqual([]);
   await page.getByRole("button", { name: "Pozrieť pobyt" }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
+  // Measure after the opening animation — mid-fade the colours are blended and contrast looks lower than it is.
+  await page
+    .getByRole("dialog")
+    .evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)));
   expect(await audit(page, "košík")).toEqual([]);
 });
