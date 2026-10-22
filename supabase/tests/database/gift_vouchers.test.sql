@@ -34,10 +34,11 @@ set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000b1","r
 select throws_ok($$select public.gift_voucher_create('10000000-0000-0000-0000-00000000000a', 10000)$$,
   '42501', null, 'another client cannot make a voucher of this one');
 set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}';
+-- (in FROM: called once; "(f()).*" would call it once per column)
 create temporary table v as
-  select (public.gift_voucher_create('10000000-0000-0000-0000-00000000000a', 20000, 'Jana', current_date + 30, 'súťaž')).*;
+  select * from public.gift_voucher_create('10000000-0000-0000-0000-00000000000a', 20000, 'Jana', current_date + 30, 'súťaž');
 create temporary table w as
-  select (public.gift_voucher_create('10000000-0000-0000-0000-00000000000a', 80000)).*;
+  select * from public.gift_voucher_create('10000000-0000-0000-0000-00000000000a', 80000);
 select matches((select code from v), '^CHALETST-[2-9A-HJKMNP-Z]{4}-[2-9A-HJKMNP-Z]{4}$', 'a code that cannot be guessed');
 select is((select balance_cents from v), 20000, 'the balance starts at the value');
 select throws_ok($$insert into public.gift_vouchers (tenant_id, code, amount_cents, balance_cents)
