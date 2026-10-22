@@ -175,8 +175,7 @@ for i, (sid, name, prio, default, min_n, rate, color, ranges) in enumerate(seaso
 
 insert("fees", id=uid("f", 101), tenant_id=STROMY, property_id=P, key="pet", name=sk("Pobyt so zvieraťom"),
        kind="pet", price_model="per_night", amount_cents=2000)
-insert("discounts", id=uid("1", 101), tenant_id=STROMY, property_id=P, kind="length_of_stay",
-       name=sk("Zľava pri pobyte od 6 nocí"), percent_bp=1000, min_nights=6)
+# No automatic discount for STRÖMY: the 10 % from 6 nights was invented for the demo (Martin 22. 10.).
 insert("discounts", id=uid("1", 102), tenant_id=STROMY, property_id=P, kind="promo", name=sk("FIRST MINUTE ZIMA"),
        code="ZIMAVJASNEJ15", percent_bp=1500, min_guests=4, max_guests=10, booked_until="2026-11-30",
        excluded_from="2026-12-19", excluded_until="2027-01-31")
