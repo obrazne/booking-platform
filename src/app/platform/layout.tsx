@@ -95,6 +95,7 @@ export default async function PlatformLayout({ children }: LayoutProps<"/platfor
               names: Object.fromEntries((tenants ?? []).map((x) => [x.id, x.name])),
               tabs: [
                 { path: "", label: t("platform.tabs.overview") },
+                { path: "/license", label: t("platform.tabs.license") },
                 { path: "/modules", label: t("platform.tabs.modules") },
                 { path: "/theme", label: t("platform.tabs.theme") },
                 { path: "/domains", label: t("platform.tabs.domains") },

@@ -183,7 +183,8 @@
       "theme": "Vzhľad",
       "domains": "Domény",
       "people": "Ľudia",
-      "audit": "Záznam zmien"
+      "audit": "Záznam zmien",
+      "license": "Licencia"
     },
     "snapshot": {
       "revenueThisMonth": "Tržby priamo tento mesiac",
@@ -337,6 +338,59 @@
       "question": "Otázka",
       "yes": "Áno",
       "no": "Nie"
+    },
+    "license": {
+      "intro": "Licencia je záznam zmluvy s klientom (A10) — číslo licencie = číslo v zmluve. Stav sa riadi platbami: po splatnosti len upozorní, pozastavená zastaví nové rezervácie a administrácia klienta je len na čítanie (hostia s rezerváciou a e-maily fungujú ďalej).",
+      "title": "Licencia {number}",
+      "new": "Nová licencia",
+      "number": "Číslo licencie",
+      "numberHint": "Rovnaké ako v zmluve, napríklad BP-2026-001.",
+      "state": "Stav",
+      "stateHint": "Podľa platieb klienta.",
+      "states": {
+        "active": "Aktívna",
+        "overdue": "Po splatnosti",
+        "suspended": "Pozastavená"
+      },
+      "package": "Balík",
+      "packages": {
+        "basic": "Základ",
+        "basicHint": "Rezervačná stránka, kalendár, platby, synchronizácia, administrácia, výpis… Moduly navyše podľa dohody.",
+        "carefree": "Bez starostí",
+        "carefreeHint": "Všetky moduly vrátane budúcich (okrem platených za použitie), zapojenie platby kartou, prednostná podpora."
+      },
+      "modules": "Moduly navyše",
+      "properties": "Objekty v licencii",
+      "propertiesHint": "Nič nezaškrtnuté = všetky objekty klienta (licencia patrí tomu, komu idú peniaze z rezervácií).",
+      "setupFee": "Zriadenie (€)",
+      "monthlyFee": "Mesačne (€)",
+      "percent": "Percentá z obratu (%)",
+      "percentHint": "Z priamych rezervácií podľa A10.",
+      "startsOn": "Začiatok",
+      "contractUntil": "Ročná zmluva do",
+      "contractUntilHint": "Po roku vypovedateľná mesačne.",
+      "note": "Poznámka",
+      "save": "Uložiť licenciu",
+      "basisTitle": "Podklad na faktúru · {month}",
+      "prev": "Predchádzajúci mesiac",
+      "next": "Nasledujúci mesiac",
+      "pdf": "Stiahnuť PDF",
+      "turnover": {
+        "title": "Obrat z priamych rezervácií",
+        "stays": "Pobyty (noci v mesiaci, bez dane z ubytovania a kaucie)",
+        "orders": "Doobjednané služby (potvrdené)",
+        "kept": "Ponechaná časť zrušených rezervácií",
+        "total": "Obrat spolu"
+      },
+      "linesTitle": "Položky",
+      "lines": {
+        "setup": "Zriadenie",
+        "monthly": "Mesačný poplatok",
+        "turnover": "{percent} % z obratu {turnover}"
+      },
+      "total": "Spolu bez DPH",
+      "beforeStart": "Licencia v tomto mesiaci ešte neplatila.",
+      "basisNote": "Podklad na faktúru, nie daňový doklad. Sumy bez DPH. Obrat podľa A10: nerátajú sa daň za ubytovanie, vratná kaucia, vrátené peniaze, pobyty z Bookingu/Airbnb a blokácie."
     }
   },
   "modules": {
@@ -991,7 +1045,8 @@
       "upload": "Fotku sa nepodarilo nahrať.",
       "tooManyFeatured": "Zvýraznených referencií môže byť najviac 5.",
       "onePaymentMethod": "Aspoň jeden spôsob platby musí ostať zapnutý — inak by hostia nemali ako zaplatiť.",
-      "widgetSites": "Niektorý riadok nie je adresa webu — napíšte napr. chaletstromy.sk."
+      "widgetSites": "Niektorý riadok nie je adresa webu — napíšte napr. chaletstromy.sk.",
+      "suspended": "Licencia je pozastavená — administrácia je len na čítanie. Ozvite sa, prosím, Martinovi."
     },
     "unsaved": {
       "label": "Neuložené zmeny",
@@ -1440,7 +1495,8 @@
         "billing": "Doplňte názov firmy, IČO, DIČ a adresu na faktúru.",
         "payment": "Tento spôsob platby teraz nie je dostupný. Zvoľte prevod.",
         "voucher": "Doplňte číslo rekreačného poukazu a jeho vydavateľa.",
-        "giftVoucher": "Darčekový poukaz sa nedá použiť (je vyčerpaný, neplatný alebo ho nemožno kombinovať s rekreačným poukazom)."
+        "giftVoucher": "Darčekový poukaz sa nedá použiť (je vyčerpaný, neplatný alebo ho nemožno kombinovať s rekreačným poukazom).",
+        "suspended": "Rezervácie sú teraz dočasne nedostupné. Skúste to, prosím, neskôr alebo kontaktujte ubytovateľa."
       },
       "priceErrors": {
         "invalidDates": "Neplatný termín.",
@@ -3046,6 +3102,13 @@
       "methods": {
         "password": "heslom",
         "link": "odkazom z e-mailu"
+      },
+      "licenseSaved": "Licencia {number} uložená",
+      "licenseState": "Stav licencie: {state}",
+      "licenseStates": {
+        "active": "aktívna",
+        "overdue": "po splatnosti",
+        "suspended": "pozastavená"
       }
     },
     "adminView": {
@@ -3089,6 +3152,23 @@
         "save": "Zaznamenať",
         "saved": "Zaznamenané.",
         "history": "Posledné behy"
+      }
+    },
+    "license": {
+      "banner": {
+        "overdue": "Licencia je po splatnosti — prosíme o úhradu faktúry, aby sa rezervácie nezastavili.",
+        "suspended": "Licencia je pozastavená: stránka neprijíma nové rezervácie a administrácia je len na čítanie. Hostia s rezerváciou a e-maily fungujú ďalej. Ozvite sa, prosím, Martinovi."
+      },
+      "card": {
+        "title": "Vaša licencia",
+        "number": "Číslo licencie",
+        "package": "Balík",
+        "valid": "Platnosť",
+        "validFrom": "od {from}",
+        "validRange": "{from} – {to} (ročná zmluva)",
+        "state": "Stav",
+        "modules": "Moduly navyše",
+        "none": "Licencia zatiaľ nie je zapísaná."
       }
     }
   },
@@ -4608,6 +4688,10 @@
       "giftVouchers": {
         "title": "Čo sú Poukazy",
         "text": "Darčekový poukaz je hodnota, ktorou hosť zaplatí pobyt (nie zľava — zľavové kódy sú pri objekte v Doplnkoch). Hosť zadá kód v košíku; poukaz zaplatí najviac cenu pobytu a zvyšok ostane na ďalší raz. Keď sa rezervácia zruší, suma sa na poukaz vráti."
+      },
+      "tenantLicense": {
+        "title": "Licencia klienta",
+        "text": "Záznam zmluvy: číslo, balík, poplatky, platnosť a stav podľa platieb. Pozastavená licencia zastaví nové rezervácie a administrácia klienta je len na čítanie. Pod formulárom je podklad na faktúru za mesiac."
       }
     },
     "fields": {

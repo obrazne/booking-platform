@@ -83,6 +83,8 @@ const KNOWN_ACTIONS = [
   "admin.entered",
   "tenant.exported",
   "auth.signed_in",
+  "license.saved",
+  "license.state_changed",
 ] as const;
 
 /**
@@ -106,6 +108,11 @@ function actionsMatching(
       );
     if (action === "tenant.status_changed")
       return ["onboarding", "active", "suspended"].map((status) => ({ ...base, data: { status } }));
+    if (action === "license.state_changed")
+      return ["active", "overdue", "suspended"].map((state) => ({
+        ...base,
+        data: { after: state },
+      }));
     if (action === "auth.signed_in")
       return ["password", "link"].map((method) => ({ ...base, data: { method } }));
     return [{ ...base, data: {} }];

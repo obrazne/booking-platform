@@ -1,5 +1,7 @@
 "use client";
 
+import { MODULE_TRIAL_DAYS } from "@/core/licenses/basis";
+import { addDays, todayIso } from "@/core/pricing/dates";
 import {
   startTransition,
   useActionState,
@@ -145,7 +147,8 @@ export function ModuleSwitchForm({
             <Input
               type="date"
               name="trialEndsAt"
-              defaultValue={trialEndsAt ?? ""}
+              // Z81: 30 days by default (A10).
+              defaultValue={trialEndsAt ?? addDays(todayIso(), MODULE_TRIAL_DAYS)}
               className="w-44"
             />
           </label>
@@ -243,7 +246,12 @@ export function AssignModuleForm({
         {value === "trial" ? (
           <label className="text-muted-foreground flex items-center gap-2 text-sm">
             {t("trialEndsAt")}
-            <Input type="date" name="trialEndsAt" className="w-44" />
+            <Input
+              type="date"
+              name="trialEndsAt"
+              defaultValue={addDays(todayIso(), MODULE_TRIAL_DAYS)}
+              className="w-44"
+            />
           </label>
         ) : null}
         <Button type="submit" disabled={pending || !tenantId} className="font-bold">

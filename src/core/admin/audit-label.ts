@@ -28,6 +28,13 @@ export function auditLabel(
       return t("adminEntered");
     case "tenant.exported":
       return t("tenantExported");
+    // Z81: the licence of the client (number in the entity id; the state before → after).
+    case "license.saved":
+      return t("licenseSaved", { number: entry.entity_id ?? "" });
+    case "license.state_changed":
+      return t("licenseState", {
+        state: t(`licenseStates.${typeof data.after === "string" ? data.after : "active"}`),
+      });
     case "auth.signed_in":
       return t("signedIn", {
         method: t(`methods.${data.method === "password" ? "password" : "link"}`),

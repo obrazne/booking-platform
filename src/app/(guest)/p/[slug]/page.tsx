@@ -187,6 +187,7 @@ export default async function PropertyPage({ params, searchParams }: PageProps<"
           paymentMethods: propertyMethods(settings.paymentMethods, approval),
           upcomingMethods: propertyMethods(settings.upcomingMethods, approval),
           approval,
+          bookingPaused: settings.bookingPaused,
           holdMinutes: settings.holdMinutes,
           cancellationPolicy: policy,
           cancellationShort: policyFirst || null,

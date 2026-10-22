@@ -13,7 +13,7 @@ export function publicDomain(domains: { hostname: string; is_primary: boolean }[
 }
 
 const TENANT_SELECT =
-  "id, name, slug, status, created_at, tenant_domains(hostname, is_primary), tenant_modules(module_key, status, trial_ends_at), tenant_themes(primary_color, heading_font, body_font, background_color), memberships(role, profile:profiles(email, full_name))";
+  "id, name, slug, status, created_at, tenant_domains(hostname, is_primary), tenant_modules(module_key, status, trial_ends_at), tenant_themes(primary_color, heading_font, body_font, background_color), memberships(role, profile:profiles(email, full_name)), tenant_licenses(number, package, state)";
 
 type TenantData = {
   id: string;
@@ -23,6 +23,8 @@ type TenantData = {
   created_at: string;
   tenant_domains: { hostname: string; is_primary: boolean }[];
   tenant_modules: { module_key: string; status: string; trial_ends_at: string | null }[];
+  /** Z81: the licence (one per client). */
+  tenant_licenses: { number: string; package: string; state: string } | null;
   tenant_themes: {
     primary_color: string;
     heading_font: string;

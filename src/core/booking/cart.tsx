@@ -152,8 +152,11 @@ export function Cart() {
   const contactValid =
     f.name.trim().length >= 2 && /\S+@\S+\.\S+/.test(f.email) && billingValid(b.billing);
   // Z30: without a valid stay the reason is always written above the button (arrival → departure → price rules).
-  const reason =
-    b.step === 1 && !ready
+  // Z81: the client's licence is suspended — no new reservations (said once, above the button).
+  const paused = b.data.settings.bookingPaused;
+  const reason = paused
+    ? t("booking.errors.suspended")
+    : b.step === 1 && !ready
       ? !b.range.checkIn
         ? t("v2.pickArrival")
         : !b.range.checkOut
@@ -166,7 +169,7 @@ export function Cart() {
       ? {
           label: t("cart.continue"),
           // A valid stay is enough: with the calendar open, Pokračovať confirms the dates and shows the extras.
-          blocked: !ready,
+          blocked: !ready || paused,
           onClick: () => {
             if (!ready) {
               setFlash((n) => n + 1);
@@ -182,7 +185,7 @@ export function Cart() {
       : b.step === 2
         ? {
             label: t("cart.toPayment"),
-            disabled: !ready || !contactValid,
+            disabled: !ready || !contactValid || paused,
             onClick: () => b.setStep(3),
           }
         : {
@@ -192,7 +195,8 @@ export function Cart() {
                 b.data.settings.approval
                 ? t("cart.approval.cta")
                 : t("booking.submit"),
-            disabled: pending || failed || !formToken || !ready || (captchaEnabled && !captcha),
+            disabled:
+              pending || failed || paused || !formToken || !ready || (captchaEnabled && !captcha),
             submit: true,
           };
   const ctaButton = (reasonId?: string) => (

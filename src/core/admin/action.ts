@@ -11,6 +11,9 @@ export function dbErrorKey(error: { code?: string } | null | undefined): string 
       return "overlap";
     case "42501":
       return "forbidden";
+    // Z81: the licence of the client is suspended — the administration is read only.
+    case "LIC01":
+      return "suspended";
     case "23514":
     case "22023":
     case "22P02":

@@ -12,11 +12,13 @@ import { isPlatformAdmin } from "@/core/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
-export type TenantTab = "overview" | "modules" | "theme" | "domains" | "people" | "audit";
+export type TenantTab =
+  "overview" | "license" | "modules" | "theme" | "domains" | "people" | "audit";
 
 /** ⓘ of each tab (rule 8). */
 const TAB_HELP: Record<TenantTab, string> = {
   overview: "tenantOverview",
+  license: "tenantLicense",
   modules: "tenantModules",
   theme: "tenantTheme",
   domains: "tenantDomains",
@@ -27,6 +29,7 @@ type TenantStatus = "onboarding" | "active" | "suspended";
 
 const TAB_PATH: Record<TenantTab, string> = {
   overview: "",
+  license: "/license",
   modules: "/modules",
   theme: "/theme",
   domains: "/domains",

@@ -13,7 +13,7 @@
   nasadenie u Jany (3e — zatiaľ odložené, teraz len naša aplikácia), Stripe (karta — **pred spustením**, Martin 20. 10.).
 - **Ďalší krok pre Claude Code (18. 10.):** pripomienky 31–44, pravidlá v `docs/pravidla-rozhrania.md` —
   **A:** ~~Z54~~ ✅ → ~~Z55~~ ✅ → ~~Z56 (zbalené sezóny a zoznamy)~~ ✅ → ~~Z63 (šírka, stránkovanie v DB)~~ ✅ → ~~Z66 (vysvetlivky ⓘ)~~ ✅ → ~~Z69 (Nastavenia s kartami, spôsoby platby)~~ ✅ → ~~Z61 (kontrola všetkých obrazoviek, e2e, „Čo je nové“)~~ ✅ → ~~Z70 (potvrdenie: kontakt, plochy hosťa)~~ ✅ → ~~Z74 (odsadenie pripnutého zhrnutia)~~ ✅ → ~~Z83 (widget: kalendár s cenami na web klienta)~~ ✅ → **Z76 (preklad správ cez DeepL)** → **Z79 (sprievodca)** → **Z80 (Omega)**;
-  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → ~~Z77 (na schválenie, rekreačný poukaz)~~ ✅ → ~~Z78 (darčekové poukazy)~~ ✅ → **Z81 (licencie)** → **Z82 (ukážka po stretnutí)**.
+  **B:** ~~Z57–Z60, Z62, Z64, Z65, Z67, Z68~~ ✅ → ~~Z71 (košík: zľavový kód, spôsob platby, faktúra na firmu)~~ ✅ → ~~Z73 (rezervácie: najnovšie hore)~~ ✅ → ~~Z72 (kalendár Google/Outlook, účet na potvrdení)~~ ✅ → ~~Z75 (výpis: rozpočet na marketing)~~ ✅ → ~~Z77 (na schválenie, rekreačný poukaz)~~ ✅ → ~~Z78 (darčekové poukazy)~~ ✅ → ~~Z81 (licencie)~~ ✅ → **Z82 (ukážka po stretnutí)**.
 - **Claude chat:** modul Správy s hosťom nakreslený a schválený (hosť v2.5, administrácia v1.3) → Z45–Z47; ďalej pripomienky zo stagingu, obchodný model.
 - **Ďalší krok pre Martina:** v riadiacom centre → Upozornenia (a pri STRÖMY po zapnutí modulu push v Nastaveniach) zapnúť push
   na mobile — na iPhone najprv „Pridať na plochu“ (Z33).
@@ -393,7 +393,7 @@ Jana fakturuje v **Omega (KROS)**. Zisti, aký import dokladov Omega podporuje (
 (rezervácia, doplnkové objednávky, poukazy — jeden alebo viac dokladov) v tomto formáte z panela rezervácie aj hromadne za obdobie.
 Ak sa formát nedá overiť bez Omegy, zapíš do Otázok, čo treba od Jany (verzia Omegy, vzorový exportovaný súbor) a sprav zatiaľ CSV.
 
-### Z81 [B] 🔄 — Licencie a stav klienta podľa platieb (A10) — po Z78
+### Z81 [B] ✅ — Licencie a stav klienta podľa platieb (A10) — po Z78
 Podľa `ROADMAP` Fáza 4 (Licencie klientov) a `ARCHITEKTURA.md` A10: v riadiacom centre licencia = záznam zmluvy (číslo, klient, objekty,
 balík Základ / Bez starostí + moduly, zriadenie, mesačne, 2 %, začiatok, ročná zmluva do, stav aktívna / po splatnosti / pozastavená).
 Pozastavená: rezervačná stránka neprijíma nové rezervácie, administrácia len na čítanie (upozornenie navrchu). Klient vidí v administrácii
@@ -600,6 +600,21 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-10-22 — Z81 [linka B]: **Licencie a stav klienta podľa platieb** (A10). (Claude Code)
+  - Riadiace centrum › klient › **Licencia**: záznam zmluvy (číslo = číslo v zmluve, balík Základ / Bez starostí + moduly navyše,
+    objekty, zriadenie 990 €, mesačne 150/190 €, 2 %, začiatok, ročná zmluva do, stav aktívna / po splatnosti / pozastavená, poznámka);
+    zmena aj stav do auditu. Pod tým **podklad na faktúru za mesiac** (obrat podľa A10: pobyty bez dane a kaucie, potvrdené
+    doobjednávky, ponechaná časť zrušených rezervácií; zriadenie v 1. mesiaci, mesačne, 2 % z obratu; bez DPH) + PDF.
+    V zozname klientov štítok „Po splatnosti“ / „Pozastavená“.
+  - **Pozastavená licencia:** databáza nepustí novú rezerváciu (hosť aj ručná) ani podržanie termínu a tímu klienta odmietne každý
+    zápis (`tenant_write_guard` na tabuľkách klienta) — administrácia len na čítanie, hore červený pruh; hostia s rezerváciou, e-maily
+    a synchronizácia idú ďalej. Košík ukáže „Rezervácie sú teraz dočasne nedostupné“. **Po splatnosti** len béžový pruh.
+    `tenants.status = suspended` (skrytie celej stránky) ostal, ako bol.
+  - Klient vidí v Nastaveniach › Všeobecné kartu „Vaša licencia“ (číslo, balík, platnosť, stav).
+  - Skúšobná doba modulu predvolene **30 dní** (formuláre aj bez dátumu).
+  - Migrácia `20261022160000_licenses.sql`, pgTAP `licenses.test.sql`, vitest `licenses/basis.test.ts`, e2e `licenses.spec.ts`
+    (bez pozastavenia — Ukážkového klienta naraz používajú aj iné testy). Opravený nestabilný test farby menu (`platform-v12`).
+    Snímky `docs/snimky/z81/`.
 - 2026-10-22 — Z78 [linka B]: **Darčekové poukazy** (pripomienka 67). (Claude Code)
   - Ponuka › Poukazy (`/admin/vouchers`, jadro): nový poukaz (hodnota, na meno, platí do, poznámka pre tím) — kód robí databáza
     (`gift_voucher_create`: prefix klienta + 8 náhodných znakov bez zameniteľných, napr. `UKAZKA-7K4P-2QXA`); zoznam so stavom

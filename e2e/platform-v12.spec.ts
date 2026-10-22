@@ -40,18 +40,23 @@ test("menu: readable on hover, hierarchy, the client's group and breadcrumbs", a
   // Graphite menu: text stays light on hover (no light background with white text).
   const link = menu.getByRole("link", { name: "Stav systému" });
   await link.hover();
-  const { color, bg } = await link.evaluate((el) => {
-    const s = getComputedStyle(el);
-    return { color: s.color, bg: s.backgroundColor };
-  });
   const light = (rgb: string) => {
     const [r, g, b] = rgb.match(/\d+(\.\d+)?/g)!.map(Number);
     return (r! + g! + b!) / 3;
   };
-  expect(light(color)).toBeGreaterThan(200);
-  expect(bg === "rgba(0, 0, 0, 0)" || light(bg) < 120 || bg.includes("255, 255, 255, 0.")).toBe(
-    true,
-  );
+  // The background fades in (150 ms) — checked once it settled.
+  await expect
+    .poll(async () => {
+      const { color, bg } = await link.evaluate((el) => {
+        const s = getComputedStyle(el);
+        return { color: s.color, bg: s.backgroundColor };
+      });
+      return (
+        light(color) > 200 &&
+        (bg === "rgba(0, 0, 0, 0)" || light(bg) < 120 || bg.includes("255, 255, 255, 0."))
+      );
+    })
+    .toBe(true);
   await noSeriousA11y(page);
 });
 

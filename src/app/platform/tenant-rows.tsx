@@ -15,6 +15,8 @@ export type TenantRowData = {
   domain: string | null;
   /** Modules on (with "(skúška)"); the row shows two and "+N", the preview all of them. */
   modules: string[];
+  /** Z81: "Licencia BP-001 · Bez starostí" and its state, when recorded. */
+  license: { text: string; state: string; stateLabel: string } | null;
   reservations30: number;
   status: "onboarding" | "active" | "suspended";
 };
@@ -104,6 +106,19 @@ export function TenantRows({ rows }: { rows: TenantRowData[] }) {
                     {r.modules.length > 2 ? (
                       <span className="text-ink shrink-0 rounded-full bg-[#eef0f3] px-1.5 py-px text-[11px] font-bold">
                         {t("moreModules", { count: r.modules.length - 2 })}
+                      </span>
+                    ) : null}
+                    {r.license && r.license.state !== "active" ? (
+                      <span
+                        title={r.license.text}
+                        className={cn(
+                          "shrink-0 rounded-full px-1.5 py-px text-[11px] font-bold",
+                          r.license.state === "suspended"
+                            ? "bg-[#fbeceb] text-[#a8432f]"
+                            : "bg-[#f6ecdf] text-[#8a4a22]",
+                        )}
+                      >
+                        {r.license.stateLabel}
                       </span>
                     ) : null}
                   </span>

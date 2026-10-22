@@ -33,7 +33,8 @@ export type BookingState = {
     | "billing"
     | "payment"
     | "voucher"
-    | "giftVoucher";
+    | "giftVoucher"
+    | "suspended";
   details?: string[];
 };
 
@@ -297,7 +298,13 @@ export async function createGuestReservation(
   if (error)
     return {
       error:
-        error.code === "23P01" ? "unavailable" : error.code === "P0002" ? "giftVoucher" : "generic",
+        error.code === "23P01"
+          ? "unavailable"
+          : error.code === "P0002"
+            ? "giftVoucher"
+            : error.code === "LIC01"
+              ? "suspended"
+              : "generic",
     };
 
   await notifyReservationCreated(data.id, data.access_token).catch(() => undefined);

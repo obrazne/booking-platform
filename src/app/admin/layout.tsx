@@ -14,6 +14,7 @@ import {
   Plus,
   Settings,
   Shield,
+  TriangleAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AdminShell, type ShellNavItem } from "@/core/admin/admin-shell";
@@ -28,6 +29,8 @@ import { SearchBox } from "@/core/search/search-box";
 import type { NavGroupKey } from "@/core/modules/types";
 import { getActiveMembership } from "@/core/tenant/active";
 import { getGuestSiteUrl } from "@/core/tenant/info";
+import { loadLicense } from "@/core/licenses/load";
+import { cn } from "@/lib/utils";
 import { loadBell } from "@/core/notifications/actions";
 import { NotificationBell } from "@/core/notifications/bell";
 import { DEFAULT_THEME } from "@/core/theme/theme";
@@ -198,9 +201,14 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     href: helpHref(id),
   }));
   const tourNew = active ? await tourIsNewForUser("owner") : false;
-  const [bell, guestUrl] = active
-    ? await Promise.all([loadBell("tenant"), getGuestSiteUrl(active.tenantId)])
-    : [null, null];
+  const [bell, guestUrl, license] = active
+    ? await Promise.all([
+        loadBell("tenant"),
+        getGuestSiteUrl(active.tenantId),
+        // Z81: a suspended or overdue licence is said on top of every page.
+        loadLicense(active.tenantId),
+      ])
+    : [null, null, null];
   const bellFor = (media: "mobile" | "desktop") =>
     bell ? (
       <NotificationBell
@@ -227,7 +235,21 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         ) : undefined
       }
       banner={
-        active?.adminView ? (
+        license && license.state !== "active" ? (
+          <div
+            role="status"
+            data-testid="license-banner"
+            className={cn(
+              "sticky top-0 z-40 flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-2.5 text-sm md:px-10",
+              license.state === "suspended"
+                ? "bg-[#a8432f] text-white"
+                : "bg-[#f6ecdf] text-[#6b3818]",
+            )}
+          >
+            <TriangleAlert className="size-4 shrink-0" />
+            <span>{t(`adminV1.license.banner.${license.state as "overdue"}`)}</span>
+          </div>
+        ) : active?.adminView ? (
           // Platform admin inside a client's administration (A4): impossible to overlook.
           <div
             role="status"

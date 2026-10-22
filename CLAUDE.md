@@ -151,6 +151,10 @@ alebo `payment_method = recreation_voucher`), `approve_reservation` / `decline_r
 **Darčekové poukazy (Z78):** `gift_vouchers` + `gift_voucher_uses` (kód len cez `gift_voucher_create`, zostatok len cez rezerváciu;
 vrátenie pri zrušení triggerom), v `create_reservation` `p -> 'gift_voucher'`; administrácia `src/app/admin/vouchers/`, jadro
 `src/core/gift-vouchers/` (stav, dotazy, PDF, e-mail); košík `previewGiftVoucher` v `src/core/booking/create.ts`.
+**Licencie (Z81):** `tenant_licenses` (zapisuje len `platform_save_license`), pozastavená = `tenant_write_guard` (trigger na každej
+tabuľke klienta — **novú tabuľku s `tenant_id` treba pridať ručne**, ako `record_history`) + `license_booking_guard` (rezervácie, hold),
+chyba `LIC01` → `forms.errors.suspended`; obrat `tenant_license_turnover`, podklad `src/core/licenses/`, karta v riadiacom centre
+`src/app/platform/tenants/[id]/license/`.
 **Hľadanie a Pomoc (Z67):** register stránok a polí `src/core/search/registry.ts` (nová stránka / nové nastavenie = riadok + slová
 v `search.entries.<id>`; `field` = id/name poľa, stránka ho po `?hl=` zvýrazní — `field-highlight.tsx` v AdminShell), hľadanie
 `search-box.tsx` (Ctrl K; rezervácie, hostia a poznámky cez DB `actions.ts`). Otázky Pomoci `src/core/help/faqs.ts` + `help.faqs.<id>`

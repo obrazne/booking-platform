@@ -24,6 +24,7 @@ import { getTenantInfo } from "@/core/tenant/info";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import { ConnectionsBody } from "../ical/body";
+import { LicenseCard } from "./license-card";
 import { TeamBody } from "../team/body";
 import { saveSettings } from "./actions";
 import { NotificationsBody } from "./notifications/body";
@@ -85,6 +86,8 @@ export default async function SettingsPage({ searchParams }: PageProps<"/admin/s
   const body: Record<SettingsTab, () => React.ReactNode> = {
     vseobecne: () => (
       <>
+        {/* Z81: number of the licence, package and validity (read only — the platform keeps the contract). */}
+        <LicenseCard tenantId={tenant.id} />
         {form(
           <>
             {/* Kontakt (Z60): the contact for guests and the signature of messages ({podpis}). */}

@@ -3208,6 +3208,68 @@ export type Database = {
           },
         ]
       }
+      tenant_licenses: {
+        Row: {
+          contract_until: string | null
+          created_at: string
+          id: string
+          modules: string[]
+          monthly_fee_cents: number
+          note: string | null
+          number: string
+          package: string
+          property_ids: string[]
+          setup_fee_cents: number
+          starts_on: string
+          state: string
+          tenant_id: string
+          turnover_bp: number
+          updated_at: string
+        }
+        Insert: {
+          contract_until?: string | null
+          created_at?: string
+          id?: string
+          modules?: string[]
+          monthly_fee_cents?: number
+          note?: string | null
+          number: string
+          package?: string
+          property_ids?: string[]
+          setup_fee_cents?: number
+          starts_on?: string
+          state?: string
+          tenant_id: string
+          turnover_bp?: number
+          updated_at?: string
+        }
+        Update: {
+          contract_until?: string | null
+          created_at?: string
+          id?: string
+          modules?: string[]
+          monthly_fee_cents?: number
+          note?: string | null
+          number?: string
+          package?: string
+          property_ids?: string[]
+          setup_fee_cents?: number
+          starts_on?: string
+          state?: string
+          tenant_id?: string
+          turnover_bp?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_licenses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_marketing_spend: {
         Row: {
           amount_cents: number
@@ -4313,6 +4375,32 @@ export type Database = {
         Args: { p_force?: boolean; p_history_id: number }
         Returns: Json
       }
+      platform_save_license: {
+        Args: { p: Json; p_tenant_id: string }
+        Returns: {
+          contract_until: string | null
+          created_at: string
+          id: string
+          modules: string[]
+          monthly_fee_cents: number
+          note: string | null
+          number: string
+          package: string
+          property_ids: string[]
+          setup_fee_cents: number
+          starts_on: string
+          state: string
+          tenant_id: string
+          turnover_bp: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_licenses"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       platform_set_module: {
         Args: {
           p_module_key: string
@@ -4551,6 +4639,14 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      tenant_license_suspended: {
+        Args: { p_tenant_id: string }
+        Returns: boolean
+      }
+      tenant_license_turnover: {
+        Args: { p_month: string; p_tenant_id: string }
+        Returns: Json
       }
       tenant_marketing_budget: {
         Args: { p_from: string; p_month: string; p_tenant_id: string }

@@ -30,11 +30,12 @@ const SHOW = TENANT_SHOW;
  */
 export default async function PlatformTenants({ searchParams }: PageProps<"/platform">) {
   if (!(await isPlatformAdmin())) return null;
-  const [t, tm, tAll, locale] = await Promise.all([
+  const [t, tm, tAll, locale, tl] = await Promise.all([
     getTranslations("platform"),
     getTranslations("adminV1.platform"),
     getTranslations(),
     getLocale(),
+    getTranslations("platform.license"),
   ]);
   const supabase = await createClient();
   const sp = await searchParams;
@@ -218,6 +219,13 @@ export default async function PlatformTenants({ searchParams }: PageProps<"/plat
                     `${moduleLabel(m.module_key)}${m.status === "trial" ? ` (${t("moduleStatus.trial").toLowerCase()})` : ""}`,
                 ),
                 reservations30: perTenant.get(x.id) ?? 0,
+                license: x.tenant_licenses
+                  ? {
+                      text: `${tl("title", { number: x.tenant_licenses.number })} · ${tl(`packages.${x.tenant_licenses.package as "basic"}`)}`,
+                      state: x.tenant_licenses.state,
+                      stateLabel: tl(`states.${x.tenant_licenses.state as "active"}`),
+                    }
+                  : null,
                 status: x.status as TenantStatus,
               };
             })}

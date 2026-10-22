@@ -46,6 +46,8 @@ export type BookingData = {
     upcomingMethods: PaymentMethodKey[];
     /** Z77: the owner approves the reservation (within 48 h) before the payment. */
     approval: boolean;
+    /** Z81: the client's licence is suspended — no new reservations. */
+    bookingPaused: boolean;
     holdMinutes: number;
     cancellationPolicy: string;
     /** First sentence of the policy for the side panel. */

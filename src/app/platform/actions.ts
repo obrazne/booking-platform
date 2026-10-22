@@ -1,5 +1,7 @@
 "use server";
 
+import { MODULE_TRIAL_DAYS } from "@/core/licenses/basis";
+import { addDays, todayIso } from "@/core/pricing/dates";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -70,7 +72,8 @@ export async function setModule(_prev: FormState, formData: FormData): Promise<F
   const parsed = moduleSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "invalidInput" };
   const v = parsed.data;
-  if (v.status === "trial" && !v.trialEndsAt) return { error: "trialNeedsDate" };
+  // Z81 (A10): a trial without a date lasts 30 days.
+  const trialEndsAt = v.trialEndsAt || addDays(todayIso(), MODULE_TRIAL_DAYS);
   // Modules in preparation (no guest screens yet) can only be switched off.
   const entry = moduleCatalog().find((m) => m.key === v.moduleKey);
   if (!entry || (!entry.ready && v.status !== "off")) return { error: "invalidInput" };
@@ -80,7 +83,7 @@ export async function setModule(_prev: FormState, formData: FormData): Promise<F
     p_tenant_id: v.tenantId,
     p_module_key: v.moduleKey,
     p_status: v.status,
-    p_trial_ends_at: v.status === "trial" ? v.trialEndsAt : undefined,
+    p_trial_ends_at: v.status === "trial" ? trialEndsAt : undefined,
   });
   if (error) return { error: "error" };
   // Defaults of the module for the client (e.g. automatic messages, Z45) — never blocks the switch.

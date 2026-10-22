@@ -150,7 +150,14 @@ export const getGuestSettings = cache(async (tenantId: string) => {
     )
     .eq("tenant_id", tenantId)
     .maybeSingle();
+  // Z81: a suspended licence takes no new reservations.
+  const { data: license } = await admin
+    .from("tenant_licenses")
+    .select("state")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
   return {
+    bookingPaused: license?.state === "suspended",
     /** Ways the guest can pay (Z69): switched on and ready — never the account itself. */
     paymentMethods: offeredMethods(data ?? {}),
     /** Prepared methods shown as "Pripravujeme" — staging only (Z71). */
