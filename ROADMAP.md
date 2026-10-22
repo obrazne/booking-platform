@@ -628,6 +628,8 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
   - E2e `widget.spec.ts` (PC aj mobil): testovacia stránka klienta na lokálnom serveri, výber termínu → košík s termínom,
     počítadlá, axe; nepovolený web bez kalendára; ostatné stránky DENY, widget bez cookies.
   - Vyhľadávací pás (len dátumy a hostia) ostáva na neskôr.
+  - Režim `data-rezim="info"` (Martin 22. 10.): len kalendár s cenami a legendou na ukážku, bez výberu, hostí a „Pokračovať“
+    (`readOnly` v `AvailabilityCalendar`); STRÖMY ho zatiaľ používa na `chaletstromy.sk` (povolený web), hostia potom píšu Jane.
 - 2026-10-22 — Z75 [linka B]: **Mesačný výpis — ušetrené provízie ako rozpočet na vlastný marketing** (Martin 21. 10., A10). (Claude Code)
   - Výpis (stránka, PDF, e-mail z jedného `monthly-view.ts`): karta „Váš rozpočet na vlastný marketing tento mesiac“ (= ušetrená provízia,
     výpočet bez zmeny) s ⓘ (sadzba z Nastavení — zadať skutočnú z faktúr Bookingu); nepovinné pole „Koľko ste tento mesiac minuli

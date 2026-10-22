@@ -22,6 +22,7 @@ Nepovinné atribúty na `div`:
 | Atribút | Význam |
 |---|---|
 | `data-pozadie="priehladne"` | pozadie stránky klienta presvitá (inak biele) |
+| `data-rezim="info"` | len na ukážku: kalendár s cenami a legendou, bez výberu termínu, hostí a tlačidla (STRÖMY zatiaľ — hostia potom píšu Jane) |
 | `data-jednotka="<id jednotky>"` | pri ubytovaní s jednotkami iná než prvá jednotka |
 | `data-titulok="…"` | názov rámčeka pre čítačky obrazovky |
 

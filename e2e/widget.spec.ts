@@ -20,7 +20,7 @@ const site = createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
   res.end(`<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Web klienta</title></head>
 <body style="margin:0;padding:16px;font-family:sans-serif;background:#f3efe6"><main><h1>Chalet na webe klienta</h1>
-<div data-booking-widget="kalendar" data-objekt="${PROPERTY_SLUG}"></div><script src="${widgetJs}" async></script>
+<div data-booking-widget="kalendar" data-objekt="${PROPERTY_SLUG}"${req.url?.startsWith("/info") ? ' data-rezim="info"' : ""}></div><script src="${widgetJs}" async></script>
 </main></body></html>`);
 });
 
@@ -118,6 +118,28 @@ test("widget on the client's website: dates → Pokračovať → cart with the d
       return after.views > before.views && after.continues > before.continues;
     })
     .toBe(true);
+});
+
+test("widget only to look at (data-rezim=info): calendar and legend, nothing to choose", async ({
+  page,
+}) => {
+  const stay = await freeStay(3);
+  await page.goto(`${ALLOWED}/info`);
+  const frame = page.frameLocator('iframe[title="Kalendár s cenami"]');
+  const root = frame.locator("[data-booking-widget-root]");
+  await expect(root).toBeVisible();
+  await expect(root.getByText(/Leto · /)).toBeVisible();
+  for (const text of [
+    "Vyberte deň príchodu.",
+    "Dospelí",
+    "Pokračovať na rezerváciu",
+    "Rezerváciu dokončíte",
+  ])
+    await expect(root.getByText(text)).toHaveCount(0);
+  // A click on a day selects nothing.
+  await pickStay(root, stay.checkIn, stay.checkOut);
+  await expect(root.locator('button[aria-pressed="true"]')).toHaveCount(0);
+  await expect(root.getByRole("button", { name: "Zrušiť výber" })).toHaveCount(0);
 });
 
 test("widget on a website the client did not allow: no calendar", async ({ page }) => {

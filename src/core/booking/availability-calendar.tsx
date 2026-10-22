@@ -30,6 +30,8 @@ type Props = {
   stayPrice?: (checkIn: IsoDate, checkOut: IsoDate) => number | null;
   /** Show the hover bubble (only in the calendar that is being used, B7 visual). */
   bubbles?: boolean;
+  /** Only to look at (widget on the client's website, Z83): prices, busy days and the bubble, no selection, no hint. */
+  readOnly?: boolean;
 };
 
 function monthStart(date: IsoDate): IsoDate {
@@ -69,6 +71,7 @@ export function AvailabilityCalendar({
   months = 2,
   stayPrice,
   bubbles = true,
+  readOnly = false,
 }: Props) {
   const t = useTranslations("guest.calendar");
   const busySet = useMemo(() => new Set(busy), [busy]);
@@ -141,6 +144,7 @@ export function AvailabilityCalendar({
     outPossible(date) && diffDays(value.checkIn!, date) >= minFor(value.checkIn!);
 
   function pick(date: IsoDate) {
+    if (readOnly) return;
     if (selectingOut && outValid(date)) {
       onChange({ checkIn: value.checkIn, checkOut: date });
       return;
@@ -189,7 +193,8 @@ export function AvailabilityCalendar({
   }
 
   let hint: { text: string; warn: boolean } | null = null;
-  if (!value.checkIn) hint = { text: t("selectCheckIn"), warn: false };
+  if (readOnly) hint = null;
+  else if (!value.checkIn) hint = { text: t("selectCheckIn"), warn: false };
   else if (!value.checkOut) {
     const s = info(value.checkIn).season;
     const hovered =
@@ -276,7 +281,7 @@ export function AvailabilityCalendar({
                       onMouseEnter={() => setHover(date)}
                       onFocus={() => setHover(date)}
                       onBlur={() => setHover(null)}
-                      aria-pressed={edge}
+                      aria-pressed={readOnly ? undefined : edge}
                       data-date={date}
                       aria-label={[
                         fmtDay.format(asDate(date)),
@@ -360,7 +365,7 @@ export function AvailabilityCalendar({
         </div>
       ) : null}
 
-      <div className="flex min-h-9 items-center justify-between gap-3">
+      <div className={cn("flex min-h-9 items-center justify-between gap-3", readOnly && "hidden")}>
         {hint ? (
           <p className={cn("text-sm", hint.warn ? "text-[#b5532f]" : "text-muted-foreground")}>
             {hint.text}

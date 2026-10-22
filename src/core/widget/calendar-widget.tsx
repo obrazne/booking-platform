@@ -19,6 +19,8 @@ type Props = {
   locale: string;
   /** Address of the property page on the client's booking domain (`https://…/p/<slug>`). */
   bookingUrl: string;
+  /** `data-rezim="info"`: only the calendar with prices and the legend, to look at — no dates, guests or button. */
+  infoOnly?: boolean;
 };
 
 /** Height of the widget for the frame on the client's website (`widget.js` listens). */
@@ -49,6 +51,7 @@ function track(slug: string, kind: "view" | "continue") {
  * The widget "kalendár s cenami" (Z83, A17 level 2): the calendar of the property page (prices in days, busy days,
  * minimum nights and arrival days by season, price preview), guests, the total and "Pokračovať na rezerváciu", which
  * opens the property page in the main window with the dates and the cart open. Payment stays in the application.
+ * With `infoOnly` (Chalet STRÖMY for now: guests look and then write to the owner) only the calendar and its legend.
  */
 export function CalendarWidget({
   slug,
@@ -59,6 +62,7 @@ export function CalendarWidget({
   today,
   locale,
   bookingUrl,
+  infoOnly = false,
 }: Props) {
   const t = useTranslations("guest.widget");
   const root = useRef<HTMLDivElement>(null);
@@ -156,44 +160,49 @@ export function CalendarWidget({
         value={range}
         onChange={setRange}
         months={2}
+        readOnly={infoOnly}
         stayPrice={(a, b) => {
           const r = priceOf(a, b);
           return r.ok ? r.totalCents : null;
         }}
       />
-      <div className="border-line flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t pt-4">
-        <fieldset className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <legend className="sr-only">{t("guests")}</legend>
-          {stepper(t("adults"), adults, setAdults, 1, total < catalog.maxGuests)}
-          {stepper(t("children"), children, setChildren, 0, total < catalog.maxGuests)}
-        </fieldset>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-          <p className="text-ink text-[15px] font-bold" aria-live="polite" data-widget-summary>
-            {/* Without the stay the calendar itself says what to choose — the total only, not the hint again. */}
-            {price?.ok
-              ? t("summary", { nights: price.nights, price: money(price.totalCents) })
-              : null}
-          </p>
-          <a
-            href={href ?? undefined}
-            target="_top"
-            // Without dates it is still the link (no address yet), announced as unavailable.
-            role={href ? undefined : "link"}
-            aria-disabled={!href}
-            onClick={(e) => {
-              if (!href) e.preventDefault();
-              else track(slug, "continue");
-            }}
-            className={cn(
-              "bg-primary text-primary-foreground inline-flex min-h-11 items-center rounded-full px-6 text-[15px] font-bold",
-              !href && "pointer-events-none opacity-50",
-            )}
-          >
-            {t("continue")}
-          </a>
-        </div>
-      </div>
-      <p className="text-muted-foreground text-xs">{t("continueHint")}</p>
+      {infoOnly ? null : (
+        <>
+          <div className="border-line flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t pt-4">
+            <fieldset className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <legend className="sr-only">{t("guests")}</legend>
+              {stepper(t("adults"), adults, setAdults, 1, total < catalog.maxGuests)}
+              {stepper(t("children"), children, setChildren, 0, total < catalog.maxGuests)}
+            </fieldset>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <p className="text-ink text-[15px] font-bold" aria-live="polite" data-widget-summary>
+                {/* Without the stay the calendar itself says what to choose — the total only, not the hint again. */}
+                {price?.ok
+                  ? t("summary", { nights: price.nights, price: money(price.totalCents) })
+                  : null}
+              </p>
+              <a
+                href={href ?? undefined}
+                target="_top"
+                // Without dates it is still the link (no address yet), announced as unavailable.
+                role={href ? undefined : "link"}
+                aria-disabled={!href}
+                onClick={(e) => {
+                  if (!href) e.preventDefault();
+                  else track(slug, "continue");
+                }}
+                className={cn(
+                  "bg-primary text-primary-foreground inline-flex min-h-11 items-center rounded-full px-6 text-[15px] font-bold",
+                  !href && "pointer-events-none opacity-50",
+                )}
+              >
+                {t("continue")}
+              </a>
+            </div>
+          </div>
+          <p className="text-muted-foreground text-xs">{t("continueHint")}</p>
+        </>
+      )}
     </div>
   );
 }
