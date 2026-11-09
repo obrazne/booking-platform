@@ -600,6 +600,13 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-11-09 — **Widget kalendára: obsadenosť len z Bookingu a Airbnb** (pokyn Martina, STRÖMY na web naostro). (Claude Code)
+  - Nový atribút `data-obsadenost="ical"`: obsadené dni len z iCal aktívnych kanálov (aj udalosti v kolízii — sú to pobyty
+    na kanáli), nič z aplikácie (rezervácie, blokácie, košíky). Ceny ostávajú z aplikácie. DB `unit_ical_busy_nights`
+    (migrácia `20261109200000`, len pridáva; na stagingu cez MCP, verzia zosúladená), pgTAP `widget_ical.test.sql`,
+    `widget.js` → `/embed/kalendar?obsadenost=ical`, `docs/prevadzka/widget.md`.
+  - STRÖMY na stagingu: 16 pobytov z iCal namiesto 24 obsadení (8 rezervácií a 1 blokácia z aplikácie sa vo widgete už neukážu).
+  - Widget beží zo stagingu (`chalet-stromy-demo.vercel.app`) — pri spustení produkcie treba zmeniť adresu skriptu na webe.
 - 2026-10-22 — Z81 [linka B]: **Licencie a stav klienta podľa platieb** (A10). (Claude Code)
   - Riadiace centrum › klient › **Licencia**: záznam zmluvy (číslo = číslo v zmluve, balík Základ / Bez starostí + moduly navyše,
     objekty, zriadenie 990 €, mesačne 150/190 €, 2 %, začiatok, ročná zmluva do, stav aktívna / po splatnosti / pozastavená, poznámka);

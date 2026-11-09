@@ -19,6 +19,7 @@ export type WidgetData = {
  * Prices and occupancy for the widget (Z83): what the calendar of the property page shows, as an anonymous guest
  * (RLS for published properties), without services (the widget prices only the stay). Cached for a minute — the
  * widget is loaded on every visit of the client's website; the booking itself checks availability again.
+ * With `icalOnly` (`data-obsadenost="ical"`) the busy nights come only from the iCal of the channels (Booking, Airbnb…).
  */
 export const loadWidgetData = unstable_cache(
   async (
@@ -27,6 +28,7 @@ export const loadWidgetData = unstable_cache(
     slug: string,
     unitParam: string,
     today: string,
+    icalOnly: boolean,
   ): Promise<WidgetData | null> => {
     const supabase = createClient<Database>(supabaseUrl(), supabasePublishableKey(), {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -51,7 +53,7 @@ export const loadWidgetData = unstable_cache(
         .eq("tenant_id", tenantId)
         .eq("kind", "length_of_stay")
         .or(`property_id.eq.${p.id},property_id.is.null`),
-      supabase.rpc("unit_busy_nights", {
+      supabase.rpc(icalOnly ? "unit_ical_busy_nights" : "unit_busy_nights", {
         p_unit_id: unit.id,
         p_from: today,
         p_to: addDays(today, 400),

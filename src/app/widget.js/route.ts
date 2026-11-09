@@ -15,6 +15,8 @@ const SCRIPT = `(function () {
     if (bg) q.set("pozadie", bg);
     var mode = el.getAttribute("data-rezim");
     if (mode) q.set("rezim", mode);
+    var busy = el.getAttribute("data-obsadenost");
+    if (busy) q.set("obsadenost", busy);
     var unit = el.getAttribute("data-jednotka");
     if (unit) q.set("unit", unit);
     var frame = document.createElement("iframe");

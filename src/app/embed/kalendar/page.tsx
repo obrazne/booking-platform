@@ -17,7 +17,8 @@ export async function generateMetadata({
 }
 
 /**
- * The widget "kalendár s cenami" for the client's website (Z83): `/embed/kalendar?objekt=<slug>[&pozadie=priehladne|sive][&rezim=info]`,
+ * The widget "kalendár s cenami" for the client's website (Z83):
+ * `/embed/kalendar?objekt=<slug>[&pozadie=priehladne|sive][&rezim=info][&obsadenost=ical]`,
  * put in a frame by `/widget.js`. Without sign-in and cookies; in a frame only on the websites the client allowed.
  */
 export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/kalendar">) {
@@ -31,7 +32,14 @@ export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/
   const slug = one(sp.objekt);
   const data =
     tenant && slug
-      ? await loadWidgetData(tenant.id, tenant.currency, slug, one(sp.unit), today)
+      ? await loadWidgetData(
+          tenant.id,
+          tenant.currency,
+          slug,
+          one(sp.unit),
+          today,
+          one(sp.obsadenost) === "ical",
+        )
       : null;
   // pozadie=priehladne: the client's page shows through; sive: a very light grey card on a white page; else white.
   const background = one(sp.pozadie);

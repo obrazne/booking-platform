@@ -4706,6 +4706,12 @@ export type Database = {
           nights: unknown
         }[]
       }
+      unit_ical_busy_nights: {
+        Args: { p_from: string; p_to: string; p_unit_id: string }
+        Returns: {
+          nights: unknown
+        }[]
+      }
       upsell_tick: { Args: never; Returns: number }
       widget_sites_by_host: { Args: { p_host: string }; Returns: string[] }
       widget_track: {
