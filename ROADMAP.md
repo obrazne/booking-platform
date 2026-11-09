@@ -600,6 +600,11 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-11-09 — **STRÖMY na stagingu bez testovacích dát** (pokyn Martina). (Claude Code)
+  - Zmazané cez Supabase MCP v jednej transakcii: 48 ukážkových rezervácií („DEMO“, `stromy-demo.invalid`) + 2 testovacie
+    (2026-0695 „Testovacia objednávka“, 2026-0696 zrušená), ich e-maily vo fronte a upozornenia, 2 ukážkové dokumenty,
+    blokácia „Údržba sauny (DEMO)“, 49 ukážkových/testovacích hostí. Ostáva 16 pobytov z iCal (Booking, Airbnb), 1 hosť @obrazne.sk.
+  - Kontext: aplikácia sa ďalej asi nebude rozvíjať; Jane sa ponúka widget kalendára ako dočasné riešenie, kým nenájde iného dodávateľa.
 - 2026-11-09 — **Widget kalendára: obsadenosť len z Bookingu a Airbnb** (pokyn Martina, STRÖMY na web naostro). (Claude Code)
   - Nový atribút `data-obsadenost="ical"`: obsadené dni len z iCal aktívnych kanálov (aj udalosti v kolízii — sú to pobyty
     na kanáli), nič z aplikácie (rezervácie, blokácie, košíky). Ceny ostávajú z aplikácie. DB `unit_ical_busy_nights`
