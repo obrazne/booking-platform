@@ -600,6 +600,9 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-11-10 — **STRÖMY: cena 900 € za noc 23. 12. a 25. 12. 2026** (požiadavka Jany cez Martina). (Claude Code)
+  - Na stagingu nová sezóna „Vianoce — 23. a 25. 12.“ (priorita 30, len rok 2026, min. 4 noci ako Vianoce, sadzba 90000 centov);
+    24. a 26. 12. ostáva „Vianoce a Silvester“ 1 200 €. Od 26. 12. je chalet obsadený z iCal.
 - 2026-11-09 — **STRÖMY na stagingu bez testovacích dát** (pokyn Martina). (Claude Code)
   - Zmazané cez Supabase MCP v jednej transakcii: 48 ukážkových rezervácií („DEMO“, `stromy-demo.invalid`) + 2 testovacie
     (2026-0695 „Testovacia objednávka“, 2026-0696 zrušená), ich e-maily vo fronte a upozornenia, 2 ukážkové dokumenty,
