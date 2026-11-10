@@ -600,6 +600,10 @@ stránok pre Martina. Dáta Ukážkového klienta sa každú noc obnovia (`npm r
 
 ## Denník
 *Najnovšie hore. Formát: `RRRR-MM-DD — čo sa spravilo (kto)`.*
+- 2026-11-10 — **Widget na webe STRÖMY: bez posuvníka po výbere dní** (pripomienka Martina z ostrého webu). (Claude Code)
+  - V režime `info` riadok „Zrušiť výber“ drží miesto aj bez výberu (`invisible` namiesto `hidden`), takže kalendár po výbere
+    nezmení výšku; rámček má `scrolling="no"` a stránka v ňom `overflow:hidden` — vnútorný posuvník sa neukáže nikdy.
+    e2e `widget.spec.ts` kontroluje, že výška rámčeka sa po výbere nemení (nespustené — prostredie bez prístupu na staging).
 - 2026-11-10 — **STRÖMY: cena 900 € za noc 23. 12. a 25. 12. 2026** (požiadavka Jany cez Martina). (Claude Code)
   - Na stagingu nová sezóna „Vianoce — 23. a 25. 12.“ (priorita 30, len rok 2026, min. 4 noci ako Vianoce, sadzba 90000 centov);
     24. a 26. 12. ostáva „Vianoce a Silvester“ 1 200 €. Od 26. 12. je chalet obsadený z iCal.

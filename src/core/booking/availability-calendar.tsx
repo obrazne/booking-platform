@@ -367,7 +367,8 @@ export function AvailabilityCalendar({
       <div
         className={cn(
           "flex min-h-9 items-center justify-between gap-3",
-          !hint && !value.checkIn && "hidden",
+          // Without the hint (widget on a website) the row keeps its place: the frame does not grow when nights are chosen.
+          !hint && !value.checkIn && "invisible",
         )}
       >
         {hint ? (

@@ -136,11 +136,15 @@ test("widget only to look at (data-rezim=info): calendar, legend, price of the n
     "Rezerváciu dokončíte",
   ])
     await expect(root.getByText(text)).toHaveCount(0);
-  // Choosing nights shows their price; still nothing to order.
+  // Choosing nights shows their price; still nothing to order, and the frame keeps its height (no scrollbar on the website).
+  const frameEl = page.locator('iframe[title="Kalendár s cenami"]');
+  await expect.poll(async () => (await frameEl.boundingBox())!.height).toBeGreaterThan(400);
+  const before = (await frameEl.boundingBox())!.height;
   await pickStay(root, stay.checkIn, stay.checkOut);
   await expect(frame.locator("[data-widget-summary]")).toHaveText(/^3 noci · .+€$/);
   await expect(root.getByRole("link")).toHaveCount(0);
   await expect(root.getByRole("button", { name: "Zrušiť výber" })).toBeVisible();
+  expect(Math.abs((await frameEl.boundingBox())!.height - before)).toBeLessThanOrEqual(1);
 });
 
 test("widget on a website the client did not allow: no calendar", async ({ page }) => {

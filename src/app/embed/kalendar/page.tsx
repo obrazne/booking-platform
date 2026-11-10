@@ -46,8 +46,9 @@ export default async function CalendarEmbed({ searchParams }: PageProps<"/embed/
   const transparent = background === "priehladne" || background === "sive";
   return (
     <main className="mx-auto w-full max-w-5xl">
-      {/* Background of the client's page through (pozadie=priehladne) or white. */}
-      <style>{`html,body{background:${transparent ? "transparent" : "#fff"} !important}`}</style>
+      {/* Background of the client's page through (pozadie=priehladne) or white; never a scrollbar in the frame —
+          `widget.js` gives the frame the height of the widget. */}
+      <style>{`html,body{background:${transparent ? "transparent" : "#fff"} !important;overflow:hidden}`}</style>
       {data ? (
         <CalendarWidget
           slug={data.slug}

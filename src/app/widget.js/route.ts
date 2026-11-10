@@ -24,6 +24,7 @@ const SCRIPT = `(function () {
     frame.title = el.getAttribute("data-titulok") || "Kalendár s cenami";
     frame.style.cssText = "display:block;width:100%;height:560px;border:0;background:transparent;color-scheme:normal";
     frame.setAttribute("allowtransparency", "true");
+    frame.setAttribute("scrolling", "no");
     window.addEventListener("message", function (e) {
       if (e.origin !== base || e.source !== frame.contentWindow) return;
       var d = e.data;
